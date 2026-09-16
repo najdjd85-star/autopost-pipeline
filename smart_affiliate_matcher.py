@@ -13,11 +13,14 @@ from __future__ import annotations
 import base64
 import hashlib
 import hmac
+import json
+import random
 import time
+from pathlib import Path
 from typing import Dict, List, Optional
 from urllib.parse import quote, urlencode
 
-from config import get_site, settings
+from config import BASE_DIR, get_site, settings
 from constants import (
     AFFILIATE_SLOT_BOT,
     AFFILIATE_SLOT_MID,
@@ -45,6 +48,12 @@ _SLOT_LABELS = {
 }
 
 COUPANG_DOMAIN = "https://api-gateway.coupang.com"
+
+ADPICK_API_URL = "https://adpick.co.kr/apis/offers.php"
+# 애드픽 문서상 "최대 1분에 1회 이하로 호출"해야 하고 별도 캐시가 필수라서,
+# 여유 있게 1시간 캐시한다 (글 하나 발행할 때마다 실시간 호출하지 않음).
+ADPICK_CACHE_PATH = BASE_DIR / "data" / "cache" / "adpick_offers.json"
+ADPICK_CACHE_TTL_SECONDS = 3600
 
 
 def build_utm_link(base_url: str, slot: str, post_id: int) -> str:
@@ -139,6 +148,96 @@ def build_coupang_deeplink(keyword: str) -> Optional[Dict[str, str]]:
         return None
 
 
+def _load_adpick_cache() -> Optional[List[dict]]:
+    if not ADPICK_CACHE_PATH.exists():
+        return None
+    try:
+        data = json.loads(ADPICK_CACHE_PATH.read_text(encoding="utf-8"))
+        if time.time() - data.get("fetched_at", 0) > ADPICK_CACHE_TTL_SECONDS:
+            return None
+        return data.get("offers") or None
+    except (OSError, ValueError):
+        return None
+
+
+def _save_adpick_cache(offers: List[dict]) -> None:
+    try:
+        ADPICK_CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
+        ADPICK_CACHE_PATH.write_text(
+            json.dumps({"fetched_at": time.time(), "offers": offers}, ensure_ascii=False),
+            encoding="utf-8",
+        )
+    except OSError as exc:
+        logger.warning("애드픽 캠페인 캐시 저장 실패: %s", exc)
+
+
+def _fetch_adpick_offers() -> List[dict]:
+    """애드픽 캠페인 리스트를 가져온다. 1시간 이내 캐시가 있으면 그걸 그대로 쓴다
+    (API 정책상 1분에 1회 이하로만 호출해야 함)."""
+    cached = _load_adpick_cache()
+    if cached is not None:
+        return cached
+
+    if not settings.adpick_affid:
+        return []
+
+    resp = safe_get(
+        ADPICK_API_URL,
+        params={"affid": settings.adpick_affid, "category": "4", "order": "rand"},
+        timeout=8,
+    )
+    if resp is None or resp.status_code != 200:
+        return []
+    try:
+        offers = resp.json()
+    except ValueError:
+        return []
+    if not isinstance(offers, list):
+        return []
+
+    _save_adpick_cache(offers)
+    return offers
+
+
+# "생활" 카테고리로 필터링해도 데이팅/채팅 앱이 섞여 나오는 것을 실측으로 확인함 -
+# 정부지원금/세금환급처럼 진지한 콘텐츠 옆에 뜨면 사이트 신뢰도를 해치므로
+# 제목에 이런 키워드가 있는 캠페인은 후보에서 아예 제외한다.
+_ADPICK_BLOCKLIST_KEYWORDS = (
+    "채팅", "소개팅", "데이트", "매칭", "친구", "만남", "미팅", "썸", "이성",
+)
+
+
+def build_adpick_offer() -> Optional[Dict[str, str]]:
+    """애드픽 캠페인 리스트 API에서 광고 하나를 골라 카드 데이터로 반환한다.
+
+    앱 설치/가입형 광고 위주라 대출/세금환급 같은 콘텐츠와 결이 완전히 맞진
+    않지만, 쿠팡처럼 보너스 카드로 추가 수익 채널을 하나 더 확보하는 용도다.
+    AFFID 미설정이거나 API 실패 시, 또는 적절한 캠페인이 하나도 없으면
+    None을 반환한다(선택 기능).
+    """
+    if not settings.adpick_affid:
+        return None
+    try:
+        offers = _fetch_adpick_offers()
+        safe_offers = [
+            o for o in offers
+            if not any(kw in o.get("apAppTitle", "") for kw in _ADPICK_BLOCKLIST_KEYWORDS)
+        ]
+        if not safe_offers:
+            return None
+        offer = random.choice(safe_offers)
+        images = offer.get("apImages") or {}
+        return {
+            "name": offer.get("apAppTitle", "추천 앱"),
+            "url": offer.get("apTrackingLink", ""),
+            "image": images.get("icon114") or images.get("icon", ""),
+            "desc": offer.get("apAppPromoText") or offer.get("apHeadline", ""),
+        }
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("애드픽 캠페인 조회 실패: %s", exc)
+        return None
+
+
 def _get_coupang_card_data(keyword: str, site: str) -> Optional[Dict[str, str]]:
     """쿠팡 API로 상품 딥링크를 먼저 시도하고, 실패하면(예: 서버가 해외 IP라
     쿠팡이 차단하는 경우) 사이트별 고정 딥링크로 대체한다.
@@ -219,6 +318,32 @@ def build_affiliate_card(site: str, slot: str, post_id: int, keyword: str = "") 
 </div>
 <p style="font-size:11px;color:#999;">이 포스팅은 쿠팡 파트너스 활동의 일환으로,
 이에 따른 일정액의 수수료를 제공받습니다.</p>
+""".strip()
+        )
+
+    adpick = build_adpick_offer()
+    if adpick and adpick.get("url"):
+        ap_link = build_utm_link(adpick["url"], f"{slot}_adpick", post_id)
+        ap_image_html = (
+            f"""<img src="{adpick['image']}" alt="{adpick.get('name','')}"
+       style="width:56px;height:56px;object-fit:cover;border-radius:10px;flex-shrink:0;">"""
+            if adpick.get("image")
+            else ""
+        )
+        cards.append(
+            f"""
+<div class="affiliate-card affiliate-card-adpick" style="margin:16px 0;padding:14px 16px;
+    border-radius:14px;background:#fafafa;border:1px solid #eee;display:flex;
+    gap:12px;align-items:center;">
+  {ap_image_html}
+  <div style="flex:1;text-align:left;">
+    <div style="font-size:13px;font-weight:600;color:#222;">{adpick.get('name','')}</div>
+    <div style="font-size:12px;color:#888;margin-top:2px;">{adpick.get('desc','')}</div>
+  </div>
+  <a href="{ap_link}" target="_blank" rel="{REL_ATTR}"
+     style="padding:8px 16px;border-radius:999px;background:#333;color:#fff;
+     font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;">확인하기</a>
+</div>
 """.strip()
         )
 

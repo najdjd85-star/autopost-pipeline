@@ -81,6 +81,9 @@ class Settings:
     coupang_access_key: str
     coupang_secret_key: str
 
+    # 애드픽 (선택) - 캠페인 리스트 API용 회원 식별자(affid)
+    adpick_affid: str
+
     # 소셜
     threads_access_token: str
     ig_access_token: str
@@ -157,6 +160,7 @@ def load_settings() -> Settings:
         public_data_api_key=_get("PUBLIC_DATA_API_KEY"),
         coupang_access_key=_get("COUPANG_ACCESS_KEY"),
         coupang_secret_key=_get("COUPANG_SECRET_KEY"),
+        adpick_affid=_get("ADPICK_AFFID"),
         threads_access_token=_get("THREADS_ACCESS_TOKEN"),
         ig_access_token=_get("IG_ACCESS_TOKEN"),
         ig_user_id=_get("IG_USER_ID"),
