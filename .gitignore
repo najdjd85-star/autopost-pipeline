@@ -1,0 +1,16 @@
+venv/
+.venv/
+.env
+data/
+__pycache__/
+*.pyc
+*.pyo
+*.db
+output/
+*.log
+service_account.json
+client_secret.json
+youtube_token.json
+.pytest_cache/
+.claude/
+*.lnk

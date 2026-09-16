@@ -1,0 +1,60 @@
+<!--
+  워드프레스 "커스텀 HTML" 블록에 그대로 붙여넣는 반응형 구독 폼.
+  /api/subscribe (newsletter_system.py의 Flask 서버) 로 POST 요청을 보낸다.
+  API_BASE_URL 값을 실제 서버 도메인으로 변경하세요.
+-->
+<div class="np-subscribe-widget" style="max-width:480px;margin:32px auto;padding:28px;
+    border-radius:16px;background:linear-gradient(135deg,#eef4ff,#f7f9ff);
+    border:1px solid #dbe6ff;font-family:'Malgun Gothic',sans-serif;box-sizing:border-box;">
+  <h3 style="margin:0 0 8px;font-size:20px;color:#1b1f3b;">📬 2026 가이드북 무료로 받기</h3>
+  <p style="margin:0 0 18px;font-size:14px;color:#555;line-height:1.6;">
+    이메일을 남기면 <b>2026 가이드북 PDF</b>를 바로 보내드리고,
+    매주 놓치기 쉬운 정보를 정리한 뉴스레터를 보내드립니다.
+  </p>
+  <form id="np-subscribe-form" style="display:flex;gap:8px;flex-wrap:wrap;">
+    <input id="np-subscribe-email" type="email" required placeholder="이메일 주소 입력"
+           style="flex:1;min-width:180px;padding:12px 14px;border-radius:10px;
+           border:1px solid #ccd6f6;font-size:14px;box-sizing:border-box;">
+    <button type="submit"
+            style="padding:12px 22px;border:none;border-radius:10px;font-weight:700;
+            font-size:14px;color:#fff;cursor:pointer;
+            background:linear-gradient(90deg,#4f7cff,#7b5cff);">구독하기</button>
+  </form>
+  <p id="np-subscribe-message" style="margin:12px 0 0;font-size:13px;"></p>
+</div>
+
+<script>
+(function () {
+  var API_BASE_URL = "https://your-server-domain.com"; // <- 실제 서버 도메인으로 변경
+  var form = document.getElementById("np-subscribe-form");
+  var emailInput = document.getElementById("np-subscribe-email");
+  var messageEl = document.getElementById("np-subscribe-message");
+
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+    messageEl.style.color = "#555";
+    messageEl.textContent = "처리 중입니다...";
+
+    fetch(API_BASE_URL + "/api/subscribe", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: emailInput.value })
+    })
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        if (data.ok) {
+          messageEl.style.color = "#1e8e3e";
+          messageEl.textContent = "✅ " + data.message;
+          emailInput.value = "";
+        } else {
+          messageEl.style.color = "#d93025";
+          messageEl.textContent = "⚠️ " + (data.error || "구독에 실패했습니다.");
+        }
+      })
+      .catch(function () {
+        messageEl.style.color = "#d93025";
+        messageEl.textContent = "⚠️ 네트워크 오류로 구독에 실패했습니다.";
+      });
+  });
+})();
+</script>
