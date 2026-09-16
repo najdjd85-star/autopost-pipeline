@@ -12,11 +12,19 @@ import re
 from pathlib import Path
 from typing import Any, List, Optional, Tuple
 
+from config import BASE_DIR
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
 
+# 프로젝트에 폰트 파일을 직접 포함시켜, 서버에 sudo 권한이 없어 시스템 폰트를
+# 설치할 수 없는 환경(예: 관리형 호스팅)에서도 항상 한글이 정상 렌더링되게 한다.
+# 그래도 혹시 이 파일들이 없으면 기존 시스템 폰트 경로들로 순서대로 폴백한다.
+_BUNDLED_REGULAR = BASE_DIR / "assets" / "fonts" / "NanumGothic-Regular.ttf"
+_BUNDLED_BOLD = BASE_DIR / "assets" / "fonts" / "NanumGothic-Bold.ttf"
+
 _CANDIDATES = [
+    str(_BUNDLED_REGULAR),
     r"C:\Windows\Fonts\malgun.ttf",  # Windows 기본 - 맑은 고딕
     "/usr/share/fonts/truetype/nanum/NanumGothic.ttf",  # Ubuntu: sudo apt install fonts-nanum
     "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",  # Ubuntu: fonts-noto-cjk
@@ -24,6 +32,7 @@ _CANDIDATES = [
 ]
 
 _BOLD_CANDIDATES = [
+    str(_BUNDLED_BOLD),
     r"C:\Windows\Fonts\malgunbd.ttf",  # Windows 기본 - 맑은 고딕 Bold
     "/usr/share/fonts/truetype/nanum/NanumGothicBold.ttf",
     "/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc",
