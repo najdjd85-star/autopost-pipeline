@@ -460,7 +460,7 @@ def distribute_all(
             comment_text = f"📖 자세한 내용/신청 방법 원문: {post_url}"
             results["youtube_comment"] = add_youtube_comment(video_id, comment_text)
             # 댓글 고정 리마인드는 여기서 텔레그램으로 직접 보내지 않는다 - 이 함수의
-            # 유일한 실제 호출측(telegram_bot.run_full_publish_pipeline)은 항상 이미
+            # 유일한 실제 호출측(telegram_bot._publish_longform_stage)은 항상 이미
             # 실행 중인 asyncio 이벤트 루프 안에서 돌기 때문에, 여기서 동기 래퍼
             # send_message_sync()의 asyncio.run()을 부르면 "cannot be called from a
             # running event loop"로 매번 조용히 실패한다. 대신 결과 dict에만 담아

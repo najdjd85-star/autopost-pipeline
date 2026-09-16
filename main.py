@@ -187,6 +187,29 @@ def cmd_test_approval(site_arg: str) -> None:
             logger.warning("[Site %s] 테스트 승인 카드 발송 실패 (TELEGRAM_BOT_TOKEN/ADMIN_CHAT_ID 확인).", site)
 
 
+def cmd_send_shorts_preview(approval_id: str) -> None:
+    """`send_approval_request_sync`가 별도 프로세스로 띄우는 내부 커맨드.
+
+    직접 실행할 일은 거의 없고, 텍스트 승인 카드를 보낸 직후 자동으로 호출된다.
+    """
+    telegram_bot.send_shorts_preview_sync(approval_id)
+
+
+def cmd_publish_wp(approval_id: str) -> None:
+    """실제 발행 1단계(WP 발행). 승인/자동발행 시 자동으로 호출된다."""
+    telegram_bot.run_publish_wp_stage_sync(approval_id)
+
+
+def cmd_publish_shorts(approval_id: str) -> None:
+    """실제 발행 2단계(쇼츠 영상). 1단계가 끝나면 자동으로 호출된다."""
+    telegram_bot.run_publish_shorts_stage_sync(approval_id)
+
+
+def cmd_publish_longform(approval_id: str) -> None:
+    """실제 발행 3단계(롱폼 영상 + 나머지 채널 배포). 2단계가 끝나면 자동으로 호출된다."""
+    telegram_bot.run_publish_longform_stage_sync(approval_id)
+
+
 def cmd_refresh_check() -> None:
     for site in SITE_KEYS:
         try:
@@ -287,6 +310,24 @@ def build_arg_parser() -> argparse.ArgumentParser:
     subparsers.add_parser("send-newsletter", help="주간 뉴스레터 즉시 발송")
     subparsers.add_parser("daemon", help="스케줄러+텔레그램봇+구독서버 상시 구동")
 
+    # 아래 4개는 telegram_bot.py가 메모리 절약을 위해 각 단계를 별도 프로세스로
+    # 띄울 때 내부적으로 사용하는 커맨드다 - 직접 실행할 일은 거의 없다.
+    shorts_preview = subparsers.add_parser(
+        "send-shorts-preview", help="[내부용] 승인 대기건의 쇼츠 미리보기 영상을 만들어 전송"
+    )
+    shorts_preview.add_argument("approval_id")
+
+    publish_wp = subparsers.add_parser("publish-wp", help="[내부용] 발행 1단계: 워드프레스 발행")
+    publish_wp.add_argument("approval_id")
+
+    publish_shorts = subparsers.add_parser("publish-shorts", help="[내부용] 발행 2단계: 쇼츠 영상")
+    publish_shorts.add_argument("approval_id")
+
+    publish_longform = subparsers.add_parser(
+        "publish-longform", help="[내부용] 발행 3단계: 롱폼 영상 + 나머지 채널 배포"
+    )
+    publish_longform.add_argument("approval_id")
+
     return parser
 
 
@@ -313,6 +354,14 @@ def main() -> None:
         cmd_send_newsletter()
     elif args.command == "daemon":
         cmd_daemon()
+    elif args.command == "send-shorts-preview":
+        cmd_send_shorts_preview(args.approval_id)
+    elif args.command == "publish-wp":
+        cmd_publish_wp(args.approval_id)
+    elif args.command == "publish-shorts":
+        cmd_publish_shorts(args.approval_id)
+    elif args.command == "publish-longform":
+        cmd_publish_longform(args.approval_id)
     else:
         parser.print_help()
         sys.exit(1)
