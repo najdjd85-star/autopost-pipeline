@@ -85,4 +85,11 @@ python main.py daemon              # 스케줄러 + 텔레그램봇 + 구독서�
   `YOUTUBE_CLIENT_SECRETS_PATH`/`YOUTUBE_TOKEN_PATH`로 최초 1회 OAuth 사용자
   인증이 별도로 필요합니다.
 - **`deploy/autopost.service`**: Ubuntu systemd 전용 템플릿이며 이 Windows
-  개발 환경에서는 직접 실행/검증할 수 없습니다.
+  개발 환경에서는 직접 실행/검증할 수 없습니다. **root/sudo 권한이 없는 관리형
+  호스팅(예: Cloudways)에서는 systemd를 쓸 수 없으므로**, 대신
+  `deploy/watchdog.sh`를 Cloudways Cron Job(예: 5분마다)에 등록해 "안 돌고
+  있으면 다시 시작"하는 방식으로 24시간 가동을 대체합니다.
+- **쿠팡 파트너스 API**: 해외 리전 서버(예: 싱가포르)에서는 IP 기반으로
+  차단될 수 있습니다. 이 경우 `constants.COUPANG_FALLBACK_LINKS`에 등록된
+  사이트별 고정 딥링크로 자동 대체됩니다(실시간 상품 매칭은 안 되지만
+  수수료는 정상 발생).
