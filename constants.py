@@ -76,10 +76,12 @@ COUPANG_FALLBACK_LINKS = {
     "C": "https://link.coupang.com/a/g5bqNuUPCK",
 }
 
-# ---- 공정거래위원회 필수 표기 문구 ----
-FTC_DISCLOSURE_TEXT = (
-    "이 포스팅은 파트너스 활동을 통해 일정 수수료를 제공받을 수 있습니다."
-)
+# ---- 공정거래위원회 필수 표기 문구 (모든 제휴 카드 - 쿠팡/애드픽/정적 링크 공통) ----
+FTC_DISCLOSURE_TEXT = "이 포스팅은 제휴마케팅이 포함된 광고로 커미션을 지급 받습니다."
+
+# ---- 링크프라이스 매체 승인 이벤트 참여 조건상 필수 표기 문구.
+# AFF_* 정적 슬롯이 전부 링크프라이스 링크이므로 그 카드에만 붙인다. ----
+LINKPRICE_EVENT_DISCLOSURE_TEXT = "이 포스팅은 링크프라이스 이벤트 참여를 위해 작성되었습니다."
 
 # ---- Claude 모델 ----
 # claude-3-5-sonnet-20241022는 더 이상 제공되지 않아(404 not_found_error) 최신 균형형 모델로 교체.

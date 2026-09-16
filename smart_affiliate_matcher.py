@@ -27,6 +27,7 @@ from constants import (
     AFFILIATE_SLOT_TOP,
     COUPANG_FALLBACK_LINKS,
     FTC_DISCLOSURE_TEXT,
+    LINKPRICE_EVENT_DISCLOSURE_TEXT,
 )
 from utils.http import safe_get
 from utils.logger import get_logger
@@ -255,10 +256,13 @@ def _get_coupang_card_data(keyword: str, site: str) -> Optional[Dict[str, str]]:
     return None
 
 
-def _disclosure_html() -> str:
-    return (
-        f'<p style="font-size:12px;color:#888;margin:6px 0 0;line-height:1.5;">'
-        f"{FTC_DISCLOSURE_TEXT}</p>"
+def _disclosure_html(extra_text: str = "") -> str:
+    lines = [FTC_DISCLOSURE_TEXT]
+    if extra_text:
+        lines.append(extra_text)
+    return "".join(
+        f'<p style="font-size:12px;color:#888;margin:6px 0 0;line-height:1.5;">{line}</p>'
+        for line in lines
     )
 
 
@@ -280,7 +284,7 @@ def build_affiliate_card(site: str, slot: str, post_id: int, keyword: str = "") 
      style="display:inline-block;padding:14px 32px;border-radius:999px;
      background:linear-gradient(90deg,#4f7cff,#7b5cff);color:#fff;
      font-weight:700;font-size:16px;text-decoration:none;">{label}</a>
-  {_disclosure_html()}
+  {_disclosure_html(LINKPRICE_EVENT_DISCLOSURE_TEXT)}
 </div>
 """.strip()
         )
@@ -316,8 +320,7 @@ def build_affiliate_card(site: str, slot: str, post_id: int, keyword: str = "") 
      style="padding:10px 18px;border-radius:999px;background:#111;color:#fff;
      font-size:13px;font-weight:600;text-decoration:none;white-space:nowrap;">바로가기</a>
 </div>
-<p style="font-size:11px;color:#999;">이 포스팅은 쿠팡 파트너스 활동의 일환으로,
-이에 따른 일정액의 수수료를 제공받습니다.</p>
+{_disclosure_html()}
 """.strip()
         )
 
@@ -344,6 +347,7 @@ def build_affiliate_card(site: str, slot: str, post_id: int, keyword: str = "") 
      style="padding:8px 16px;border-radius:999px;background:#333;color:#fff;
      font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;">확인하기</a>
 </div>
+{_disclosure_html()}
 """.strip()
         )
 
