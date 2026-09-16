@@ -68,6 +68,14 @@ OUTRO_MENTION = "자세한 사항은 고정 댓글 또는 프로필 링크 사�
 # ---- 이미지 생성 규격 ----
 POLLINATIONS_IMAGE_SIZE = (1200, 675)
 
+# ---- 쿠팡 파트너스 Open API 실패 시(예: 서버가 해외 IP라 차단되는 경우) 대체할
+# 사이트별 고정 딥링크. 실시간 키워드 매칭은 아니지만 수수료 자체는 정상 발생한다. ----
+COUPANG_FALLBACK_LINKS = {
+    "A": "https://link.coupang.com/a/g5bcOwno5c",
+    "B": "https://link.coupang.com/a/g5boawUePs",
+    "C": "https://link.coupang.com/a/g5bqNuUPCK",
+}
+
 # ---- 공정거래위원회 필수 표기 문구 ----
 FTC_DISCLOSURE_TEXT = (
     "이 포스팅은 파트너스 활동을 통해 일정 수수료를 제공받을 수 있습니다."

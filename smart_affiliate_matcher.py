@@ -22,6 +22,7 @@ from constants import (
     AFFILIATE_SLOT_BOT,
     AFFILIATE_SLOT_MID,
     AFFILIATE_SLOT_TOP,
+    COUPANG_FALLBACK_LINKS,
     FTC_DISCLOSURE_TEXT,
 )
 from utils.http import safe_get
@@ -138,6 +139,23 @@ def build_coupang_deeplink(keyword: str) -> Optional[Dict[str, str]]:
         return None
 
 
+def _get_coupang_card_data(keyword: str, site: str) -> Optional[Dict[str, str]]:
+    """쿠팡 API로 상품 딥링크를 먼저 시도하고, 실패하면(예: 서버가 해외 IP라
+    쿠팡이 차단하는 경우) 사이트별 고정 딥링크로 대체한다.
+
+    고정 링크는 실시간 상품명/이미지/가격 정보가 없으므로 name/image/price를
+    비워 반환한다 - 카드 렌더링 쪽에서 이 경우 이미지/가격 줄을 생략한다.
+    """
+    coupang = build_coupang_deeplink(keyword) if keyword else None
+    if coupang and coupang.get("url"):
+        return coupang
+
+    fallback_url = COUPANG_FALLBACK_LINKS.get(site)
+    if fallback_url:
+        return {"name": "지금 쿠팡 인기 상품 확인하기", "url": fallback_url, "image": "", "price": ""}
+    return None
+
+
 def _disclosure_html() -> str:
     return (
         f'<p style="font-size:12px;color:#888;margin:6px 0 0;line-height:1.5;">'
@@ -170,20 +188,30 @@ def build_affiliate_card(site: str, slot: str, post_id: int, keyword: str = "") 
     else:
         logger.info("사이트 %s 슬롯 %s: 제휴 링크 미설정 - 카드 생략", site, slot)
 
-    coupang = build_coupang_deeplink(keyword) if keyword else None
+    coupang = _get_coupang_card_data(keyword, site)
     if coupang and coupang.get("url"):
         cp_link = build_utm_link(coupang["url"], f"{slot}_coupang", post_id)
+        image_html = (
+            f"""<img src="{coupang['image']}" alt="{coupang.get('name','')}"
+       style="width:80px;height:80px;object-fit:cover;border-radius:10px;flex-shrink:0;">"""
+            if coupang.get("image")
+            else ""
+        )
+        price_html = (
+            f"""<div style="font-size:13px;color:#e5533d;font-weight:700;margin-top:4px;">
+      {coupang['price']}원</div>"""
+            if coupang.get("price")
+            else ""
+        )
         cards.append(
             f"""
 <div class="affiliate-card affiliate-card-coupang" style="margin:16px 0;padding:16px;
     border-radius:14px;background:#fff;border:1px solid #eee;display:flex;
     gap:14px;align-items:center;">
-  <img src="{coupang.get('image','')}" alt="{coupang.get('name','')}"
-       style="width:80px;height:80px;object-fit:cover;border-radius:10px;flex-shrink:0;">
+  {image_html}
   <div style="flex:1;text-align:left;">
     <div style="font-size:14px;font-weight:600;color:#222;">{coupang.get('name','')}</div>
-    <div style="font-size:13px;color:#e5533d;font-weight:700;margin-top:4px;">
-      {coupang.get('price','')}원</div>
+    {price_html}
   </div>
   <a href="{cp_link}" target="_blank" rel="{REL_ATTR}"
      style="padding:10px 18px;border-radius:999px;background:#111;color:#fff;
