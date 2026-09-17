@@ -72,12 +72,44 @@ def build_utm_link(base_url: str, slot: str, post_id: int) -> str:
 
 
 def _pick_site_affiliate_url(site: str) -> Optional[str]:
-    """사이트별 제휴 카테고리 중 하나를 대표 링크로 선택한다."""
+    """사이트별 제휴 카테고리 중 하나를 대표 링크로 선택한다 (get_primary_affiliate_link 전용)."""
     site_cfg = get_site(site)
     for value in site_cfg.affiliates.values():
         if value:
             return value
     return None
+
+
+# 제휴 링크 종류(키)별로 실제 무엇을 확인/신청하는지 명시한 CTA 문구.
+# 예전에는 top/mid/bot 위치별로 문구만 다르고 실제 링크는 전부 사이트의
+# 첫 번째 제휴 링크 하나로 고정되어 있어서(예: 3개 버튼이 전부 같은 곳으로
+# 이동), 버튼 문구와 실제 도착지가 안 맞고 같은 링크가 반복되는 문제가
+# 있었다 - 슬롯마다 사이트가 가진 제휴 링크를 돌아가며 배정하고, 그 링크의
+# 실제 성격에 맞는 문구를 쓰도록 고쳤다.
+_AFFILIATE_KEY_LABELS = {
+    "loan": "💳 내 신용점수 무료로 확인하기",
+    "welfare": "🔍 내 지원금 자격 미리 확인하기",
+    "mvno": "📱 요금제 비교하고 갈아타기",
+    "rental": "🔧 우리 동네 전문가 찾기",
+    "internet": "🌐 인터넷 결합 혜택 확인하기",
+    "refund": "💸 숨은 환급액 조회하기",
+    "pension": "👴 연금 혜택 확인하기",
+}
+
+
+def _pick_slot_affiliate(site: str, slot: str) -> Tuple[str, Optional[str], str]:
+    """슬롯(top/mid/bot) 순서에 맞춰 사이트가 가진 제휴 링크를 하나씩 돌아가며
+    배정한다. (제휴 키, URL, 버튼 라벨)을 반환하며, 설정된 제휴 링크가 하나도
+    없으면 ("", None, 기본 라벨)을 반환한다."""
+    site_cfg = get_site(site)
+    keys = [k for k, v in site_cfg.affiliates.items() if v]
+    if not keys:
+        return "", None, _SLOT_LABELS.get(slot, "지금 확인하기")
+
+    slot_index = {"top": 0, "mid": 1, "bot": 2}.get(slot, 0)
+    key = keys[slot_index % len(keys)]
+    label = _AFFILIATE_KEY_LABELS.get(key, _SLOT_LABELS.get(slot, "지금 확인하기"))
+    return key, site_cfg.affiliates[key], label
 
 
 def get_primary_affiliate_link(site: str, slot: str, post_id: int) -> Optional[str]:
@@ -277,8 +309,7 @@ _BAG_ICON_SVG = (
 def build_affiliate_card(site: str, slot: str, post_id: int, keyword: str = "") -> str:
     """단일 슬롯에 들어갈 제휴 카드 HTML을 생성한다 (고지 문구는 포함하지 않음 -
     글 전체에서 한 번만 보여주면 되므로 inject_affiliate_slots가 마지막에 한 번만 붙인다)."""
-    base_url = _pick_site_affiliate_url(site)
-    label = _SLOT_LABELS.get(slot, "지금 확인하기")
+    _, base_url, label = _pick_slot_affiliate(site, slot)
 
     cards: List[str] = []
 
