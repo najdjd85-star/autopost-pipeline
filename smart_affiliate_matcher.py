@@ -200,11 +200,18 @@ def _fetch_adpick_offers() -> List[dict]:
     return offers
 
 
-# "생활" 카테고리로 필터링해도 데이팅/채팅 앱이 섞여 나오는 것을 실측으로 확인함 -
-# 정부지원금/세금환급처럼 진지한 콘텐츠 옆에 뜨면 사이트 신뢰도를 해치므로
-# 제목에 이런 키워드가 있는 캠페인은 후보에서 아예 제외한다.
+# "생활" 카테고리로 필터링해도 데이팅/채팅 앱이 대부분이고, 심지어 애드픽
+# 자체 회원가입 홍보 캠페인까지 섞여 나오는 것을 실측으로 확인함. 블랙리스트
+# 방식은 "데이톡"처럼 정확한 금지어를 피해가는 이름이 계속 나와 안전하지
+# 않아서, 반대로 우리 사이트(정부지원금/통신비/세금환급) 주제와 조금이라도
+# 관련된 키워드가 있을 때만 통과시키는 화이트리스트 방식으로 바꿨다.
+_ADPICK_ALLOWLIST_KEYWORDS = (
+    "렌트", "리스", "대출", "보험", "환급", "연금", "통신", "요금제", "적금",
+    "예금", "카드", "전기", "가스", "차량", "자동차", "세금", "청약", "저축",
+)
 _ADPICK_BLOCKLIST_KEYWORDS = (
     "채팅", "소개팅", "데이트", "매칭", "친구", "만남", "미팅", "썸", "이성",
+    "인연", "애드픽", "쇼핑메이트", "광고메이트",
 )
 
 
@@ -220,19 +227,23 @@ def build_adpick_offer() -> Optional[Dict[str, str]]:
         return None
     try:
         offers = _fetch_adpick_offers()
-        safe_offers = [
-            o for o in offers
-            if not any(kw in o.get("apAppTitle", "") for kw in _ADPICK_BLOCKLIST_KEYWORDS)
-        ]
+        safe_offers = []
+        for o in offers:
+            text = f"{o.get('apAppTitle', '')} {o.get('apAppPromoText', '')} {o.get('apHeadline', '')}"
+            has_blocked = any(kw in text for kw in _ADPICK_BLOCKLIST_KEYWORDS)
+            has_allowed = any(kw in text for kw in _ADPICK_ALLOWLIST_KEYWORDS)
+            if has_allowed and not has_blocked:
+                safe_offers.append(o)
         if not safe_offers:
             return None
         offer = random.choice(safe_offers)
         images = offer.get("apImages") or {}
+        desc = offer.get("apAppPromoText") or offer.get("apHeadline", "")
         return {
             "name": offer.get("apAppTitle", "추천 앱"),
             "url": offer.get("apTrackingLink", ""),
             "image": images.get("icon114") or images.get("icon", ""),
-            "desc": offer.get("apAppPromoText") or offer.get("apHeadline", ""),
+            "desc": desc[:80],  # 애드픽 자체 홍보문이 수백 자로 길게 오는 경우가 있어 카드에 맞게 자른다
         }
     except Exception as exc:  # noqa: BLE001
         logger.warning("애드픽 캠페인 조회 실패: %s", exc)
@@ -256,18 +267,16 @@ def _get_coupang_card_data(keyword: str, site: str) -> Optional[Dict[str, str]]:
     return None
 
 
-def _disclosure_html(extra_text: str = "") -> str:
-    lines = [FTC_DISCLOSURE_TEXT]
-    if extra_text:
-        lines.append(extra_text)
-    return "".join(
-        f'<p style="font-size:12px;color:#888;margin:6px 0 0;line-height:1.5;">{line}</p>'
-        for line in lines
-    )
+_BAG_ICON_SVG = (
+    '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#e5533d" '
+    'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'
+    '<path d="M6 8h12l-1 12H7L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>'
+)
 
 
 def build_affiliate_card(site: str, slot: str, post_id: int, keyword: str = "") -> str:
-    """단일 슬롯에 들어갈 완성된 제휴 카드 HTML을 생성한다."""
+    """단일 슬롯에 들어갈 제휴 카드 HTML을 생성한다 (고지 문구는 포함하지 않음 -
+    글 전체에서 한 번만 보여주면 되므로 inject_affiliate_slots가 마지막에 한 번만 붙인다)."""
     base_url = _pick_site_affiliate_url(site)
     label = _SLOT_LABELS.get(slot, "지금 확인하기")
 
@@ -284,7 +293,6 @@ def build_affiliate_card(site: str, slot: str, post_id: int, keyword: str = "") 
      style="display:inline-block;padding:14px 32px;border-radius:999px;
      background:linear-gradient(90deg,#4f7cff,#7b5cff);color:#fff;
      font-weight:700;font-size:16px;text-decoration:none;">{label}</a>
-  {_disclosure_html(LINKPRICE_EVENT_DISCLOSURE_TEXT)}
 </div>
 """.strip()
         )
@@ -294,12 +302,18 @@ def build_affiliate_card(site: str, slot: str, post_id: int, keyword: str = "") 
     coupang = _get_coupang_card_data(keyword, site)
     if coupang and coupang.get("url"):
         cp_link = build_utm_link(coupang["url"], f"{slot}_coupang", post_id)
-        image_html = (
-            f"""<img src="{coupang['image']}" alt="{coupang.get('name','')}"
+        # 실시간 상품 이미지가 있으면 그대로 쓰고, 폴백(고정 링크)이라 이미지가
+        # 없으면 빈 자리 대신 아이콘 배지를 넣어 카드가 허전해 보이지 않게 한다.
+        if coupang.get("image"):
+            image_html = (
+                f"""<img src="{coupang['image']}" alt="{coupang.get('name','')}"
        style="width:80px;height:80px;object-fit:cover;border-radius:10px;flex-shrink:0;">"""
-            if coupang.get("image")
-            else ""
-        )
+            )
+        else:
+            image_html = (
+                f"""<div style="width:56px;height:56px;border-radius:12px;background:#fff0ed;
+       display:flex;align-items:center;justify-content:center;flex-shrink:0;">{_BAG_ICON_SVG}</div>"""
+            )
         price_html = (
             f"""<div style="font-size:13px;color:#e5533d;font-weight:700;margin-top:4px;">
       {coupang['price']}원</div>"""
@@ -320,34 +334,24 @@ def build_affiliate_card(site: str, slot: str, post_id: int, keyword: str = "") 
      style="padding:10px 18px;border-radius:999px;background:#111;color:#fff;
      font-size:13px;font-weight:600;text-decoration:none;white-space:nowrap;">바로가기</a>
 </div>
-{_disclosure_html()}
 """.strip()
         )
 
     adpick = build_adpick_offer()
     if adpick and adpick.get("url"):
         ap_link = build_utm_link(adpick["url"], f"{slot}_adpick", post_id)
-        ap_image_html = (
-            f"""<img src="{adpick['image']}" alt="{adpick.get('name','')}"
-       style="width:56px;height:56px;object-fit:cover;border-radius:10px;flex-shrink:0;">"""
-            if adpick.get("image")
-            else ""
-        )
+        # 애드픽 CDN 이미지는 리퍼러 차단으로 우리 사이트에 임베드하면 깨져서
+        # 아예 이미지를 쓰지 않고 텍스트 카드로만 구성한다(실측으로 확인함).
         cards.append(
             f"""
 <div class="affiliate-card affiliate-card-adpick" style="margin:16px 0;padding:14px 16px;
-    border-radius:14px;background:#fafafa;border:1px solid #eee;display:flex;
-    gap:12px;align-items:center;">
-  {ap_image_html}
-  <div style="flex:1;text-align:left;">
-    <div style="font-size:13px;font-weight:600;color:#222;">{adpick.get('name','')}</div>
-    <div style="font-size:12px;color:#888;margin-top:2px;">{adpick.get('desc','')}</div>
-  </div>
+    border-radius:14px;background:#fafafa;border:1px solid #eee;">
+  <div style="font-size:13px;font-weight:600;color:#222;">{adpick.get('name','')}</div>
+  <div style="font-size:12px;color:#888;margin-top:2px;">{adpick.get('desc','')}</div>
   <a href="{ap_link}" target="_blank" rel="{REL_ATTR}"
-     style="padding:8px 16px;border-radius:999px;background:#333;color:#fff;
-     font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;">확인하기</a>
+     style="display:inline-block;margin-top:10px;padding:8px 16px;border-radius:999px;
+     background:#333;color:#fff;font-size:12px;font-weight:600;text-decoration:none;">확인하기</a>
 </div>
-{_disclosure_html()}
 """.strip()
         )
 
@@ -355,13 +359,28 @@ def build_affiliate_card(site: str, slot: str, post_id: int, keyword: str = "") 
 
 
 def inject_affiliate_slots(html: str, post_id: int, site: str, keyword: str = "") -> str:
-    """html_content 안의 AFFILIATE_SLOT_* 플레이스홀더를 실제 카드로 치환한다."""
+    """html_content 안의 AFFILIATE_SLOT_* 플레이스홀더를 실제 카드로 치환한다.
+
+    슬롯이 top/mid/bot 여러 개라 카드마다 고지 문구를 넣으면 글 하나에 최대
+    9번까지 같은 문구가 반복돼 스팸처럼 보인다 - 그래서 각 카드에는 고지
+    문구를 넣지 않고, 실제로 제휴 카드가 하나라도 들어간 글이면 본문 맨
+    끝에 딱 한 번만 모아서 붙인다.
+    """
     if not html:
         return html
 
     result = html
+    any_affiliate_content = False
     for token, slot_name in _SLOT_TOKEN_TO_NAME.items():
         if token in result:
             card_html = build_affiliate_card(site, slot_name, post_id, keyword)
             result = result.replace(token, card_html)
+            if card_html.strip():
+                any_affiliate_content = True
+
+    if any_affiliate_content:
+        result += (
+            f'\n<p style="font-size:12px;color:#888;margin:24px 0 0;line-height:1.6;">'
+            f"{FTC_DISCLOSURE_TEXT}<br>{LINKPRICE_EVENT_DISCLOSURE_TEXT}</p>"
+        )
     return result
