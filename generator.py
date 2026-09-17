@@ -24,6 +24,7 @@ from constants import (
     IMAGE_SLOT_2,
     REQUIRED_GENERATOR_KEYS,
     SITE_LABELS,
+    SITE_OFFICIAL_URLS,
 )
 from keyword_expander import expand_to_longtail
 from trend_scraper import fetch_today_hot_topics
@@ -117,6 +118,7 @@ def _get_client():
 
 def build_system_prompt(site: str) -> str:
     site_label = SITE_LABELS.get(site, site)
+    official_url = SITE_OFFICIAL_URLS.get(site, "")
     return f"""당신은 대한민국 최상위 1% 바이럴 블로그 카피라이터이자 UI/UX 퍼블리셔입니다.
 지금부터 "{site_label}" 주제로 워드프레스에 바로 게시할 완성된 HTML 콘텐츠를 작성합니다.
 
@@ -139,6 +141,9 @@ html_content 안에 아래 컴포넌트를 전부 포함해야 합니다:
 4. `<div class="benefit-calc">` 모의 판별/계산기 위젯: 순수 Vanilla JavaScript(<script> 태그, 외부
    라이브러리 금지)로 입력값에 따라 결과를 즉시 보여주는 위젯. 반드시 동작 가능한 JS 로직 포함.
 5. 그라데이션 배경의 공식 신청 바로가기 CTA 버튼 (linear-gradient 인라인 스타일).
+   href는 반드시 "{official_url}" 을 그대로 사용하세요 (실제 존재하는 공식 사이트 주소입니다).
+   "#"이나 다른 임의의 주소를 절대 사용하지 마세요 - 클릭했을 때 아무 데도 안 가는
+   가짜 버튼이 되어서는 안 됩니다.
 6. 아래 플레이스홀더를 본문 흐름에 맞는 위치에 정확히 그대로(문자 변경 없이) 삽입:
    - "{IMAGE_SLOT_1}" : 도입부 직후
    - "{IMAGE_SLOT_2}" : 본문 중반(페르소나 사례 근처)

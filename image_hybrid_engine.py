@@ -77,8 +77,34 @@ def generate_pollinations_image(
         return None
 
 
+# Pexels는 실사 스톡 "사진"만 있는 라이브러리라, 인포그래픽/일러스트/아이콘
+# 스타일을 요청하면 매칭되는 사진이 없어 엉뚱한(제목에 겹치는 영단어만 있는)
+# 사진을 억지로 반환하는 것을 실측으로 확인함(예: "infographic style" 요청 시
+# "FEED BACK" 글자가 적힌 무관한 사진이 나옴). 이런 스타일 키워드가 프롬프트에
+# 있으면 아예 Pexels를 건너뛰고 바로 AI 생성(Pollinations)으로 간다.
+_NON_PHOTO_STYLE_KEYWORDS = (
+    "infographic", "illustration", "flat design", "icon", "diagram",
+    "vector", "cartoon", "clipart", "clip art", "graphic design",
+)
+
+
+def _looks_like_non_photo_style(prompt_en: str) -> bool:
+    lowered = prompt_en.lower()
+    return any(kw in lowered for kw in _NON_PHOTO_STYLE_KEYWORDS)
+
+
 def resolve_image_for_slot(prompt_en: str) -> Tuple[Optional[bytes], str]:
     """이미지를 확보한다. (바이트, 소스라벨) 튜플을 반환. 둘 다 실패하면 (None, 'none')."""
+    if _looks_like_non_photo_style(prompt_en):
+        image_bytes = generate_pollinations_image(prompt_en)
+        if image_bytes:
+            return image_bytes, "pollinations-ai"
+        # AI 생성마저 실패하면 그때는 Pexels로라도 시도(완전히 이미지 없는 것보다 낫다).
+        image_bytes = search_pexels_photo(prompt_en)
+        if image_bytes:
+            return image_bytes, "pexels"
+        return None, "none"
+
     image_bytes = search_pexels_photo(prompt_en)
     if image_bytes:
         return image_bytes, "pexels"

@@ -48,6 +48,15 @@ SITE_BADGES = {
     SITE_C: "💰 세금환급",
 }
 
+# ---- 사이트별 "공식 신청/조회 사이트" CTA용 실제 URL (전부 정부/공공기관 운영,
+# 확인된 진짜 주소) - generator.py가 프롬프트에 그대로 박아서 Claude가
+# href="#" 같은 가짜 링크를 만들지 않게 한다. ----
+SITE_OFFICIAL_URLS = {
+    SITE_A: "https://www.bokjiro.go.kr",  # 복지로 - 보건복지부 복지서비스 모의계산
+    SITE_B: "https://www.smartchoice.or.kr",  # 스마트초이스 - 과기정통부·KTOA 통신요금 비교
+    SITE_C: "https://www.hometax.go.kr",  # 홈택스 - 국세청 세금 환급/신고
+}
+
 # ---- TTS ----
 DEFAULT_TTS_VOICE = "ko-KR-InJoonNeural"
 
