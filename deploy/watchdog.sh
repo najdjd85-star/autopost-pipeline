@@ -16,6 +16,17 @@ LOG_DIR="$APP_DIR/data/logs"
 mkdir -p "$LOG_DIR"
 
 RESTART_FLAG="$APP_DIR/deploy/.restart_requested"
+STOP_FLAG="$APP_DIR/deploy/.stop_requested"
+
+# 데몬을 영구적으로(재시작 없이) 종료하고 싶을 때 사용한다(예: 렌더링 전용 VPS로
+# 데몬 자체를 이전하면서 이 서버의 데몬은 완전히 꺼야 할 때). 이것도 같은 이유로
+# 크론 자신의 권한으로 kill해야 한다: `touch deploy/.stop_requested` 후 최대
+# 크론 주기 이내에 데몬이 종료되고, 이 스크립트는 더 이상 재시작하지 않는다.
+if [ -f "$STOP_FLAG" ]; then
+    echo "$(date -u '+%Y-%m-%d %H:%M:%S UTC') - 영구 정지 요청 감지 - 데몬을 종료하고 재시작하지 않습니다." >> "$LOG_DIR/watchdog.log"
+    pkill -f "python.*main\.py daemon" || true
+    exit 0
+fi
 
 # 새 코드를 배포한 뒤 데몬을 강제로 재시작하고 싶을 때, 이 크론(=데몬을 실제로
 # 띄운 것과 같은 사용자 계정으로 실행됨)이 아니면 다른 로그인 세션(예: 마스터
