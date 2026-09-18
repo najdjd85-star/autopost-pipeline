@@ -236,7 +236,9 @@ def render_longform(
             audio_codec="aac",
             logger=None,
             preset="veryfast",
-            threads=os.cpu_count() or 4,
+            threads=1,  # video_engine.py와 동일한 이유 - 인코더 스레드가 늘수록
+            # 스레드별 참조 프레임 버퍼가 늘어 메모리를 더 쓴다. 롱폼은 쇼츠보다
+            # 훨씬 길어 영향이 더 크므로 반드시 1로 고정한다.
             ffmpeg_params=["-crf", "23"],
         )
         final.close()

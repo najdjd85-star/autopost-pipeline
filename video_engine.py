@@ -240,7 +240,9 @@ def render_shorts(
             audio_codec="aac",
             logger=None,
             preset="veryfast",
-            threads=os.cpu_count() or 4,
+            threads=1,  # 스레드를 늘리면 x264 인코더가 스레드별 참조 프레임 버퍼를
+            # 따로 들고 있어서 메모리 사용량이 늘어난다 - RAM이 작은 렌더링 서버에서
+            # OOM으로 죽는 걸 실측으로 확인해서 1로 고정한다(속도보다 안정성 우선).
             ffmpeg_params=["-crf", "23"],
         )
 
