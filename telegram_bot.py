@@ -593,6 +593,15 @@ async def check_expired_approvals_and_auto_publish() -> None:
         if pending is None:
             continue
 
+        if pending.get("post_id"):
+            # 이미 워드프레스 발행 단계까지 끝난 건이다(자동발행이든 수동승인이든).
+            # 이후 쇼츠/롱폼 단계가 오래 걸리거나(렌더링 실패 등) 완전히 멈춰서
+            # 대기 기록이 삭제되지 않고 남아있더라도, 여기서 다시 워드프레스
+            # 발행을 재실행하면 안 된다 - 그러면 같은 글이 30분마다 계속
+            # 중복 발행된다(실제로 발생했던 사고: 렌더링이 안 끝나 대기 기록이
+            # 안 지워지고, 그때마다 이 체크가 새 글을 계속 만들어 냄).
+            continue
+
         created_at_raw = pending.get("created_at")
         if not created_at_raw:
             continue  # 이 필드 도입 이전에 저장된 예전 대기건은 자동발행 대상에서 제외
