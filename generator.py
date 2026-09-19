@@ -60,38 +60,11 @@ CONTENT_TOOL = {
                 },
                 "required": ["slot_1", "slot_2"],
             },
-            "shorts_script": {
-                "type": "string",
-                "description": (
-                    "30초 세로 쇼츠 나레이션 대본. 실제로 성우가 그대로 읽고 화면 자막으로도 "
-                    "그대로 노출되는 순수 발화 텍스트만 작성한다. '(0-3초)', '(장면1)', "
-                    "'나레이터:' 같은 시간 지시문/연출 메모/화자 표시는 절대 포함하지 않는다."
-                ),
-            },
-            "longform_chapters": {
-                "type": "array",
-                "description": "5~7분 롱폼 영상용 챕터 목록",
-                "items": {
-                    "type": "object",
-                    "properties": {
-                        "title": {"type": "string"},
-                        "script": {
-                            "type": "string",
-                            "description": (
-                                "해당 챕터 나레이션. 시간 지시문/연출 메모 없이 순수 발화 텍스트만."
-                            ),
-                        },
-                        "stock_query_en": {"type": "string"},
-                    },
-                    "required": ["title", "script", "stock_query_en"],
-                },
-            },
             "threads_post": {"type": "string", "description": "스레드 본문 요약 (500자 이내)"},
             "threads_comment": {
                 "type": "string",
                 "description": "스레드 첫 댓글. 블로그 링크 자리에 {POST_URL} 플레이스홀더 사용",
             },
-            "ig_caption": {"type": "string", "description": "인스타그램 릴스 캡션 (해시태그 포함)"},
             "pinterest_desc": {"type": "string", "description": "핀터레스트 설명 (SEO 키워드 포함)"},
         },
         "required": list(REQUIRED_GENERATOR_KEYS),
@@ -194,8 +167,8 @@ def build_user_prompt(
 [상위 1~3위 블로그 레퍼런스 - 팩트만 흡수, 문체는 100% 재창작]
 {ref_block}
 
-[최근 3개월 조회수 상위 관련 유튜브 영상 - shorts_script/longform_chapters 작성 시
-제목·후킹 패턴만 참고하고 내용/문장은 절대 베끼지 말 것. 100% 새로운 대본으로 작성]
+[최근 3개월 조회수 상위 관련 유튜브 영상 - title/html_content 작성 시
+제목·후킹 패턴만 참고하고 내용/문장은 절대 베끼지 말 것. 100% 새로운 글로 작성]
 {video_trend_briefing or "(참고 데이터 없음 - 일반적인 후킹 원칙으로 작성하세요.)"}
 
 위 정보를 바탕으로 시스템 프롬프트의 모든 규칙을 만족하는 콘텐츠를 submit_blog_content 도구로 제출하세요."""

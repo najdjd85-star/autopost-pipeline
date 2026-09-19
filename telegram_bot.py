@@ -4,9 +4,13 @@
 python-telegram-bot v20+(asyncio 기반)를 전용 스레드에서 실행하여,
 main.py의 동기(schedule) 루프/Flask 스레드와 충돌 없이 공존한다.
 
-메시지 포맷: [Site 뱃지] + 제목 + 요약 카드 + 쇼츠 영상 + 롱폼 링크
+메시지 포맷: [Site 뱃지] + 제목 + 요약 카드
 인라인 버튼: [🌐 웹 미리보기] [✏️ WP 수정] [✅ 일괄 발행 승인] [❌ 반려]
-승인 클릭 시: WP 공개 -> 색인 핑 -> 스레드 -> 인스타 -> 핀터레스트 -> 유튜브 순차 배포.
+승인 클릭 시: WP 공개 -> 색인 핑 -> 스레드 -> 핀터레스트 순차 배포.
+
+영상(쇼츠/롱폼) 제작은 지원하지 않는다 - 렌더링 서버의 메모리/CPU 부담이 커서
+제외했다(자세한 경위는 프로젝트 메모리 참고). 이 때문에 영상이 필요한
+유튜브/인스타그램 릴스 배포도 함께 제외된다.
 """
 from __future__ import annotations
 
@@ -23,11 +27,9 @@ from typing import Any, Dict, Optional, Tuple
 from config import BASE_DIR, OUTPUT_DIR, settings
 from constants import SITE_BADGES
 from image_hybrid_engine import process_image_slots
-from longform_engine import build_longform_video
 from smart_affiliate_matcher import inject_affiliate_slots
 from social_distributor import build_card_news_thumbnail, distribute_all
 from utils.logger import get_logger
-from video_engine import build_shorts_video
 from wp_client import WordPressClient
 
 logger = get_logger(__name__)
@@ -185,18 +187,6 @@ async def _send_test_approval_async(site: str) -> None:
         chat_id=settings.telegram_admin_chat_id, text=text, parse_mode="HTML", reply_markup=keyboard
     )
 
-    # 쇼츠 영상까지 무료(edge-tts+moviepy)로 만들어서 실제 미리보기 경험을 보여준다.
-    workdir = OUTPUT_DIR / "test_approval"
-    shorts_path = build_shorts_video(dummy_draft["shorts_script"], "", workdir)
-    if shorts_path and Path(shorts_path).exists():
-        with open(shorts_path, "rb") as fh:
-            await bot.send_video(
-                chat_id=settings.telegram_admin_chat_id,
-                video=fh,
-                caption="🧪 테스트 쇼츠 미리보기",
-                **VIDEO_UPLOAD_TIMEOUTS,
-            )
-
 
 def send_test_approval_card(site: str) -> bool:
     """CLI/GUI에서 호출하는 동기 래퍼. Claude를 호출하지 않는다."""
@@ -219,11 +209,6 @@ async def send_approval_request(site: str, draft: Dict[str, Any]) -> Optional[st
     "봇이 지금 이 프로세스에서 폴링 중이어야만 카드를 보낼 수 있다"는 제약을
     없애야 한다. 대기열은 디스크에도 저장되므로, 실제 버튼 콜백은 나중에
     daemon 프로세스가 폴링 중일 때 처리되면 된다.
-
-    쇼츠 미리보기 영상은 여기서 만들지 않는다 - Claude 호출 직후 같은 프로세스
-    안에서 무거운 영상 렌더링까지 이어서 하면 메모리가 작은 서버에서 죽는 것을
-    실측으로 확인해서, 별도 프로세스(send_approval_request_sync가 호출 후
-    바로 띄움)로 완전히 분리했다.
     """
     if not _is_configured():
         logger.warning("텔레그램 봇 미설정 - 승인 요청을 보낼 수 없습니다.")
@@ -235,7 +220,6 @@ async def send_approval_request(site: str, draft: Dict[str, Any]) -> Optional[st
     draft["_approval_id"] = approval_id
 
     text, keyboard = format_approval_card(site, draft)
-    text += "\n\n⏳ 쇼츠 미리보기 영상은 잠시 후 별도 메시지로 도착합니다."
 
     try:
         _save_pending(
@@ -245,7 +229,6 @@ async def send_approval_request(site: str, draft: Dict[str, Any]) -> Optional[st
                 "draft": draft,
                 "post_id": None,
                 "post_url": None,
-                "shorts_path": None,
                 "created_at": datetime.now(timezone.utc).isoformat(),
             },
         )
@@ -271,74 +254,21 @@ def send_approval_request_sync(site: str, draft: Dict[str, Any]) -> Optional[str
     (daemon의 봇 폴링 루프는 별도 스레드에서 돌기 때문에 충돌하지 않는다).
     """
     try:
-        approval_id = asyncio.run(send_approval_request(site, draft))
+        return asyncio.run(send_approval_request(site, draft))
     except Exception as exc:  # noqa: BLE001
         logger.warning("승인 요청 발송 실패(sync): %s", exc)
         return None
-    if approval_id:
-        _spawn_stage("send-shorts-preview", approval_id)
-    return approval_id
 
 
-async def _send_shorts_preview(approval_id: str) -> None:
-    """대기 중인 초안의 쇼츠 미리보기 영상을 만들어 텔레그램으로 보낸다.
-
-    send_approval_request_sync가 별도 프로세스로 띄우는 CLI 커맨드
-    (`main.py send-shorts-preview <approval_id>`)에서 호출된다.
-    """
-    import telegram
-
-    pending = _load_pending(approval_id)
-    if pending is None:
-        logger.warning("승인 대기(%s)를 찾을 수 없어 쇼츠 미리보기를 건너뜁니다.", approval_id)
-        return
-
-    draft = pending["draft"]
-    workdir = OUTPUT_DIR / approval_id
-    workdir.mkdir(parents=True, exist_ok=True)
-
-    bot = telegram.Bot(token=settings.telegram_bot_token)
-    shorts_path = build_shorts_video(
-        draft.get("shorts_script", ""),
-        cta_link="",
-        workdir=workdir,
-        image_prompt=draft.get("image_prompts", {}).get("slot_1"),
-    )
-    if shorts_path and Path(shorts_path).exists():
-        pending["shorts_path"] = str(shorts_path)
-        _save_pending(approval_id, pending)
-        with open(shorts_path, "rb") as fh:
-            await bot.send_video(
-                chat_id=settings.telegram_admin_chat_id,
-                video=fh,
-                caption="쇼츠 미리보기",
-                **VIDEO_UPLOAD_TIMEOUTS,
-            )
-    else:
-        await bot.send_message(
-            chat_id=settings.telegram_admin_chat_id,
-            text="⚠️ 쇼츠 미리보기 영상 생성에 실패했습니다 (텍스트 승인 카드는 그대로 유효합니다).",
-        )
+# 실제 발행은 승인/자동발행 시점에 완전히 별도의 OS 프로세스로 실행한다
+# (_spawn_stage) - 텔레그램 콜백 핸들러(또는 30분 자동발행 점검 루프)를 WP
+# API 호출/이미지 처리/배포 네트워크 요청으로 블로킹하지 않기 위해서다.
+# 영상 렌더링을 뺀 뒤로는 무거운 단계가 없어져 굳이 여러 단계로 나눌 필요가
+# 없으므로, WP 발행부터 나머지 채널 배포까지 한 단계(_publish_stage)로 처리한다.
 
 
-def send_shorts_preview_sync(approval_id: str) -> None:
-    try:
-        asyncio.run(_send_shorts_preview(approval_id))
-    except Exception as exc:  # noqa: BLE001
-        logger.warning("쇼츠 미리보기 전송 실패(%s): %s", approval_id, exc)
-
-
-# 실제 발행은 3단계(WP -> 쇼츠 -> 롱폼+배포)로 나눠서 각각 완전히 별도의 OS
-# 프로세스로 실행한다(_spawn_stage). Claude 호출 + WP 발행 + 쇼츠 렌더링 +
-# 롱폼 렌더링 + 멀티채널 업로드를 전부 한 프로세스에서 순차로 하면, 메모리가
-# 작은 서버(예: 2GB 미만 공유 호스팅)에서 중간에 OOM으로 죽는 것을 실측으로
-# 확인했다. 각 단계가 새 프로세스로 시작하면 항상 깨끗한 메모리 상태에서
-# 시작하므로 훨씬 안정적이다. 대기 상태(post_id/post_url/shorts_path)는
-# _save_pending/_load_pending으로 디스크에 넘겨 다음 단계가 이어받는다.
-
-
-async def _publish_wp_stage(approval_id: str) -> None:
-    """1단계: 워드프레스에 실제 발행하고, 2단계(쇼츠)를 이어서 띄운다."""
+async def _publish_stage(approval_id: str) -> None:
+    """워드프레스 발행 + 썸네일 생성 + 나머지 채널(색인핑/스레드/핀터레스트) 배포."""
     import telegram
 
     pending = _load_pending(approval_id)
@@ -379,112 +309,38 @@ async def _publish_wp_stage(approval_id: str) -> None:
     pending["post_url"] = post_url
     _save_pending(approval_id, pending)
 
-    await bot.send_message(
-        chat_id=settings.telegram_admin_chat_id,
-        text=f"✅ 워드프레스 발행 완료: {post_url}\n⏳ 쇼츠 영상을 준비 중입니다...",
-    )
-    _spawn_stage("publish-shorts", approval_id)
-
-
-def run_publish_wp_stage_sync(approval_id: str) -> None:
-    try:
-        asyncio.run(_publish_wp_stage(approval_id))
-    except Exception as exc:  # noqa: BLE001
-        logger.warning("발행(WP 단계) 실패(%s): %s", approval_id, exc)
-
-
-async def _publish_shorts_stage(approval_id: str) -> None:
-    """2단계: 실제 글 URL을 CTA로 넣어 쇼츠 영상을 만들고, 3단계(롱폼+배포)를 이어서 띄운다."""
-    import telegram
-
-    pending = _load_pending(approval_id)
-    if pending is None:
-        logger.warning("승인 대기(%s)를 찾을 수 없어 쇼츠 단계를 건너뜁니다.", approval_id)
-        return
-
-    draft = pending["draft"]
-    post_url = pending.get("post_url", "")
-    workdir = OUTPUT_DIR / f"post_{pending.get('post_id', approval_id)}"
-    workdir.mkdir(parents=True, exist_ok=True)
-
-    shorts_path = build_shorts_video(
-        draft.get("shorts_script", ""),
-        post_url,
-        workdir,
-        image_prompt=draft.get("image_prompts", {}).get("slot_1"),
-    )
-    pending["shorts_path"] = str(shorts_path) if shorts_path else None
-    _save_pending(approval_id, pending)
-
-    bot = telegram.Bot(token=settings.telegram_bot_token)
-    await bot.send_message(
-        chat_id=settings.telegram_admin_chat_id,
-        text="✅ 쇼츠 영상 준비 완료\n⏳ 롱폼 영상 제작 및 나머지 채널 배포를 진행합니다...",
-    )
-    _spawn_stage("publish-longform", approval_id)
-
-
-def run_publish_shorts_stage_sync(approval_id: str) -> None:
-    try:
-        asyncio.run(_publish_shorts_stage(approval_id))
-    except Exception as exc:  # noqa: BLE001
-        logger.warning("발행(쇼츠 단계) 실패(%s): %s", approval_id, exc)
-
-
-async def _publish_longform_stage(approval_id: str) -> None:
-    """3단계: 롱폼 영상 제작 + 썸네일 + 나머지 채널(색인핑/스레드/인스타/핀터레스트/유튜브) 배포."""
-    import telegram
-
-    pending = _load_pending(approval_id)
-    if pending is None:
-        logger.warning("승인 대기(%s)를 찾을 수 없어 롱폼/배포 단계를 건너뜁니다.", approval_id)
-        return
-
-    site = pending["site"]
-    draft = pending["draft"]
-    post_url = pending.get("post_url", "")
-    post_id = pending.get("post_id", 0)
     workdir = OUTPUT_DIR / f"post_{post_id}"
     workdir.mkdir(parents=True, exist_ok=True)
-
-    longform_path = build_longform_video(draft.get("longform_chapters", []), workdir, cta_link=post_url)
     thumbnail_path = build_card_news_thumbnail(
         draft.get("title", ""), draft.get("fact_summary", ""), workdir / "thumbnail.png"
     )
 
-    shorts_path = pending.get("shorts_path")
     distribution = distribute_all(
         site=site,
         post_url=post_url,
         thumbnail_path=thumbnail_path,
-        video_paths={
-            "shorts": Path(shorts_path) if shorts_path else None,
-            "longform": longform_path,
-        },
         captions={
             "title": draft.get("title", ""),
             "fact_summary": draft.get("fact_summary", ""),
             "threads_post": draft.get("threads_post", ""),
             "threads_comment": draft.get("threads_comment", ""),
-            "ig_caption": draft.get("ig_caption", ""),
             "pinterest_desc": draft.get("pinterest_desc", ""),
         },
         post_id=post_id,
     )
     results = {"wordpress": {"status": "ok", "post_id": post_id, "url": post_url}, **distribution}
 
-    bot = telegram.Bot(token=settings.telegram_bot_token)
     await bot.send_message(
         chat_id=settings.telegram_admin_chat_id, text=_format_result_report(site, results)
     )
     _delete_pending(approval_id)
 
 
-def run_publish_longform_stage_sync(approval_id: str) -> None:
+def run_publish_stage_sync(approval_id: str) -> None:
     try:
-        asyncio.run(_publish_longform_stage(approval_id))
+        asyncio.run(_publish_stage(approval_id))
     except Exception as exc:  # noqa: BLE001
-        logger.warning("발행(롱폼/배포 단계) 실패(%s): %s", approval_id, exc)
+        logger.warning("발행 실패(%s): %s", approval_id, exc)
         try:
             import telegram
 
@@ -492,7 +348,7 @@ def run_publish_longform_stage_sync(approval_id: str) -> None:
                 bot = telegram.Bot(token=settings.telegram_bot_token)
                 await bot.send_message(
                     chat_id=settings.telegram_admin_chat_id,
-                    text=f"❌ 롱폼 제작/배포 단계에서 오류가 발생했습니다: {exc}",
+                    text=f"❌ 발행/배포 단계에서 오류가 발생했습니다: {exc}",
                 )
 
             asyncio.run(_notify_failure())
@@ -553,13 +409,13 @@ async def handle_callback(update, context) -> None:  # noqa: ANN001
     if action == "approve":
         await query.edit_message_text(
             f"⏳ 발행을 시작합니다: {draft.get('title', '')}\n"
-            "(WP 발행 -> 쇼츠 -> 롱폼/배포 순서로 단계마다 진행 상황을 알려드립니다)"
+            "(WP 발행 -> 색인핑/스레드/핀터레스트 배포 순서로 진행합니다)"
         )
-        _spawn_stage("publish-wp", approval_id)
+        _spawn_stage("publish", approval_id)
 
 
 async def _auto_publish_expired(approval_id: str, pending: Dict[str, Any]) -> None:
-    """AUTO_PUBLISH_TIMEOUT_HOURS 동안 응답이 없어 자동으로 발행한다 (approve 버튼과 동일한 단계별 파이프라인)."""
+    """AUTO_PUBLISH_TIMEOUT_HOURS 동안 응답이 없어 자동으로 발행한다 (approve 버튼과 동일한 파이프라인)."""
     import telegram
 
     draft = pending["draft"]
@@ -572,7 +428,7 @@ async def _auto_publish_expired(approval_id: str, pending: Dict[str, Any]) -> No
             f"자동으로 발행합니다: {draft.get('title', '')}"
         ),
     )
-    _spawn_stage("publish-wp", approval_id)
+    _spawn_stage("publish", approval_id)
 
 
 async def check_expired_approvals_and_auto_publish() -> None:

@@ -57,26 +57,7 @@ SITE_OFFICIAL_URLS = {
     SITE_C: "https://www.hometax.go.kr",  # 홈택스 - 국세청 세금 환급/신고
 }
 
-# ---- TTS ----
-DEFAULT_TTS_VOICE = "ko-KR-InJoonNeural"
-
-# ---- 영상 규격 ----
-# 쇼츠는 720x1280으로 낮췄다 - 메모리가 작은(또는 앱별 메모리 상한이 걸린) 서버에서
-# 1080x1920 렌더링 중 OOM으로 죽는 것을 실측으로 확인해서, 프레임당 메모리 사용량을
-# 줄이기 위함이다(픽셀 수 약 44%로 감소). 쇼츠/릴스 플랫폼에서는 720p도 충분히
-# 정상적인 화질이다.
-SHORTS_SIZE = (720, 1280)   # 9:16 세로
-LONGFORM_SIZE = (1920, 1080)  # 16:9 가로
 THUMBNAIL_SIZE = (1000, 1500)  # 카드뉴스 썸네일
-
-# ---- 영상 자막 스타일 (쇼츠/롱폼 공통 - 동일한 톤 유지) ----
-CAPTION_FONT_SIZE = 92
-CAPTION_COLOR = "#FFC400"
-CAPTION_STROKE_WIDTH = 4
-CAPTION_MAX_LINES = 2  # 한 컷당 자막은 2줄을 넘기지 않는다
-
-# ---- 영상 마무리 멘트 (쇼츠는 스크립트 끝에, 롱폼은 마지막 챕터 끝에 붙는다) ----
-OUTRO_MENTION = "자세한 사항은 고정 댓글 또는 프로필 링크 사이트를 참고하세요."
 
 # ---- 이미지 생성 규격 ----
 POLLINATIONS_IMAGE_SIZE = (1200, 675)
@@ -101,15 +82,15 @@ LINKPRICE_EVENT_DISCLOSURE_TEXT = "이 포스팅은 링크프라이스 이벤트
 CLAUDE_MODEL = "claude-sonnet-5"
 
 # ---- 콘텐츠 생성 필수 JSON 키 (generator.py 응답 스키마 검증용) ----
+# 영상(쇼츠/롱폼) 렌더링을 지원하지 않으므로 shorts_script/longform_chapters는
+# 요구하지 않는다 - 어차피 안 쓸 콘텐츠를 Claude에게 만들게 해서 토큰을
+# 낭비할 이유가 없다.
 REQUIRED_GENERATOR_KEYS = (
     "title",
     "fact_summary",
     "html_content",
     "image_prompts",
-    "shorts_script",
-    "longform_chapters",
     "threads_post",
     "threads_comment",
-    "ig_caption",
     "pinterest_desc",
 )

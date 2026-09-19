@@ -13,6 +13,9 @@ CLI:
     매주 월요일 08:00  -> 주간 뉴스레터 발송
     매주 일요일 23:00  -> 서치콘솔 순위 방어 점검
     30분마다          -> 자동발행 점검 (AUTO_PUBLISH_TIMEOUT_HOURS 초과 대기건 자동 발행)
+
+영상(쇼츠/롱폼) 렌더링은 지원하지 않는다 - 워드프레스 발행 + 색인핑/스레드/
+핀터레스트 배포만 수행한다(유튜브/인스타그램 릴스는 영상이 필요해 제외).
 """
 from __future__ import annotations
 
@@ -89,12 +92,6 @@ def _build_preview_document(site: str, draft: Dict[str, Any], rendered_html: str
     """워드프레스/SNS 어디에도 발행하지 않는 순수 로컬 미리보기 HTML 문서를 만든다."""
     badge = SITE_BADGES.get(site, site)
 
-    chapters_html = "".join(
-        f"<li><b>{c.get('title','')}</b><br>{c.get('script','')}"
-        f"<br><i style='color:#888;'>스톡영상 검색어: {c.get('stock_query_en','')}</i></li>"
-        for c in draft.get("longform_chapters", [])
-    ) or "<li>(없음)</li>"
-
     def esc(text: str) -> str:
         return (text or "").replace("<", "&lt;").replace(">", "&gt;")
 
@@ -118,19 +115,16 @@ def _build_preview_document(site: str, draft: Dict[str, Any], rendered_html: str
        white-space:pre-wrap;}}
 </style></head>
 <body>
-  <div class="banner">⚠️ 이 페이지는 로컬 미리보기입니다. 워드프레스·유튜브·인스타·스레드·핀터레스트
+  <div class="banner">⚠️ 이 페이지는 로컬 미리보기입니다. 워드프레스·스레드·핀터레스트
   어디에도 등록/발행되지 않았습니다. 실제로 발행하려면 GUI/텔레그램에서 승인 절차를 거쳐야 합니다.</div>
   <div class="post">
     <span class="badge">{badge}</span>
     {rendered_html}
   </div>
   <details>
-    <summary>다른 채널용 콘텐츠 (쇼츠 대본 / 롱폼 / 스레드 / 인스타 / 핀터레스트)</summary>
-    <div class="field"><b>쇼츠 대본 (shorts_script)</b><div>{esc(draft.get('shorts_script',''))}</div></div>
-    <div class="field"><b>롱폼 챕터 (longform_chapters)</b><ul>{chapters_html}</ul></div>
+    <summary>다른 채널용 콘텐츠 (스레드 / 핀터레스트)</summary>
     <div class="field"><b>스레드 본문 (threads_post)</b><div>{esc(draft.get('threads_post',''))}</div></div>
     <div class="field"><b>스레드 첫 댓글 (threads_comment)</b><div>{esc(draft.get('threads_comment',''))}</div></div>
-    <div class="field"><b>인스타 캡션 (ig_caption)</b><div>{esc(draft.get('ig_caption',''))}</div></div>
     <div class="field"><b>핀터레스트 설명 (pinterest_desc)</b><div>{esc(draft.get('pinterest_desc',''))}</div></div>
   </details>
 </body></html>"""
@@ -187,27 +181,9 @@ def cmd_test_approval(site_arg: str) -> None:
             logger.warning("[Site %s] 테스트 승인 카드 발송 실패 (TELEGRAM_BOT_TOKEN/ADMIN_CHAT_ID 확인).", site)
 
 
-def cmd_send_shorts_preview(approval_id: str) -> None:
-    """`send_approval_request_sync`가 별도 프로세스로 띄우는 내부 커맨드.
-
-    직접 실행할 일은 거의 없고, 텍스트 승인 카드를 보낸 직후 자동으로 호출된다.
-    """
-    telegram_bot.send_shorts_preview_sync(approval_id)
-
-
-def cmd_publish_wp(approval_id: str) -> None:
-    """실제 발행 1단계(WP 발행). 승인/자동발행 시 자동으로 호출된다."""
-    telegram_bot.run_publish_wp_stage_sync(approval_id)
-
-
-def cmd_publish_shorts(approval_id: str) -> None:
-    """실제 발행 2단계(쇼츠 영상). 1단계가 끝나면 자동으로 호출된다."""
-    telegram_bot.run_publish_shorts_stage_sync(approval_id)
-
-
-def cmd_publish_longform(approval_id: str) -> None:
-    """실제 발행 3단계(롱폼 영상 + 나머지 채널 배포). 2단계가 끝나면 자동으로 호출된다."""
-    telegram_bot.run_publish_longform_stage_sync(approval_id)
+def cmd_publish(approval_id: str) -> None:
+    """실제 발행(WP + 나머지 채널 배포). 승인/자동발행 시 자동으로 호출된다."""
+    telegram_bot.run_publish_stage_sync(approval_id)
 
 
 def cmd_refresh_check() -> None:
@@ -310,23 +286,12 @@ def build_arg_parser() -> argparse.ArgumentParser:
     subparsers.add_parser("send-newsletter", help="주간 뉴스레터 즉시 발송")
     subparsers.add_parser("daemon", help="스케줄러+텔레그램봇+구독서버 상시 구동")
 
-    # 아래 4개는 telegram_bot.py가 메모리 절약을 위해 각 단계를 별도 프로세스로
-    # 띄울 때 내부적으로 사용하는 커맨드다 - 직접 실행할 일은 거의 없다.
-    shorts_preview = subparsers.add_parser(
-        "send-shorts-preview", help="[내부용] 승인 대기건의 쇼츠 미리보기 영상을 만들어 전송"
+    # telegram_bot.py가 승인 콜백/자동발행 시점에 별도 프로세스로 띄울 때
+    # 내부적으로 사용하는 커맨드다 - 직접 실행할 일은 거의 없다.
+    publish = subparsers.add_parser(
+        "publish", help="[내부용] 워드프레스 발행 + 나머지 채널(색인핑/스레드/핀터레스트) 배포"
     )
-    shorts_preview.add_argument("approval_id")
-
-    publish_wp = subparsers.add_parser("publish-wp", help="[내부용] 발행 1단계: 워드프레스 발행")
-    publish_wp.add_argument("approval_id")
-
-    publish_shorts = subparsers.add_parser("publish-shorts", help="[내부용] 발행 2단계: 쇼츠 영상")
-    publish_shorts.add_argument("approval_id")
-
-    publish_longform = subparsers.add_parser(
-        "publish-longform", help="[내부용] 발행 3단계: 롱폼 영상 + 나머지 채널 배포"
-    )
-    publish_longform.add_argument("approval_id")
+    publish.add_argument("approval_id")
 
     return parser
 
@@ -354,14 +319,8 @@ def main() -> None:
         cmd_send_newsletter()
     elif args.command == "daemon":
         cmd_daemon()
-    elif args.command == "send-shorts-preview":
-        cmd_send_shorts_preview(args.approval_id)
-    elif args.command == "publish-wp":
-        cmd_publish_wp(args.approval_id)
-    elif args.command == "publish-shorts":
-        cmd_publish_shorts(args.approval_id)
-    elif args.command == "publish-longform":
-        cmd_publish_longform(args.approval_id)
+    elif args.command == "publish":
+        cmd_publish(args.approval_id)
     else:
         parser.print_help()
         sys.exit(1)
