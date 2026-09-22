@@ -11,6 +11,7 @@ trend_scraper -> keyword_expander -> competitor_analyzer 순으로 수집한 데
 """
 from __future__ import annotations
 
+import html
 from typing import Any, Dict, List, Optional
 
 from competitor_analyzer import get_top_blog_references
@@ -30,6 +31,7 @@ from keyword_expander import expand_to_longtail
 from trend_scraper import fetch_today_hot_topics
 from utils.logger import get_logger
 from video_trend_analyzer import format_trend_briefing, get_trending_videos
+from wp_client import WordPressClient
 
 logger = get_logger(__name__)
 
@@ -150,6 +152,34 @@ html_content 안에 아래 컴포넌트를 전부 포함해야 합니다:
 """
 
 
+def _fetch_recent_titles(site: str, days: int = 30) -> List[str]:
+    """최근 발행 글 제목 목록 (키워드 중복 회피 + Claude에게 반복 금지 지시용)."""
+    try:
+        wp = WordPressClient(site)
+        posts = wp.get_recent_posts(days=days, per_page=30)
+        return [
+            html.unescape(p.get("title", {}).get("rendered", ""))
+            for p in posts
+            if p.get("title")
+        ]
+    except Exception as exc:  # noqa: BLE001 - 실패해도 생성 자체는 막지 않는다
+        logger.info("[Site %s] 최근 글 제목 조회 실패, 중복 회피 없이 진행: %s", site, exc)
+        return []
+
+
+def _pick_fresh_keyword(keywords: List[str], recent_titles: List[str]) -> str:
+    """최근 제목에 이미 등장한 키워드는 건너뛰고, 아직 안 쓴 키워드를 고른다.
+
+    site별 SITE_SEED_KEYWORDS가 매번 keywords[0]에 고정으로 오기 때문에, 이 함수가
+    없으면 매일 똑같은 메인 키워드로 글을 써서(예: 매번 "연말정산 환급") 제목/구성이
+    거의 똑같은 글이 계속 쌓이는 문제가 실제로 있었다.
+    """
+    for kw in keywords:
+        if not any(kw in title for title in recent_titles):
+            return kw
+    return keywords[0] if keywords else ""
+
+
 def build_user_prompt(
     site: str,
     keyword: str,
@@ -157,6 +187,7 @@ def build_user_prompt(
     references: List[Dict[str, str]],
     trend_briefing: str,
     video_trend_briefing: str = "",
+    recent_titles: Optional[List[str]] = None,
 ) -> str:
     if references:
         ref_lines = []
@@ -168,7 +199,21 @@ def build_user_prompt(
     else:
         ref_block = "(상위 노출 블로그 레퍼런스를 가져오지 못했습니다 - 아래 트렌드 데이터만으로 작성하세요.)"
 
-    return f"""[오늘의 트렌드 브리핑]
+    if recent_titles:
+        recent_block = "\n".join(f"- {t}" for t in recent_titles[:15])
+        dedup_section = f"""[중요 - 최근 발행한 글 제목 목록 (절대 반복 금지)]
+아래는 이 사이트에 최근 발행된 글 제목들입니다. 오늘 쓸 글은 이 글들과
+제목·소제목 구성·페르소나 이름(김OO씨/이OO씨 등)·구체적 사례·전개 순서가
+겹치면 안 됩니다. 같은 메인 키워드를 다루더라도 완전히 다른 세부 각도
+(예: 다른 대상층, 다른 탈락/성공 사유, 다른 조건, 다른 최신 이슈)로
+새롭게 써야 합니다.
+{recent_block}
+
+"""
+    else:
+        dedup_section = ""
+
+    return f"""{dedup_section}[오늘의 트렌드 브리핑]
 {trend_briefing}
 
 [메인 키워드] {keyword}
@@ -241,7 +286,12 @@ def generate_post(site: str, base_keyword: Optional[str] = None) -> Dict[str, An
     site = site.upper().replace("SITE_", "")
 
     hot = fetch_today_hot_topics(site)
-    keyword = base_keyword or (hot["keywords"][0] if hot["keywords"] else SITE_LABELS.get(site, site))
+    recent_titles = _fetch_recent_titles(site)
+    keyword = base_keyword or (
+        _pick_fresh_keyword(hot["keywords"], recent_titles)
+        if hot["keywords"]
+        else SITE_LABELS.get(site, site)
+    )
 
     longtail = expand_to_longtail(keyword)
     references = get_top_blog_references(longtail[0] if longtail else keyword)
@@ -255,7 +305,13 @@ def generate_post(site: str, base_keyword: Optional[str] = None) -> Dict[str, An
 
     system_prompt = build_system_prompt(site)
     user_prompt = build_user_prompt(
-        site, keyword, longtail, references, hot["briefing_text"], video_trend_briefing
+        site,
+        keyword,
+        longtail,
+        references,
+        hot["briefing_text"],
+        video_trend_briefing,
+        recent_titles,
     )
 
     try:

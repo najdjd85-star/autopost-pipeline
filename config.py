@@ -151,7 +151,7 @@ def load_settings() -> Settings:
         schedule_time=_get("SCHEDULE_TIME", "07:00"),
         pexels_api_key=_get("PEXELS_API_KEY"),
         google_key_path=_get("GOOGLE_KEY_PATH", "service_account.json"),
-        auto_publish_timeout_hours=_get_float("AUTO_PUBLISH_TIMEOUT_HOURS", 24.0),
+        auto_publish_timeout_hours=_get_float("AUTO_PUBLISH_TIMEOUT_HOURS", 1.0),
         resend_api_key=_get("RESEND_API_KEY"),
         sender_email=_get("SENDER_EMAIL", "newsletter@your-domain.com"),
         newsletter_schedule_time=_get("NEWSLETTER_SCHEDULE_TIME", "Monday 08:00"),
