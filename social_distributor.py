@@ -209,8 +209,10 @@ def publish_threads_post(text: str) -> Dict[str, Any]:
         return {"status": "skipped", "reason": "not_configured"}
 
     try:
-        # Threads API는 IG 유저ID를 게시 주체로 사용한다.
-        user_id = settings.ig_user_id or "me"
+        # Threads는 인스타그램과 연동되어 있어도 별도의 자체 유저ID 체계를 쓴다
+        # (IG_USER_ID를 넣으면 "does not exist" 에러가 난다 - 실측으로 확인함).
+        # "me"는 액세스 토큰 소유자 본인을 가리키는 그래프 API 예약어라 항상 정확하다.
+        user_id = "me"
         create_resp = safe_post(
             f"{THREADS_API_BASE}/{user_id}/threads",
             data={
@@ -221,6 +223,11 @@ def publish_threads_post(text: str) -> Dict[str, Any]:
             timeout=20,
         )
         if create_resp is None or create_resp.status_code != 200:
+            logger.warning(
+                "스레드 게시 생성 실패: status=%s body=%s",
+                getattr(create_resp, "status_code", "N/A"),
+                getattr(create_resp, "text", ""),
+            )
             return {"status": "error", "reason": "create_failed"}
         creation_id = create_resp.json().get("id")
 
@@ -230,6 +237,11 @@ def publish_threads_post(text: str) -> Dict[str, Any]:
             timeout=20,
         )
         if publish_resp is None or publish_resp.status_code != 200:
+            logger.warning(
+                "스레드 게시 발행 실패: status=%s body=%s",
+                getattr(publish_resp, "status_code", "N/A"),
+                getattr(publish_resp, "text", ""),
+            )
             return {"status": "error", "reason": "publish_failed"}
 
         result = publish_resp.json()
@@ -245,7 +257,7 @@ def add_threads_first_comment(post_id: str, comment_text: str) -> Dict[str, Any]
 
     try:
         create_resp = safe_post(
-            f"{THREADS_API_BASE}/{settings.ig_user_id or 'me'}/threads",
+            f"{THREADS_API_BASE}/me/threads",
             data={
                 "media_type": "TEXT",
                 "text": comment_text,
@@ -255,6 +267,11 @@ def add_threads_first_comment(post_id: str, comment_text: str) -> Dict[str, Any]
             timeout=20,
         )
         if create_resp is None or create_resp.status_code != 200:
+            logger.warning(
+                "스레드 첫 댓글 등록 실패: status=%s body=%s",
+                getattr(create_resp, "status_code", "N/A"),
+                getattr(create_resp, "text", ""),
+            )
             return {"status": "error", "reason": "comment_create_failed"}
         return {"status": "ok", "response": create_resp.json()}
     except Exception as exc:  # noqa: BLE001
