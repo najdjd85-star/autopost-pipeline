@@ -91,7 +91,7 @@ _AFFILIATE_KEY_LABELS = {
     "welfare": "🔍 내 지원금 자격 미리 확인하기",
     "mvno": "📱 요금제 비교하고 갈아타기",
     "rental": "🔧 우리 동네 전문가 찾기",
-    "internet": "🌐 인터넷 결합 혜택 확인하기",
+    "internet": "📶 와이파이 공유기·인터넷 용품 특가 확인",
     "refund": "💸 숨은 환급액 조회하기",
     "pension": "👴 연금 혜택 확인하기",
 }
