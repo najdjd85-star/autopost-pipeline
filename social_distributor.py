@@ -203,6 +203,32 @@ def publish_instagram_reel(
 # ---------------------------------------------------------------------------
 # Threads
 # ---------------------------------------------------------------------------
+def _wait_for_threads_container_ready(
+    creation_id: str, access_token: str, max_attempts: int = 6, delay_seconds: float = 3.0
+) -> bool:
+    """threads_publish 호출 전에 컨테이너 처리가 끝났는지 확인한다.
+
+    생성(POST /threads) 직후 바로 발행(POST /threads_publish)을 호출하면 아직
+    미디어 컨테이너 처리가 안 끝나서 "미디어를 찾을 수 없음"(subcode 4279009)
+    오류가 나는 걸 실측으로 확인했다 - 특히 답글(reply_to_id 지정)에서 잘
+    발생한다. Meta 공식 가이드대로 status가 FINISHED가 될 때까지 짧게 폴링한다.
+    """
+    for _ in range(max_attempts):
+        status_resp = safe_get(
+            f"{THREADS_API_BASE}/{creation_id}",
+            params={"fields": "status,error_message", "access_token": access_token},
+            timeout=15,
+        )
+        if status_resp is not None and status_resp.status_code == 200:
+            status = status_resp.json().get("status")
+            if status == "FINISHED":
+                return True
+            if status == "ERROR":
+                return False
+        time.sleep(delay_seconds)
+    return False
+
+
 def publish_threads_post(text: str) -> Dict[str, Any]:
     if not settings.threads_access_token:
         logger.info("THREADS_ACCESS_TOKEN 미설정 - 스레드 게시를 건너뜁니다.")
@@ -230,6 +256,8 @@ def publish_threads_post(text: str) -> Dict[str, Any]:
             )
             return {"status": "error", "reason": "create_failed"}
         creation_id = create_resp.json().get("id")
+
+        _wait_for_threads_container_ready(creation_id, settings.threads_access_token)
 
         publish_resp = safe_post(
             f"{THREADS_API_BASE}/{user_id}/threads_publish",
@@ -278,6 +306,8 @@ def add_threads_first_comment(post_id: str, comment_text: str) -> Dict[str, Any]
             )
             return {"status": "error", "reason": "comment_create_failed"}
         creation_id = create_resp.json().get("id")
+
+        _wait_for_threads_container_ready(creation_id, settings.threads_access_token)
 
         publish_resp = safe_post(
             f"{THREADS_API_BASE}/me/threads_publish",
