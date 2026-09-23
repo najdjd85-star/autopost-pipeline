@@ -256,6 +256,10 @@ def add_threads_first_comment(post_id: str, comment_text: str) -> Dict[str, Any]
         return {"status": "skipped", "reason": "not_configured_or_no_post_id"}
 
     try:
+        # publish_threads_post와 동일하게 생성(threads) -> 발행(threads_publish)
+        # 2단계가 반드시 필요하다. 이전 코드는 생성만 하고 발행을 안 해서,
+        # 댓글이 실제로는 미발행 상태로 남아 "아직 답글이 없습니다"가 되는
+        # 버그가 있었다(실측으로 확인함 - 본문은 정상 게시되는데 첫 댓글만 안 달림).
         create_resp = safe_post(
             f"{THREADS_API_BASE}/me/threads",
             data={
@@ -268,12 +272,27 @@ def add_threads_first_comment(post_id: str, comment_text: str) -> Dict[str, Any]
         )
         if create_resp is None or create_resp.status_code != 200:
             logger.warning(
-                "스레드 첫 댓글 등록 실패: status=%s body=%s",
+                "스레드 첫 댓글 생성 실패: status=%s body=%s",
                 getattr(create_resp, "status_code", "N/A"),
                 getattr(create_resp, "text", ""),
             )
             return {"status": "error", "reason": "comment_create_failed"}
-        return {"status": "ok", "response": create_resp.json()}
+        creation_id = create_resp.json().get("id")
+
+        publish_resp = safe_post(
+            f"{THREADS_API_BASE}/me/threads_publish",
+            data={"creation_id": creation_id, "access_token": settings.threads_access_token},
+            timeout=20,
+        )
+        if publish_resp is None or publish_resp.status_code != 200:
+            logger.warning(
+                "스레드 첫 댓글 발행 실패: status=%s body=%s",
+                getattr(publish_resp, "status_code", "N/A"),
+                getattr(publish_resp, "text", ""),
+            )
+            return {"status": "error", "reason": "comment_publish_failed"}
+
+        return {"status": "ok", "response": publish_resp.json()}
     except Exception as exc:  # noqa: BLE001
         logger.warning("스레드 첫 댓글 등록 실패: %s", exc)
         return {"status": "error", "reason": str(exc)}
