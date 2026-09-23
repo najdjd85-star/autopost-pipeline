@@ -63,11 +63,13 @@ THUMBNAIL_SIZE = (1000, 1500)  # 카드뉴스 썸네일
 POLLINATIONS_IMAGE_SIZE = (1200, 675)
 
 # ---- 쿠팡 파트너스 Open API 실패 시(예: 서버가 해외 IP라 차단되는 경우) 대체할
-# 사이트별 고정 딥링크. 실시간 키워드 매칭은 아니지만 수수료 자체는 정상 발생한다. ----
+# 고정 딥링크. 세 사이트 다 동일한 "쿠팡 홈" 일반 링크를 쓴다 - 예전에는
+# 사이트별로 서로 다른 특정 상품(생수 등) 딥링크였는데, 글 주제와 무관한
+# 상품이 계속 노출되는 문제가 실측으로 확인되어 일반 링크로 통일했다. ----
 COUPANG_FALLBACK_LINKS = {
-    "A": "https://link.coupang.com/a/g5bcOwno5c",
-    "B": "https://link.coupang.com/a/g5boawUePs",
-    "C": "https://link.coupang.com/a/g5bqNuUPCK",
+    "A": "https://link.coupang.com/a/hfBRjMrEgC",
+    "B": "https://link.coupang.com/a/hfBRjMrEgC",
+    "C": "https://link.coupang.com/a/hfBRjMrEgC",
 }
 
 # ---- 공정거래위원회 필수 표기 문구 (모든 제휴 카드 - 쿠팡/애드픽/정적 링크 공통) ----
@@ -76,6 +78,12 @@ FTC_DISCLOSURE_TEXT = "이 포스팅은 제휴마케팅이 포함된 광고로 �
 # ---- 링크프라이스 매체 승인 이벤트 참여 조건상 필수 표기 문구.
 # AFF_* 정적 슬롯이 전부 링크프라이스 링크이므로 그 카드에만 붙인다. ----
 LINKPRICE_EVENT_DISCLOSURE_TEXT = "이 포스팅은 링크프라이스 이벤트 참여를 위해 작성되었습니다."
+
+# ---- 쿠팡 파트너스 운영정책상 필수 표기 문구(정확히 이 문구를 요구함).
+# 쿠팡 카드가 실제로 삽입된 글에만 붙인다. ----
+COUPANG_DISCLOSURE_TEXT = (
+    "이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다."
+)
 
 # ---- Claude 모델 ----
 # claude-3-5-sonnet-20241022는 더 이상 제공되지 않아(404 not_found_error) 최신 균형형 모델로 교체.

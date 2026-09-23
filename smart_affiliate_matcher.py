@@ -26,6 +26,7 @@ from constants import (
     AFFILIATE_SLOT_MID,
     AFFILIATE_SLOT_TOP,
     COUPANG_FALLBACK_LINKS,
+    COUPANG_DISCLOSURE_TEXT,
     FTC_DISCLOSURE_TEXT,
     LINKPRICE_EVENT_DISCLOSURE_TEXT,
 )
@@ -402,16 +403,22 @@ def inject_affiliate_slots(html: str, post_id: int, site: str, keyword: str = ""
 
     result = html
     any_affiliate_content = False
+    any_coupang_content = False
     for token, slot_name in _SLOT_TOKEN_TO_NAME.items():
         if token in result:
             card_html = build_affiliate_card(site, slot_name, post_id, keyword)
             result = result.replace(token, card_html)
             if card_html.strip():
                 any_affiliate_content = True
+            if "affiliate-card-coupang" in card_html:
+                any_coupang_content = True
 
     if any_affiliate_content:
+        disclosure_lines = [FTC_DISCLOSURE_TEXT, LINKPRICE_EVENT_DISCLOSURE_TEXT]
+        if any_coupang_content:
+            disclosure_lines.append(COUPANG_DISCLOSURE_TEXT)
         result += (
             f'\n<p style="font-size:12px;color:#888;margin:24px 0 0;line-height:1.6;">'
-            f"{FTC_DISCLOSURE_TEXT}<br>{LINKPRICE_EVENT_DISCLOSURE_TEXT}</p>"
+            f"{'<br>'.join(disclosure_lines)}</p>"
         )
     return result
