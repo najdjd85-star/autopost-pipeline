@@ -62,10 +62,23 @@ CONTENT_TOOL = {
                 },
                 "required": ["slot_1", "slot_2"],
             },
-            "threads_post": {"type": "string", "description": "스레드 본문 요약 (500자 이내)"},
+            "threads_post": {
+                "type": "string",
+                "description": (
+                    "스레드 본문 요약 (500자 이내). 존댓말 금지, 실제 스레드에서 흔한 편하고 "
+                    "친근한 반말체로 작성한다(예: '~다', '~야', '~하더라', '~임' 같은 말투). "
+                    "블로그 격식체가 아니라 친구한테 말하듯 캐주얼하게."
+                ),
+            },
             "threads_comment": {
                 "type": "string",
-                "description": "스레드 첫 댓글. 블로그 링크 자리에 {POST_URL} 플레이스홀더 사용",
+                "description": (
+                    "스레드 첫 댓글. threads_post와 동일하게 반말체 유지. '이거 안 보면 진짜 "
+                    "손해다' 식으로 안 보면 손해 본다는 느낌을 강하게 주는 클릭 유도 문장으로 "
+                    "시작하고, 그 다음 블로그 링크 자리에 {POST_URL} 플레이스홀더를 그대로 넣어 "
+                    "마무리한다. 예: '이거 모르고 넘어가면 진짜 손해임, 자세한 내용 여기서 "
+                    "확인해 {POST_URL}'"
+                ),
             },
             "pinterest_desc": {"type": "string", "description": "핀터레스트 설명 (SEO 키워드 포함)"},
         },

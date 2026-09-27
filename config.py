@@ -148,7 +148,9 @@ def load_settings() -> Settings:
         anthropic_api_key=_get("ANTHROPIC_API_KEY"),
         telegram_bot_token=_get("TELEGRAM_BOT_TOKEN"),
         telegram_admin_chat_id=_get("TELEGRAM_ADMIN_CHAT_ID"),
-        schedule_time=_get("SCHEDULE_TIME", "07:00"),
+        # 서버(Cloudways)는 UTC로 돌아간다 - "11:00"은 KST 20:00(저녁 8시)에
+        # 해당한다. 이 값을 바꿀 때는 항상 UTC 기준임을 잊지 말 것(KST = UTC+9).
+        schedule_time=_get("SCHEDULE_TIME", "11:00"),
         pexels_api_key=_get("PEXELS_API_KEY"),
         google_key_path=_get("GOOGLE_KEY_PATH", "service_account.json"),
         auto_publish_timeout_hours=_get_float("AUTO_PUBLISH_TIMEOUT_HOURS", 1.0),
