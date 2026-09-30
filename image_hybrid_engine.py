@@ -15,10 +15,13 @@ from __future__ import annotations
 
 import base64
 import json
-from typing import Dict, Optional, Tuple
+import re
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple
 from urllib.parse import quote
 
-from config import settings
+from config import DATA_DIR, settings
 from constants import IMAGE_SLOT_1, IMAGE_SLOT_2, POLLINATIONS_IMAGE_SIZE
 from utils.http import safe_get, safe_post
 from utils.logger import get_logger
@@ -200,6 +203,92 @@ def _placeholder_figure(alt: str) -> str:
     border-radius:12px;color:#999;font-size:14px;">🖼️ 이미지 준비 중 ({alt})</div>"""
 
 
+# ---------------------------------------------------------------------------
+# 이미지 캐시 - 비슷한 맥락의 프롬프트면 새로 생성(=토큰 소모)하지 않고
+# 예전에 만들어둔 이미지를 재사용한다. Gemini 생성이 Pexels/Pollinations보다
+# 품질은 훨씬 좋지만 매번 새로 생성하면 콘텐츠 생성용 Claude 토큰과 별개로
+# 비용이 계속 쌓이기 때문에(실측 문의로 확인) 추가한 절감 장치다.
+# 사이트별로 캐시를 분리한다(사이트마다 이미지 톤/맥락이 다르므로).
+# ---------------------------------------------------------------------------
+IMAGE_CACHE_DIR = DATA_DIR / "image_cache"
+IMAGE_CACHE_MAX_ENTRIES = 60
+IMAGE_CACHE_SIMILARITY_THRESHOLD = 0.45
+
+_STOPWORDS = {
+    "a", "an", "the", "of", "in", "on", "at", "with", "and", "or", "for",
+    "style", "photo", "photos", "photograph", "realistic", "image", "one",
+    "two", "three", "looking", "while",
+}
+
+
+def _cache_path(site: str) -> Path:
+    return IMAGE_CACHE_DIR / f"{site}.json"
+
+
+def _prompt_word_set(prompt_en: str) -> set:
+    words = re.findall(r"[a-zA-Z]+", prompt_en.lower())
+    return {w for w in words if len(w) > 2 and w not in _STOPWORDS}
+
+
+def _load_image_cache(site: str) -> List[Dict[str, str]]:
+    path = _cache_path(site)
+    if not path.exists():
+        return []
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return []
+
+
+def _save_image_cache(site: str, entries: List[Dict[str, str]]) -> None:
+    IMAGE_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    trimmed = entries[-IMAGE_CACHE_MAX_ENTRIES:]
+    try:
+        _cache_path(site).write_text(
+            json.dumps(trimmed, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
+    except OSError as exc:
+        logger.warning("[Site %s] 이미지 캐시 저장 실패: %s", site, exc)
+
+
+def find_cached_image(site: str, prompt_en: str) -> Optional[str]:
+    """비슷한 맥락(단어 겹침 비율 기준)의 캐시된 이미지가 있으면 media_url을 반환한다."""
+    target_words = _prompt_word_set(prompt_en)
+    if not target_words:
+        return None
+
+    best_url: Optional[str] = None
+    best_score = IMAGE_CACHE_SIMILARITY_THRESHOLD
+    for entry in _load_image_cache(site):
+        cached_words = _prompt_word_set(entry.get("prompt", ""))
+        if not cached_words:
+            continue
+        overlap = len(target_words & cached_words) / len(target_words | cached_words)
+        if overlap >= best_score:
+            best_score = overlap
+            best_url = entry.get("media_url")
+
+    if best_url:
+        logger.info(
+            "[Site %s] 비슷한 맥락(유사도 %.2f)의 캐시 이미지 재사용 - 새로 생성하지 않음",
+            site,
+            best_score,
+        )
+    return best_url
+
+
+def add_to_image_cache(site: str, prompt_en: str, media_url: str) -> None:
+    entries = _load_image_cache(site)
+    entries.append(
+        {
+            "prompt": prompt_en,
+            "media_url": media_url,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+        }
+    )
+    _save_image_cache(site, entries)
+
+
 def process_image_slots(
     html: str, image_prompts: Dict[str, str], wp: WordPressClient, post_id: int = 0
 ) -> str:
@@ -217,6 +306,13 @@ def process_image_slots(
             result = result.replace(token, _placeholder_figure(prompt_key))
             continue
 
+        site_key = wp.site_key
+        cached_url = find_cached_image(site_key, prompt_en)
+        if cached_url:
+            figure = build_figure_html(cached_url, alt=prompt_en, caption="출처: google-ai-studio")
+            result = result.replace(token, figure)
+            continue
+
         image_bytes, source = resolve_image_for_slot(prompt_en)
         if image_bytes is None:
             result = result.replace(token, _placeholder_figure(prompt_key))
@@ -229,6 +325,8 @@ def process_image_slots(
             figure = build_figure_html(
                 media["source_url"], alt=prompt_en, caption=f"출처: {source}"
             )
+            if source == "google-ai-studio":
+                add_to_image_cache(site_key, prompt_en, media["source_url"])
         else:
             # 워드프레스 업로드 실패/미설정 시에도 이미지 자체는 확보했으므로 안내 문구만 대체.
             figure = _placeholder_figure(f"{prompt_key} (업로드 대기)")
