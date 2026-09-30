@@ -1,13 +1,14 @@
 """
-Gemini 생성 우선 + Pexels/Pollinations 폴백 하이브리드 이미지 엔진.
+Gemini/Flux 생성 우선 + Pexels/Pollinations 폴백 하이브리드 이미지 엔진.
 
 본문 중의 IMAGE_SLOT_1/2 플레이스홀더를 처리한다:
   1차: Google AI Studio(Gemini) 이미지 생성 API로 글 내용에 맞는 이미지를 직접 생성.
        (Pexels 스톡 검색은 "검색"이라 완전히 일치하는 사진이 없으면 엉뚱한 키워드만
        겹치는 사진을 억지로 반환하는 문제가 실측으로 있었음 - 생성 방식으로 바꿔서
        매번 프롬프트에 맞는 이미지를 새로 만들도록 한다.)
-  2차: Gemini 생성 실패 시 Pexels API로 영문 키워드 기반 실사 스톡 이미지 검색.
-  3차: 그마저 실패하면 Pollinations.ai 무료 Flux 엔드포인트로 최종 폴백.
+  2차: Gemini 크레딧 소진/호출 실패 시 fal.ai의 Flux(schnell) 모델로 생성.
+  3차: 그마저 실패하면 Pexels API로 영문 키워드 기반 실사 스톡 이미지 검색.
+  4차: 그마저도 실패하면 Pollinations.ai 무료 Flux 엔드포인트로 최종 폴백.
   업로드: 워드프레스 REST API(wp/v2/media)로 업로드 후 alt/caption 포함
           반응형 <figure> 블록으로 치환.
 """
@@ -33,6 +34,10 @@ PEXELS_SEARCH_URL = "https://api.pexels.com/v1/search"
 POLLINATIONS_BASE_URL = "https://image.pollinations.ai/prompt"
 GEMINI_INTERACTIONS_URL = "https://generativelanguage.googleapis.com/v1beta/interactions"
 GEMINI_IMAGE_MODEL = "gemini-3.1-flash-image"
+# fal.ai 동기(sync) 엔드포인트 - 큐/폴링 없이 한 번의 HTTP 요청으로 결과를 바로 받는다.
+# schnell 모델은 fal의 Flux 라인업 중 가장 빠르고 저렴한 버전(품질도 블로그
+# 삽입 이미지 용도로는 충분).
+FAL_FLUX_URL = "https://fal.run/fal-ai/flux/schnell"
 
 _SLOT_TOKEN_TO_KEY = {IMAGE_SLOT_1: "slot_1", IMAGE_SLOT_2: "slot_2"}
 
@@ -132,6 +137,59 @@ def generate_google_ai_image(
         return None
 
 
+def generate_flux_image(
+    prompt_en: str, width: int = POLLINATIONS_IMAGE_SIZE[0], height: int = POLLINATIONS_IMAGE_SIZE[1]
+) -> Optional[bytes]:
+    """fal.ai의 Flux(schnell) 모델로 이미지를 생성한다.
+
+    Gemini(Google AI Studio) 크레딧이 소진되거나 호출이 실패했을 때의 2순위
+    생성 경로다. fal의 동기(sync) 엔드포인트(fal.run)를 쓰므로 큐 등록 후
+    상태를 폴링할 필요 없이 한 번의 요청으로 결과를 바로 받는다.
+    """
+    if not settings.fal_api_key:
+        logger.info("FAL_API_KEY 미설정 - Flux 이미지 생성을 건너뜁니다.")
+        return None
+
+    payload = {
+        "prompt": prompt_en,
+        "image_size": {"width": width, "height": height},
+        "num_images": 1,
+    }
+    resp = safe_post(
+        FAL_FLUX_URL,
+        headers={
+            "Authorization": f"Key {settings.fal_api_key}",
+            "Content-Type": "application/json",
+        },
+        data=json.dumps(payload),
+        timeout=30,
+    )
+    if resp is None or resp.status_code != 200:
+        logger.warning(
+            "Flux 이미지 생성 실패: status=%s body=%s",
+            getattr(resp, "status_code", "N/A"),
+            getattr(resp, "text", "")[:300],
+        )
+        return None
+
+    try:
+        data = resp.json()
+        images = data.get("images", [])
+        if not images or not images[0].get("url"):
+            logger.warning("Flux 응답에 이미지가 없습니다: %s", json.dumps(data)[:300])
+            return None
+        image_url = images[0]["url"]
+    except (ValueError, KeyError) as exc:
+        logger.warning("Flux 응답 파싱 실패: %s", exc)
+        return None
+
+    img_resp = safe_get(image_url, timeout=20)
+    if img_resp is None or img_resp.status_code != 200:
+        logger.warning("Flux 이미지 다운로드 실패: %s", image_url)
+        return None
+    return img_resp.content
+
+
 def generate_pollinations_image(
     prompt_en: str, width: int = POLLINATIONS_IMAGE_SIZE[0], height: int = POLLINATIONS_IMAGE_SIZE[1]
 ) -> Optional[bytes]:
@@ -171,14 +229,22 @@ def _looks_like_non_photo_style(prompt_en: str) -> bool:
 def resolve_image_for_slot(prompt_en: str) -> Tuple[Optional[bytes], str]:
     """이미지를 확보한다. (바이트, 소스라벨) 튜플을 반환. 전부 실패하면 (None, 'none').
 
+    우선순위: Gemini(Google AI Studio) -> Flux(fal.ai) -> Pexels -> Pollinations.
     Gemini 생성을 최우선으로 시도한다 - 글 내용에 맞춰 매번 새로 그리므로
     Pexels 스톡 검색의 "검색어만 겹치는 엉뚱한 사진" 문제가 원천적으로 없다.
-    Gemini 키가 없거나 호출이 실패하면 기존 방식(Pexels -> Pollinations)으로
-    그대로 폴백한다.
+    Gemini 크레딧이 소진되거나(과금/쿼터 에러) 호출이 실패하면 Flux로 넘어가고,
+    Flux마저 실패하면 예전 방식(Pexels -> Pollinations)으로 최종 폴백한다.
+    별도의 "소진 감지" 로직은 없다 - Gemini 호출이 실패하면 이유를 가리지 않고
+    바로 다음 순위로 넘어가므로, 크레딧이 떨어져 매 호출이 실패하기 시작하는
+    순간부터 자연스럽게 Flux가 주력이 된다.
     """
     image_bytes = generate_google_ai_image(prompt_en)
     if image_bytes:
         return image_bytes, "google-ai-studio"
+
+    image_bytes = generate_flux_image(prompt_en)
+    if image_bytes:
+        return image_bytes, "flux"
 
     if _looks_like_non_photo_style(prompt_en):
         image_bytes = generate_pollinations_image(prompt_en)
@@ -337,7 +403,7 @@ def process_image_slots(
             figure = build_figure_html(
                 media["source_url"], alt=prompt_en, caption=f"출처: {source}"
             )
-            if source == "google-ai-studio":
+            if source in ("google-ai-studio", "flux"):
                 add_to_image_cache(site_key, prompt_en, media["source_url"])
         else:
             # 워드프레스 업로드 실패/미설정 시에도 이미지 자체는 확보했으므로 안내 문구만 대체.

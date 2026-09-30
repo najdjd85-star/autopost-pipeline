@@ -65,6 +65,7 @@ class Settings:
     schedule_time: str
     pexels_api_key: str
     google_ai_studio_api_key: str  # Gemini 이미지 생성용 (Google AI Studio API 키 - 서비스 계정과 별개)
+    fal_api_key: str  # fal.ai Flux 이미지 생성용 - Gemini 실패/소진 시 2순위 폴백
     google_key_path: str
     auto_publish_timeout_hours: float
 
@@ -154,6 +155,7 @@ def load_settings() -> Settings:
         schedule_time=_get("SCHEDULE_TIME", "11:00"),
         pexels_api_key=_get("PEXELS_API_KEY"),
         google_ai_studio_api_key=_get("GOOGLE_AI_STUDIO_API_KEY"),
+        fal_api_key=_get("FAL_API_KEY"),
         google_key_path=_get("GOOGLE_KEY_PATH", "service_account.json"),
         auto_publish_timeout_hours=_get_float("AUTO_PUBLISH_TIMEOUT_HOURS", 1.0),
         resend_api_key=_get("RESEND_API_KEY"),
