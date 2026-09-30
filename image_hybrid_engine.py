@@ -1,21 +1,26 @@
 """
-스톡 우선 검색 + AI 생성 자동 폴백 하이브리드 이미지 엔진.
+Gemini 생성 우선 + Pexels/Pollinations 폴백 하이브리드 이미지 엔진.
 
 본문 중의 IMAGE_SLOT_1/2 플레이스홀더를 처리한다:
-  1차: Pexels API로 영문 키워드 기반 1080p 실사 스톡 이미지 검색.
-  2차: 검색 실패/타임아웃 시 Pollinations.ai 무료 Flux 엔드포인트로 자동 우회하여
-       실시간 AI 이미지 생성 (1200x675).
+  1차: Google AI Studio(Gemini) 이미지 생성 API로 글 내용에 맞는 이미지를 직접 생성.
+       (Pexels 스톡 검색은 "검색"이라 완전히 일치하는 사진이 없으면 엉뚱한 키워드만
+       겹치는 사진을 억지로 반환하는 문제가 실측으로 있었음 - 생성 방식으로 바꿔서
+       매번 프롬프트에 맞는 이미지를 새로 만들도록 한다.)
+  2차: Gemini 생성 실패 시 Pexels API로 영문 키워드 기반 실사 스톡 이미지 검색.
+  3차: 그마저 실패하면 Pollinations.ai 무료 Flux 엔드포인트로 최종 폴백.
   업로드: 워드프레스 REST API(wp/v2/media)로 업로드 후 alt/caption 포함
           반응형 <figure> 블록으로 치환.
 """
 from __future__ import annotations
 
+import base64
+import json
 from typing import Dict, Optional, Tuple
 from urllib.parse import quote
 
 from config import settings
 from constants import IMAGE_SLOT_1, IMAGE_SLOT_2, POLLINATIONS_IMAGE_SIZE
-from utils.http import safe_get
+from utils.http import safe_get, safe_post
 from utils.logger import get_logger
 from wp_client import WordPressClient
 
@@ -23,6 +28,8 @@ logger = get_logger(__name__)
 
 PEXELS_SEARCH_URL = "https://api.pexels.com/v1/search"
 POLLINATIONS_BASE_URL = "https://image.pollinations.ai/prompt"
+GEMINI_INTERACTIONS_URL = "https://generativelanguage.googleapis.com/v1beta/interactions"
+GEMINI_IMAGE_MODEL = "gemini-3.1-flash-image"
 
 _SLOT_TOKEN_TO_KEY = {IMAGE_SLOT_1: "slot_1", IMAGE_SLOT_2: "slot_2"}
 
@@ -54,6 +61,59 @@ def search_pexels_photo(query_en: str) -> Optional[bytes]:
         return img_resp.content
     except (ValueError, KeyError, IndexError) as exc:
         logger.warning("Pexels 응답 처리 실패: %s", exc)
+        return None
+
+
+def generate_google_ai_image(
+    prompt_en: str, width: int = POLLINATIONS_IMAGE_SIZE[0], height: int = POLLINATIONS_IMAGE_SIZE[1]
+) -> Optional[bytes]:
+    """Google AI Studio(Gemini) 이미지 생성 API로 프롬프트에 맞는 이미지를 생성한다."""
+    if not settings.google_ai_studio_api_key:
+        logger.info("GOOGLE_AI_STUDIO_API_KEY 미설정 - Gemini 이미지 생성을 건너뜁니다.")
+        return None
+
+    aspect_ratio = "16:9" if width >= height else "9:16"
+    payload = {
+        "model": GEMINI_IMAGE_MODEL,
+        "input": [{"type": "text", "text": prompt_en}],
+        "response_format": {
+            "type": "image",
+            "mime_type": "image/jpeg",
+            "aspect_ratio": aspect_ratio,
+        },
+    }
+    resp = safe_post(
+        GEMINI_INTERACTIONS_URL,
+        headers={
+            "x-goog-api-key": settings.google_ai_studio_api_key,
+            "Content-Type": "application/json",
+        },
+        data=json.dumps(payload),
+        timeout=30,
+    )
+    if resp is None or resp.status_code != 200:
+        logger.warning(
+            "Gemini 이미지 생성 실패: status=%s body=%s",
+            getattr(resp, "status_code", "N/A"),
+            getattr(resp, "text", "")[:300],
+        )
+        return None
+
+    try:
+        data = resp.json()
+        # 응답은 {"steps": [{"type": "thought", ...}, {"type": "model_output",
+        # "content": [{"type": "image", "mime_type": ..., "data": "<base64>"}]}]}
+        # 형태다(실측으로 확인함 - 문서 예시의 interaction.outputImage 경로와 다름).
+        for step in data.get("steps", []):
+            if step.get("type") != "model_output":
+                continue
+            for block in step.get("content", []):
+                if block.get("type") == "image" and block.get("data"):
+                    return base64.b64decode(block["data"])
+        logger.warning("Gemini 응답에 이미지 블록이 없습니다: %s", json.dumps(data)[:300])
+        return None
+    except (ValueError, KeyError) as exc:
+        logger.warning("Gemini 이미지 응답 파싱 실패: %s", exc)
         return None
 
 
@@ -94,7 +154,17 @@ def _looks_like_non_photo_style(prompt_en: str) -> bool:
 
 
 def resolve_image_for_slot(prompt_en: str) -> Tuple[Optional[bytes], str]:
-    """이미지를 확보한다. (바이트, 소스라벨) 튜플을 반환. 둘 다 실패하면 (None, 'none')."""
+    """이미지를 확보한다. (바이트, 소스라벨) 튜플을 반환. 전부 실패하면 (None, 'none').
+
+    Gemini 생성을 최우선으로 시도한다 - 글 내용에 맞춰 매번 새로 그리므로
+    Pexels 스톡 검색의 "검색어만 겹치는 엉뚱한 사진" 문제가 원천적으로 없다.
+    Gemini 키가 없거나 호출이 실패하면 기존 방식(Pexels -> Pollinations)으로
+    그대로 폴백한다.
+    """
+    image_bytes = generate_google_ai_image(prompt_en)
+    if image_bytes:
+        return image_bytes, "google-ai-studio"
+
     if _looks_like_non_photo_style(prompt_en):
         image_bytes = generate_pollinations_image(prompt_en)
         if image_bytes:
