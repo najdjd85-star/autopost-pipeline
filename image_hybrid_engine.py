@@ -1,7 +1,7 @@
 """
 Gemini/Flux 생성 우선 + Pexels/Pollinations 폴백 하이브리드 이미지 엔진.
 
-본문 중의 IMAGE_SLOT_1/2 플레이스홀더를 처리한다:
+본문 중의 IMAGE_SLOT_1 플레이스홀더를 처리한다:
   1차: Google AI Studio(Gemini) 이미지 생성 API로 글 내용에 맞는 이미지를 직접 생성.
        (Pexels 스톡 검색은 "검색"이라 완전히 일치하는 사진이 없으면 엉뚱한 키워드만
        겹치는 사진을 억지로 반환하는 문제가 실측으로 있었음 - 생성 방식으로 바꿔서
@@ -23,7 +23,7 @@ from typing import Dict, List, Optional, Tuple
 from urllib.parse import quote
 
 from config import DATA_DIR, settings
-from constants import IMAGE_SLOT_1, IMAGE_SLOT_2, POLLINATIONS_IMAGE_SIZE
+from constants import IMAGE_SLOT_1, POLLINATIONS_IMAGE_SIZE
 from utils.http import safe_get, safe_post
 from utils.logger import get_logger
 from wp_client import WordPressClient
@@ -39,7 +39,7 @@ GEMINI_IMAGE_MODEL = "gemini-3.1-flash-image"
 # 삽입 이미지 용도로는 충분).
 FAL_FLUX_URL = "https://fal.run/fal-ai/flux/schnell"
 
-_SLOT_TOKEN_TO_KEY = {IMAGE_SLOT_1: "slot_1", IMAGE_SLOT_2: "slot_2"}
+_SLOT_TOKEN_TO_KEY = {IMAGE_SLOT_1: "slot_1"}
 
 
 def search_pexels_photo(query_en: str) -> Optional[bytes]:
@@ -370,7 +370,7 @@ def add_to_image_cache(site: str, prompt_en: str, media_url: str) -> None:
 def process_image_slots(
     html: str, image_prompts: Dict[str, str], wp: WordPressClient, post_id: int = 0
 ) -> str:
-    """html_content 안의 IMAGE_SLOT_1/2를 실제 <figure> 블록으로 치환한다."""
+    """html_content 안의 IMAGE_SLOT_1을 실제 <figure> 블록으로 치환한다."""
     if not html:
         return html
 

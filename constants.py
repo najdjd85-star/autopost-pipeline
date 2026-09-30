@@ -11,8 +11,6 @@
 
 # ---- 이미지 슬롯 플레이스홀더 (generator.py가 html_content 안에 삽입) ----
 IMAGE_SLOT_1 = "<!-- IMAGE_SLOT_1 -->"
-IMAGE_SLOT_2 = "<!-- IMAGE_SLOT_2 -->"
-IMAGE_SLOTS = (IMAGE_SLOT_1, IMAGE_SLOT_2)
 
 # ---- 제휴(CPA/쿠팡) 슬롯 플레이스홀더 ----
 AFFILIATE_SLOT_TOP = "<!-- AFFILIATE_SLOT_TOP -->"

@@ -22,7 +22,6 @@ from constants import (
     AFFILIATE_SLOT_TOP,
     CLAUDE_MODEL,
     IMAGE_SLOT_1,
-    IMAGE_SLOT_2,
     REQUIRED_GENERATOR_KEYS,
     SITE_LABELS,
     SITE_OFFICIAL_URLS,
@@ -65,9 +64,8 @@ CONTENT_TOOL = {
                 "description": "이미지 슬롯별 영문 검색/생성 프롬프트",
                 "properties": {
                     "slot_1": {"type": "string"},
-                    "slot_2": {"type": "string"},
                 },
-                "required": ["slot_1", "slot_2"],
+                "required": ["slot_1"],
             },
             "threads_post": {
                 "type": "string",
@@ -174,7 +172,6 @@ html_content 안에 아래 컴포넌트를 전부 포함해야 합니다:
    가짜 버튼이 되어서는 안 됩니다.
 6. 아래 플레이스홀더를 본문 흐름에 맞는 위치에 정확히 그대로(문자 변경 없이) 삽입:
    - "{IMAGE_SLOT_1}" : 도입부 직후
-   - "{IMAGE_SLOT_2}" : 본문 중반(페르소나 사례 근처)
    - "{AFFILIATE_SLOT_TOP}" : 메트릭스 카드 직후
    - "{AFFILIATE_SLOT_MID}" : 계산기 위젯 직후
    - "{AFFILIATE_SLOT_BOT}" : 글 최하단
