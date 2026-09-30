@@ -19,6 +19,7 @@ import json
 import subprocess
 import sys
 import threading
+import time
 import uuid
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -267,6 +268,54 @@ def send_approval_request_sync(site: str, draft: Dict[str, Any]) -> Optional[str
 # 없으므로, WP 발행부터 나머지 채널 배포까지 한 단계(_publish_stage)로 처리한다.
 
 
+_PUBLISH_THROTTLE_SECONDS = 600  # 10분
+_LAST_PUBLISH_FILE = OUTPUT_DIR / ".last_publish_at"
+
+
+def _throttle_publish() -> None:
+    """실제 워드프레스 등록 시점이 직전 발행으로부터 최소 10분 뒤가 되도록 대기한다.
+
+    여러 사이트를 한꺼번에 승인하거나(또는 자동발행 타이밍이 겹치거나) 하면
+    각 사이트의 발행이 별도 OS 프로세스로 거의 동시에 시작될 수 있는데,
+    사이트들이 한 번에 우르르 올라오는 것처럼 보이지 않게 하기 위해(요청사항)
+    실제 발행 직전에 간격을 강제한다. 프로세스가 여러 개 동시에 이 지점에
+    도달해도 순서가 보장되도록 파일 락을 쓴다(리눅스 전용 - Windows 로컬
+    개발 환경에서는 락 없이, 즉 대기 없이 진행한다).
+    """
+    _LAST_PUBLISH_FILE.parent.mkdir(parents=True, exist_ok=True)
+    lock_file = None
+    try:
+        import fcntl
+
+        lock_file = open(_LAST_PUBLISH_FILE.with_suffix(".lock"), "w")
+        fcntl.flock(lock_file, fcntl.LOCK_EX)
+    except ImportError:
+        pass
+
+    try:
+        now = time.time()
+        last = 0.0
+        if _LAST_PUBLISH_FILE.exists():
+            try:
+                last = float(_LAST_PUBLISH_FILE.read_text().strip())
+            except ValueError:
+                last = 0.0
+
+        target = max(now, last + _PUBLISH_THROTTLE_SECONDS)
+        wait = target - now
+        if wait > 0:
+            logger.info("발행 간격 조절을 위해 %.0f초 대기합니다.", wait)
+            time.sleep(wait)
+
+        _LAST_PUBLISH_FILE.write_text(str(target))
+    finally:
+        if lock_file is not None:
+            import fcntl
+
+            fcntl.flock(lock_file, fcntl.LOCK_UN)
+            lock_file.close()
+
+
 async def _publish_stage(approval_id: str) -> None:
     """워드프레스 발행 + 썸네일 생성 + 나머지 채널(색인핑/스레드/핀터레스트) 배포."""
     import telegram
@@ -278,6 +327,7 @@ async def _publish_stage(approval_id: str) -> None:
 
     site = pending["site"]
     draft = pending["draft"]
+    _throttle_publish()
     bot = telegram.Bot(token=settings.telegram_bot_token)
 
     wp = WordPressClient(site)
