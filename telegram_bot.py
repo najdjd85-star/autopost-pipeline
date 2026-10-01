@@ -332,7 +332,7 @@ async def _publish_stage(approval_id: str) -> None:
 
     wp = WordPressClient(site)
     html = draft.get("html_content", "")
-    draft_post = wp.create_draft_post(draft.get("title", ""), html)
+    draft_post = wp.create_draft_post(draft.get("title", ""), html, category=draft.get("category"))
     if draft_post is None:
         await bot.send_message(
             chat_id=settings.telegram_admin_chat_id,

@@ -23,6 +23,7 @@ from constants import (
     CLAUDE_MODEL,
     IMAGE_SLOT_1,
     REQUIRED_GENERATOR_KEYS,
+    SITE_CATEGORIES,
     SITE_LABELS,
     SITE_OFFICIAL_URLS,
 )
@@ -53,6 +54,10 @@ CONTENT_TOOL = {
                     "규칙을 반드시 따를 것 - 매번 같은 문장 틀(예: '~~, 매년 수십만 명이 이 조건 "
                     "하나로 OO합니다')을 재사용하지 말고, 그때그때 다른 구조를 골라 쓴다."
                 ),
+            },
+            "category": {
+                "type": "string",
+                "description": "이 글의 워드프레스 카테고리. 아래 [사용 가능한 카테고리] 목록 중 글 주제에 가장 맞는 것 하나를 글자 그대로 선택할 것.",
             },
             "fact_summary": {"type": "string", "description": "핵심 팩트 요약 (2~3문장)"},
             "html_content": {
@@ -116,8 +121,14 @@ def _get_client():
 def build_system_prompt(site: str) -> str:
     site_label = SITE_LABELS.get(site, site)
     official_url = SITE_OFFICIAL_URLS.get(site, "")
+    categories = SITE_CATEGORIES.get(site, ())
+    category_list = ", ".join(f'"{c}"' for c in categories)
     return f"""당신은 대한민국 최상위 1% 바이럴 블로그 카피라이터이자 UI/UX 퍼블리셔입니다.
 지금부터 "{site_label}" 주제로 워드프레스에 바로 게시할 완성된 HTML 콘텐츠를 작성합니다.
+
+[사용 가능한 카테고리] {category_list}
+category 필드에는 위 목록 중 오늘 글의 주제와 가장 가까운 것 하나를 띄어쓰기/글자 하나까지
+정확히 그대로 입력하세요. 목록에 없는 이름을 새로 만들어내지 마세요.
 
 [절대 규칙 1 - 심리 작성 규칙]
 1. 도입부(intro, 본문 첫 문단): 지루한 공고문 말투를 절대 금지합니다. "매년 수십만 명이 이
@@ -365,6 +376,15 @@ def generate_post(site: str, base_keyword: Optional[str] = None) -> Dict[str, An
             " 다시 호출하되, 모든 필드를 빠짐없이 채워주세요."
         )
         data = _validate(_call_claude(system_prompt, retry_prompt))
+
+    valid_categories = SITE_CATEGORIES.get(site, ())
+    if valid_categories and data.get("category") not in valid_categories:
+        logger.warning(
+            "[Site %s] Claude가 목록에 없는 카테고리(%s)를 반환해 기본값으로 대체합니다.",
+            site,
+            data.get("category"),
+        )
+        data["category"] = valid_categories[0]
 
     data["site"] = site
     data["keyword"] = keyword

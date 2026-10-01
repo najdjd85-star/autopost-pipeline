@@ -74,6 +74,33 @@ class WordPressClient:
     # ------------------------------------------------------------------
     # 게시글
     # ------------------------------------------------------------------
+    def get_or_create_category(self, name: str) -> Optional[int]:
+        """카테고리 이름으로 워드프레스 카테고리 id를 찾고, 없으면 새로 만든다."""
+        if not name or not self.is_configured:
+            return None
+
+        existing = safe_get(
+            self._api_url("wp/v2/categories"),
+            headers=self._auth_header(),
+            params={"search": name, "per_page": 50},
+            timeout=10,
+        )
+        if existing is not None and existing.status_code == 200:
+            for cat in existing.json():
+                if cat.get("name") == name:
+                    return cat.get("id")
+
+        resp = safe_post(
+            self._api_url("wp/v2/categories"),
+            headers={**self._auth_header(), "Content-Type": "application/json"},
+            data=json.dumps({"name": name}),
+            timeout=10,
+        )
+        if resp is not None and resp.status_code in (200, 201):
+            return resp.json().get("id")
+        logger.warning("[Site %s] 카테고리 조회/생성 실패: %s", self.site_key, name)
+        return None
+
     def create_draft_post(
         self, title: str, html_content: str, category: Optional[str] = None
     ) -> Optional[Dict[str, Any]]:
@@ -87,7 +114,9 @@ class WordPressClient:
             "status": "draft",
         }
         if category:
-            payload["categories"] = [category]
+            cat_id = self.get_or_create_category(category)
+            if cat_id:
+                payload["categories"] = [cat_id]
 
         resp = safe_post(
             self._api_url("wp/v2/posts"),

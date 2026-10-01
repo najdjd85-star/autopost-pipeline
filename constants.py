@@ -46,6 +46,15 @@ SITE_BADGES = {
     SITE_C: "💰 세금환급",
 }
 
+# ---- 사이트별 워드프레스 카테고리 - generator.py가 이 중 하나를 글 주제에 맞게
+# 골라 반환하고, telegram_bot.py가 발행 시 그대로 넘긴다. 전부 "Uncategorized"로
+# 쌓이던 문제(발행 코드가 카테고리를 아예 안 넘겨서 생긴 버그) 수정의 일환. ----
+SITE_CATEGORIES = {
+    SITE_A: ("복지·지원금", "주거지원", "연금"),
+    SITE_B: ("통신비", "렌탈"),
+    SITE_C: ("연말정산", "종합소득세", "국민연금"),
+}
+
 # ---- 사이트별 "공식 신청/조회 사이트" CTA용 실제 URL (전부 정부/공공기관 운영,
 # 확인된 진짜 주소) - generator.py가 프롬프트에 그대로 박아서 Claude가
 # href="#" 같은 가짜 링크를 만들지 않게 한다. ----
@@ -93,6 +102,7 @@ CLAUDE_MODEL = "claude-sonnet-5"
 # 낭비할 이유가 없다.
 REQUIRED_GENERATOR_KEYS = (
     "title",
+    "category",
     "fact_summary",
     "html_content",
     "image_prompts",
