@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Fix Point - 정부지원금·통신비·세금 정보 안내</title>
+<meta name="description" content="정부지원금, 통신비 절약, 세금·연금 정보를 공식 기준으로 정리하고 직접 계산해 볼 수 있는 모의 계산기를 제공합니다.">
+<link rel="canonical" href="https://dailyfixpoint.com/">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5672149391967711"
+     crossorigin="anonymous"></script>
+<style>
+  :root {
+    --bg: #f6f7fb;
+    --card-bg: #ffffff;
+    --text: #16192b;
+    --muted: #667085;
+    --line: #e7e9f2;
+    --accent: #2454ff;
+    --accent-ink: #14306b;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Malgun Gothic", "Apple SD Gothic Neo", "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+  }
+  a { color: inherit; }
+
+  .topbar { border-bottom: 1px solid var(--line); background: #fff; }
+  .topbar-inner {
+    max-width: 1040px; margin: 0 auto; padding: 18px 24px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .brand-mark {
+    width: 30px; height: 30px; border-radius: 8px;
+    background: linear-gradient(135deg, var(--accent), #6a3dff);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .brand-mark svg { width: 16px; height: 16px; }
+  .brand-name { font-weight: 800; font-size: 1.05rem; letter-spacing: -0.3px; }
+
+  header { text-align: center; padding: 64px 24px 36px; max-width: 720px; margin: 0 auto; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.78rem; font-weight: 700; color: var(--accent-ink);
+    background: #eaf0ff; border: 1px solid #d7e2ff;
+    padding: 6px 14px; border-radius: 999px; margin-bottom: 20px;
+  }
+  .eyebrow .dot { width: 6px; height: 6px; border-radius: 50%; background: #2fbf71; }
+  header h1 { font-size: clamp(1.7rem, 4vw, 2.35rem); margin: 0 0 14px; letter-spacing: -0.6px; font-weight: 800; }
+  header p { color: var(--muted); font-size: 1.02rem; margin: 0; }
+
+  main {
+    max-width: 1040px; margin: 0 auto; padding: 8px 24px 40px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px;
+  }
+  @media (max-width: 780px) {
+    main { grid-template-columns: 1fr; }
+    header { padding: 48px 20px 28px; }
+  }
+
+  .card {
+    background: var(--card-bg); border: 1px solid var(--line); border-radius: 18px;
+    padding: 30px 26px; color: var(--text);
+    display: flex; flex-direction: column;
+  }
+  .card .icon-badge {
+    width: 52px; height: 52px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center; margin-bottom: 20px;
+  }
+  .card .icon-badge svg { width: 26px; height: 26px; }
+  .card.gov .icon-badge { background: #eaf0ff; color: #2454ff; }
+  .card.life .icon-badge { background: #e8f9f1; color: #17a06b; }
+  .card.tax .icon-badge { background: #fff3e6; color: #d9822b; }
+  .card h2 { font-size: 1.18rem; margin: 0 0 10px; letter-spacing: -0.3px; }
+  .card h2 a { text-decoration: none; }
+  .card p { font-size: 0.92rem; color: var(--muted); margin: 0 0 14px; line-height: 1.6; }
+  .card ul { margin: 0 0 18px; padding-left: 18px; font-size: 0.88rem; color: var(--muted); line-height: 1.7; flex-grow: 1; }
+  .card .go { font-size: 0.86rem; font-weight: 700; text-decoration: none; display: inline-block; }
+  .card .go:hover { text-decoration: underline; }
+  .card .sub { font-size: 0.8rem; color: var(--muted); margin-top: 10px; }
+  .card .sub a { color: var(--muted); }
+
+  .about {
+    max-width: 1040px; margin: 0 auto; padding: 8px 24px 70px;
+  }
+  .about-box {
+    background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 30px 28px;
+  }
+  .about-box h2 { margin: 0 0 12px; font-size: 1.15rem; }
+  .about-box p, .about-box li { color: var(--muted); font-size: 0.92rem; line-height: 1.8; }
+  .about-box ul { padding-left: 18px; margin: 10px 0 0; }
+
+  footer { border-top: 1px solid var(--line); padding: 32px 24px 40px; }
+  .footer-inner {
+    max-width: 1040px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px;
+    color: var(--muted); font-size: 0.82rem;
+  }
+  .footer-links { display: flex; gap: 8px 20px; flex-wrap: wrap; }
+  .footer-links a { color: var(--muted); text-decoration: none; }
+  .footer-links a:hover { color: var(--text); }
+  .footer-links b { color: var(--text); font-weight: 700; }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l6 6L20 6"/></svg>
+      </div>
+      <span class="brand-name">Daily Fix Point</span>
+    </div>
+  </div>
+
+  <header>
+    <span class="eyebrow"><span class="dot"></span>공식 기준으로 정리하는 생활 정보</span>
+    <h1>흩어진 혜택 정보, 한곳에서 확인하세요</h1>
+    <p>정부지원금 · 통신비 절약 · 세금·연금까지, 놓치기 쉬운 생활 밀착 정보를 공식 자료를 바탕으로 알기 쉽게 정리하고 직접 계산해 볼 수 있게 제공합니다.</p>
+  </header>
+
+  <main>
+    <section class="card gov">
+      <span class="icon-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 21h18"/><path d="M4 21V10"/><path d="M20 21V10"/><path d="M2 10l10-6 10 6"/>
+          <path d="M8 21v-6"/><path d="M12 21v-6"/><path d="M16 21v-6"/>
+        </svg>
+      </span>
+      <h2><a href="https://gov.dailyfixpoint.com">정부지원금 안내소</a></h2>
+      <p>생계급여, 근로장려금, 기초연금처럼 놓치기 쉬운 지원금의 자격 조건과 신청 방법을 정리합니다.</p>
+      <ul>
+        <li>생계·주거·기초연금 등 기본 복지</li>
+        <li>청년·육아·출산 지원</li>
+        <li>취업·교육 지원 제도</li>
+        <li>기초연금 선정기준 확인 계산기</li>
+      </ul>
+      <a class="go" href="https://gov.dailyfixpoint.com">정부지원금 글 보기 →</a>
+      <div class="sub"><a href="https://gov.dailyfixpoint.com/calculators/">계산기</a> · <a href="https://gov.dailyfixpoint.com/%ec%86%8c%ea%b0%9c/">소개</a></div>
+    </section>
+
+    <section class="card life">
+      <span class="icon-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12.5a11 11 0 0 1 14 0"/><path d="M8.2 16a6.5 6.5 0 0 1 7.6 0"/><circle cx="12" cy="19.5" r="1.4" fill="currentColor" stroke="none"/>
+        </svg>
+      </span>
+      <h2><a href="https://life.dailyfixpoint.com">통신비 절약 안내소</a></h2>
+      <p>알뜰폰 요금제 비교부터 렌탈료 절약 팁까지, 매달 나가는 고정비를 줄이는 방법을 다룹니다.</p>
+      <ul>
+        <li>알뜰폰·선택약정·공시지원금</li>
+        <li>인터넷 결합할인과 해지 위약금</li>
+        <li>해외 로밍·eSIM</li>
+        <li>통신비 절감액 계산기</li>
+      </ul>
+      <a class="go" href="https://life.dailyfixpoint.com">통신비 글 보기 →</a>
+      <div class="sub"><a href="https://life.dailyfixpoint.com/calculators/">계산기</a> · <a href="https://life.dailyfixpoint.com/%ec%86%8c%ea%b0%9c/">소개</a></div>
+    </section>
+
+    <section class="card tax">
+      <span class="icon-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.3c0-1.1 1.1-1.8 2.5-1.8s2.5.7 2.5 1.7-1 1.5-2.5 1.8-2.5.8-2.5 1.8 1.1 1.7 2.5 1.7 2.5-.7 2.5-1.8"/>
+        </svg>
+      </span>
+      <h2><a href="https://tax.dailyfixpoint.com">세금·연금 안내소</a></h2>
+      <p>놓친 환급금 조회 방법과 절세·연금 제도를 알기 쉽게 안내합니다.</p>
+      <ul>
+        <li>연말정산·종합소득세</li>
+        <li>해외주식 양도세·배당세</li>
+        <li>국민연금·개인연금</li>
+        <li>양도세·세액공제 등 6종 계산기</li>
+      </ul>
+      <a class="go" href="https://tax.dailyfixpoint.com">세금·연금 글 보기 →</a>
+      <div class="sub"><a href="https://tax.dailyfixpoint.com/calculators/">계산기</a> · <a href="https://tax.dailyfixpoint.com/%ec%86%8c%ea%b0%9c/">소개</a></div>
+    </section>
+  </main>
+
+  <section class="about">
+    <div class="about-box">
+      <h2>Daily Fix Point는 이런 사이트입니다</h2>
+      <p>제도 이름은 알아도 내가 대상인지, 어떤 조건에서 탈락하는지는 한눈에 보기 어렵습니다. Daily Fix Point는 정부지원금·통신비·세금 분야의 공식 기준을 바탕으로 실제로 헷갈리는 지점을 정리하고, 조건을 직접 넣어 볼 수 있는 모의 계산기를 함께 제공합니다.</p>
+      <ul>
+        <li>복지로, 국세청 홈택스, 국민연금공단 등 공공기관 자료를 기준으로 정리하며 글마다 참고 출처와 정보 기준일을 표기합니다.</li>
+        <li>콘텐츠는 AI 도구의 도움을 받아 작성되며, 계산기는 참고용 모의 계산입니다. 정확한 판정은 해당 기관에서 확인해 주세요.</li>
+        <li>일부 글에는 제휴 링크가 포함되어 수수료가 발생할 수 있습니다.</li>
+        <li>오류를 발견하시면 각 사이트의 문의 페이지로 알려 주세요. 확인 후 수정합니다.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-links">
+        <b>정부지원금</b>
+        <a href="https://gov.dailyfixpoint.com/%ec%86%8c%ea%b0%9c/">소개</a>
+        <a href="https://gov.dailyfixpoint.com/%eb%ac%b8%ec%9d%98%ed%95%98%ea%b8%b0/">문의하기</a>
+        <a href="https://gov.dailyfixpoint.com/privacy-policy/">개인정보처리방침</a>
+      </div>
+      <div class="footer-links">
+        <b>통신비 절약</b>
+        <a href="https://life.dailyfixpoint.com/%ec%86%8c%ea%b0%9c/">소개</a>
+        <a href="https://life.dailyfixpoint.com/%eb%ac%b8%ec%9d%98%ed%95%98%ea%b8%b0/">문의하기</a>
+        <a href="https://life.dailyfixpoint.com/privacy-policy-2/">개인정보처리방침</a>
+      </div>
+      <div class="footer-links">
+        <b>세금·연금</b>
+        <a href="https://tax.dailyfixpoint.com/%ec%86%8c%ea%b0%9c/">소개</a>
+        <a href="https://tax.dailyfixpoint.com/%eb%ac%b8%ec%9d%98%ed%95%98%ea%b8%b0/">문의하기</a>
+        <a href="https://tax.dailyfixpoint.com/privacy-policy-2/">개인정보처리방침</a>
+      </div>
+      <span>&copy; <span id="year"></span> Daily Fix Point. 본 사이트의 정보는 일반적인 안내이며, 정확한 내용은 공식 기관에서 확인하세요.</span>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

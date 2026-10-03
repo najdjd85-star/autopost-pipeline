@@ -16,6 +16,7 @@ import hmac
 import json
 import random
 import time
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Dict, List, Optional
 from urllib.parse import quote, urlencode
@@ -30,6 +31,7 @@ from constants import (
     COUPANG_DISCLOSURE_TEXT,
     FTC_DISCLOSURE_TEXT,
     LINKPRICE_EVENT_DISCLOSURE_TEXT,
+    SITE_SOURCES,
 )
 from utils.http import safe_get
 from utils.logger import get_logger
@@ -409,6 +411,28 @@ def add_calculator_disclaimer(html: str) -> str:
     return html
 
 
+def build_source_footer(site: str, info_date: str) -> str:
+    links = " · ".join(
+        f'<a href="{url}" target="_blank" rel="noopener noreferrer">{name}</a>'
+        for name, url in SITE_SOURCES.get(site, ())
+    )
+    return (
+        '<div class="source-footer" style="margin:28px 0 8px;padding:16px 18px;border:1px solid #e5e7eb;'
+        'border-radius:12px;background:#fafafa;font-size:13px;line-height:1.8;">'
+        f"<strong>📚 참고 출처</strong> · 정보 기준일 {info_date}<br>{links}<br>"
+        '<span style="color:#888;">제도와 수치는 바뀔 수 있으니 최신 내용은 위 공식 사이트에서 확인하세요.</span></div>'
+    )
+
+
+def add_source_footer(html: str, site: str, info_date: Optional[str] = None) -> str:
+    """글 하단에 공식 출처 박스와 정보 기준일을 한 번만 넣는다 (info_date: YYYY.MM.DD, 기본은 오늘 KST)."""
+    if not html or "source-footer" in html or site not in SITE_SOURCES:
+        return html
+    if info_date is None:
+        info_date = datetime.now(timezone(timedelta(hours=9))).strftime("%Y.%m.%d")
+    return html + "\n" + build_source_footer(site, info_date)
+
+
 def inject_affiliate_slots(html: str, post_id: int, site: str, keyword: str = "") -> str:
     """html_content 안의 AFFILIATE_SLOT_* 플레이스홀더를 실제 카드로 치환한다.
 
@@ -420,7 +444,7 @@ def inject_affiliate_slots(html: str, post_id: int, site: str, keyword: str = ""
     if not html:
         return html
 
-    result = add_calculator_disclaimer(html)
+    result = add_source_footer(add_calculator_disclaimer(html), site)
     any_affiliate_content = False
     any_coupang_content = False
     for token, slot_name in _SLOT_TOKEN_TO_NAME.items():

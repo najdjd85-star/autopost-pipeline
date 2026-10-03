@@ -67,6 +67,25 @@ SITE_OFFICIAL_URLS = {
     SITE_C: "https://www.hometax.go.kr",  # 홈택스 - 국세청 세금 환급/신고
 }
 
+# ---- 사이트별 "참고 출처" 공식 기관 (글 하단 출처 박스와 소개 페이지에서 공유) ----
+SITE_SOURCES = {
+    SITE_A: (
+        ("복지로", "https://www.bokjiro.go.kr"),
+        ("정부24", "https://www.gov.kr"),
+        ("보건복지부", "https://www.mohw.go.kr"),
+    ),
+    SITE_B: (
+        ("스마트초이스", "https://www.smartchoice.or.kr"),
+        ("방송통신위원회", "https://www.kcc.go.kr"),
+        ("한국소비자원", "https://www.kca.go.kr"),
+    ),
+    SITE_C: (
+        ("국세청 홈택스", "https://www.hometax.go.kr"),
+        ("국세청", "https://www.nts.go.kr"),
+        ("국민연금공단", "https://www.nps.or.kr"),
+    ),
+}
+
 THUMBNAIL_SIZE = (1000, 1500)  # 카드뉴스 썸네일
 
 # ---- 이미지 생성 규격 ----
