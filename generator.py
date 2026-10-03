@@ -12,6 +12,7 @@ trend_scraper -> keyword_expander -> competitor_analyzer 순으로 수집한 데
 from __future__ import annotations
 
 import html
+import re
 from typing import Any, Dict, List, Optional
 
 from competitor_analyzer import get_top_blog_references
@@ -72,16 +73,25 @@ CONTENT_TOOL = {
                 },
                 "required": ["slot_1"],
             },
+            "slug": {
+                "type": "string",
+                "description": (
+                    "글 주소(URL)용 영문 슬러그. 소문자 영문/숫자와 하이픈만, 3~5단어, 60자 이내. "
+                    "예: 'part-time-income-support-check'. 한글 금지."
+                ),
+            },
             "threads_post": {
                 "type": "string",
                 "description": (
-                    "스레드 본문 요약 (500자 이내). 존댓말 금지, 실제 스레드에서 흔한 편하고 "
-                    "친근한 반말체로 작성한다(예: '~다', '~야', '~하더라', '~임' 같은 말투). "
-                    "블로그 격식체가 아니라 친구한테 말하듯 캐주얼하게. 스레드 본문 자체에는 "
-                    "링크를 넣지 않으므로(링크는 별도 첫 댓글에만 들어감), 맨 마지막 문장은 "
-                    "댓글을 클릭하도록 유도하는 문장으로 마무리한다. 예: '자세한 내용/링크는 "
-                    "댓글에 남겨둠', '더 자세한 내용은 댓글 참고', '나머지는 댓글에 있음' 같은 "
-                    "반말 톤의 짧은 유도 문장."
+                    "스레드 본문 요약 (500자 이내). 존댓말 금지. 톤은 '조사해보고 알게 된 팩트를 "
+                    "혼잣말하듯 친구에게 공유'하는 느낌(~더라, ~였음, ~인 듯, ~임). 훈계·명령형, "
+                    "'너네' 같은 호칭, 과격한 말투는 금지(돈·복지 정보라 신뢰가 중요함). "
+                    "'내가 직접 겪어봤는데' 같은 지어낸 경험담도 금지하고 '찾아보니까' 식의 "
+                    "조사형 표현만 쓴다. 구체적인 숫자나 조건을 최소 1개 넣는다. 끝에서 두 번째 "
+                    "줄에는 독자가 댓글로 자기 상황을 남기고 싶어지는 짧은 질문을 넣는다"
+                    "(예: '너는 어떤 경우인지 궁금함'). 스레드 본문 자체에는 링크를 넣지 않으므로"
+                    "(링크는 별도 첫 댓글에만 들어감), 맨 마지막 문장은 댓글을 확인하도록 유도하는 "
+                    "문장으로 마무리한다. 예: '자세한 내용/링크는 댓글에 남겨둠', '나머지는 댓글에 있음'."
                 ),
             },
             "threads_comment": {
@@ -385,6 +395,12 @@ def generate_post(site: str, base_keyword: Optional[str] = None) -> Dict[str, An
             data.get("category"),
         )
         data["category"] = valid_categories[0]
+
+    slug = str(data.get("slug", "")).strip().lower()
+    if not re.fullmatch(r"[a-z0-9]+(-[a-z0-9]+){1,6}", slug) or len(slug) > 60:
+        data.pop("slug", None)
+    else:
+        data["slug"] = slug
 
     data["site"] = site
     data["keyword"] = keyword

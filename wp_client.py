@@ -102,7 +102,11 @@ class WordPressClient:
         return None
 
     def create_draft_post(
-        self, title: str, html_content: str, category: Optional[str] = None
+        self,
+        title: str,
+        html_content: str,
+        category: Optional[str] = None,
+        slug: Optional[str] = None,
     ) -> Optional[Dict[str, Any]]:
         if not self.is_configured:
             logger.warning("[Site %s] 워드프레스 미설정 - 초안 생성을 건너뜁니다.", self.site_key)
@@ -113,6 +117,8 @@ class WordPressClient:
             "content": html_content,
             "status": "draft",
         }
+        if slug:
+            payload["slug"] = slug
         if category:
             cat_id = self.get_or_create_category(category)
             if cat_id:
