@@ -55,7 +55,7 @@ SITE_BADGES = {
 SITE_CATEGORIES = {
     SITE_A: ("복지·지원금", "주거지원", "연금"),
     SITE_B: ("통신비", "렌탈"),
-    SITE_C: ("연말정산", "종합소득세", "국민연금"),
+    SITE_C: ("연말정산", "종합소득세", "국민연금", "해외주식 세금"),
 }
 
 # ---- 사이트별 "공식 신청/조회 사이트" CTA용 실제 URL (전부 정부/공공기관 운영,
@@ -112,6 +112,8 @@ CLAUDE_MODEL = "claude-sonnet-5"
 REQUIRED_GENERATOR_KEYS = (
     "title",
     "category",
+    "calculator_type",
+    "slug",
     "fact_summary",
     "html_content",
     "image_prompts",

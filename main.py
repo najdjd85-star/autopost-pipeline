@@ -25,7 +25,7 @@ import sys
 import threading
 import time
 import webbrowser
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List
 
 import schedule
@@ -201,7 +201,19 @@ def cmd_send_newsletter() -> None:
     logger.info("뉴스레터 발송 결과: %s", result)
 
 
+def _skip_flag_matches_today() -> bool:
+    """data/output/.skip_run_date에 오늘(UTC) 날짜가 적혀 있으면 오늘 스케줄 실행만 건너뛴다."""
+    try:
+        flagged = (OUTPUT_DIR / ".skip_run_date").read_text().strip()
+    except OSError:
+        return False
+    return flagged == datetime.now(timezone.utc).date().isoformat()
+
+
 def daily_pipeline_job() -> None:
+    if _skip_flag_matches_today():
+        logger.info("=== 오늘 날짜가 .skip_run_date와 같아 일일 포스팅을 건너뜁니다 ===")
+        return
     logger.info("=== 일일 포스팅 파이프라인 시작 (스케줄) ===")
     cmd_run_now("all")
 
