@@ -37,6 +37,7 @@ from content_updater import run_rank_check
 from generator import GeneratorNotConfiguredError, generate_post
 from image_hybrid_engine import process_image_slots
 from newsletter_system import build_and_send_weekly_newsletter, run_flask_server
+from calculator_library import inject_calculator
 from smart_affiliate_matcher import inject_affiliate_slots
 from utils.logger import get_logger
 from utils.telegram_notify import send_message_sync
@@ -148,6 +149,7 @@ def _preview_site(site: str) -> None:
     wp = WordPressClient(site)
     html = draft.get("html_content", "")
     html = process_image_slots(html, draft.get("image_prompts", {}), wp, post_id=0)
+    html = inject_calculator(html, draft.get("calculator_type"))
     html = inject_affiliate_slots(html, post_id=0, site=site, keyword=draft.get("keyword", ""))
 
     preview_dir = OUTPUT_DIR / "previews"

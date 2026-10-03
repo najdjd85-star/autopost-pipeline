@@ -28,6 +28,7 @@ from typing import Any, Dict, Optional, Tuple
 from config import BASE_DIR, OUTPUT_DIR, settings
 from constants import SITE_BADGES
 from image_hybrid_engine import process_image_slots
+from calculator_library import inject_calculator
 from smart_affiliate_matcher import inject_affiliate_slots
 from social_distributor import build_card_news_thumbnail, distribute_all
 from utils.logger import get_logger
@@ -345,6 +346,7 @@ async def _publish_stage(approval_id: str) -> None:
 
     post_id = draft_post.get("id", 0)
     html = process_image_slots(html, draft.get("image_prompts", {}), wp, post_id)
+    html = inject_calculator(html, draft.get("calculator_type"))
     html = inject_affiliate_slots(html, post_id, site, draft.get("keyword", ""))
 
     published = wp.update_post(post_id, content=html, status="publish")

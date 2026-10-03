@@ -12,6 +12,9 @@
 # ---- 이미지 슬롯 플레이스홀더 (generator.py가 html_content 안에 삽입) ----
 IMAGE_SLOT_1 = "<!-- IMAGE_SLOT_1 -->"
 
+# ---- 검증된 계산기 라이브러리 슬롯 (calculator_library.py가 치환) ----
+CALCULATOR_SLOT = "<!-- CALCULATOR_SLOT -->"
+
 # ---- 제휴(CPA/쿠팡) 슬롯 플레이스홀더 ----
 AFFILIATE_SLOT_TOP = "<!-- AFFILIATE_SLOT_TOP -->"
 AFFILIATE_SLOT_MID = "<!-- AFFILIATE_SLOT_MID -->"

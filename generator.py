@@ -15,12 +15,14 @@ import html
 import re
 from typing import Any, Dict, List, Optional
 
+from calculator_library import CALCULATOR_CHOICES
 from competitor_analyzer import get_top_blog_references
 from config import settings
 from constants import (
     AFFILIATE_SLOT_BOT,
     AFFILIATE_SLOT_MID,
     AFFILIATE_SLOT_TOP,
+    CALCULATOR_SLOT,
     CLAUDE_MODEL,
     IMAGE_SLOT_1,
     REQUIRED_GENERATOR_KEYS,
@@ -72,6 +74,12 @@ CONTENT_TOOL = {
                     "slot_1": {"type": "string"},
                 },
                 "required": ["slot_1"],
+            },
+            "calculator_type": {
+                "type": "string",
+                "description": (
+                    "아래 [검증된 계산기] 목록 중 글 주제에 정확히 맞는 키 하나. 맞는 게 없으면 'custom'."
+                ),
             },
             "slug": {
                 "type": "string",
@@ -133,6 +141,7 @@ def build_system_prompt(site: str) -> str:
     official_url = SITE_OFFICIAL_URLS.get(site, "")
     categories = SITE_CATEGORIES.get(site, ())
     category_list = ", ".join(f'"{c}"' for c in categories)
+    calculator_choices = "\n".join(f"   - {k}: {d}" for k, d in CALCULATOR_CHOICES.items())
     return f"""당신은 대한민국 최상위 1% 바이럴 블로그 카피라이터이자 UI/UX 퍼블리셔입니다.
 지금부터 "{site_label}" 주제로 워드프레스에 바로 게시할 완성된 HTML 콘텐츠를 작성합니다.
 
@@ -185,8 +194,15 @@ html_content 안에 아래 컴포넌트를 전부 포함해야 합니다:
    flexbox 또는 grid로 3등분한 카드 UI.
 2. 3단계 타임라인 프로세스 바: 신청 절차를 3단계로 시각화한 가로 타임라인.
 3. `<details>` 기반 아코디언 FAQ: 질문 4개 이상, `<summary>`와 본문(2~3문장 이상)으로 구성.
-4. `<div class="benefit-calc">` 모의 판별/계산기 위젯: 순수 Vanilla JavaScript(<script> 태그, 외부
-   라이브러리 금지)로 입력값에 따라 결과를 즉시 보여주는 위젯. 반드시 동작 가능한 JS 로직 포함.
+4. 계산기: 아래 [검증된 계산기] 중 오늘 글 주제에 정확히 맞는 것이 있으면 calculator_type에 그
+   키를 넣고, 본문에는 위젯 코드를 직접 쓰지 말고 "{CALCULATOR_SLOT}" 자리표시자만 넣으세요
+   (공식 수치가 검증된 계산기가 코드로 자동 삽입됩니다). 맞는 게 없을 때만 calculator_type을
+   "custom"으로 하고 `<div class="benefit-calc">` 모의 판별/계산기 위젯을 직접 작성하세요
+   (순수 Vanilla JavaScript, 외부 라이브러리 금지, 반드시 동작하는 JS). custom 위젯에는 정확히
+   아는 공식 수치만 쓰고, 기준값이 불확실하면 "자격 있음/없음" 판정 대신 입력값의 단순 계산이나
+   체크리스트로 만드세요 (틀린 기준으로 신청을 권하면 안 됩니다).
+   [검증된 계산기]
+{calculator_choices}
 5. 그라데이션 배경의 공식 신청 바로가기 CTA 버튼 (linear-gradient 인라인 스타일).
    href는 반드시 "{official_url}" 을 그대로 사용하세요 (실제 존재하는 공식 사이트 주소입니다).
    "#"이나 다른 임의의 주소를 절대 사용하지 마세요 - 클릭했을 때 아무 데도 안 가는
@@ -194,6 +210,7 @@ html_content 안에 아래 컴포넌트를 전부 포함해야 합니다:
 6. 아래 플레이스홀더를 본문 흐름에 맞는 위치에 정확히 그대로(문자 변경 없이) 삽입:
    - "{IMAGE_SLOT_1}" : 도입부 직후
    - "{AFFILIATE_SLOT_TOP}" : 메트릭스 카드 직후
+   - "{CALCULATOR_SLOT}" : 4번에서 검증된 계산기를 고른 경우에만, 계산기 위치(FAQ 앞 등 본문 중반)에
    - "{AFFILIATE_SLOT_MID}" : 계산기 위젯 직후
    - "{AFFILIATE_SLOT_BOT}" : 글 최하단
 
@@ -395,6 +412,9 @@ def generate_post(site: str, base_keyword: Optional[str] = None) -> Dict[str, An
             data.get("category"),
         )
         data["category"] = valid_categories[0]
+
+    if data.get("calculator_type") not in CALCULATOR_CHOICES:
+        data["calculator_type"] = "custom"
 
     slug = str(data.get("slug", "")).strip().lower()
     if not re.fullmatch(r"[a-z0-9]+(-[a-z0-9]+){1,6}", slug) or len(slug) > 60:
