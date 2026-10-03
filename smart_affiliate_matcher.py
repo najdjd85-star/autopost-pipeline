@@ -24,6 +24,7 @@ from config import BASE_DIR, get_site, settings
 from constants import (
     AFFILIATE_SLOT_BOT,
     AFFILIATE_SLOT_MID,
+    CALCULATOR_DISCLAIMER_TEXT,
     AFFILIATE_SLOT_TOP,
     COUPANG_FALLBACK_LINKS,
     COUPANG_DISCLOSURE_TEXT,
@@ -390,6 +391,25 @@ def build_affiliate_card(site: str, slot: str, post_id: int, keyword: str = "") 
     return "\n".join(cards)
 
 
+def add_calculator_disclaimer(html: str) -> str:
+    """benefit-calc 위젯 바로 아래에 면책 문구를 한 번만 넣는다 (계산기가 없으면 그대로)."""
+    if not html or "benefit-calc" not in html or "calc-disclaimer" in html:
+        return html
+
+    disclaimer = (
+        '<p class="calc-disclaimer" style="font-size:12px;color:#888;margin:8px 0 20px;'
+        f'line-height:1.6;">{CALCULATOR_DISCLAIMER_TEXT}</p>\n'
+    )
+    if AFFILIATE_SLOT_MID in html:
+        return html.replace(AFFILIATE_SLOT_MID, disclaimer + AFFILIATE_SLOT_MID, 1)
+
+    script_end = html.find("</script>", html.find("benefit-calc"))
+    if script_end == -1:
+        return html
+    insert_at = script_end + len("</script>")
+    return html[:insert_at] + "\n" + disclaimer + html[insert_at:]
+
+
 def inject_affiliate_slots(html: str, post_id: int, site: str, keyword: str = "") -> str:
     """html_content 안의 AFFILIATE_SLOT_* 플레이스홀더를 실제 카드로 치환한다.
 
@@ -401,7 +421,7 @@ def inject_affiliate_slots(html: str, post_id: int, site: str, keyword: str = ""
     if not html:
         return html
 
-    result = html
+    result = add_calculator_disclaimer(html)
     any_affiliate_content = False
     any_coupang_content = False
     for token, slot_name in _SLOT_TOKEN_TO_NAME.items():

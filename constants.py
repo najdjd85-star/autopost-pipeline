@@ -92,6 +92,12 @@ COUPANG_DISCLOSURE_TEXT = (
     "이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다."
 )
 
+# ---- 모의 계산기 면책 문구 (generator가 만든 benefit-calc 위젯 바로 아래에 코드로 삽입) ----
+CALCULATOR_DISCLAIMER_TEXT = (
+    "※ 위 계산기는 이해를 돕기 위한 참고용 모의 계산이며, 실제 자격 판정·금액과 다를 수 있습니다. "
+    "정확한 결과는 반드시 해당 공식 기관 사이트에서 확인하세요."
+)
+
 # ---- Claude 모델 ----
 # claude-3-5-sonnet-20241022는 더 이상 제공되지 않아(404 not_found_error) 최신 균형형 모델로 교체.
 CLAUDE_MODEL = "claude-sonnet-5"
