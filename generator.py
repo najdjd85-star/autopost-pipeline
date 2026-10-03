@@ -17,6 +17,7 @@ from typing import Any, Dict, List, Optional
 
 from calculator_library import CALCULATOR_CHOICES
 from competitor_analyzer import get_top_blog_references
+from fact_sheets import get_fact_sheet
 from config import settings
 from constants import (
     AFFILIATE_SLOT_BOT,
@@ -291,6 +292,10 @@ def build_user_prompt(
 """
     else:
         dedup_section = ""
+
+    fact_sheet = get_fact_sheet(keyword)
+    if fact_sheet:
+        dedup_section += fact_sheet + "\n"
 
     return f"""{dedup_section}[오늘의 트렌드 브리핑]
 {trend_briefing}
