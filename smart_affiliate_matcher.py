@@ -400,14 +400,13 @@ def add_calculator_disclaimer(html: str) -> str:
         '<p class="calc-disclaimer" style="font-size:12px;color:#888;margin:8px 0 20px;'
         f'line-height:1.6;">{CALCULATOR_DISCLAIMER_TEXT}</p>\n'
     )
+    script_end = html.find("</script>", html.find("benefit-calc"))
+    if script_end != -1:
+        insert_at = script_end + len("</script>")
+        return html[:insert_at] + "\n" + disclaimer + html[insert_at:]
     if AFFILIATE_SLOT_MID in html:
         return html.replace(AFFILIATE_SLOT_MID, disclaimer + AFFILIATE_SLOT_MID, 1)
-
-    script_end = html.find("</script>", html.find("benefit-calc"))
-    if script_end == -1:
-        return html
-    insert_at = script_end + len("</script>")
-    return html[:insert_at] + "\n" + disclaimer + html[insert_at:]
+    return html
 
 
 def inject_affiliate_slots(html: str, post_id: int, site: str, keyword: str = "") -> str:

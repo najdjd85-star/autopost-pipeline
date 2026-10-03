@@ -18,6 +18,7 @@ from typing import Any, Dict, List, Optional
 from calculator_library import CALCULATOR_CHOICES
 from competitor_analyzer import get_top_blog_references
 from fact_sheets import get_fact_sheet
+from layout_variants import VARIANTS, format_variant_prompt, pick_variant, record_variant
 from config import settings
 from constants import (
     AFFILIATE_SLOT_BOT,
@@ -79,7 +80,8 @@ CONTENT_TOOL = {
             "calculator_type": {
                 "type": "string",
                 "description": (
-                    "아래 [검증된 계산기] 목록 중 글 주제에 정확히 맞는 키 하나. 맞는 게 없으면 'custom'."
+                    "아래 [검증된 계산기] 목록 중 글 주제에 정확히 맞는 키 하나. 구조 지시상 계산기를 "
+                    "빼거나 맞는 게 없으면 'none', 필수인데 맞는 게 없으면 'custom'."
                 ),
             },
             "slug": {
@@ -156,8 +158,9 @@ category 필드에는 위 목록 중 오늘 글의 주제와 가장 가까운 �
    단, 이건 본문 첫 문단 예시일 뿐 title에 그대로 쓰라는 뜻이 아닙니다(아래 6번 참고).
 2. 소제목(h2/h3): 실제 네이버 지식인에 올라올 법한 구어체 의문문 형태로 호기심을 유발하세요.
    예) "저도 이거 받을 수 있나요?", "이미 신청했는데 왜 탈락했을까요?"
-3. 페르소나 사례: 조건이 비슷하지만 결과가 상반된 가상 인물 2명(예: "김OO씨(합격)" vs "이OO씨(불합격)")의
-   판정 비교를 본문 중간에 박스 형태로 삽입하세요.
+3. 페르소나 사례: [이번 글의 구조]가 요구할 때, 조건이 비슷하지만 결과가 상반된 가상 인물(예:
+   "김OO씨(합격)" vs "이OO씨(불합격)")의 판정 비교를 박스나 섹션으로 넣으세요. 인원수와 형식은
+   구조 지시를 따릅니다.
 4. 상식 깨기(Myth Buster): 대중이 흔히 오해하는 사실 1가지를 제시하고 바로 팩트로 정정하는
    단락을 반드시 넣으세요.
 5. 분량과 깊이: 짧고 얕은 글은 절대 안 됩니다. html_content의 실제 텍스트 분량이 최소
@@ -165,11 +168,9 @@ category 필드에는 위 목록 중 오늘 글의 주제와 가장 가까운 �
    - 각 소제목(h2) 밑에는 최소 3~4문단 분량의 설명을 넣으세요 (한두 문장으로 끝내지 마세요).
    - 조건/기준을 나열할 때는 각 항목마다 "왜 이 기준이 있는지, 실제로 어떤 case에서
      문제가 되는지" 구체적 사례나 숫자를 곁들여 설명하세요.
-   - 페르소나 비교 사례는 2명이 아니라 3명(합격 1명, 불합격 2명 - 각기 다른 탈락 사유)으로
-     늘려서 다양한 경우의 수를 보여주세요.
-   - FAQ는 2개가 아니라 4개 이상, 각 답변도 2~3문장 이상으로 충분히 설명하세요.
-   - 글 말미에 "다음 단계로 무엇을 확인해야 하는지"를 정리하는 체크리스트형 요약 섹션을
-     추가하세요.
+   - 페르소나 사례·FAQ·체크리스트의 개수와 형식은 [이번 글의 구조] 지시를 따르되, FAQ 답변은
+     2~3문장 이상으로 충분히 설명하세요.
+   - 구조 지시에 체크리스트가 있으면 "다음 단계로 무엇을 확인해야 하는지"를 정리하세요.
    - 정확성: 지원금액·소득 기준·세율·기한 같은 수치는 확실히 아는 공식 수치만 쓰세요. 확실하지
      않으면 구체 숫자를 지어내지 말고 "정확한 기준은 공식 사이트에서 확인" 식으로 안내하세요.
      레퍼런스 블로그의 수치가 서로 다르면 단정하지 마세요.
@@ -189,7 +190,8 @@ category 필드에는 위 목록 중 오늘 글의 주제와 가장 가까운 �
    - 반전형: "다들 OO라고 아는데, 사실은 아닙니다"
 
 [절대 규칙 2 - 반응형 비주얼 UI 컴포넌트 (인라인 CSS로 직접 작성, 외부 CSS 파일 참조 금지)]
-html_content 안에 아래 컴포넌트를 전부 포함해야 합니다:
+아래는 컴포넌트 작성 규격입니다. 어떤 컴포넌트를 쓸지, 어떤 순서로 쓸지는 사용자 메시지의
+[이번 글의 구조]가 정하며(매 글 다른 구조), 0·5·6번은 모든 글에 공통입니다.
 0. 모든 `<h2>` 소제목은 일반 본문과 확실히 구분되도록 인라인 스타일을 넣으세요
    (예: 좌측 컬러 border-left 4px + 배경색 옅게 + padding, 또는 이모지 prefix + 밑줄 accent).
    본문 대비 시각적으로 눈에 띄어야 하며, 글 안의 모든 h2에 동일한 스타일을 일관되게
@@ -200,8 +202,9 @@ html_content 안에 아래 컴포넌트를 전부 포함해야 합니다:
 3. `<details>` 기반 아코디언 FAQ: 질문 4개 이상, `<summary>`와 본문(2~3문장 이상)으로 구성.
 4. 계산기: 아래 [검증된 계산기] 중 오늘 글 주제에 정확히 맞는 것이 있으면 calculator_type에 그
    키를 넣고, 본문에는 위젯 코드를 직접 쓰지 말고 "{CALCULATOR_SLOT}" 자리표시자만 넣으세요
-   (공식 수치가 검증된 계산기가 코드로 자동 삽입됩니다). 맞는 게 없을 때만 calculator_type을
-   "custom"으로 하고 `<div class="benefit-calc">` 모의 판별/계산기 위젯을 직접 작성하세요
+   (공식 수치가 검증된 계산기가 코드로 자동 삽입됩니다). [이번 글의 구조]가 계산기를 넣지
+   말라고 하거나 맞는 검증 계산기가 없으면 calculator_type을 "none"으로 하세요. 구조가 계산기를
+   필수로 요구하는데 맞는 게 없을 때만 calculator_type을 "custom"으로 하고 `<div class="benefit-calc">` 모의 판별/계산기 위젯을 직접 작성하세요
    (순수 Vanilla JavaScript, 외부 라이브러리 금지, 반드시 동작하는 JS). custom 위젯에는 정확히
    아는 공식 수치만 쓰고, 기준값이 불확실하면 "자격 있음/없음" 판정 대신 입력값의 단순 계산이나
    체크리스트로 만드세요 (틀린 기준으로 신청을 권하면 안 됩니다).
@@ -211,12 +214,13 @@ html_content 안에 아래 컴포넌트를 전부 포함해야 합니다:
    href는 반드시 "{official_url}" 을 그대로 사용하세요 (실제 존재하는 공식 사이트 주소입니다).
    "#"이나 다른 임의의 주소를 절대 사용하지 마세요 - 클릭했을 때 아무 데도 안 가는
    가짜 버튼이 되어서는 안 됩니다.
-6. 아래 플레이스홀더를 본문 흐름에 맞는 위치에 정확히 그대로(문자 변경 없이) 삽입:
-   - "{IMAGE_SLOT_1}" : 도입부 직후
-   - "{AFFILIATE_SLOT_TOP}" : 메트릭스 카드 직후
-   - "{CALCULATOR_SLOT}" : 4번에서 검증된 계산기를 고른 경우에만, 계산기 위치(FAQ 앞 등 본문 중반)에
-   - "{AFFILIATE_SLOT_MID}" : 계산기 위젯 직후
-   - "{AFFILIATE_SLOT_BOT}" : 글 최하단
+6. 아래 플레이스홀더를 정확히 그대로(문자 변경 없이) 삽입하되, 위치는 [이번 글의 구조]가
+   지정한 대로 따르세요:
+   - "{IMAGE_SLOT_1}"
+   - "{AFFILIATE_SLOT_TOP}"
+   - "{CALCULATOR_SLOT}" : 4번에서 검증된 계산기를 고른 경우에만
+   - "{AFFILIATE_SLOT_MID}"
+   - "{AFFILIATE_SLOT_BOT}"
 
 [절대 규칙 3 - 레퍼런스 처리 원칙]
 아래 사용자 메시지에 상위 노출 경쟁 블로그의 제목/핵심 텍스트가 주어집니다.
@@ -266,6 +270,7 @@ def build_user_prompt(
     trend_briefing: str,
     video_trend_briefing: str = "",
     recent_titles: Optional[List[str]] = None,
+    layout_block: str = "",
 ) -> str:
     if references:
         ref_lines = []
@@ -299,6 +304,7 @@ def build_user_prompt(
     fact_sheet = get_fact_sheet(keyword)
     if fact_sheet:
         dedup_section += fact_sheet + "\n"
+    dedup_section += layout_block
 
     return f"""{dedup_section}[오늘의 트렌드 브리핑]
 {trend_briefing}
@@ -361,7 +367,9 @@ def _call_claude(system_prompt: str, user_prompt: str) -> Dict[str, Any]:
     raise GeneratorResponseError("Claude 응답에 submit_blog_content 도구 호출이 없습니다.")
 
 
-def generate_post(site: str, base_keyword: Optional[str] = None) -> Dict[str, Any]:
+def generate_post(
+    site: str, base_keyword: Optional[str] = None, layout: Optional[str] = None
+) -> Dict[str, Any]:
     """사이트별 콘텐츠를 생성한다.
 
     site: "A"/"B"/"C" (또는 "site_a" 등)
@@ -390,6 +398,9 @@ def generate_post(site: str, base_keyword: Optional[str] = None) -> Dict[str, An
         logger.info("유튜브 트렌드 조회 실패, 참고 없이 진행: %s", exc)
         video_trend_briefing = ""
 
+    variant = pick_variant(site, layout)
+    logger.info("[Site %s] 이번 글 구조: %s (%s)", site, variant, VARIANTS[variant]["name"])
+
     system_prompt = build_system_prompt(site)
     user_prompt = build_user_prompt(
         site,
@@ -399,6 +410,7 @@ def generate_post(site: str, base_keyword: Optional[str] = None) -> Dict[str, An
         hot["briefing_text"],
         video_trend_briefing,
         recent_titles,
+        format_variant_prompt(variant),
     )
 
     try:
@@ -421,8 +433,10 @@ def generate_post(site: str, base_keyword: Optional[str] = None) -> Dict[str, An
         )
         data["category"] = valid_categories[0]
 
-    if data.get("calculator_type") not in CALCULATOR_CHOICES:
+    if data.get("calculator_type") not in CALCULATOR_CHOICES and data.get("calculator_type") != "none":
         data["calculator_type"] = "custom"
+    data["layout_variant"] = variant
+    record_variant(site, variant)
 
     slug = str(data.get("slug", "")).strip().lower()
     if not re.fullmatch(r"[a-z0-9]+(-[a-z0-9]+){1,6}", slug) or len(slug) > 60:
