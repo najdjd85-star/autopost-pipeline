@@ -19,6 +19,7 @@ from calculator_library import CALCULATOR_CHOICES
 from competitor_analyzer import get_top_blog_references
 from fact_sheets import get_fact_sheet
 from layout_variants import VARIANTS, format_variant_prompt, pick_variant, record_variant
+from situational_personas import format_persona_prompt, pick_persona, record_persona
 from config import settings
 from constants import (
     AFFILIATE_SLOT_BOT,
@@ -271,6 +272,7 @@ def build_user_prompt(
     video_trend_briefing: str = "",
     recent_titles: Optional[List[str]] = None,
     layout_block: str = "",
+    persona_block: str = "",
 ) -> str:
     if references:
         ref_lines = []
@@ -305,6 +307,7 @@ def build_user_prompt(
     if fact_sheet:
         dedup_section += fact_sheet + "\n"
     dedup_section += layout_block
+    dedup_section += persona_block
 
     return f"""{dedup_section}[오늘의 트렌드 브리핑]
 {trend_briefing}
@@ -368,7 +371,10 @@ def _call_claude(system_prompt: str, user_prompt: str) -> Dict[str, Any]:
 
 
 def generate_post(
-    site: str, base_keyword: Optional[str] = None, layout: Optional[str] = None
+    site: str,
+    base_keyword: Optional[str] = None,
+    layout: Optional[str] = None,
+    persona: Optional[str] = None,
 ) -> Dict[str, Any]:
     """사이트별 콘텐츠를 생성한다.
 
@@ -400,6 +406,9 @@ def generate_post(
 
     variant = pick_variant(site, layout)
     logger.info("[Site %s] 이번 글 구조: %s (%s)", site, variant, VARIANTS[variant]["name"])
+    target_persona = pick_persona(site, persona)
+    if target_persona:
+        logger.info("[Site %s] 이번 글 타깃 상황: %s", site, target_persona)
 
     system_prompt = build_system_prompt(site)
     user_prompt = build_user_prompt(
@@ -411,6 +420,7 @@ def generate_post(
         video_trend_briefing,
         recent_titles,
         format_variant_prompt(variant),
+        format_persona_prompt(target_persona),
     )
 
     try:
@@ -437,6 +447,9 @@ def generate_post(
         data["calculator_type"] = "custom"
     data["layout_variant"] = variant
     record_variant(site, variant)
+    if target_persona:
+        data["target_persona"] = target_persona
+        record_persona(site, target_persona)
 
     slug = str(data.get("slug", "")).strip().lower()
     if not re.fullmatch(r"[a-z0-9]+(-[a-z0-9]+){1,6}", slug) or len(slug) > 60:
