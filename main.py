@@ -26,7 +26,7 @@ import threading
 import time
 import webbrowser
 from datetime import datetime, timezone
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import schedule
 
@@ -35,6 +35,7 @@ from config import OUTPUT_DIR, settings, validate_config
 from constants import SITE_BADGES, SITE_CLI_ALIASES, SITE_KEYS
 from content_updater import run_rank_check
 from generator import GeneratorNotConfiguredError, generate_post
+from layout_variants import VARIANTS
 from image_hybrid_engine import process_image_slots
 from newsletter_system import build_and_send_weekly_newsletter, run_flask_server
 from calculator_library import inject_calculator
@@ -57,10 +58,10 @@ def _resolve_sites(site_arg: str) -> List[str]:
     raise ValueError(f"알 수 없는 site 인자: {site_arg!r} (site_a/site_b/site_c/all 중 하나)")
 
 
-def _run_site_pipeline(site: str) -> None:
+def _run_site_pipeline(site: str, keyword: Optional[str] = None, layout: Optional[str] = None) -> None:
     logger.info("[Site %s] 콘텐츠 생성 파이프라인 시작", site)
     try:
-        draft = generate_post(site)
+        draft = generate_post(site, base_keyword=keyword, layout=layout)
     except GeneratorNotConfiguredError as exc:
         logger.warning("[Site %s] 콘텐츠 생성 불가: %s", site, exc)
         send_message_sync(f"⚠️ [Site {site}] ANTHROPIC_API_KEY 미설정으로 콘텐츠 생성을 건너뜁니다.")
@@ -84,9 +85,9 @@ def _run_site_pipeline(site: str) -> None:
         )
 
 
-def cmd_run_now(site_arg: str) -> None:
+def cmd_run_now(site_arg: str, keyword: Optional[str] = None, layout: Optional[str] = None) -> None:
     for site in _resolve_sites(site_arg):
-        _run_site_pipeline(site)
+        _run_site_pipeline(site, keyword, layout)
 
 
 def _build_preview_document(site: str, draft: Dict[str, Any], rendered_html: str) -> str:
@@ -131,11 +132,11 @@ def _build_preview_document(site: str, draft: Dict[str, Any], rendered_html: str
 </body></html>"""
 
 
-def _preview_site(site: str) -> None:
+def _preview_site(site: str, keyword: Optional[str] = None, layout: Optional[str] = None) -> None:
     """콘텐츠를 생성하되 워드프레스/SNS 어디에도 등록하지 않고 로컬 파일로만 저장한다."""
     logger.info("[Site %s] 미리보기 전용 콘텐츠 생성 시작 (발행하지 않음)", site)
     try:
-        draft = generate_post(site)
+        draft = generate_post(site, base_keyword=keyword, layout=layout)
     except GeneratorNotConfiguredError as exc:
         logger.warning("[Site %s] 미리보기 생성 불가: %s", site, exc)
         return
@@ -168,9 +169,9 @@ def _preview_site(site: str) -> None:
         logger.info("브라우저 자동 열기 실패 - 파일을 직접 열어주세요: %s (%s)", html_path, exc)
 
 
-def cmd_preview(site_arg: str) -> None:
+def cmd_preview(site_arg: str, keyword: Optional[str] = None, layout: Optional[str] = None) -> None:
     for site in _resolve_sites(site_arg):
-        _preview_site(site)
+        _preview_site(site, keyword, layout)
 
 
 def cmd_test_approval(site_arg: str) -> None:
@@ -285,11 +286,15 @@ def build_arg_parser() -> argparse.ArgumentParser:
 
     run_now = subparsers.add_parser("run-now", help="즉시 콘텐츠 생성 파이프라인 실행")
     run_now.add_argument("site", choices=["site_a", "site_b", "site_c", "all"])
+    run_now.add_argument("--keyword", help="오늘의 메인 키워드를 직접 지정 (사이트 하나만 지정할 때)")
+    run_now.add_argument("--layout", choices=sorted(VARIANTS), help="글 구조를 직접 지정")
 
     preview = subparsers.add_parser(
         "preview", help="어디에도 등록/발행하지 않고 로컬 미리보기 파일만 생성"
     )
     preview.add_argument("site", choices=["site_a", "site_b", "site_c", "all"])
+    preview.add_argument("--keyword", help="메인 키워드를 직접 지정 (사이트 하나만 지정할 때)")
+    preview.add_argument("--layout", choices=sorted(VARIANTS), help="글 구조를 직접 지정")
 
     test_approval = subparsers.add_parser(
         "test-approval", help="Claude 호출 없이 더미 내용으로 텔레그램 승인 카드만 테스트 발송"
@@ -321,10 +326,13 @@ def main() -> None:
     parser = build_arg_parser()
     args = parser.parse_args()
 
+    if args.command in ("run-now", "preview") and args.keyword and args.site == "all":
+        parser.error("--keyword는 site_a/site_b/site_c 중 하나와 함께 써야 합니다.")
+
     if args.command == "run-now":
-        cmd_run_now(args.site)
+        cmd_run_now(args.site, args.keyword, args.layout)
     elif args.command == "preview":
-        cmd_preview(args.site)
+        cmd_preview(args.site, args.keyword, args.layout)
     elif args.command == "test-approval":
         cmd_test_approval(args.site)
     elif args.command == "refresh-check":

@@ -275,6 +275,11 @@ def build_figure_html(media_url: str, alt: str, caption: str) -> str:
 </figure>"""
 
 
+def caption_for(source: str) -> str:
+    """이미지 캡션 문구 - 내부 소스 식별자(google-ai-studio 등)를 그대로 노출하지 않는다."""
+    return "사진: Pexels" if source == "pexels" else "AI 생성 이미지"
+
+
 def _placeholder_figure(alt: str) -> str:
     """이미지 확보에 완전히 실패했을 때 파이프라인을 막지 않기 위한 대체 블록."""
     return f"""<div style="margin:24px 0;padding:40px;text-align:center;background:#f2f2f2;
@@ -387,7 +392,7 @@ def process_image_slots(
         site_key = wp.site_key
         cached_url = find_cached_image(site_key, prompt_en)
         if cached_url:
-            figure = build_figure_html(cached_url, alt=prompt_en, caption="출처: google-ai-studio")
+            figure = build_figure_html(cached_url, alt=prompt_en, caption=caption_for("google-ai-studio"))
             result = result.replace(token, figure)
             continue
 
@@ -401,7 +406,7 @@ def process_image_slots(
 
         if media and media.get("source_url"):
             figure = build_figure_html(
-                media["source_url"], alt=prompt_en, caption=f"출처: {source}"
+                media["source_url"], alt=prompt_en, caption=caption_for(source)
             )
             if source in ("google-ai-studio", "flux"):
                 add_to_image_cache(site_key, prompt_en, media["source_url"])

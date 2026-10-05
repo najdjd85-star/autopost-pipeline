@@ -334,7 +334,11 @@ async def _publish_stage(approval_id: str) -> None:
     wp = WordPressClient(site)
     html = draft.get("html_content", "")
     draft_post = wp.create_draft_post(
-        draft.get("title", ""), html, category=draft.get("category"), slug=draft.get("slug")
+        draft.get("title", ""),
+        html,
+        category=draft.get("category"),
+        slug=draft.get("slug"),
+        excerpt=draft.get("fact_summary"),
     )
     if draft_post is None:
         await bot.send_message(
