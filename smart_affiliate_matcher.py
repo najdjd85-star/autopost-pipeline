@@ -433,6 +433,12 @@ def add_source_footer(html: str, site: str, info_date: Optional[str] = None) -> 
     return html + "\n" + build_source_footer(site, info_date)
 
 
+# 애드센스 심사 기간 동안은 글당 제휴 카드를 3개(top/mid/bot)가 아니라 1개로 제한한다.
+# 광고 밀도가 낮아 보이도록 가장 덜 공격적인 위치(글 최하단)만 실제 카드로 채우고
+# 나머지 슬롯은 빈 문자열로 치환한다. 승인 후 늘리려면 이 집합에 슬롯 이름을 추가하면 된다.
+_ACTIVE_AFFILIATE_SLOTS = {"bot"}
+
+
 def inject_affiliate_slots(html: str, post_id: int, site: str, keyword: str = "") -> str:
     """html_content 안의 AFFILIATE_SLOT_* 플레이스홀더를 실제 카드로 치환한다.
 
@@ -449,6 +455,9 @@ def inject_affiliate_slots(html: str, post_id: int, site: str, keyword: str = ""
     any_coupang_content = False
     for token, slot_name in _SLOT_TOKEN_TO_NAME.items():
         if token in result:
+            if slot_name not in _ACTIVE_AFFILIATE_SLOTS:
+                result = result.replace(token, "")
+                continue
             card_html = build_affiliate_card(site, slot_name, post_id, keyword)
             result = result.replace(token, card_html)
             if card_html.strip():
