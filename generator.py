@@ -12,12 +12,14 @@ trend_scraper -> keyword_expander -> competitor_analyzer 순으로 수집한 데
 from __future__ import annotations
 
 import html
+import os
 import re
 from typing import Any, Dict, List, Optional
 
 from calculator_library import CALCULATOR_CHOICES
 from competitor_analyzer import get_top_blog_references
 from fact_sheets import get_fact_sheet
+from llm_usage import call_message
 from layout_variants import VARIANTS, format_variant_prompt, pick_variant, record_variant
 from situational_personas import format_persona_prompt, pick_persona, record_persona
 from config import settings
@@ -137,7 +139,8 @@ def _get_client():
         return None
     import anthropic
 
-    return anthropic.Anthropic(api_key=settings.anthropic_api_key)
+    # 타임아웃/5xx 재시도가 과금되는 호출을 불필요하게 반복하지 않도록 재시도는 1회로 제한한다.
+    return anthropic.Anthropic(api_key=settings.anthropic_api_key, max_retries=1)
 
 
 def build_system_prompt(site: str) -> str:
@@ -209,6 +212,8 @@ category 필드에는 위 목록 중 오늘 글의 주제와 가장 가까운 �
    (순수 Vanilla JavaScript, 외부 라이브러리 금지, 반드시 동작하는 JS). custom 위젯에는 정확히
    아는 공식 수치만 쓰고, 기준값이 불확실하면 "자격 있음/없음" 판정 대신 입력값의 단순 계산이나
    체크리스트로 만드세요 (틀린 기준으로 신청을 권하면 안 됩니다).
+   본문에서 계산기를 언급·설명할 때는 아래 괄호에 적힌 입력/출력 기능만 말하세요(없는 입력칸이나
+   기능을 지어내지 말 것).
    [검증된 계산기]
 {calculator_choices}
 5. 그라데이션 배경의 공식 신청 바로가기 CTA 버튼 (linear-gradient 인라인 스타일).
@@ -303,6 +308,10 @@ def build_user_prompt(
     else:
         dedup_section = ""
 
+    # 보조 컨텍스트는 길이 상한을 둔다 - 스크래핑 결과가 비정상적으로 커져도 입력 토큰이 폭주하지 않게.
+    trend_briefing = (trend_briefing or "")[:3000]
+    video_trend_briefing = (video_trend_briefing or "")[:2000]
+
     fact_sheet = get_fact_sheet(keyword)
     if fact_sheet:
         dedup_section += fact_sheet + "\n"
@@ -332,12 +341,31 @@ def _validate(data: Dict[str, Any]) -> Dict[str, Any]:
     return data
 
 
-def _call_claude(system_prompt: str, user_prompt: str) -> Dict[str, Any]:
+def _model_for_site(site: Optional[str]) -> str:
+    """사이트별 모델 오버라이드(CLAUDE_MODEL_SITE_A/B/C) - 없으면 기본 모델."""
+    if site:
+        override = os.environ.get(f"CLAUDE_MODEL_SITE_{site}", "").strip()
+        if override:
+            return override
+    return MODEL
+
+
+def _call_claude(
+    system_prompt: str,
+    user_prompt: str,
+    site: Optional[str] = None,
+    purpose: str = "generate",
+    use_batch: bool = False,
+) -> Dict[str, Any]:
     """Claude를 tool use 모드로 호출해 구조화된 콘텐츠 dict를 받는다.
 
     tool_choice로 submit_blog_content 호출을 강제하므로, 응답의 tool_use 블록
     input이 곧 우리가 원하는 dict다 - 텍스트를 직접 JSON으로 파싱할 필요가 없어
     html_content 안의 따옴표/줄바꿈 이스케이프 문제가 원천적으로 발생하지 않는다.
+
+    모든 호출은 llm_usage.call_message를 거쳐 일일 예산/호출 수 가드와 사용량 로그가 적용된다.
+    사고(thinking)는 끈다 - 이 작업은 도구 입력을 채우는 구조화 생성이라 숨은 사고 토큰이
+    출력 단가로 추가 과금되는 것이 순손실이다.
     """
     client = _get_client()
     if client is None:
@@ -345,23 +373,23 @@ def _call_claude(system_prompt: str, user_prompt: str) -> Dict[str, Any]:
             "ANTHROPIC_API_KEY가 설정되지 않았습니다. .env에 키를 추가하세요."
         )
 
-    response = client.messages.create(
-        model=MODEL,
+    model = _model_for_site(site)
+    response = call_message(
+        client,
+        purpose=purpose,
+        site=site,
+        use_batch=use_batch,
+        model=model,
         max_tokens=16000,
         system=system_prompt,
         tools=[CONTENT_TOOL],
         tool_choice={"type": "tool", "name": TOOL_NAME},
+        thinking={"type": "disabled"},
         messages=[{"role": "user", "content": user_prompt}],
     )
 
-    usage = getattr(response, "usage", None)
-    if usage is not None:
-        logger.info(
-            "Claude 호출 완료 - 입력 %s 토큰 / 출력 %s 토큰 (model=%s)",
-            usage.input_tokens,
-            usage.output_tokens,
-            MODEL,
-        )
+    if getattr(response, "stop_reason", None) == "max_tokens":
+        raise GeneratorResponseError("출력이 max_tokens에서 잘렸습니다(응답 불완전).")
 
     for block in response.content:
         if getattr(block, "type", None) == "tool_use" and block.name == TOOL_NAME:
@@ -375,6 +403,7 @@ def generate_post(
     base_keyword: Optional[str] = None,
     layout: Optional[str] = None,
     persona: Optional[str] = None,
+    use_batch: bool = False,
 ) -> Dict[str, Any]:
     """사이트별 콘텐츠를 생성한다.
 
@@ -424,7 +453,7 @@ def generate_post(
     )
 
     try:
-        data = _validate(_call_claude(system_prompt, user_prompt))
+        data = _validate(_call_claude(system_prompt, user_prompt, site=site, purpose="generate", use_batch=use_batch))
     except GeneratorResponseError as exc:
         logger.warning("1차 응답 검증 실패(%s) - 1회 재시도합니다.", exc)
         retry_prompt = (
@@ -432,7 +461,9 @@ def generate_post(
             + "\n\n[중요] 방금 응답에 필수 필드가 빠졌습니다. submit_blog_content 도구를"
             " 다시 호출하되, 모든 필드를 빠짐없이 채워주세요."
         )
-        data = _validate(_call_claude(system_prompt, retry_prompt))
+        data = _validate(
+            _call_claude(system_prompt, retry_prompt, site=site, purpose="generate_retry", use_batch=use_batch)
+        )
 
     valid_categories = SITE_CATEGORIES.get(site, ())
     if valid_categories and data.get("category") not in valid_categories:

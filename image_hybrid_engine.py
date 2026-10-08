@@ -23,6 +23,7 @@ from typing import Dict, List, Optional, Tuple
 from urllib.parse import quote
 
 from config import DATA_DIR, settings
+from llm_usage import image_generation_allowed, record_image
 from constants import IMAGE_SLOT_1, POLLINATIONS_IMAGE_SIZE
 from utils.http import safe_get, safe_post
 from utils.logger import get_logger
@@ -238,13 +239,17 @@ def resolve_image_for_slot(prompt_en: str) -> Tuple[Optional[bytes], str]:
     바로 다음 순위로 넘어가므로, 크레딧이 떨어져 매 호출이 실패하기 시작하는
     순간부터 자연스럽게 Flux가 주력이 된다.
     """
-    image_bytes = generate_google_ai_image(prompt_en)
-    if image_bytes:
-        return image_bytes, "google-ai-studio"
+    # 유료 생성(Gemini/Flux)은 일일 한도를 넘으면 건너뛰고 무료 폴백(Pexels/Pollinations)만 쓴다.
+    if image_generation_allowed():
+        image_bytes = generate_google_ai_image(prompt_en)
+        if image_bytes:
+            record_image("google-ai-studio")
+            return image_bytes, "google-ai-studio"
 
-    image_bytes = generate_flux_image(prompt_en)
-    if image_bytes:
-        return image_bytes, "flux"
+        image_bytes = generate_flux_image(prompt_en)
+        if image_bytes:
+            record_image("flux")
+            return image_bytes, "flux"
 
     if _looks_like_non_photo_style(prompt_en):
         image_bytes = generate_pollinations_image(prompt_en)

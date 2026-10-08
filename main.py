@@ -36,6 +36,7 @@ from constants import SITE_BADGES, SITE_CLI_ALIASES, SITE_KEYS
 from content_updater import run_rank_check
 from generator import GeneratorNotConfiguredError, generate_post
 from layout_variants import VARIANTS
+from llm_usage import format_summary
 from image_hybrid_engine import process_image_slots
 from newsletter_system import build_and_send_weekly_newsletter, run_flask_server
 from calculator_library import inject_calculator
@@ -59,11 +60,17 @@ def _resolve_sites(site_arg: str) -> List[str]:
 
 
 def _run_site_pipeline(
-    site: str, keyword: Optional[str] = None, layout: Optional[str] = None, persona: Optional[str] = None
+    site: str,
+    keyword: Optional[str] = None,
+    layout: Optional[str] = None,
+    persona: Optional[str] = None,
+    use_batch: bool = False,
 ) -> None:
     logger.info("[Site %s] 콘텐츠 생성 파이프라인 시작", site)
     try:
-        draft = generate_post(site, base_keyword=keyword, layout=layout, persona=persona)
+        draft = generate_post(
+            site, base_keyword=keyword, layout=layout, persona=persona, use_batch=use_batch
+        )
     except GeneratorNotConfiguredError as exc:
         logger.warning("[Site %s] 콘텐츠 생성 불가: %s", site, exc)
         send_message_sync(f"⚠️ [Site {site}] ANTHROPIC_API_KEY 미설정으로 콘텐츠 생성을 건너뜁니다.")
@@ -88,10 +95,14 @@ def _run_site_pipeline(
 
 
 def cmd_run_now(
-    site_arg: str, keyword: Optional[str] = None, layout: Optional[str] = None, persona: Optional[str] = None
+    site_arg: str,
+    keyword: Optional[str] = None,
+    layout: Optional[str] = None,
+    persona: Optional[str] = None,
+    use_batch: bool = False,
 ) -> None:
     for site in _resolve_sites(site_arg):
-        _run_site_pipeline(site, keyword, layout, persona)
+        _run_site_pipeline(site, keyword, layout, persona, use_batch)
 
 
 def _build_preview_document(site: str, draft: Dict[str, Any], rendered_html: str) -> str:
@@ -219,12 +230,29 @@ def _skip_flag_matches_today() -> bool:
     return flagged == datetime.now(timezone.utc).date().isoformat()
 
 
+def _run_sites_parallel(sites: List[str]) -> None:
+    from concurrent.futures import ThreadPoolExecutor
+
+    with ThreadPoolExecutor(max_workers=len(sites)) as pool:
+        futures = {site: pool.submit(_run_site_pipeline, site, None, None, None, True) for site in sites}
+        for site, future in futures.items():
+            try:
+                future.result()
+            except Exception as exc:  # noqa: BLE001
+                logger.exception("[Site %s] 병렬 생성 중 예기치 못한 오류: %s", site, exc)
+
+
 def daily_pipeline_job() -> None:
     if _skip_flag_matches_today():
         logger.info("=== 오늘 날짜가 .skip_run_date와 같아 일일 포스팅을 건너뜁니다 ===")
         return
     logger.info("=== 일일 포스팅 파이프라인 시작 (스케줄) ===")
-    cmd_run_now("all")
+    # 스케줄 실행은 급하지 않으니 배치(50% 할인)로 생성한다. 실패/시간초과 시 자동으로 일반 호출.
+    # 배치는 건당 몇 분~수십 분 걸릴 수 있어서 3개 사이트를 동시에 제출해 대기 시간이 합이 아니라 최댓값이 되게 한다.
+    if settings.llm_use_batch:
+        _run_sites_parallel(list(SITE_KEYS))
+    else:
+        cmd_run_now("all")
 
 
 def weekly_newsletter_job() -> None:
@@ -297,6 +325,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
     run_now.add_argument("--keyword", help="오늘의 메인 키워드를 직접 지정 (사이트 하나만 지정할 때)")
     run_now.add_argument("--layout", choices=sorted(VARIANTS), help="글 구조를 직접 지정")
     run_now.add_argument("--persona", help="타깃 상황을 직접 지정 (사이트 하나만 지정할 때)")
+    run_now.add_argument("--batch", action="store_true", help="배치 API(50%% 할인)로 생성 - 몇 분 더 걸림")
 
     preview = subparsers.add_parser(
         "preview", help="어디에도 등록/발행하지 않고 로컬 미리보기 파일만 생성"
@@ -310,6 +339,9 @@ def build_arg_parser() -> argparse.ArgumentParser:
         "test-approval", help="Claude 호출 없이 더미 내용으로 텔레그램 승인 카드만 테스트 발송"
     )
     test_approval.add_argument("site", choices=["site_a", "site_b", "site_c", "all"])
+
+    usage = subparsers.add_parser("usage", help="최근 LLM 호출 비용/횟수 요약 (api_usage.jsonl)")
+    usage.add_argument("--days", type=int, default=7)
 
     subparsers.add_parser("refresh-check", help="서치콘솔 순위 방어 점검 즉시 실행")
     subparsers.add_parser("send-newsletter", help="주간 뉴스레터 즉시 발송")
@@ -340,9 +372,11 @@ def main() -> None:
         parser.error("--keyword는 site_a/site_b/site_c 중 하나와 함께 써야 합니다.")
 
     if args.command == "run-now":
-        cmd_run_now(args.site, args.keyword, args.layout, args.persona)
+        cmd_run_now(args.site, args.keyword, args.layout, args.persona, use_batch=args.batch)
     elif args.command == "preview":
         cmd_preview(args.site, args.keyword, args.layout, args.persona)
+    elif args.command == "usage":
+        print(format_summary(args.days))
     elif args.command == "test-approval":
         cmd_test_approval(args.site)
     elif args.command == "refresh-check":

@@ -40,6 +40,17 @@ def _get_float(key: str, default: float) -> float:
         return default
 
 
+def _get_int(key: str, default: int) -> int:
+    return int(_get_float(key, float(default)))
+
+
+def _get_bool(key: str, default: bool) -> bool:
+    raw = os.environ.get(key, "").strip().lower()
+    if not raw:
+        return default
+    return raw in ("1", "true", "yes", "on")
+
+
 @dataclass(frozen=True)
 class SiteConfig:
     """사이트 A/B/C 공통 워드프레스 + 제휴 링크 설정."""
@@ -68,6 +79,15 @@ class Settings:
     fal_api_key: str  # fal.ai Flux 이미지 생성용 - Gemini 실패/소진 시 2순위 폴백
     google_key_path: str
     auto_publish_timeout_hours: float
+
+    # LLM/이미지 비용 보호 장치 (llm_usage.py가 사용). 하루 정상 사용량(글 3편)은 대략 0.2~0.4달러.
+    llm_daily_budget_usd: float
+    llm_max_calls_per_day: int
+    llm_max_generations_per_site_per_day: int
+    llm_max_prompt_chars: int
+    llm_use_batch: bool
+    llm_batch_timeout_seconds: int
+    image_max_per_day: int
 
     # 뉴스레터
     resend_api_key: str
@@ -158,6 +178,13 @@ def load_settings() -> Settings:
         fal_api_key=_get("FAL_API_KEY"),
         google_key_path=_get("GOOGLE_KEY_PATH", "service_account.json"),
         auto_publish_timeout_hours=_get_float("AUTO_PUBLISH_TIMEOUT_HOURS", 1.0),
+        llm_daily_budget_usd=_get_float("LLM_DAILY_BUDGET_USD", 1.5),
+        llm_max_calls_per_day=_get_int("LLM_MAX_CALLS_PER_DAY", 12),
+        llm_max_generations_per_site_per_day=_get_int("LLM_MAX_GENERATIONS_PER_SITE_PER_DAY", 3),
+        llm_max_prompt_chars=_get_int("LLM_MAX_PROMPT_CHARS", 80000),
+        llm_use_batch=_get_bool("LLM_USE_BATCH", True),
+        llm_batch_timeout_seconds=_get_int("LLM_BATCH_TIMEOUT_SECONDS", 1800),
+        image_max_per_day=_get_int("IMAGE_MAX_PER_DAY", 12),
         resend_api_key=_get("RESEND_API_KEY"),
         sender_email=_get("SENDER_EMAIL", "newsletter@your-domain.com"),
         newsletter_schedule_time=_get("NEWSLETTER_SCHEDULE_TIME", "Monday 08:00"),

@@ -14,6 +14,10 @@ from typing import Any, Dict, List
 
 from config import get_site, settings
 from generator import CLAUDE_MODEL, GeneratorNotConfiguredError, _get_client
+from llm_usage import LLMGuardError, call_message
+
+# 서치콘솔이 후보를 수백 개 돌려줘도 한 번의 실행에서 리라이팅 호출은 이 수를 넘지 않는다.
+MAX_REWRITES_PER_RUN = 3
 from utils.logger import get_logger
 from utils.telegram_notify import send_message_sync
 from wp_client import WordPressClient
@@ -109,20 +113,16 @@ def rewrite_post_for_rank_defense(site: str, post: Dict[str, Any], current_html:
 
 설명 없이 submit_rewrite 도구를 호출해서 결과를 제출하세요.
 """
-    response = client.messages.create(
+    response = call_message(
+        client,
+        purpose="rank_defense",
         model=CLAUDE_MODEL,
         max_tokens=6000,
         tools=[REWRITE_TOOL],
         tool_choice={"type": "tool", "name": "submit_rewrite"},
+        thinking={"type": "disabled"},
         messages=[{"role": "user", "content": prompt}],
     )
-    usage = getattr(response, "usage", None)
-    if usage is not None:
-        logger.info(
-            "Claude 리라이팅 호출 완료 - 입력 %s 토큰 / 출력 %s 토큰",
-            usage.input_tokens,
-            usage.output_tokens,
-        )
     for block in response.content:
         if getattr(block, "type", None) == "tool_use" and block.name == "submit_rewrite":
             return dict(block.input)
@@ -155,7 +155,7 @@ def run_rank_check(site: str) -> List[Dict[str, Any]]:
         return []
 
     processed = []
-    for candidate in candidates:
+    for candidate in candidates[:MAX_REWRITES_PER_RUN]:
         try:
             # 실제 운영에서는 candidate['page'] URL로 워드프레스 post_id를 역조회해야 하나,
             # 이 파이프라인 단계에서는 개념 검증용으로 현재 본문을 알 수 없는 경우 스킵 처리한다.
@@ -167,7 +167,7 @@ def run_rank_check(site: str) -> List[Dict[str, Any]]:
             rewrite_result = rewrite_post_for_rank_defense(site, candidate, current_html)
             request_rank_defense_approval(site, candidate, rewrite_result.get("updated_html", ""))
             processed.append({**candidate, **rewrite_result})
-        except GeneratorNotConfiguredError as exc:
+        except (GeneratorNotConfiguredError, LLMGuardError) as exc:
             logger.warning("[Site %s] %s", site, exc)
             break
         except Exception as exc:  # noqa: BLE001

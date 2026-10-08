@@ -19,7 +19,10 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 from config import DATA_DIR, settings
-from generator import CLAUDE_MODEL, GeneratorNotConfiguredError, _get_client
+from generator import GeneratorNotConfiguredError, _get_client
+from llm_usage import call_message
+
+NEWSLETTER_MODEL = "claude-haiku-5-5"
 from utils.logger import get_logger
 from wp_client import WordPressClient
 
@@ -178,18 +181,15 @@ def build_weekly_newsletter_html(days: int = 7) -> str:
 이 목록을 바탕으로 구독자에게 보낼 주간 브리핑 이메일 HTML을 작성하세요.
 친근한 어투로 핵심 소식 3~5개를 요약하고, 각 항목에 궁금증을 유발하는 한줄 후킹 문구를 붙이세요.
 인라인 CSS만 사용하고, 완성된 HTML 문자열만 출력하세요 (설명 없이)."""
-        response = client.messages.create(
-            model=CLAUDE_MODEL,
+        # 제목 목록을 이메일 문구로 요약하는 단순 작업이라 가장 싼 Haiku로 처리한다(사고는 끈다).
+        response = call_message(
+            client,
+            purpose="newsletter",
+            model=NEWSLETTER_MODEL,
             max_tokens=3000,
+            thinking={"type": "disabled"},
             messages=[{"role": "user", "content": prompt}],
         )
-        usage = getattr(response, "usage", None)
-        if usage is not None:
-            logger.info(
-                "Claude 뉴스레터 생성 호출 완료 - 입력 %s 토큰 / 출력 %s 토큰",
-                usage.input_tokens,
-                usage.output_tokens,
-            )
         html = "".join(block.text for block in response.content if hasattr(block, "text"))
         return html.strip() or _fallback_newsletter_html(titles_block)
     except Exception as exc:  # noqa: BLE001
