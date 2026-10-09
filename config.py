@@ -82,6 +82,7 @@ class Settings:
 
     # LLM/이미지 비용 보호 장치 (llm_usage.py가 사용). 하루 정상 사용량(글 3편)은 대략 0.2~0.4달러.
     llm_daily_budget_usd: float
+    llm_monthly_budget_usd: float
     llm_max_calls_per_day: int
     llm_max_generations_per_site_per_day: int
     llm_max_prompt_chars: int
@@ -179,6 +180,7 @@ def load_settings() -> Settings:
         google_key_path=_get("GOOGLE_KEY_PATH", "service_account.json"),
         auto_publish_timeout_hours=_get_float("AUTO_PUBLISH_TIMEOUT_HOURS", 1.0),
         llm_daily_budget_usd=_get_float("LLM_DAILY_BUDGET_USD", 1.5),
+        llm_monthly_budget_usd=_get_float("LLM_MONTHLY_BUDGET_USD", 15.0),
         llm_max_calls_per_day=_get_int("LLM_MAX_CALLS_PER_DAY", 12),
         llm_max_generations_per_site_per_day=_get_int("LLM_MAX_GENERATIONS_PER_SITE_PER_DAY", 3),
         llm_max_prompt_chars=_get_int("LLM_MAX_PROMPT_CHARS", 80000),

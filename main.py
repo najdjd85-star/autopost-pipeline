@@ -302,6 +302,16 @@ def start_scheduler_loop() -> None:
 
 
 def cmd_daemon() -> None:
+    try:
+        from generator import _get_client
+        from llm_usage import reap_orphan_batches
+
+        client = _get_client()
+        if client is not None:
+            reap_orphan_batches(client)
+    except Exception as exc:  # noqa: BLE001 - 정리 실패가 데몬 기동을 막으면 안 된다
+        logger.info("고아 배치 정리 건너뜀: %s", exc)
+
     threading.Thread(target=run_flask_server, name="flask-subscribe", daemon=True).start()
     logger.info("Flask 구독 서버 스레드 시작 (포트 5000)")
 

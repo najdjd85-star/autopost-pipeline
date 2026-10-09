@@ -126,16 +126,96 @@ def record_usage(
         cost,
         f" stop={stop_reason}" if stop_reason and stop_reason != "end_turn" and stop_reason != "tool_use" else "",
     )
+    _warn_if_near_limit()
     return cost
 
 
+_PENDING_ESTIMATE_USD = {"generate": 0.06}  # 배치 제출 후 결과가 오기 전까지 가드가 잡아둘 예상 비용
+_DEFAULT_PENDING_ESTIMATE_USD = 0.03
+
+
+def record_batch_submit(batch_id: str, purpose: str, site: Optional[str]) -> None:
+    """배치를 제출한 순간 기록한다 - 프로세스가 죽어 결과를 못 받아도 가드가 이 비용을 볼 수 있게."""
+    key = "generate" if purpose.startswith("generate") else purpose
+    _append(
+        {
+            "ts": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            "date": _today(),
+            "kind": "batch_submit",
+            "batch_id": batch_id,
+            "purpose": purpose,
+            "site": site,
+            "est_cost": _PENDING_ESTIMATE_USD.get(key, _DEFAULT_PENDING_ESTIMATE_USD),
+        }
+    )
+
+
+def record_batch_end(batch_id: str, outcome: str) -> None:
+    _append(
+        {
+            "ts": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            "date": _today(),
+            "kind": "batch_end",
+            "batch_id": batch_id,
+            "outcome": outcome,
+        }
+    )
+
+
+def _pending_batches(records: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    ended = {r.get("batch_id") for r in records if r.get("kind") == "batch_end"}
+    return [r for r in records if r.get("kind") == "batch_submit" and r.get("batch_id") not in ended]
+
+
 def today_totals() -> Dict[str, Any]:
-    records = [r for r in _read_records(_today()) if r.get("kind") == "llm"]
+    all_records = _read_records(_today())
+    records = [r for r in all_records if r.get("kind") == "llm"]
+    pending = _pending_batches(all_records)
     return {
         "calls": len(records),
-        "cost": sum(r.get("cost_usd", 0.0) for r in records),
+        "cost": sum(r.get("cost_usd", 0.0) for r in records) + sum(r.get("est_cost", 0.0) for r in pending),
         "records": records,
+        "pending": pending,
     }
+
+
+def month_cost() -> float:
+    prefix = _today()[:7]
+    records = [r for r in _read_records(days=31) if r.get("date", "").startswith(prefix)]
+    pending = _pending_batches(records)
+    return sum(r.get("cost_usd", 0.0) for r in records if r.get("kind") == "llm") + sum(
+        r.get("est_cost", 0.0) for r in pending
+    )
+
+
+def _alert_once(tag: str, text: str) -> None:
+    """같은 날 같은 사유로는 텔레그램 알림을 한 번만 보낸다."""
+    flag = OUTPUT_DIR / f".llm_alert_{_today()}_{tag}"
+    if flag.exists():
+        return
+    try:
+        flag.write_text("1")
+        from utils.telegram_notify import send_message_sync
+
+        send_message_sync(text)
+    except Exception as exc:  # noqa: BLE001 - 알림 실패가 호출 흐름을 막으면 안 된다
+        logger.info("LLM 알림 전송 실패(무시): %s", exc)
+
+
+def _warn_if_near_limit() -> None:
+    totals = today_totals()
+    if totals["cost"] >= settings.llm_daily_budget_usd * 0.8:
+        _alert_once(
+            "daily80",
+            f"⚠️ LLM 사용량 경고: 오늘 ${totals['cost']:.2f} / 일일 한도 ${settings.llm_daily_budget_usd:.2f} "
+            "(80% 도달). 평소(글 3편 약 $0.16~0.35)보다 많습니다 - 중복 실행이나 루프를 확인하세요.",
+        )
+    month = month_cost()
+    if month >= settings.llm_monthly_budget_usd * 0.8:
+        _alert_once(
+            "month80",
+            f"⚠️ LLM 월 사용량 경고: 이번 달 ${month:.2f} / 월 한도 ${settings.llm_monthly_budget_usd:.2f} (80% 도달).",
+        )
 
 
 def check_budget(purpose: str, site: Optional[str] = None) -> None:
@@ -146,7 +226,13 @@ def check_budget(purpose: str, site: Optional[str] = None) -> None:
             f"일일 LLM 예산 초과: 오늘 ${totals['cost']:.2f} / 한도 ${settings.llm_daily_budget_usd:.2f} "
             "(LLM_DAILY_BUDGET_USD로 조정). 호출을 중단합니다."
         )
-    if totals["calls"] >= settings.llm_max_calls_per_day:
+    month = month_cost()
+    if month >= settings.llm_monthly_budget_usd:
+        raise LLMGuardError(
+            f"월 LLM 예산 초과: 이번 달 ${month:.2f} / 한도 ${settings.llm_monthly_budget_usd:.2f} "
+            "(LLM_MONTHLY_BUDGET_USD로 조정). 호출을 중단합니다."
+        )
+    if totals["calls"] + len(totals["pending"]) >= settings.llm_max_calls_per_day:
         raise LLMGuardError(
             f"일일 LLM 호출 수 초과: 오늘 {totals['calls']}회 / 한도 {settings.llm_max_calls_per_day}회 "
             "(LLM_MAX_CALLS_PER_DAY로 조정). 호출을 중단합니다."
@@ -154,7 +240,7 @@ def check_budget(purpose: str, site: Optional[str] = None) -> None:
     if purpose == "generate" and site:
         generations = sum(
             1 for r in totals["records"] if r.get("purpose") == "generate" and r.get("site") == site
-        )
+        ) + sum(1 for r in totals["pending"] if r.get("purpose") == "generate" and r.get("site") == site)
         if generations >= settings.llm_max_generations_per_site_per_day:
             raise LLMGuardError(
                 f"Site {site}의 오늘 글 생성 {generations}회 - 한도 {settings.llm_max_generations_per_site_per_day}회 "
@@ -168,7 +254,7 @@ def _prompt_chars(params: Dict[str, Any]) -> int:
     )
 
 
-def _run_batch(client: Any, params: Dict[str, Any], purpose: str) -> Optional[Any]:
+def _run_batch(client: Any, params: Dict[str, Any], purpose: str, site: Optional[str] = None) -> Optional[Any]:
     """요청 1건짜리 배치를 만들어 결과 Message를 돌려준다. 실패/시간초과면 None(호출부가 일반 호출로 폴백)."""
     custom_id = f"{purpose}-{uuid.uuid4().hex[:8]}"
     try:
@@ -176,7 +262,16 @@ def _run_batch(client: Any, params: Dict[str, Any], purpose: str) -> Optional[An
     except Exception as exc:  # noqa: BLE001
         logger.warning("[LLM] 배치 생성 실패 - 일반 호출로 폴백: %s", exc)
         return None
+    record_batch_submit(batch.id, purpose, site)
+    outcome_box = {"outcome": "fallback"}
+    try:
+        return _wait_for_batch(client, batch, custom_id, outcome_box)
+    finally:
+        record_batch_end(batch.id, outcome_box["outcome"])
 
+
+def _wait_for_batch(client: Any, batch: Any, custom_id: str, outcome_box: Dict[str, str]) -> Optional[Any]:
+    """제출된 배치를 기다려 결과를 돌려준다(시간초과 시 취소). outcome_box에 결과 사유를 남긴다."""
     deadline = time.time() + settings.llm_batch_timeout_seconds
     delay = 5.0
     ended = False
@@ -207,6 +302,7 @@ def _run_batch(client: Any, params: Dict[str, Any], purpose: str) -> Optional[An
     try:
         for result in client.messages.batches.results(batch.id):
             if result.custom_id == custom_id and result.result.type == "succeeded":
+                outcome_box["outcome"] = "succeeded"
                 return result.result.message
             if result.custom_id == custom_id:
                 logger.warning("[LLM] 배치 결과 %s - 일반 호출로 폴백", result.result.type)
@@ -238,7 +334,7 @@ def call_message(
     message = None
     batched = False
     if use_batch and settings.llm_use_batch:
-        message = _run_batch(client, params, purpose)
+        message = _run_batch(client, params, purpose, site)
         batched = message is not None
     if message is None:
         message = client.messages.create(**params)
@@ -307,3 +403,20 @@ def format_summary(days: int = 7) -> str:
         lines.append(f"  {name:<18} {int(p['calls'])}회  ${p['cost']:.3f}")
     lines.append(f"합계 ${sum(d['cost'] for d in by_day.values()):.3f}")
     return "\n".join(lines)
+
+
+def reap_orphan_batches(client: Any) -> int:
+    """데몬 시작 시 호출: 이전 프로세스가 제출만 하고 끝내지 못한 배치를 취소한다(결과는 어차피 버려지므로)."""
+    records = _read_records(days=2)
+    orphans = _pending_batches(records)
+    reaped = 0
+    for rec in orphans:
+        try:
+            client.messages.batches.cancel(rec["batch_id"])
+        except Exception as exc:  # noqa: BLE001 - 이미 끝났거나 만료된 배치일 수 있다
+            logger.info("[LLM] 고아 배치 %s 취소 불가(무시): %s", rec["batch_id"], exc)
+        record_batch_end(rec["batch_id"], "reaped")
+        reaped += 1
+    if reaped:
+        logger.warning("[LLM] 이전 실행에서 끝내지 못한 배치 %s건을 정리했습니다.", reaped)
+    return reaped
