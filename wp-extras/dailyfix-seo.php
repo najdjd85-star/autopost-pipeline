@@ -36,6 +36,13 @@ function dailyfix_seo_trim($text, $limit = 150) {
     return mb_substr($text, 0, $limit - 1) . '…';
 }
 
+// Pinterest 도메인 인증(계정 단위 토큰이라 3개 사이트에 동일하게 쓴다) - 메인 페이지에만 출력
+add_action('wp_head', function () {
+    if (is_front_page() || is_home()) {
+        echo '<meta name="p:domain_verify" content="20c04508325dc5ba241ed91a919b04dc">' . "\n";
+    }
+}, 1);
+
 add_action('wp_head', function () {
     if (is_admin() || is_feed() || is_404()) {
         return;
