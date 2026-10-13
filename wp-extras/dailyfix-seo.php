@@ -43,6 +43,14 @@ add_action('wp_head', function () {
     }
 }, 1);
 
+// AdSense 사이트 코드 - 모든 공개 페이지의 <head>에 넣는다(승인 전에는 광고가 나오지 않는다)
+add_action('wp_head', function () {
+    if (is_admin() || is_feed() || is_robots() || is_preview()) {
+        return;
+    }
+    echo '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5672149391967711" crossorigin="anonymous"></script>' . "\n";
+}, 2);
+
 add_action('wp_head', function () {
     if (is_admin() || is_feed() || is_404()) {
         return;
