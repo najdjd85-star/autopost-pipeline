@@ -1,0 +1,189 @@
+"""쿠팡 링크 은행: 한국 IP(데스크탑)에서 만든 상품 딥링크를 서버가 가져다 쓴다.
+
+서버는 해외 IP라 쿠팡 Open API가 접속을 거절한다("Access denied" 웹페이지가 옴). 그래서
+- 데스크탑이 하루 한 번 scripts/refresh_coupang_links.py로 상품 링크를 만들어
+  gov 사이트의 비공개 워드프레스 페이지(slug=coupang-link-bank)에 JSON으로 저장하고,
+- 서버는 쿠팡 API 호출이 실패했을 때 이 페이지에서 링크를 꺼내 쓴다(6시간 캐시).
+7일이 지난 항목은 쓰지 않고 기존의 "쿠팡 홈" 고정 링크로 대체된다. 가격은 금방 바뀌므로 저장하지 않는다.
+"""
+from __future__ import annotations
+
+import json
+import random
+import time
+from datetime import datetime, timedelta, timezone
+from typing import Any, Dict, List, Optional
+
+from config import OUTPUT_DIR
+from utils.http import safe_get, safe_post
+from utils.logger import get_logger
+from wp_client import WordPressClient
+
+logger = get_logger(__name__)
+
+BANK_SITE = "A"
+BANK_PAGE_SLUG = "coupang-link-bank"
+BANK_MAX_AGE_DAYS = 7
+CACHE_TTL_SECONDS = 6 * 3600
+CACHE_PATH = OUTPUT_DIR / "coupang_bank_cache.json"
+API_CALL_GAP_SECONDS = 7.0  # 쿠팡 검색 API 호출 한도(분당 약 10회)를 넉넉히 지킨다
+
+# 사이트별 상품 검색어. life(통신/렌탈)는 글 주제와 맞는 상품이 많고, gov/tax는 무난한 생활용품 위주.
+QUERIES: Dict[str, List[str]] = {
+    "A": ["문서 보관함", "서류 파일 정리", "가계부", "공학용 계산기"],
+    "B": [
+        "공기청정기", "안마의자", "정수기", "와이파이 공유기", "보조배터리",
+        "무선 충전기", "스마트폰 거치대", "해외여행 멀티어댑터", "무선 이어폰", "휴대폰 케이스",
+    ],
+    "C": ["가계부", "문서 보관함", "공학용 계산기", "재테크 도서"],
+}
+
+
+def _now() -> datetime:
+    return datetime.now(timezone.utc)
+
+
+def _find_page(wp: WordPressClient) -> Optional[Dict[str, Any]]:
+    resp = safe_get(
+        wp._api_url("wp/v2/pages"),
+        headers=wp._auth_header(),
+        params={"slug": BANK_PAGE_SLUG, "status": "private,publish,draft", "context": "edit"},
+        timeout=20,
+    )
+    if resp is not None and resp.status_code == 200 and resp.json():
+        return resp.json()[0]
+    return None
+
+
+def load_remote_bank() -> Optional[Dict[str, Any]]:
+    """비공개 페이지에서 은행 JSON을 읽는다(인증 필요). 실패하면 None."""
+    wp = WordPressClient(BANK_SITE)
+    if not wp.is_configured:
+        return None
+    page = _find_page(wp)
+    if not page:
+        return None
+    raw = page.get("content", {}).get("raw", "")
+    try:
+        return json.loads(raw)
+    except ValueError:
+        logger.warning("쿠팡 링크 은행 페이지 내용을 JSON으로 읽지 못했습니다.")
+        return None
+
+
+def publish_bank(bank: Dict[str, Any]) -> bool:
+    wp = WordPressClient(BANK_SITE)
+    if not wp.is_configured:
+        return False
+    page = _find_page(wp)
+    url = wp._api_url(f"wp/v2/pages/{page['id']}") if page else wp._api_url("wp/v2/pages")
+    resp = safe_post(
+        url,
+        headers={**wp._auth_header(), "Content-Type": "application/json"},
+        data=json.dumps(
+            {
+                "title": "(내부용) 쿠팡 링크 은행",
+                "slug": BANK_PAGE_SLUG,
+                "status": "private",
+                "content": json.dumps(bank, ensure_ascii=False),
+            }
+        ),
+        timeout=30,
+    )
+    return resp is not None and resp.status_code in (200, 201)
+
+
+def refresh_bank() -> Dict[str, int]:
+    """[데스크탑에서 실행] 모든 검색어의 상품 링크를 새로 만들어 업로드한다."""
+    from smart_affiliate_matcher import build_coupang_deeplink  # 순환 임포트 방지용 지연 임포트
+
+    previous = load_remote_bank() or {}
+    bank: Dict[str, Any] = {"generated_at": _now().isoformat(timespec="seconds"), "sites": {}}
+    made = kept = failed = 0
+    first_call = True
+
+    for site, queries in QUERIES.items():
+        old_items = {i.get("query"): i for i in previous.get("sites", {}).get(site, [])}
+        items: List[Dict[str, Any]] = []
+        for query in queries:
+            if not first_call:
+                time.sleep(API_CALL_GAP_SECONDS)
+            first_call = False
+            product = build_coupang_deeplink(query)
+            if product and product.get("url"):
+                items.append(
+                    {
+                        "query": query,
+                        "name": product.get("name", query),
+                        "url": product["url"],
+                        "image": product.get("image", ""),
+                        "generated_at": _now().isoformat(timespec="seconds"),
+                    }
+                )
+                made += 1
+            elif query in old_items:
+                items.append(old_items[query])  # 이번에 실패하면 이전 항목을 유지(7일 한도 안에서만 쓰임)
+                kept += 1
+            else:
+                failed += 1
+        bank["sites"][site] = items
+
+    if made == 0:
+        logger.warning("쿠팡 API 호출이 전부 실패해 업로드하지 않습니다(이 PC도 막혔는지 확인하세요).")
+        return {"made": made, "kept": kept, "failed": failed, "uploaded": 0}
+
+    uploaded = 1 if publish_bank(bank) else 0
+    return {"made": made, "kept": kept, "failed": failed, "uploaded": uploaded}
+
+
+# ---------------------------------------------------------------------------
+# 서버 쪽: 은행에서 상품 꺼내기
+# ---------------------------------------------------------------------------
+def _load_bank_cached() -> Optional[Dict[str, Any]]:
+    cached: Optional[Dict[str, Any]] = None
+    try:
+        cached = json.loads(CACHE_PATH.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        cached = None
+
+    if cached and time.time() - cached.get("fetched_at", 0) < CACHE_TTL_SECONDS:
+        return cached.get("bank")
+
+    bank = load_remote_bank()
+    if bank is not None:
+        try:
+            OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+            CACHE_PATH.write_text(
+                json.dumps({"fetched_at": time.time(), "bank": bank}, ensure_ascii=False), encoding="utf-8"
+            )
+        except OSError:
+            pass
+        return bank
+    return cached.get("bank") if cached else None  # 원격 조회가 실패하면 낡은 캐시라도 7일 한도 안에서 사용
+
+
+def pick_product(site: str, keyword: str) -> Optional[Dict[str, str]]:
+    """사이트 은행에서 키워드와 맞는 상품을 고른다. 맞는 게 없으면 그 사이트의 아무 상품, 없으면 None."""
+    try:
+        bank = _load_bank_cached()
+    except Exception as exc:  # noqa: BLE001 - 은행 조회 실패가 글 발행을 막으면 안 된다
+        logger.info("쿠팡 링크 은행 조회 실패(무시): %s", exc)
+        return None
+    if not bank:
+        return None
+
+    cutoff = _now() - timedelta(days=BANK_MAX_AGE_DAYS)
+    fresh: List[Dict[str, Any]] = []
+    for item in bank.get("sites", {}).get(site, []):
+        try:
+            if datetime.fromisoformat(item["generated_at"]) >= cutoff and item.get("url"):
+                fresh.append(item)
+        except (KeyError, ValueError):
+            continue
+    if not fresh:
+        return None
+
+    keyword_tokens = set((keyword or "").split())
+    matched = [i for i in fresh if i["query"] in (keyword or "") or keyword_tokens & set(i["query"].split())]
+    chosen = random.choice(matched or fresh)
+    return {"name": chosen.get("name", ""), "url": chosen["url"], "image": chosen.get("image", ""), "price": ""}

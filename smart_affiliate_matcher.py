@@ -22,6 +22,7 @@ from typing import Dict, List, Optional
 from urllib.parse import quote, urlencode
 
 from config import BASE_DIR, get_site, settings
+from coupang_link_bank import pick_product
 from constants import (
     AFFILIATE_SLOT_BOT,
     AFFILIATE_SLOT_MID,
@@ -296,6 +297,11 @@ def _get_coupang_card_data(keyword: str, site: str) -> Optional[Dict[str, str]]:
     coupang = build_coupang_deeplink(keyword) if keyword else None
     if coupang and coupang.get("url"):
         return coupang
+
+    # 서버는 해외 IP라 위 호출이 막힌다 - 한국 IP(데스크탑)가 미리 만들어 둔 링크 은행에서 대신 꺼낸다.
+    banked = pick_product(site, keyword)
+    if banked:
+        return banked
 
     fallback_url = COUPANG_FALLBACK_LINKS.get(site)
     if fallback_url:
