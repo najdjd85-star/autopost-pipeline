@@ -26,6 +26,9 @@ BANK_PAGE_SLUG = "coupang-link-bank"
 BANK_MAX_AGE_DAYS = 7
 CACHE_TTL_SECONDS = 6 * 3600
 CACHE_PATH = OUTPUT_DIR / "coupang_bank_cache.json"
+PROBE_PATH = OUTPUT_DIR / "coupang_probes.json"  # [데스크탑] 유효기간 측정용 표본 링크
+CHECK_LOG = OUTPUT_DIR / "coupang_link_check.log"
+PROBE_KEEP_DAYS = 14
 API_CALL_GAP_SECONDS = 7.0  # 쿠팡 검색 API 호출 한도(분당 약 10회)를 넉넉히 지킨다
 
 # 사이트별 상품 검색어. life(통신/렌탈)는 글 주제와 맞는 상품이 많고, gov/tax는 무난한 생활용품 위주.
@@ -93,12 +96,72 @@ def publish_bank(bank: Dict[str, Any]) -> bool:
     return resp is not None and resp.status_code in (200, 201)
 
 
+def check_link(url: str) -> Dict[str, Any]:
+    """딥링크가 아직 쿠팡 페이지로 리다이렉트되는지 본다(클릭이 아니라 응답 헤더만 확인)."""
+    resp = safe_get(url, allow_redirects=False, timeout=12, headers={"User-Agent": "Mozilla/5.0"})
+    if resp is None:
+        return {"ok": False, "detail": "no_response"}
+    location = resp.headers.get("Location", "")
+    ok = resp.status_code in (301, 302, 303, 307, 308) and "coupang.com" in location
+    return {"ok": ok, "detail": f"{resp.status_code} -> {location[:70]}"}
+
+
+def run_probes(today_items: Optional[List[Dict[str, Any]]] = None) -> int:
+    """[데스크탑] today_items가 None이면 예전 표본 링크가 아직 열리는지 점검해 로그를 남기고 서버가 믿어도 되는
+    최대 연령(일)을 돌려준다. 리스트를 주면 점검 없이 오늘 만든 링크 일부를 새 표본으로 등록만 한다."""
+    try:
+        probes = json.loads(PROBE_PATH.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        probes = []
+
+    max_age = BANK_MAX_AGE_DAYS
+    kept: List[Dict[str, Any]] = []
+    lines: List[str] = []
+    for probe in probes:
+        try:
+            age_hours = (_now() - datetime.fromisoformat(probe["generated_at"])).total_seconds() / 3600
+        except (KeyError, ValueError):
+            continue
+        if age_hours > PROBE_KEEP_DAYS * 24:
+            continue
+        if today_items is not None:
+            kept.append(probe)
+            continue
+        result = check_link(probe["url"])
+        lines.append(f"{_now().isoformat(timespec='seconds')} age={age_hours:.0f}h ok={result['ok']} {result['detail']}")
+        if not result["ok"] and age_hours >= 6:
+            max_age = min(max_age, max(1, int(age_hours // 24) - 1) if age_hours >= 24 else 1)
+        kept.append(probe)
+
+    # 오늘 만든 링크 중 2개를 새 표본으로 추가(이미 오늘 표본이 있으면 건너뜀)
+    today = _now().date().isoformat()
+    if today_items and not any(p.get("generated_at", "").startswith(today) for p in kept):
+        for item in today_items[:2]:
+            kept.append({"url": item["url"], "generated_at": item["generated_at"]})
+
+    try:
+        OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+        PROBE_PATH.write_text(json.dumps(kept, ensure_ascii=False), encoding="utf-8")
+        if lines:
+            with CHECK_LOG.open("a", encoding="utf-8") as fh:
+                fh.write("\n".join(lines) + "\n")
+    except OSError:
+        pass
+    logger.info("쿠팡 링크 유효성 표본 %s개 점검, 서버 사용 한도 %s일", len(lines), max_age)
+    return max_age
+
+
 def refresh_bank() -> Dict[str, int]:
     """[데스크탑에서 실행] 모든 검색어의 상품 링크를 새로 만들어 업로드한다."""
     from smart_affiliate_matcher import build_coupang_deeplink  # 순환 임포트 방지용 지연 임포트
 
     previous = load_remote_bank() or {}
-    bank: Dict[str, Any] = {"generated_at": _now().isoformat(timespec="seconds"), "sites": {}}
+    max_age_days = run_probes()  # 예전 표본 먼저 점검(오늘 표본은 아래에서 추가)
+    bank: Dict[str, Any] = {
+        "generated_at": _now().isoformat(timespec="seconds"),
+        "max_age_days": max_age_days,
+        "sites": {},
+    }
     made = kept = failed = 0
     first_call = True
 
@@ -132,6 +195,8 @@ def refresh_bank() -> Dict[str, int]:
         logger.warning("쿠팡 API 호출이 전부 실패해 업로드하지 않습니다(이 PC도 막혔는지 확인하세요).")
         return {"made": made, "kept": kept, "failed": failed, "uploaded": 0}
 
+    all_items = [i for items in bank["sites"].values() for i in items if i.get("generated_at", "").startswith(_now().date().isoformat())]
+    run_probes(all_items)  # 오늘 만든 링크 중 일부를 내일부터 점검할 표본으로 등록
     uploaded = 1 if publish_bank(bank) else 0
     return {"made": made, "kept": kept, "failed": failed, "uploaded": uploaded}
 
@@ -172,7 +237,7 @@ def pick_product(site: str, keyword: str) -> Optional[Dict[str, str]]:
     if not bank:
         return None
 
-    cutoff = _now() - timedelta(days=BANK_MAX_AGE_DAYS)
+    cutoff = _now() - timedelta(days=min(BANK_MAX_AGE_DAYS, int(bank.get("max_age_days", BANK_MAX_AGE_DAYS))))
     fresh: List[Dict[str, Any]] = []
     for item in bank.get("sites", {}).get(site, []):
         try:
