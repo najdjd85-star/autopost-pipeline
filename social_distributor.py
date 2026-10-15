@@ -8,6 +8,8 @@
 from __future__ import annotations
 
 import json
+import os
+import re
 import time
 from pathlib import Path
 from typing import Any, Dict, Optional
@@ -229,6 +231,18 @@ def _wait_for_threads_container_ready(
     return False
 
 
+_BLOCK_ERROR_CODES = {4, 17, 32, 190, 368, 613}  # 요청 한도/토큰/일시 차단 계열 Meta 오류 코드
+
+
+def _is_blocked_response(resp: Any) -> bool:
+    """Meta가 앱/계정 차단·제한으로 거절한 응답인지(재시도하면 오히려 악화될 수 있는 경우)."""
+    body = getattr(resp, "text", "") or ""
+    if "access blocked" in body.lower():
+        return True
+    match = re.search(r'"code"\s*:\s*(\d+)', body)
+    return bool(match and int(match.group(1)) in _BLOCK_ERROR_CODES)
+
+
 def publish_threads_post(text: str) -> Dict[str, Any]:
     if not settings.threads_access_token:
         logger.info("THREADS_ACCESS_TOKEN 미설정 - 스레드 게시를 건너뜁니다.")
@@ -254,7 +268,7 @@ def publish_threads_post(text: str) -> Dict[str, Any]:
                 getattr(create_resp, "status_code", "N/A"),
                 getattr(create_resp, "text", ""),
             )
-            return {"status": "error", "reason": "create_failed"}
+            return {"status": "error", "reason": "blocked" if _is_blocked_response(create_resp) else "create_failed"}
         creation_id = create_resp.json().get("id")
 
         _wait_for_threads_container_ready(creation_id, settings.threads_access_token)
@@ -270,7 +284,7 @@ def publish_threads_post(text: str) -> Dict[str, Any]:
                 getattr(publish_resp, "status_code", "N/A"),
                 getattr(publish_resp, "text", ""),
             )
-            return {"status": "error", "reason": "publish_failed"}
+            return {"status": "error", "reason": "blocked" if _is_blocked_response(publish_resp) else "publish_failed"}
 
         result = publish_resp.json()
         return {"status": "ok", "post_id": result.get("id"), "response": result}
@@ -304,7 +318,7 @@ def add_threads_first_comment(post_id: str, comment_text: str) -> Dict[str, Any]
                 getattr(create_resp, "status_code", "N/A"),
                 getattr(create_resp, "text", ""),
             )
-            return {"status": "error", "reason": "comment_create_failed"}
+            return {"status": "error", "reason": "blocked" if _is_blocked_response(create_resp) else "comment_create_failed"}
         creation_id = create_resp.json().get("id")
 
         _wait_for_threads_container_ready(creation_id, settings.threads_access_token)
@@ -320,7 +334,7 @@ def add_threads_first_comment(post_id: str, comment_text: str) -> Dict[str, Any]
                 getattr(publish_resp, "status_code", "N/A"),
                 getattr(publish_resp, "text", ""),
             )
-            return {"status": "error", "reason": "comment_publish_failed"}
+            return {"status": "error", "reason": "blocked" if _is_blocked_response(publish_resp) else "comment_publish_failed"}
 
         return {"status": "ok", "response": publish_resp.json()}
     except Exception as exc:  # noqa: BLE001
@@ -484,13 +498,19 @@ def distribute_all(
     results["google_index"] = {"status": "ok" if ping_google_indexing(post_url) else "error"}
     results["naver_index"] = {"status": "ok" if ping_naver(post_url) else "error"}
 
-    threads_result = publish_threads_post(captions.get("threads_post", ""))
-    results["threads"] = threads_result
-    if threads_result.get("status") == "ok" and captions.get("threads_comment"):
-        comment_text = captions["threads_comment"].replace("{POST_URL}", post_url)
-        results["threads_comment"] = add_threads_first_comment(
-            threads_result.get("post_id", ""), comment_text
-        )
+    if os.environ.get("THREADS_QUEUE_ENABLED", "1") != "0":
+        # 즉시 게시하지 않고 예약 - 시간대/간격/일일 한도/차단기는 threads_guard가 맡는다(데몬이 5분마다 처리).
+        from threads_guard import enqueue
+
+        results["threads"] = enqueue(site, captions.get("threads_post", ""), captions.get("threads_comment", ""), post_url)
+    else:
+        threads_result = publish_threads_post(captions.get("threads_post", ""))
+        results["threads"] = threads_result
+        if threads_result.get("status") == "ok" and captions.get("threads_comment"):
+            comment_text = captions["threads_comment"].replace("{POST_URL}", post_url)
+            results["threads_comment"] = add_threads_first_comment(
+                threads_result.get("post_id", ""), comment_text
+            )
 
     shorts_path = video_paths.get("shorts")
     if shorts_path:

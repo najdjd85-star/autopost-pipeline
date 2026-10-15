@@ -420,7 +420,7 @@ def _format_result_report(site: str, results: Dict[str, Any]) -> str:
     lines = [f"{badge} 발행 결과 보고"]
     for channel, result in results.items():
         status = result.get("status", "unknown") if isinstance(result, dict) else str(result)
-        icon = {"ok": "✅", "skipped": "⏭️", "error": "❌"}.get(status, "❔")
+        icon = {"ok": "✅", "skipped": "⏭️", "error": "❌", "queued": "🕒"}.get(status, "❔")
         lines.append(f"{icon} {channel}: {status}")
 
     if results.get("youtube_comment", {}).get("status") == "ok":

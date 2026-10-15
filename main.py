@@ -269,9 +269,20 @@ def auto_publish_check_job() -> None:
     telegram_bot.check_expired_approvals_and_auto_publish_sync()
 
 
+def threads_queue_job() -> None:
+    """예약된 스레드 게시 중 때가 된 것을 한 건 올린다(시간대/간격/한도/차단기는 threads_guard가 판단)."""
+    try:
+        import threads_guard
+
+        threads_guard.process_due()
+    except Exception as exc:  # noqa: BLE001 - 스레드 문제가 다른 스케줄 작업을 막으면 안 된다
+        logger.warning("스레드 예약 처리 중 오류(무시): %s", exc)
+
+
 def _register_schedule_jobs() -> None:
     schedule.every().day.at(settings.schedule_time).do(daily_pipeline_job)
     schedule.every(30).minutes.do(auto_publish_check_job)
+    schedule.every(5).minutes.do(threads_queue_job)
 
     # NEWSLETTER_SCHEDULE_TIME 예: "Monday 08:00"
     try:
