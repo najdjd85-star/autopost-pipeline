@@ -197,13 +197,20 @@ def _load_history(site: str) -> List[str]:
         return []
 
 
-def pick_variant(site: str, forced: Optional[str] = None) -> str:
-    """최근 쓴 구조와 겹치지 않는 구조 키를 고른다."""
+def pick_variant(site: str, forced: Optional[str] = None, allowed: Optional[List[str]] = None) -> str:
+    """최근 쓴 구조와 겹치지 않는 구조 키를 고른다. allowed가 있으면 그 안에서만 고른다(글 유형과 어울리는 구조)."""
     if forced in VARIANTS:
         return forced
-    recent = _load_history(site)[-_AVOID_RECENT:]
-    candidates = [k for k in VARIANTS if k not in recent] or list(VARIANTS)
-    return random.choice(candidates)
+    pool = [k for k in (allowed or []) if k in VARIANTS] or list(VARIANTS)
+    history = _load_history(site)
+    recent = history[-_AVOID_RECENT:]
+    candidates = [k for k in pool if k not in recent]
+    if candidates:
+        return random.choice(candidates)
+    # 풀이 작아 전부 최근에 쓴 구조라면, 가장 오래전에 쓴 구조를 고른다
+    last_used = {k: max((i for i, h in enumerate(history) if h == k), default=-1) for k in pool}
+    oldest = min(last_used.values())
+    return random.choice([k for k, v in last_used.items() if v == oldest])
 
 
 def record_variant(site: str, key: str) -> None:

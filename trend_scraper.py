@@ -53,6 +53,26 @@ SITE_SEED_KEYWORDS = {
 }
 
 
+# 주제 풀 확장 - gov(A)/life(B)는 시드가 16개뿐이라 같은 주제가 금방 돌아왔다.
+# 검증된 팩트 시트가 없는 키워드라서 topic_planner가 "수치 지어내지 말 것" 주의 문구를 붙인다.
+EXPANDED_SEED_KEYWORDS = {
+    "A": [
+        "국가장학금", "청년내일저축계좌", "첫만남이용권", "장애인연금", "문화누리카드",
+        "국민행복카드 임신 출산 바우처", "노인일자리 사업", "청년 버팀목 전세대출", "소상공인 정책자금",
+        "산후조리비 지원", "난방비 지원", "다자녀 가구 혜택", "자립준비청년 지원", "한부모 아이돌봄서비스",
+    ],
+    "B": [
+        "통신사 멤버십 활용", "알뜰폰 번호이동 방법", "휴대폰 분실 보험", "인터넷 설치 사은품",
+        "정수기 렌탈 비교", "비데 렌탈", "공기청정기 필터 교체", "TV 인터넷 결합상품",
+        "통신비 카드 할인", "스마트워치 요금제", "청소년 요금제", "시니어 요금제", "데이터 쉐어링",
+        "해외 eSIM 비교", "중고폰 개통 방법", "인터넷 속도 느림 해결", "와이파이 공유기 고르는 법",
+    ],
+}
+UNVERIFIED_SEEDS = {kw for kws in EXPANDED_SEED_KEYWORDS.values() for kw in kws}
+for _site, _extra in EXPANDED_SEED_KEYWORDS.items():
+    SITE_SEED_KEYWORDS[_site] = SITE_SEED_KEYWORDS[_site] + [k for k in _extra if k not in SITE_SEED_KEYWORDS[_site]]
+
+
 def fetch_public_data_subsidies(limit: int = 20) -> List[Dict[str, str]]:
     """공공데이터포털 보조금24 API에서 지원사업 목록을 가져온다."""
     if not settings.public_data_api_key:

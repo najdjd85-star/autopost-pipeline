@@ -23,6 +23,8 @@ from fact_sheets import get_fact_sheet
 from llm_usage import call_message
 from layout_variants import VARIANTS, format_variant_prompt, pick_variant, record_variant
 from situational_personas import format_persona_prompt, pick_persona, record_persona
+from topic_planner import CONTENT_TYPES, plan_topic, record_pick
+from trend_scraper import SITE_SEED_KEYWORDS, UNVERIFIED_SEEDS
 from config import settings
 from constants import (
     AFFILIATE_SLOT_BOT,
@@ -281,6 +283,7 @@ def build_user_prompt(
     layout_block: str = "",
     persona_block: str = "",
     benchmark_block: str = "",
+    plan_block: str = "",
 ) -> str:
     if references:
         ref_lines = []
@@ -323,6 +326,7 @@ def build_user_prompt(
     dedup_section += persona_block
     if benchmark_block:
         dedup_section += benchmark_block[:3000] + "\n"
+    dedup_section += plan_block[:2500]
 
     return f"""{dedup_section}[오늘의 트렌드 브리핑]
 {trend_briefing}
@@ -423,11 +427,29 @@ def generate_post(
 
     hot = fetch_today_hot_topics(site)
     recent_titles = _fetch_recent_titles(site)
-    keyword = base_keyword or (
-        _pick_fresh_keyword(hot["keywords"], recent_titles)
-        if hot["keywords"]
-        else SITE_LABELS.get(site, site)
-    )
+    plan: Optional[Dict[str, Any]] = None
+    if os.environ.get("TOPIC_PLANNER_ENABLED", "1") != "0":
+        try:
+            plan = plan_topic(
+                site,
+                SITE_SEED_KEYWORDS.get(site, []),
+                hot.get("sources", {}).get("briefings", []),
+                recent_titles,
+                forced_keyword=base_keyword,
+                unverified_seeds=UNVERIFIED_SEEDS,
+            )
+        except Exception as exc:  # noqa: BLE001 - 플래너 오류가 글 생성을 막으면 안 된다
+            logger.warning("[Site %s] 주제 플래너 실패, 기존 키워드 선정으로 진행: %s", site, exc)
+    if plan and plan["keyword"]:
+        keyword = plan["keyword"]
+        logger.info("[Site %s] 주제 플랜: 키워드=%s / 유형=%s", site, keyword, CONTENT_TYPES[plan["content_type"]]["name"])
+    else:
+        plan = None
+        keyword = base_keyword or (
+            _pick_fresh_keyword(hot["keywords"], recent_titles)
+            if hot["keywords"]
+            else SITE_LABELS.get(site, site)
+        )
 
     longtail = expand_to_longtail(keyword)
     references = get_top_blog_references(longtail[0] if longtail else keyword)
@@ -442,7 +464,7 @@ def generate_post(
         logger.info("유튜브 트렌드 조회 실패, 참고 없이 진행: %s", exc)
         video_trend_briefing = ""
 
-    variant = pick_variant(site, layout)
+    variant = pick_variant(site, layout, allowed=plan["layouts"] if plan else None)
     logger.info("[Site %s] 이번 글 구조: %s (%s)", site, variant, VARIANTS[variant]["name"])
     target_persona = pick_persona(site, persona)
     if target_persona:
@@ -460,6 +482,7 @@ def generate_post(
         format_variant_prompt(variant),
         format_persona_prompt(target_persona),
         benchmark_block,
+        plan["block"] if plan else "",
     )
 
     try:
@@ -488,6 +511,9 @@ def generate_post(
         data["calculator_type"] = "custom"
     data["layout_variant"] = variant
     record_variant(site, variant)
+    if plan:
+        data["content_type"] = plan["content_type"]
+        record_pick(site, keyword, plan["content_type"])
     if target_persona:
         data["target_persona"] = target_persona
         record_persona(site, target_persona)
