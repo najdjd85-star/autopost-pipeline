@@ -4,7 +4,8 @@
 서버가 해외(싱가포르) 데이터센터 IP인 점과 겹쳐 자동화로 보이기 쉬운 패턴이라서 아래처럼 바꾼다.
 
 1. 큐: 발행 시점에는 스레드 게시를 "예약"만 하고, 데몬이 5분마다 때가 된 것을 한 건씩 올린다.
-2. 간격/시간대: 글 사이 75~135분 간격 + 무작위 지터, 한국 시간 08:00~22:30에만 게시, 하루 최대 3건.
+2. 시각/한도: 게시 시각은 날짜마다 한국 시간 08:00~22:30 안에서 무작위로 뽑고(앞 글에 이어 붙이지 않음),
+   다른 게시와 최소 75분 간격, 하루 최대 3건. 3개 사이트 글이 한꺼번에 올라가지 않는다.
 3. 댓글 지연: 본문을 올린 뒤 40~110초 뒤에 링크 댓글을 단다.
 4. 차단기: Meta가 차단/제한 응답(API access blocked, 토큰/요청 한도 오류)을 주거나 연속 실패하면 일정 시간 스레드 게시를
    멈추고 텔레그램으로 알린다. 막힌 상태에서 계속 두드리지 않는다.
@@ -115,7 +116,8 @@ def _save(path, data) -> None:
 
 def _state() -> Dict[str, Any]:
     state = _load(STATE_PATH, {})
-    state.setdefault("posted_log", [])
+    state.setdefault("posted_log", [])  # 글 링크 게시
+    state.setdefault("casual_log", [])  # 일상 글 게시
     state.setdefault("fail_streak", 0)
     return state
 
@@ -143,27 +145,54 @@ def _day_key(dt: datetime) -> str:
     return dt.astimezone(KST).date().isoformat()
 
 
-def _count_on_day(day_key: str, queue: List[Dict[str, Any]], state: Dict[str, Any]) -> int:
-    posted = sum(1 for p in state.get("posted_log", []) if (_parse(p) and _day_key(_parse(p)) == day_key))
-    queued = sum(1 for q in queue if (_parse(q.get("due_at", "")) and _day_key(_parse(q["due_at"])) == day_key))
+def _count_on_day(day_key: str, queue: List[Dict[str, Any]], state: Dict[str, Any], kind: str = "link") -> int:
+    log = state.get("casual_log" if kind == "casual" else "posted_log", [])
+    posted = sum(1 for p in log if (_parse(p) and _day_key(_parse(p)) == day_key))
+    queued = sum(
+        1
+        for q in queue
+        if q.get("kind", "link") == kind and _parse(q.get("due_at", "")) and _day_key(_parse(q["due_at"])) == day_key
+    )
     return posted + queued
 
 
-def _compute_due(queue: List[Dict[str, Any]], state: Dict[str, Any], now: datetime) -> datetime:
-    gap = min_gap_minutes()
-    times: List[datetime] = [t for t in (_parse(q.get("due_at", "")) for q in queue) if t]
-    times += [t for t in (_parse(p) for p in state.get("posted_log", [])[-5:]) if t]
-    last = max(times) if times else None
-    if last is None or last < now:
-        due = now + timedelta(minutes=random.randint(5, 25))
-    else:
-        due = last + timedelta(minutes=random.randint(gap, gap + 60))
-    due = _clamp_to_window(due)
-    for _ in range(14):  # 하루 한도를 넘으면 다음 날로 넘긴다
-        if _count_on_day(_day_key(due), queue, state) < max_per_day():
-            break
-        due = _window_start(due.astimezone(KST) + timedelta(days=1))
-    return due
+def casual_max_per_day() -> int:
+    return _int_env("THREADS_CASUAL_MAX_PER_DAY", 1)
+
+
+TODAY_CHANCE = 0.3  # 발행 직후 같은 날 저녁에 올릴 확률(나머지는 다음 날 이후의 무작위 시각)
+
+
+def _compute_due(queue: List[Dict[str, Any]], state: Dict[str, Any], now: datetime, kind: str = "link") -> datetime:
+    """게시 시각을 "날짜 → 그날 08:00~22:30 안의 무작위 시각"으로 정한다.
+
+    앞 글에 이어 붙이는 방식이 아니라 날마다 시각을 새로 뽑아서 매일 같은 시간대에 몰리는 패턴이 안 생기게 한다.
+    이미 예약/게시된 시각과는 최소 간격(THREADS_MIN_GAP_MINUTES)을 두고, 하루 한도를 넘으면 다음 날로 넘어간다.
+    """
+    gap = timedelta(minutes=min_gap_minutes())
+    taken: List[datetime] = [t for t in (_parse(q.get("due_at", "")) for q in queue) if t]
+    taken += [t for t in (_parse(p) for p in state.get("posted_log", [])[-20:]) if t]
+    taken += [t for t in (_parse(p) for p in state.get("casual_log", [])[-20:]) if t]
+    local_now = now.astimezone(KST)
+    first_offset = 0 if random.random() < TODAY_CHANCE else 1
+    cap = casual_max_per_day() if kind == "casual" else max_per_day()
+
+    for offset in range(first_offset, first_offset + 14):
+        day = local_now + timedelta(days=offset)
+        if _count_on_day(_day_key(day), queue, state, kind) >= cap:
+            continue
+        start = day.replace(hour=8, minute=0, second=0, microsecond=0)
+        end = day.replace(hour=22, minute=30, second=0, microsecond=0)
+        if offset == 0:
+            start = max(start, local_now + timedelta(minutes=10))
+        span = int((end - start).total_seconds())
+        if span < 600:
+            continue
+        for _ in range(80):
+            candidate = start + timedelta(seconds=random.randint(0, span))
+            if all(abs(candidate - t) >= gap for t in taken):
+                return candidate.astimezone(timezone.utc)
+    return _clamp_to_window(now + timedelta(hours=6))
 
 
 # ---------------------------------------------------------------------------
@@ -227,6 +256,42 @@ def enqueue(site: str, text: str, comment: str, post_url: str, now: Optional[dat
     return {"status": "queued", "due_at": _iso(due)}
 
 
+def enqueue_casual(text: str, now: Optional[datetime] = None) -> Dict[str, Any]:
+    """링크 없는 일상 글 한 건을 예약한다(봇처럼 보이지 않게 섞는 용도). 하루 최대 THREADS_CASUAL_MAX_PER_DAY건."""
+    now = now or _now()
+    if not text:
+        return {"status": "skipped", "reason": "no_text"}
+    if paused_until(now):
+        return {"status": "skipped", "reason": "paused"}
+    with _lock():
+        queue = _load(QUEUE_PATH, [])
+        state = _state()
+        due = _compute_due(queue, state, now, "casual")
+        queue.append(
+            {
+                "kind": "casual",
+                "site": "-",
+                "text": text,
+                "comment": "",
+                "post_url": "",
+                "created_at": _iso(now),
+                "due_at": _iso(due),
+                "attempts": 0,
+            }
+        )
+        _save(QUEUE_PATH, queue)
+    logger.info("[Threads] 일상 글 예약: %s KST", due.astimezone(KST).strftime("%m-%d %H:%M"))
+    return {"status": "queued", "due_at": _iso(due)}
+
+
+def casual_queued() -> bool:
+    return any(q.get("kind") == "casual" for q in _load(QUEUE_PATH, []))
+
+
+def last_casual_posted() -> Optional[datetime]:
+    return max((t for t in (_parse(p) for p in _state().get("casual_log", [])) if t), default=None)
+
+
 def _pop_due(now: datetime) -> Optional[Dict[str, Any]]:
     """지금 올려도 되는 항목 하나를 큐에서 꺼낸다. 없으면 None(한도/간격/시간대 조건 포함)."""
     with _lock():
@@ -235,9 +300,9 @@ def _pop_due(now: datetime) -> Optional[Dict[str, Any]]:
 
         fresh: List[Dict[str, Any]] = []
         for item in queue:
-            created = _parse(item.get("created_at", ""))
-            if created and now - created > timedelta(hours=STALE_HOURS):
-                logger.info("[Threads] %s시간 넘게 못 올린 예약을 버립니다: %s", STALE_HOURS, item.get("post_url"))
+            due_at = _parse(item.get("due_at", ""))
+            if due_at and now - due_at > timedelta(hours=STALE_HOURS):  # 예약 시각이 한참 지나도록 못 올린 것
+                logger.info("[Threads] 예약 시각을 %s시간 넘겨 못 올린 항목을 버립니다: %s", STALE_HOURS, item.get("post_url") or "일상 글")
                 continue
             fresh.append(item)
         queue = fresh
@@ -254,12 +319,16 @@ def _pop_due(now: datetime) -> Optional[Dict[str, Any]]:
 
         local = now.astimezone(KST)
         minutes = local.hour * 60 + local.minute
-        last_posted = max((t for t in (_parse(p) for p in state["posted_log"]) if t), default=None)
+        kind = picked.get("kind", "link")
+        last_posted = max(
+            (t for t in (_parse(p) for p in state["posted_log"] + state["casual_log"]) if t), default=None
+        )
         too_soon = last_posted is not None and now - last_posted < timedelta(minutes=min_gap_minutes())
-        over_cap = _count_on_day(_day_key(now), [], state) >= max_per_day()
+        cap = casual_max_per_day() if kind == "casual" else max_per_day()
+        over_cap = _count_on_day(_day_key(now), [], state, kind) >= cap
         out_of_window = not (WINDOW_START_MIN <= minutes < WINDOW_END_MIN)
         if too_soon or over_cap or out_of_window:
-            picked["due_at"] = _iso(_compute_due([i for i in queue if i is not picked], state, now))
+            picked["due_at"] = _iso(_compute_due([i for i in queue if i is not picked], state, now, kind))
             _save(QUEUE_PATH, queue)
             return None
 
@@ -292,7 +361,8 @@ def process_due(now: Optional[datetime] = None, sleep=time.sleep) -> Dict[str, A
     if result.get("status") == "ok":
         with _lock():
             state = _state()
-            state["posted_log"] = (state["posted_log"] + [_iso(now)])[-50:]
+            log_key = "casual_log" if item.get("kind") == "casual" else "posted_log"
+            state[log_key] = (state[log_key] + [_iso(now)])[-50:]
             state["fail_streak"] = 0
             _save(STATE_PATH, state)
         comment_result: Dict[str, Any] = {"status": "skipped"}

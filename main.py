@@ -279,10 +279,21 @@ def threads_queue_job() -> None:
         logger.warning("스레드 예약 처리 중 오류(무시): %s", exc)
 
 
+def threads_casual_job() -> None:
+    """링크 없는 일상 글을 가끔 예약한다(계정이 홍보용 자동 게시로만 보이지 않게)."""
+    try:
+        import threads_casual
+
+        threads_casual.maybe_schedule_casual()
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("스레드 일상 글 예약 중 오류(무시): %s", exc)
+
+
 def _register_schedule_jobs() -> None:
     schedule.every().day.at(settings.schedule_time).do(daily_pipeline_job)
     schedule.every(30).minutes.do(auto_publish_check_job)
     schedule.every(5).minutes.do(threads_queue_job)
+    schedule.every(3).hours.do(threads_casual_job)
 
     # NEWSLETTER_SCHEDULE_TIME 예: "Monday 08:00"
     try:
