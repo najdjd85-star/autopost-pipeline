@@ -16,6 +16,7 @@ import os
 import re
 from typing import Any, Dict, List, Optional
 
+from benchmark import build_benchmark_brief
 from calculator_library import CALCULATOR_CHOICES
 from competitor_analyzer import get_top_blog_references
 from fact_sheets import get_fact_sheet
@@ -279,6 +280,7 @@ def build_user_prompt(
     recent_titles: Optional[List[str]] = None,
     layout_block: str = "",
     persona_block: str = "",
+    benchmark_block: str = "",
 ) -> str:
     if references:
         ref_lines = []
@@ -319,6 +321,8 @@ def build_user_prompt(
         dedup_section += fact_sheet + "\n"
     dedup_section += layout_block
     dedup_section += persona_block
+    if benchmark_block:
+        dedup_section += benchmark_block[:3000] + "\n"
 
     return f"""{dedup_section}[오늘의 트렌드 브리핑]
 {trend_briefing}
@@ -427,6 +431,9 @@ def generate_post(
 
     longtail = expand_to_longtail(keyword)
     references = get_top_blog_references(longtail[0] if longtail else keyword)
+    benchmark_block = ""
+    if os.environ.get("BENCHMARK_ENABLED", "1") != "0":
+        benchmark_block = build_benchmark_brief(longtail[0] if longtail else keyword, site=site)
 
     try:
         video_trends = get_trending_videos(keyword)
@@ -452,6 +459,7 @@ def generate_post(
         recent_titles,
         format_variant_prompt(variant),
         format_persona_prompt(target_persona),
+        benchmark_block,
     )
 
     try:
