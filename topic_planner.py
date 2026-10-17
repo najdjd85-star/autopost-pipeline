@@ -219,10 +219,30 @@ def pick_keyword(site: str, seeds: List[str], recent_titles: List[str]) -> str:
     return random.choice([seed for seed, _ in eligible[:_PICK_FROM_OLDEST]])
 
 
-def pick_content_type(site: str, news_available: bool) -> str:
+# 우선 주제: 허브 "내 지원금 확인"에서 연결할 글이 아직 없는 제도. 사이트별로 앞에서부터 하나씩, 아직 안 쓴 것을
+# 일반 로테이션보다 먼저 쓴다(코드에만 있어서 서버는 git pull만 하면 된다). 다 쓰면 자동으로 일반 선정으로 돌아간다.
+PRIORITY_TOPICS: Dict[str, List[str]] = {
+    "A": ["아동수당", "의료급여", "교육급여", "임신·출산 진료비 바우처"],
+    "C": ["자녀 세액공제", "중소기업 취업청년 소득세 감면"],
+}
+# 안내/설명형 글에 어울리는 유형만 쓴다(탈락 겁주기·뉴스 풀이 제외)
+_PRIORITY_TYPES = ["policy_update", "checklist", "glossary", "case_calc", "choose", "calendar"]
+
+
+def pick_priority(site: str, history: Dict[str, List[str]], recent_titles: List[str]) -> str:
+    for kw in PRIORITY_TOPICS.get(site, []):
+        if kw in history["keywords"]:
+            continue
+        if _title_distance(kw, recent_titles) is not None:  # 최근 제목에 이미 다룬 흔적이 있으면 건너뜀
+            continue
+        return kw
+    return ""
+
+
+def pick_content_type(site: str, news_available: bool, allowed: Optional[List[str]] = None) -> str:
     history = _load_history(site)
     recent = history["types"][-_AVOID_RECENT_TYPES:]
-    pool = [t for t in CONTENT_TYPES if t != "news_hook" or news_available]
+    pool = [t for t in CONTENT_TYPES if (t != "news_hook" or news_available) and (not allowed or t in allowed)]
     candidates = [t for t in pool if t not in recent]
     if news_available and "news_hook" in candidates:
         return "news_hook"  # 이번 주 소식은 시의성이 있어서 쓸 수 있을 때 우선
@@ -262,16 +282,19 @@ def plan_topic(
 ) -> Dict[str, Any]:
     """오늘 글의 키워드·유형·프롬프트 블록·어울리는 구조 목록을 정한다."""
     history = _load_history(site)
-    news = None if forced_keyword else find_news_for_site(seeds, briefings)
+    priority = "" if forced_keyword else pick_priority(site, history, recent_titles)
+    news = None if (forced_keyword or priority) else find_news_for_site(seeds, briefings)
     if news:
         families = {family_of(k) for k in history["keywords"][-_AVOID_RECENT_FAMILIES:]}
         if family_of(news["keyword"]) in families or _title_distance(news["keyword"], recent_titles[:_AVOID_RECENT_FAMILIES]) == 0:
             news = None
 
-    content_type = pick_content_type(site, news_available=news is not None)
+    content_type = pick_content_type(site, news_available=news is not None, allowed=_PRIORITY_TYPES if priority else None)
     if content_type != "news_hook":
         news = None
-    keyword = forced_keyword or (news["keyword"] if news else pick_keyword(site, seeds, recent_titles))
+    keyword = forced_keyword or priority or (news["keyword"] if news else pick_keyword(site, seeds, recent_titles))
+    if priority:
+        logger.info("[Site %s] 우선 주제 큐에서 선정: %s", site, priority)
 
     spec = CONTENT_TYPES[content_type]
     block = ""
