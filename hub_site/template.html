@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>데일리픽스 포인트 - 시안</title>
+<style>
+:root{--bg:#f6f6f4;--card:#fff;--text:#1d1d1b;--sub:#5f5e5a;--mute:#8a8985;--line:#e4e3de;--line2:#cfcec7;--acc:#185fa5;--accbg:#e6f1fb;--ok:#27500a;--okbg:#eaf3de;--warn:#633806;--warnbg:#faeeda;--no:#6b6a66;--nobg:#efeee9}
+@media (prefers-color-scheme:dark){:root{--bg:#1b1b19;--card:#252523;--text:#f1efe8;--sub:#b4b2a9;--mute:#888780;--line:#383835;--line2:#4a4a46;--acc:#85b7eb;--accbg:#0c447c;--ok:#c0dd97;--okbg:#27500a;--warn:#fac775;--warnbg:#633806;--no:#b4b2a9;--nobg:#2f2f2c}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;font-size:16px;line-height:1.65;-webkit-text-size-adjust:100%}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;cursor:pointer}
+.wrap{max-width:1040px;margin:0 auto;padding:0 16px}
+.banner{background:var(--warnbg);color:var(--warn);font-size:12px;text-align:center;padding:6px 12px}
+.top{background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+.nav{display:flex;align-items:center;justify-content:space-between;height:56px}
+.logo{font-weight:600;font-size:17px;letter-spacing:-.2px}
+.menu{display:none;gap:22px;font-size:14px;color:var(--sub)}
+.menu a:hover{color:var(--text)}
+.burger{width:44px;height:44px;border:1px solid var(--line);border-radius:10px;background:var(--card);display:flex;align-items:center;justify-content:center}
+.mm{display:none;border-top:1px solid var(--line);background:var(--card)}
+.mm.open{display:block}
+.mm a{display:block;padding:14px 16px;border-bottom:1px solid var(--line);font-size:15px}
+.hero{padding:22px 0 8px}
+.hero h1{font-size:22px;line-height:1.4;margin:0 0 6px;letter-spacing:-.3px}
+.hero p{margin:0 0 14px;color:var(--sub);font-size:14px}
+.search{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line2);border-radius:12px;padding:0 14px;height:48px}
+.search input{flex:1;border:0;background:transparent;font:inherit;font-size:15px;color:var(--text);outline:none;min-width:0}
+.cta{display:flex;align-items:center;gap:14px;width:100%;margin-top:14px;background:#e8590c;color:#fff;border:0;border-radius:18px;padding:18px 16px;text-align:left;box-shadow:0 5px 0 #b84508,0 12px 20px rgba(232,89,12,.28)}
+.cta:active{transform:translateY(3px);box-shadow:0 2px 0 #b84508,0 6px 12px rgba(232,89,12,.28)}
+.cta .ci{flex:none;width:48px;height:48px;border-radius:50%;background:#fff;color:#e8590c;display:flex;align-items:center;justify-content:center}
+.cta .ct2{flex:1;min-width:0}
+.cta .ct2 b{display:block;font-size:19px;line-height:1.35;font-weight:700;letter-spacing:-.3px}
+.cta .ct2 em{display:block;font-style:normal;font-size:13px;opacity:.95;margin-top:2px}
+.cta .ca{flex:none;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-style:normal;font-size:22px;line-height:1}
+.h2{font-size:15px;font-weight:600;margin:26px 0 10px}
+.today{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;display:block}
+.img{height:110px;border-radius:10px;background:var(--nobg);margin-bottom:10px;overflow:hidden}
+.img img{width:100%;height:100%;object-fit:cover;display:block}
+.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:5px;margin-bottom:6px;font-weight:500}
+.t-gov{background:var(--accbg);color:var(--acc)}.t-life{background:var(--okbg);color:var(--ok)}.t-tax{background:var(--warnbg);color:var(--warn)}
+.ct{font-size:15px;line-height:1.55;font-weight:600;margin:0 0 4px}
+.mt{font-size:12px;color:var(--mute);margin:0}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 8px;scrollbar-width:none}
+.chip{flex:none;height:38px;padding:0 15px;border-radius:999px;border:1px solid var(--line2);background:var(--card);font-size:14px;color:var(--sub)}
+.chip.on{background:var(--accbg);border-color:var(--acc);color:var(--acc);font-weight:600}
+.list{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:0 12px}
+.row{display:flex;gap:12px;padding:12px 0;border-top:1px solid var(--line);min-height:64px}
+.row:first-child{border-top:0}
+.th{width:60px;height:60px;border-radius:9px;background:var(--nobg);flex:none;overflow:hidden}
+.th img{width:100%;height:100%;object-fit:cover;display:block}
+.more{display:block;width:100%;height:48px;margin-top:10px;border:1px solid var(--line2);background:var(--card);border-radius:12px;font-size:14px;font-weight:600}
+.empty{padding:22px 4px;color:var(--mute);font-size:14px;text-align:center}
+.calc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.cb{background:var(--card);border:1px solid var(--line);border-radius:12px;min-height:52px;padding:10px 12px;font-size:14px;display:flex;align-items:center}
+.cb small{display:block;color:var(--mute);font-size:11px}
+.foot{margin-top:34px;border-top:1px solid var(--line);background:var(--card);padding:18px 0 30px;font-size:12px;color:var(--mute);line-height:1.8}
+.foot a{color:var(--sub);margin-right:12px}
+/* wizard */
+.back{display:flex;align-items:center;gap:6px;height:48px;border:0;background:none;font-size:14px;color:var(--sub);padding:0}
+.pr{height:5px;border-radius:3px;background:var(--line);margin:4px 0 8px}.pr span{display:block;height:5px;border-radius:3px;background:var(--acc);transition:width .2s}
+.stp{font-size:13px;color:var(--sub);margin:0 0 18px}
+.q{font-size:20px;font-weight:600;line-height:1.5;margin:0 0 6px}
+.hint{font-size:13px;color:var(--sub);margin:0 0 16px}
+.opt{display:flex;align-items:center;gap:10px;width:100%;min-height:56px;padding:12px 16px;margin-bottom:8px;text-align:left;background:var(--card);border:1px solid var(--line2);border-radius:14px;font-size:16px}
+.opt:active{background:var(--accbg)}
+.opt.on{background:var(--accbg);border-color:var(--acc);color:var(--acc);font-weight:600}
+.box{width:22px;height:22px;border-radius:6px;border:1.5px solid var(--line2);flex:none;display:flex;align-items:center;justify-content:center;font-size:14px;line-height:1}
+.opt.on .box{background:var(--acc);border-color:var(--acc);color:#fff}
+.go{width:100%;height:54px;margin-top:6px;background:var(--acc);color:#fff;border:0;border-radius:14px;font-size:16px;font-weight:600}
+@media (prefers-color-scheme:dark){.go{color:#0b0b0b}}
+.sum{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:13px;color:var(--sub);line-height:1.8;margin-bottom:14px}
+.res{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px}
+.rt{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:4px}
+.rn{font-size:16px;font-weight:600}
+.bd{font-size:12px;padding:3px 9px;border-radius:6px;flex:none;font-weight:600}
+.b-y{background:var(--okbg);color:var(--ok)}.b-m{background:var(--warnbg);color:var(--warn)}.b-n{background:var(--nobg);color:var(--no)}
+.rd{font-size:14px;color:var(--sub);margin:0 0 10px}
+.lk{display:flex;gap:8px}
+.lb{flex:1;min-height:44px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line2);border-radius:10px;font-size:13px;font-weight:600;background:var(--card);text-align:center;padding:0 6px}
+.lb.pri{flex:1.5;background:var(--acc);border-color:var(--acc);color:#fff;font-size:15px;min-height:50px}
+.lb.sec{flex:1;color:var(--sub);font-weight:500;font-size:12px}
+@media (prefers-color-scheme:dark){.lb.pri{color:#0b0b0b}}
+.yh{font-size:13px;font-weight:600;color:var(--sub);margin:14px 2px 6px;display:flex;align-items:baseline;gap:6px}
+.yh span{font-weight:400;color:var(--mute)}
+.dt{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:4px 14px;margin:14px 0 4px}
+.dt summary{min-height:48px;display:flex;align-items:center;font-size:14px;font-weight:600;color:var(--sub);cursor:pointer}
+.nrow{margin:0;padding:9px 0;border-top:1px solid var(--line);font-size:13px;line-height:1.55}
+.nrow b{display:block;font-size:14px}.nrow span{color:var(--mute)}
+button.lb{font-family:inherit}
+.sform{display:flex;gap:8px}.sform .search{flex:1;min-width:0}
+.sbtn{flex:none;height:48px;padding:0 20px;border:0;border-radius:12px;background:var(--acc);color:#fff;font-size:15px;font-weight:600}
+@media (prefers-color-scheme:dark){.sbtn{color:#0b0b0b}}
+.serr{margin:6px 4px 0;font-size:13px;color:#b3261e;min-height:18px}
+.kw{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:4px}
+.kw span{font-size:12px;color:var(--mute);margin-right:2px}
+.kw button{height:34px;padding:0 12px;border-radius:999px;border:1px solid var(--line2);background:var(--card);font-size:13px;color:var(--sub)}
+#results .inner{padding-bottom:10px}
+.disc{font-size:12px;color:var(--mute);line-height:1.7;margin:14px 2px}
+.sub2{font-size:13px;font-weight:600;color:var(--sub);margin:18px 0 8px}
+@media (min-width:720px){
+ .menu{display:flex}.burger{display:none}.mm{display:none!important}
+ .hero{padding:34px 0 10px}.hero h1{font-size:28px}.hero p{font-size:15px}
+ .hero-in{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:24px;align-items:end}
+ .cta{margin-top:0}
+ .today{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .calc{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .two{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:24px;align-items:start}
+ #check .inner{max-width:560px;margin:0 auto}
+ #results .inner{max-width:720px;margin:0 auto}
+}
+</style>
+</head>
+<body>
+<div class="banner">시안입니다. 서버에 반영되지 않았고, 빠른 확인의 판정은 예시 로직입니다.</div>
+<header class="top"><div class="wrap nav">
+ <a class="logo" href="#" id="logo">데일리픽스 포인트</a>
+ <nav class="menu"><a data-f="gov" href="#">정부지원금</a><a data-f="life" href="#">통신비</a><a data-f="tax" href="#">세금·연금</a><a class="nav-all" href="#">전체 글</a><a href="#calc">계산기</a><a id="pg-about" href="#">소개</a><a id="pg-contact" href="#">문의</a></nav>
+ <button class="burger" id="burger" aria-label="메뉴 열기"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 5h14M3 10h14M3 15h14"/></svg></button>
+</div>
+<nav class="mm" id="mm"><a data-f="gov" href="#">정부지원금</a><a data-f="life" href="#">통신비</a><a data-f="tax" href="#">세금·연금</a><a class="nav-all" href="#">전체 글</a><a href="#calc">계산기</a><a id="pg-about2" href="#">소개</a><a id="pg-contact2" href="#">문의</a></nav></header>
+
+<main id="home"><div class="wrap">
+ <section class="hero"><div class="hero-in">
+  <div><h1>공식 기준으로 정리한 생활 혜택 안내소</h1><p>정부지원금, 통신비, 세금·연금을 출처와 함께 정리합니다.</p>
+   <form class="sform" id="sform" role="search"><label class="search"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="9" r="6"/><path d="M14 14l4 4"/></svg><input id="q" type="search" enterkeyhint="search" placeholder="제도나 키워드 검색" aria-label="검색"></label><button class="sbtn" type="submit">검색</button></form>
+   <p class="serr" id="serr" role="alert"></p>
+   <div class="kw" id="kw"><span>자주 찾는 검색어</span><button type="button">근로장려금</button><button type="button">기초연금</button><button type="button">청년월세</button><button type="button">부모급여</button><button type="button">연말정산</button></div></div>
+  <button class="cta" id="open-check"><span class="ci" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span class="ct2"><b>내 지원금, 1분 만에 확인하기</b><em>질문 몇 개로 20개 제도를 한꺼번에 살펴봐요</em></span><i class="ca" aria-hidden="true">›</i></button>
+ </div></section>
+
+ <section id="today-sec"><p class="h2">오늘의 새 글</p><div class="today" id="today"></div></section>
+
+ <div class="two"><section><p class="h2" id="list-h">글 모아보기</p>
+  <div class="chips" id="chips"><button class="chip on" data-f="all">전체</button><button class="chip" data-f="gov">정부지원금</button><button class="chip" data-f="life">통신비</button><button class="chip" data-f="tax">세금·연금</button></div>
+  <div class="list" id="list"></div><button class="more" id="more">글 더 보기</button><button class="more" id="all-btn" style="background:var(--accbg);border-color:var(--acc);color:var(--acc)">전체 글 목록 보기</button></section>
+  <aside id="calc"><p class="h2">계산기 바로가기</p><div class="calc" id="calcs"></div></aside>
+ </div>
+</div></main>
+
+<main id="results" hidden><div class="wrap"><div class="inner">
+ <button class="back" id="rback"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4l-6 6 6 6"/></svg><span>홈으로</span></button>
+ <form class="sform" id="sform2" role="search"><label class="search"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="9" r="6"/><path d="M14 14l4 4"/></svg><input id="q2" type="search" enterkeyhint="search" placeholder="제도나 키워드 검색" aria-label="검색"></label><button class="sbtn" type="submit">검색</button></form>
+ <p class="serr" id="serr2" role="alert"></p>
+ <p class="h2" id="rcount" style="margin-top:20px"></p>
+ <div class="list" id="rlist"></div>
+ <div id="rempty" hidden><div class="empty">일치하는 글이 없어요. 다른 단어로 찾아 보세요.</div><div class="kw" id="kw2" style="justify-content:center"><button type="button">근로장려금</button><button type="button">기초연금</button><button type="button">청년월세</button><button type="button">부모급여</button><button type="button">연말정산</button></div></div>
+ <button class="more" id="rmore">결과 더 보기</button>
+</div></div></main>
+
+<main id="all" hidden><div class="wrap"><div class="inner" style="max-width:720px;margin:0 auto">
+ <button class="back" id="aback"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4l-6 6 6 6"/></svg><span>홈으로</span></button>
+ <h1 class="q" style="margin-top:2px">전체 글 목록</h1>
+ <p class="hint" id="acount" style="margin-bottom:10px"></p>
+ <div class="chips" id="achips"><button class="chip on" data-a="all">전체</button><button class="chip" data-a="gov">정부지원금</button><button class="chip" data-a="life">통신비</button><button class="chip" data-a="tax">세금·연금</button></div>
+ <div class="chips" id="ychips" style="margin-top:2px"></div>
+ <div id="alist"></div>
+</div></div></main>
+
+<main id="check" hidden><div class="wrap"><div class="inner">
+ <button class="back" id="back"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l-6 6 6 6"/></svg><span id="back-t">이전</span></button>
+ <div id="wiz"></div>
+</div></div></main>
+
+<footer class="foot"><div class="wrap">
+ <div><a id="pg-about3" href="#">소개</a><a id="pg-contact3" href="#">문의</a><a id="pg-privacy" href="#">개인정보처리방침</a></div>
+ <div style="margin-top:6px">이 사이트의 일부 링크에는 제휴 수수료가 포함될 수 있습니다. 정보는 공식 자료를 기준으로 하며 신청 전 해당 기관에서 확인하세요.</div>
+</div></footer>
+
+<script>
+const D = __DATA__;
+const $ = (s) => document.querySelector(s);
+const fmt = (d) => { const [y,m,dd] = d.split('-'); return Number(m) + '월 ' + Number(dd) + '일'; };
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- 홈 ---------- */
+let filter = 'all', shown = 6;
+const cardHTML = (p) => `<a class="card" href="${p.link}"><div class="img">${p.image ? `<img src="${esc(p.image)}" alt="" loading="lazy">` : ''}</div><span class="tag t-${p.site}">${D.sites[p.site].label}</span><p class="ct">${esc(p.title)}</p><p class="mt">${fmt(p.date)} · ${p.minutes}분 읽기</p></a>`;
+const rowHTML = (p) => `<a class="row" href="${p.link}"><div class="th">${p.image ? `<img src="${esc(p.image)}" alt="" loading="lazy">` : ''}</div><div><p class="ct" style="font-size:15px">${esc(p.title)}</p><p class="mt">${D.sites[p.site].label} · ${p.date.slice(0, 4)}년 ${fmt(p.date)} · ${p.minutes}분 읽기</p></div></a>`;
+
+function renderToday() {
+  const latest = ['gov','life','tax'].map((s) => D.posts.find((p) => p.site === s)).filter(Boolean);
+  $('#today').innerHTML = latest.map(cardHTML).join('');
+}
+function renderList() {
+  const items = D.posts.filter((p) => filter === 'all' || p.site === filter);
+  const total = items.length;
+  $('#list').innerHTML = total ? items.slice(0, shown).map(rowHTML).join('') : '<div class="empty">글이 없습니다.</div>';
+  $('#more').style.display = total > shown ? 'block' : 'none';
+}
+
+/* ---------- 화면 전환 + 검색 결과 화면 ---------- */
+const VIEWS = ['home', 'results', 'all', 'check'];
+function setView(name) { VIEWS.forEach((v) => { document.getElementById(v).hidden = v !== name; }); window.scrollTo(0, 0); }
+function pushView(name, extra, replace) { try { history[replace ? 'replaceState' : 'pushState'](Object.assign({v: name}, extra || {}), '', '#' + name); } catch (e) {} }
+let rq = '', rshown = 10;
+function findPosts(q) {
+  const k = q.trim().toLowerCase();
+  const hit = (p) => (p.title + ' ' + p.excerpt + ' ' + (p.kw || '')).toLowerCase().includes(k);
+  const inTitle = (p) => p.title.toLowerCase().includes(k);
+  const items = D.posts.filter(hit);
+  return items.filter(inTitle).concat(items.filter((p) => !inTitle(p)));
+}
+function renderResults() {
+  const items = findPosts(rq);
+  $('#q2').value = rq;
+  $('#rcount').textContent = items.length ? `"${rq}" 검색 결과 ${items.length}개` : `"${rq}" 검색 결과`;
+  $('#rlist').innerHTML = items.slice(0, rshown).map(rowHTML).join('');
+  $('#rlist').hidden = !items.length;
+  $('#rempty').hidden = !!items.length;
+  $('#rmore').style.display = items.length > rshown ? 'block' : 'none';
+}
+function runSearch(raw, errId, fromPop) {
+  const q = (raw || '').trim();
+  if (!q) { $(errId).textContent = '검색어를 입력해 주세요.'; return; }
+  $('#serr').textContent = ''; $('#serr2').textContent = '';
+  const wasResults = !document.getElementById('results').hidden;
+  rq = q; rshown = 10;
+  setView('results'); renderResults();
+  if (!fromPop) pushView('results', {q}, wasResults);
+}
+$('#sform').addEventListener('submit', (e) => { e.preventDefault(); runSearch($('#q').value, '#serr'); });
+$('#sform2').addEventListener('submit', (e) => { e.preventDefault(); runSearch($('#q2').value, '#serr2'); });
+['#q', '#q2'].forEach((id) => $(id).addEventListener('input', () => { $('#serr').textContent = ''; $('#serr2').textContent = ''; }));
+document.querySelectorAll('#kw button, #kw2 button').forEach((b) => b.addEventListener('click', () => { $('#q').value = b.textContent; runSearch(b.textContent, '#serr'); }));
+$('#rmore').addEventListener('click', () => { rshown += 10; renderResults(); });
+
+/* 전체 글 목록: 사이트별로 모든 글을 보여준다 */
+let allSite = 'all', allYear = 'all';
+function renderAll() {
+  const keys = ['gov', 'life', 'tax'];
+  const years = [...new Set(D.posts.map((p) => p.date.slice(0, 4)))].sort().reverse();
+  $('#acount').textContent = '전체 ' + D.posts.length + '개 · ' + keys.map((s) => D.sites[s].label + ' ' + D.posts.filter((p) => p.site === s).length + '개').join(' · ');
+  document.querySelectorAll('#achips .chip').forEach((c) => c.classList.toggle('on', c.dataset.a === allSite));
+  $('#ychips').innerHTML = ['all'].concat(years).map((y) => `<button class="chip${allYear === y ? ' on' : ''}" data-y="${y}">${y === 'all' ? '모든 연도' : y + '년 (' + D.posts.filter((p) => p.date.startsWith(y)).length + ')'}</button>`).join('');
+  document.querySelectorAll('#ychips .chip').forEach((c) => c.addEventListener('click', () => { allYear = c.dataset.y; renderAll(); }));
+  const show = allSite === 'all' ? keys : [allSite];
+  $('#alist').innerHTML = show.map((s) => {
+    const ps = D.posts.filter((p) => p.site === s && (allYear === 'all' || p.date.startsWith(allYear)));
+    const byYear = years.filter((y) => ps.some((p) => p.date.startsWith(y)));
+    const body = byYear.length
+      ? byYear.map((y) => { const yp = ps.filter((p) => p.date.startsWith(y)); return `<p class="yh">${y}년 <span>${yp.length}개</span></p><div class="list">${yp.map(rowHTML).join('')}</div>`; }).join('')
+      : '<div class="empty">이 연도에는 글이 없습니다.</div>';
+    return `<p class="h2" style="margin-top:24px">${D.sites[s].label} <span style="color:var(--mute);font-weight:400;font-size:13px">${ps.length}개</span></p>${body}`;
+  }).join('');
+}
+function showAll(site) { allSite = site || 'all'; setView('all'); renderAll(); pushView('all', {}, !document.getElementById('all').hidden && false); }
+$('#all-btn').textContent = '전체 글 목록 보기 (' + D.posts.length + '개)';
+$('#all-btn').addEventListener('click', () => showAll('all'));
+document.querySelectorAll('.nav-all').forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); $('#mm').classList.remove('open'); showAll('all'); }));
+document.querySelectorAll('#achips .chip').forEach((c) => c.addEventListener('click', () => { allSite = c.dataset.a; renderAll(); window.scrollTo(0, 0); }));
+$('#aback').addEventListener('click', () => { showHome(); pushView('home', {}, true); });
+$('#rback').addEventListener('click', () => { showHome(); pushView('home', {}, true); });
+window.addEventListener('popstate', (e) => {
+  const s = e.state;
+  if (s && s.v === 'results' && s.q) { rq = s.q; rshown = 10; setView('results'); renderResults(); }
+  else if (s && s.v === 'all') { setView('all'); renderAll(); }
+  else if (s && s.v === 'check') { setView('check'); }
+  else { setView('home'); }
+});
+function renderCalcs() {
+  const labels = {gov:'정부지원금 계산기', life:'통신비 계산기', tax:'세금·연금 계산기'};
+  $('#calcs').innerHTML = ['tax','gov','life'].filter((s) => D.calc[s]).map((s) => `<a class="cb" href="${D.calc[s]}"><span>${labels[s]}<small>${D.sites[s].label}</small></span></a>`).join('');
+}
+document.querySelectorAll('[data-f]').forEach((el) => el.addEventListener('click', (e) => {
+  if (el.classList.contains('chip') || el.closest('nav')) { e.preventDefault(); setFilter(el.dataset.f); showHome(); $('#mm').classList.remove('open'); document.getElementById('list').scrollIntoView({behavior:'smooth', block:'start'}); }
+}));
+function setFilter(f) { filter = f; shown = 6; document.querySelectorAll('.chip').forEach((c) => c.classList.toggle('on', c.dataset.f === f)); renderList(); }
+$('#more').addEventListener('click', () => { shown += 6; renderList(); });
+$('#burger').addEventListener('click', () => $('#mm').classList.toggle('open'));
+['about','contact','about2','contact2','about3'].forEach((id) => {
+  const el = document.getElementById('pg-' + id); if (!el) return;
+  const t = id.startsWith('about') ? '소개' : '문의하기';
+  if (D.pages[t]) { el.href = D.pages[t]; }
+});
+const c3 = document.getElementById('pg-contact3'); if (c3 && D.pages['문의하기']) { c3.href = D.pages['문의하기']; }
+const pv = document.getElementById('pg-privacy'); if (pv && D.pages['개인정보처리방침']) { pv.href = D.pages['개인정보처리방침']; }
+
+__WIZARD__
+
+renderToday(); renderList(); renderCalcs();
+</script>
+</body>
+</html>

@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import json
 import random
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional  # noqa: F401
 
 from config import OUTPUT_DIR
 from fact_sheets import get_fact_sheet
@@ -162,6 +162,7 @@ def record_pick(site: str, keyword: str, content_type: str) -> None:
         _history_path(site).write_text(json.dumps(history, ensure_ascii=False), encoding="utf-8")
     except OSError as exc:
         logger.info("주제 히스토리 저장 실패(무시): %s", exc)
+    _consume_refresh(site, keyword)  # 이 글로 '새 수치로 다시 쓰기'가 끝난 제도는 대기열에서 뺀다
 
 
 def family_of(keyword: str) -> str:
@@ -229,6 +230,61 @@ PRIORITY_TOPICS: Dict[str, List[str]] = {
 _PRIORITY_TYPES = ["policy_update", "checklist", "glossary", "case_calc", "choose", "calendar"]
 
 
+# 기준 자동 갱신(standards_updater)이 끝난 제도는 새 연도 수치로 글을 한 번 다시 쓴다(허브가 가장 최근 글로 연결하므로).
+REFRESH_PATH = OUTPUT_DIR / "refresh_queue.json"
+_TAX_REFRESH = ("월세 세액공제", "자녀 세액공제", "연금저축", "ISA", "중소기업 취업청년")
+_REFRESH_KEYWORD = {
+    "임신·출산": "임신·출산 진료비 바우처", "한부모": "한부모가족 지원", "연금저축": "연금저축 세액공제",
+    "ISA": "ISA 비과세 한도", "중소기업 취업청년": "중소기업 취업청년 소득세 감면", "청년월세": "청년월세 지원",
+}
+
+
+def refresh_site(key: str) -> str:
+    return "C" if any(t in key for t in _TAX_REFRESH) else "A"
+
+
+def refresh_keyword(key: str) -> str:
+    return _REFRESH_KEYWORD.get(key, key)
+
+
+def _load_refresh() -> List[Dict[str, Any]]:
+    try:
+        data = json.loads(REFRESH_PATH.read_text(encoding="utf-8"))
+        return data if isinstance(data, list) else []
+    except (OSError, ValueError):
+        return []
+
+
+def _save_refresh(entries: List[Dict[str, Any]]) -> None:
+    try:
+        OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+        REFRESH_PATH.write_text(json.dumps(entries, ensure_ascii=False), encoding="utf-8")
+    except OSError as exc:
+        logger.info("재작성 대기열 저장 실패(무시): %s", exc)
+
+
+def add_refresh(key: str) -> None:
+    """기준이 새 연도로 갱신된 제도를 '새 수치로 글 다시 쓰기' 대기열에 넣는다."""
+    entries = _load_refresh()
+    if all(e.get("key") != key for e in entries):
+        entries.append({"key": key})
+        _save_refresh(entries)
+
+
+def pick_refresh(site: str) -> str:
+    for entry in _load_refresh():
+        if refresh_site(entry.get("key", "")) == site:
+            return refresh_keyword(entry["key"])
+    return ""
+
+
+def _consume_refresh(site: str, keyword: str) -> None:
+    entries = _load_refresh()
+    kept = [e for e in entries if not (refresh_site(e.get("key", "")) == site and refresh_keyword(e.get("key", "")) == keyword)]
+    if len(kept) != len(entries):
+        _save_refresh(kept)
+
+
 def pick_priority(site: str, history: Dict[str, List[str]], recent_titles: List[str]) -> str:
     for kw in PRIORITY_TOPICS.get(site, []):
         if kw in history["keywords"]:
@@ -282,7 +338,7 @@ def plan_topic(
 ) -> Dict[str, Any]:
     """오늘 글의 키워드·유형·프롬프트 블록·어울리는 구조 목록을 정한다."""
     history = _load_history(site)
-    priority = "" if forced_keyword else pick_priority(site, history, recent_titles)
+    priority = "" if forced_keyword else (pick_priority(site, history, recent_titles) or pick_refresh(site))
     news = None if (forced_keyword or priority) else find_news_for_site(seeds, briefings)
     if news:
         families = {family_of(k) for k in history["keywords"][-_AVOID_RECENT_FAMILIES:]}

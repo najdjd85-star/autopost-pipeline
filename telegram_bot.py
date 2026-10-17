@@ -366,6 +366,12 @@ async def _publish_stage(approval_id: str) -> None:
     pending["post_id"] = post_id
     pending["post_url"] = post_url
     _save_pending(approval_id, pending)
+    try:  # 허브가 제도별 최신 글을 정확히 잇도록 "어떤 주제의 글이 어느 주소인지" 기록
+        from post_ledger import record_post
+
+        record_post(site, draft.get("keyword", ""), draft.get("title", ""), post_url, draft.get("content_type", ""))
+    except Exception as exc:  # noqa: BLE001
+        logger.info("발행 기록 실패(무시): %s", exc)
 
     workdir = OUTPUT_DIR / f"post_{post_id}"
     workdir.mkdir(parents=True, exist_ok=True)

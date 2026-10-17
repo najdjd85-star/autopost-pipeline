@@ -314,6 +314,10 @@ def run_update(now: Optional[datetime] = None, force: bool = False, only: Option
         _save(OVERRIDE_PATH, overrides)
         info["last_status"] = "updated"
         result["updated"].append(key)
+        if any(p in key or key in p for p in PRIORITY):  # 허브 제도는 새 수치로 글을 한 번 다시 쓴다
+            from topic_planner import add_refresh
+
+            add_refresh(key)
         lines = "\n".join(
             f"· {str(c.get('fact', ''))[:40]}: {str(c.get('old', ''))[:20]} → {str(c.get('new', ''))[:20]}"
             for c in (data.get("changes") or [])[:6]

@@ -309,8 +309,19 @@ def standards_update_job() -> None:
         logger.warning("기준 자동 갱신 중 오류(무시): %s", exc)
 
 
+def hub_build_job() -> None:
+    """허브 홈 페이지를 최신 글·제도 기준으로 다시 만든다(data/output/hub/index.html). 실제 허브에 올리는 것은 HUB_PUBLISH_PATH를 설정했을 때만."""
+    try:
+        import hub_builder
+
+        hub_builder.run_daily()
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("허브 생성 중 오류(무시): %s", exc)
+
+
 def _register_schedule_jobs() -> None:
     schedule.every().day.at(settings.schedule_time).do(daily_pipeline_job)
+    schedule.every().day.at("13:30").do(hub_build_job)  # 서버 UTC 13:30 = 한국 22:30 (글 발행이 끝난 뒤)
     schedule.every().day.at("00:20").do(policy_watch_job)  # 서버 UTC 00:20 = 한국 09:20
     schedule.every().day.at("00:40").do(standards_update_job)  # 서버 UTC 00:40 = 한국 09:40
     schedule.every(30).minutes.do(auto_publish_check_job)
