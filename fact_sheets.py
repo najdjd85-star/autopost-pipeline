@@ -7,7 +7,12 @@
 """
 from __future__ import annotations
 
+import json
+import re
+from datetime import datetime, timedelta, timezone
 from typing import List, Tuple
+
+from config import OUTPUT_DIR
 
 _STOCK_TAX_FACTS = """[검증된 사실 메모 - 해외주식 세금 (2026년 기준). 이 범위를 벗어나는 제도·수치 주장은 쓰지 마세요.
  레퍼런스 블로그 내용과 다르면 이 메모를 따르세요]
@@ -538,8 +543,56 @@ _FACT_SHEETS: List[Tuple[Tuple[str, ...], str]] = [
 ]
 
 
+_OVERRIDE_PATH = OUTPUT_DIR / "fact_overrides.json"
+_YEAR_RE = re.compile(r"(\d{4})년 기준")
+_STALE_NOTICE = (
+    "[주의 - 이 사실 메모는 {year}년 기준입니다. 올해는 {now}년이라 금액·소득 기준·한도·지급액이 바뀌었을 수 있습니다. "
+    "구체 수치는 단정하지 말고 '{year}년 기준으로는 ~였고, {now}년 기준은 공식 사이트에서 확인하세요'처럼 기준 연도를 "
+    "밝혀 쓰세요. 제도의 구조·절차 설명은 그대로 써도 됩니다.]\n"
+)
+
+
+def year_of(text: str):
+    match = _YEAR_RE.search(text[:200])
+    return int(match.group(1)) if match else None
+
+
+def _now_year() -> int:
+    return datetime.now(timezone(timedelta(hours=9))).year
+
+
+def load_overrides() -> dict:
+    """standards_updater가 검증을 통과시켜 저장한 최신 연도 사실 메모({시트키: {year, text, ...}})."""
+    try:
+        return json.loads(_OVERRIDE_PATH.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+
+
+def sheet_key(tokens) -> str:
+    return str(tokens[0])
+
+
+def base_sheet_text(tokens, facts: str) -> str:
+    """코드에 있는 원본과 자동 갱신본 중 기준 연도가 더 최신인 쪽(같으면 원본)."""
+    override = load_overrides().get(sheet_key(tokens))
+    if override and override.get("text") and (year_of(override["text"]) or 0) > (year_of(facts) or 0):
+        return override["text"]
+    return facts
+
+
+def iter_sheets():
+    """[(키, 토큰, 현재 유효한 본문)] - 자동 갱신 대상 점검과 보고에 쓴다."""
+    return [(sheet_key(tokens), tokens, base_sheet_text(tokens, facts)) for tokens, facts in _FACT_SHEETS]
+
+
 def get_fact_sheet(keyword: str) -> str:
     for tokens, facts in _FACT_SHEETS:
         if any(token in keyword for token in tokens):
-            return facts
+            text = base_sheet_text(tokens, facts)
+            year, now = year_of(text), _now_year()
+            if year and year < now:
+                # 새해가 됐는데 아직 갱신되지 않은 시트: 수치를 단정하지 않도록 자동으로 낮춘다(안전장치)
+                return _STALE_NOTICE.format(year=year, now=now) + text
+            return text
     return ""

@@ -299,9 +299,20 @@ def policy_watch_job() -> None:
         logger.warning("정책 변화 감시 중 오류(무시): %s", exc)
 
 
+def standards_update_job() -> None:
+    """기준 연도 자동 갱신: 12/20~3/31(매일)과 월요일(재시도)에, 낡은 팩트 시트를 공식 사이트 기준으로 조사·검증해 갱신."""
+    try:
+        import standards_updater
+
+        standards_updater.run_daily()
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("기준 자동 갱신 중 오류(무시): %s", exc)
+
+
 def _register_schedule_jobs() -> None:
     schedule.every().day.at(settings.schedule_time).do(daily_pipeline_job)
     schedule.every().day.at("00:20").do(policy_watch_job)  # 서버 UTC 00:20 = 한국 09:20
+    schedule.every().day.at("00:40").do(standards_update_job)  # 서버 UTC 00:40 = 한국 09:40
     schedule.every(30).minutes.do(auto_publish_check_job)
     schedule.every(5).minutes.do(threads_queue_job)
     schedule.every(3).hours.do(threads_casual_job)

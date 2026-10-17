@@ -121,19 +121,18 @@ def send_due_reminders(now: Optional[datetime] = None, dry: bool = False) -> int
 # 3. 팩트 시트 기준 연도 점검
 # ---------------------------------------------------------------------------
 def fact_year_report(now: Optional[datetime] = None) -> Dict[str, Any]:
-    from fact_sheets import _FACT_SHEETS
+    from fact_sheets import iter_sheets, year_of  # 자동 갱신된 시트는 갱신본의 연도로 센다
 
     now = now or _now()
     stale: List[str] = []
     years: Dict[int, int] = {}
-    for tokens, text in _FACT_SHEETS:
-        match = re.search(r"(\d{4})년 기준", text[:200])
-        if not match:
+    for key, _tokens, text in iter_sheets():
+        year = year_of(text)
+        if not year:
             continue
-        year = int(match.group(1))
         years[year] = years.get(year, 0) + 1
         if year < now.year:
-            stale.append(str(tokens[0]))
+            stale.append(key)
     return {"total": sum(years.values()), "years": years, "stale": stale, "current_year": now.year}
 
 

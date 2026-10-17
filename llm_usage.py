@@ -9,6 +9,7 @@
 from __future__ import annotations
 
 import json
+import os
 import time
 import uuid
 from datetime import datetime, timedelta, timezone
@@ -232,7 +233,13 @@ def check_budget(purpose: str, site: Optional[str] = None) -> None:
             f"월 LLM 예산 초과: 이번 달 ${month:.2f} / 한도 ${settings.llm_monthly_budget_usd:.2f} "
             "(LLM_MONTHLY_BUDGET_USD로 조정). 호출을 중단합니다."
         )
-    if totals["calls"] + len(totals["pending"]) >= settings.llm_max_calls_per_day:
+    # 연 1회 기준 갱신 조사(policy_update)는 글 생성용 하루 호출 한도와 따로 센다(자체 한도 POLICY_UPDATE_MAX_CALLS_PER_DAY).
+    update_calls = sum(1 for r in totals["records"] if r.get("purpose") == "policy_update")
+    if purpose == "policy_update":
+        update_cap = int(os.environ.get("POLICY_UPDATE_MAX_CALLS_PER_DAY", "8"))
+        if update_calls >= update_cap:
+            raise LLMGuardError(f"기준 갱신 조사 일일 호출 한도 초과: 오늘 {update_calls}회 / 한도 {update_cap}회.")
+    elif totals["calls"] - update_calls + len(totals["pending"]) >= settings.llm_max_calls_per_day:
         raise LLMGuardError(
             f"일일 LLM 호출 수 초과: 오늘 {totals['calls']}회 / 한도 {settings.llm_max_calls_per_day}회 "
             "(LLM_MAX_CALLS_PER_DAY로 조정). 호출을 중단합니다."
