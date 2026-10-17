@@ -43,15 +43,17 @@ def footer_markup(wp: WordPressClient, tagline: str) -> str:
     contact = _page_link(wp, [quote("문의하기").lower(), "문의하기"])
     privacy = _page_link(wp, ["privacy-policy", "privacy-policy-2"])
     calc = _page_link(wp, ["calculators"])
+    from add_home_button import FOOTER_BUTTON  # 같은 폴더(scripts)의 큰 '메인으로' 버튼
+
     return f"""<!-- wp:group {{"style":{{"spacing":{{"padding":{{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|50"}}}}}},"layout":{{"type":"constrained"}}}} -->
-<div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--60);padding-bottom:var(--wp--preset--spacing--50)"><!-- wp:site-title {{"level":2}} /-->
+<div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--60);padding-bottom:var(--wp--preset--spacing--50)">{FOOTER_BUTTON}<!-- wp:site-title {{"level":2}} /-->
 
 <!-- wp:paragraph -->
 <p>{tagline}</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p><a href="{about}">소개</a> · <a href="{contact}">문의하기</a> · <a href="{privacy}">개인정보처리방침</a> · <a href="{calc}">계산기</a></p>
+<p><a href="https://dailyfixpoint.com">데일리픽스 메인</a> · <a href="{about}">소개</a> · <a href="{contact}">문의하기</a> · <a href="{privacy}">개인정보처리방침</a> · <a href="{calc}">계산기</a></p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph {{"fontSize":"small"}} -->
