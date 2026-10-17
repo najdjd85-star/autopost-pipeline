@@ -289,8 +289,19 @@ def threads_casual_job() -> None:
         logger.warning("스레드 일상 글 예약 중 오류(무시): %s", exc)
 
 
+def policy_watch_job() -> None:
+    """정책 변화 감시: 고정 날짜 알림 + 월 1회 신규/수정 제도 점검 + 팩트 시트 기준 연도 점검(토큰 0)."""
+    try:
+        import policy_watch
+
+        policy_watch.run_daily_checks()
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("정책 변화 감시 중 오류(무시): %s", exc)
+
+
 def _register_schedule_jobs() -> None:
     schedule.every().day.at(settings.schedule_time).do(daily_pipeline_job)
+    schedule.every().day.at("00:20").do(policy_watch_job)  # 서버 UTC 00:20 = 한국 09:20
     schedule.every(30).minutes.do(auto_publish_check_job)
     schedule.every(5).minutes.do(threads_queue_job)
     schedule.every(3).hours.do(threads_casual_job)
