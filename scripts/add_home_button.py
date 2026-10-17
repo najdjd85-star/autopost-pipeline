@@ -68,6 +68,41 @@ def add_header_button(site: str) -> None:
     logger.info("[Site %s] 헤더 메인 버튼 추가: %s", site, getattr(res, "status_code", "N/A"))
 
 
+BODY_BUTTON = (
+    '<!-- wp:group {"layout":{"type":"constrained"},"style":{"spacing":{"margin":{"top":"var:preset|spacing|50"}}}} -->\n'
+    '<div class="wp-block-group" style="margin-top:var(--wp--preset--spacing--50)"><!-- wp:html -->\n'
+    f'<a class="dfp-home-body" href="{HUB_URL}" aria-label="데일리픽스 메인 화면으로 돌아가기" '
+    'style="display:flex;align-items:center;justify-content:center;gap:10px;min-height:56px;padding:0 20px;'
+    'border-radius:14px;background:#185fa5;color:#fff;font-size:18px;font-weight:600;text-decoration:none">'
+    + HOUSE.format(s=24)
+    + "메인 화면으로 돌아가기</a>\n<!-- /wp:html --></div>\n<!-- /wp:group -->\n"
+)
+CONTENT_MARKER = '<!-- wp:post-content {"align":"full","layout":{"type":"constrained"}} /-->'
+
+
+def add_body_button(site: str) -> None:
+    """글(single)과 페이지(page) 템플릿의 본문 바로 아래에 큰 '메인으로' 버튼을 넣는다."""
+    wp = WordPressClient(site)
+    for slug in ("single", "page"):
+        url = wp._api_url(f"wp/v2/templates/twentytwentyfive//{slug}")
+        resp = safe_get(url, headers=wp._auth_header(), params={"context": "edit"}, timeout=20)
+        content = resp.json()["content"]["raw"]
+        if "dfp-home-body" in content:
+            logger.info("[Site %s] %s 템플릿에 이미 본문 버튼이 있습니다.", site, slug)
+            continue
+        if content.count(CONTENT_MARKER) != 1:
+            logger.warning("[Site %s] %s 템플릿 구조가 예상과 달라 건드리지 않습니다.", site, slug)
+            continue
+        res = safe_post(
+            url,
+            headers={**wp._auth_header(), "Content-Type": "application/json"},
+            data=json.dumps({"content": content.replace(CONTENT_MARKER, CONTENT_MARKER + "\n" + BODY_BUTTON)}),
+            timeout=30,
+        )
+        logger.info("[Site %s] %s 템플릿 본문 버튼 추가: %s", site, slug, getattr(res, "status_code", "N/A"))
+
+
 if __name__ == "__main__":
     for key in ("A", "B", "C"):
         add_header_button(key)
+        add_body_button(key)
