@@ -26,9 +26,21 @@ function showHome() { setView('home'); }
 function showCheck() { setView('check'); step = 0; ans = {flags: []}; renderStep(); pushView('check'); }
 $('#open-check').addEventListener('click', showCheck);
 $('#logo').addEventListener('click', (e) => { e.preventDefault(); showHome(); });
-function skipped(i) { return QS[i] && QS[i].skip && QS[i].skip(ans); }
+/* 실업급여만 바로 확인하는 짧은 흐름(홈의 전용 버튼): 퇴사 질문 3개만 묻는다 */
+function showUnemp() { setView('check'); step = 0; ans = {flags: ['left'], mini: true, size: 1, inc: 0, asset: 0}; renderStep(); pushView('check'); }
+$('#open-unemp').addEventListener('click', showUnemp);
+function skipped(i) {
+  if (!QS[i]) return false;
+  if (ans.mini) return !QS[i].extra;
+  return !!(QS[i].skip && QS[i].skip(ans));
+}
 $('#back').addEventListener('click', () => {
-  if (step > 0 && step <= QS.length) { step--; while (step > 0 && skipped(step)) step--; renderStep(); } else showHome();
+  if (step > 0 && step <= QS.length) {
+    let prev = step - 1;
+    while (prev >= 0 && skipped(prev)) prev--;
+    if (prev < 0) { showHome(); return; }
+    step = prev; renderStep();
+  } else showHome();
 });
 
 function renderStep() {
@@ -202,7 +214,19 @@ function renderCands() {
   $('#cands').innerHTML = candList.slice(0, candShown).map(candCard).join('');
   $('#candmore').style.display = candList.length > candShown ? 'block' : 'none';
 }
+function renderMiniResult() {
+  $('#back-t').textContent = '답 수정하기';
+  const x = evaluate(ans).find((r) => r.k === 'unemp');
+  $('#wiz').innerHTML = `<h1 class="q" style="margin-top:6px">실업급여 확인 결과</h1>` + resCard(x) +
+    `<p class="disc">참고용 안내이며 지급 여부를 확정하지 않습니다. 이직 사유의 정당성과 수급 자격은 관할 고용센터가 최종 판단합니다. 금액·기준은 ${RULES_YEAR}년 기준입니다.</p>` +
+    `<button class="go" id="allcheck">다른 지원금도 한꺼번에 확인하기</button>` +
+    `<button class="go" id="again" style="background:var(--card);color:var(--text);border:1px solid var(--line2);margin-top:10px">실업급여 다시 확인하기</button>`;
+  $('#wiz').querySelectorAll('button[data-kw]').forEach((b) => b.addEventListener('click', () => { $('#q').value = b.dataset.kw; runSearch(b.dataset.kw, '#serr'); }));
+  $('#allcheck').addEventListener('click', showCheck);
+  $('#again').addEventListener('click', showUnemp);
+}
 function renderResult() {
+  if (ans.mini) return renderMiniResult();
   $('#back-t').textContent = '답 수정하기';
   const r = evaluate(ans);
   const y = r.filter((x) => x.s === 'y'), m = r.filter((x) => x.s === 'm'), n = r.filter((x) => x.s === 'n');
