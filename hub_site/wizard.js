@@ -17,9 +17,11 @@ const QS = [
   {k: 'flags', t: '가구 상황에서 해당하는 것을 모두 고르세요.', h: '없으면 그대로 다음으로 넘어가세요.', multi: true, o: [['rent', '월세로 살고 있어요'], ['apart', '부모님과 따로 살고 있어요'], ['disabled', '장애가 있는 가족이 있어요'], ['pregnant', '임신 중이에요'], ['baby', '만 2세 미만(0~23개월) 아이가 있어요'], ['child9', '만 9세 미만 아이가 있어요'], ['teen', '만 9~17세 자녀가 있어요']]},
   {k: 'flags', t: '지금 상황은 어떠세요? 해당하는 것을 모두 고르세요.', h: '없으면 그대로 결과 보기를 누르세요.', multi: true, last: true, o: [['working', '일하고 있어요 (직장인·자영업)'], ['jobseek', '일자리를 구하는 중이에요'], ['left', '최근 1년 안에 회사를 그만뒀어요 (실업급여 확인)'], ['recipient', '기초생활수급(생계·의료급여)을 받고 있어요'], ['student', '대학(원)에 다니고 있어요']]},
   /* 실업급여(구직급여) 확인용 추가 질문: 위에서 '최근 1년 안에 회사를 그만뒀어요'를 고른 사람에게만 묻는다 */
+  {k: 'etype', t: '어떤 형태로 일하셨나요?', h: '고용 형태에 따라 실업급여 요건이 달라요.', extra: true, skip: (a) => !a.flags.includes('left'), o: [['emp', '회사에 고용된 직원이었어요 (정규직·계약직·아르바이트, 고용보험 가입)'], ['daily', '일용직(하루 단위로 일한 근로자)이었어요'], ['free', '프리랜서·특수고용·예술인이었어요'], ['self', '자영업자(사장)였어요']]},
+  {k: 'when', t: '회사를 그만둔 지 얼마나 됐나요?', h: '실업급여는 퇴사(이직)한 다음 날부터 12개월 안에 신청해야 해요.', extra: true, skip: (a) => !a.flags.includes('left'), o: [['recent', '1년이 안 됐어요'], ['over', '1년이 넘었어요']]},
   {k: 'ins', t: '퇴사 전 고용보험에 가입한 기간은 얼마나 되나요?', h: '퇴사 전 18개월 안에서 합산해요. 계약직·아르바이트도 고용보험에 가입했다면 포함돼요.', extra: true, skip: (a) => !a.flags.includes('left'), o: [['yes', '180일(약 6개월) 이상'], ['no', '180일 미만'], ['unk', '잘 모르겠어요']]},
-  {k: 'why', t: '회사를 그만둔 이유는 무엇인가요?', h: '가장 가까운 것을 고르세요.', extra: true, skip: (a) => !a.flags.includes('left'), o: [['invol', '회사 사정이에요 (권고사직·해고·계약 만료·폐업 등)'], ['just', '제가 그만뒀지만 부득이했어요 (임금체불·괴롭힘·질병·통근 곤란 등)'], ['vol', '개인 사정이에요 (이직·자기 사업 준비·단순 퇴사 등)']]},
-  {k: 'will', t: '지금 바로 일할 수 있고, 일자리를 구하고 있나요?', h: '실업급여는 일할 의사와 능력이 있어야 받을 수 있어요.', extra: true, skip: (a) => !a.flags.includes('left'), last: true, o: [['yes', '네, 구하고 있어요'], ['no', '아니요 (쉬는 중·학업·건강 문제 등)']]},
+  {k: 'why', t: '회사를 그만둔 이유는 무엇인가요?', h: '가장 가까운 것을 고르세요.', extra: true, skip: (a) => !a.flags.includes('left'), o: [['invol', '회사 사정이에요 (권고사직·경영상 해고·폐업·회사가 계약을 갱신하지 않음)'], ['just', '제가 그만뒀지만 부득이했어요 (임금체불·괴롭힘·질병·통근 곤란 등)'], ['fault', '징계해고 등 제 잘못으로 해고됐어요'], ['vol', '개인 사정이에요 (이직·자기 사업 준비·단순 퇴사·제가 계약 갱신을 거절)']]},
+  {k: 'will', t: '지금 바로 일할 수 있고, 일자리를 구하고 있나요?', h: '실업급여는 일할 의사와 능력이 있어야 받을 수 있어요.', extra: true, skip: (a) => !a.flags.includes('left'), last: true, o: [['yes', '네, 일자리를 구하고 있어요'], ['working', '이미 새 직장에서 일하고 있어요'], ['no', '아니요 (쉬는 중·학업·건강 문제 등)']]},
 ];
 let step = 0, ans = {flags: []};
 function showHome() { setView('home'); }
@@ -134,11 +136,17 @@ const PROGS = [
   }},
   {k: 'unemp', n: '실업급여(구직급여)', kw: '실업급여', off: ['https://www.work24.go.kr', '고용24에서 확인'], fn: (a, has) => {
     if (!has('left')) return N('최근 1년 안에 퇴사(이직)한 경우가 대상입니다(이직일 다음 날부터 12개월 안에 신청).');
-    if (a.ins === 'no') return N('퇴사 전 18개월 동안 고용보험 가입기간(피보험단위기간)이 180일 이상이어야 합니다.');
+    if (a.when === 'over') return N('이직일 다음 날부터 12개월이 지나면 구직급여를 신청할 수 없습니다.');
+    if (a.why === 'fault') return N('본인의 중대한 귀책사유(징계해고 등)로 그만둔 경우는 원칙적으로 대상이 아닙니다. 사안에 따라 달라질 수 있어 고용센터에 확인해 보세요.');
+    if (a.ins === 'no') return N('퇴사 전 18개월 동안 고용보험 가입기간(피보험단위기간)이 180일 이상이어야 합니다(초단시간근로자는 24개월 기준).');
+    if (a.will === 'working') return N('이미 새 직장에서 일하고 있으면 실업 상태로 보기 어려워 대상이 아닙니다.');
     if (a.will === 'no') return N('지금 일할 의사와 능력이 있고 적극적으로 일자리를 구하는 중이어야 합니다.');
     if (a.why === 'vol') return N('개인 사정으로 그만둔 경우는 원칙적으로 대상이 아닙니다. 임금체불·괴롭힘 등 정당한 사유가 있었다면 고용센터에 확인해 보세요.');
-    if (a.ins === 'unk') return M('고용보험 가입기간이 180일 이상인지 고용보험 사이트에서 확인해 보세요. 퇴사 사유와 재취업 의사는 조건에 맞아 보입니다.');
+    if (a.etype === 'self') return M('자영업자는 직원용 구직급여와 요건이 다릅니다. 자영업자 고용보험에 가입했는지 고용보험 사이트에서 확인해 보세요.');
+    if (a.etype === 'free') return M('프리랜서·특수고용·예술인은 직원용과 다른 별도 요건(이직 전 24개월 기준)이 적용됩니다. 노무제공자·예술인 고용보험 가입 여부를 확인해 보세요.');
+    if (a.ins === 'unk') return M('고용보험 가입기간이 180일 이상인지 고용보험 사이트에서 확인해 보세요. 나머지 조건은 맞아 보입니다.');
     if (a.why === 'just') return M('본인이 그만뒀어도 임금체불·괴롭힘·질병·통근 곤란 같은 정당한 사유로 인정되면 받을 수 있습니다. 고용센터가 판단하니 증빙 서류를 준비하세요.');
+    if (a.etype === 'daily') return M('일용근로자는 가입기간 외에 신청일 직전 근로일수 요건이 더해져 확인이 필요합니다. 고용센터에서 확인하세요.');
     return Y('권고사직·해고·계약 만료 같은 비자발적 퇴사이고 가입기간도 충분해, 조건에 맞을 가능성이 높습니다. 이직일 다음 날부터 12개월 안에 고용센터에 신청하세요(지급은 평균임금의 60%, 120~270일).');
   }},
   {k: 'job', n: '국민취업지원제도', kw: '국민취업지원', off: ['https://www.work24.go.kr', '고용24에서 확인'], fn: (a, has) => has('jobseek') ? M('구직 중이라면 대상이 될 수 있습니다. 소득·재산·취업 경험에 따라 유형이 나뉘니 고용센터에서 확인하세요.') : N('구직 중인 경우가 대상입니다.')},
@@ -201,9 +209,10 @@ function postLink(k) { return D.program_posts[k] || ''; }
 function resCard(x) {
   const bd = {y: ['b-y', '해당 가능성 높음'], m: ['b-m', '확인 필요'], n: ['b-n', '해당 어려움']}[x.s];
   const post = postLink(x.k);
-  const main = post ? `<a class="lb pri" href="${post}">자세한 글 보기 ›</a>` : `<button class="lb pri" data-kw="${esc(x.kw)}" type="button">관련 글 찾기 ›</button>`;
-  const off = x.off ? `<a class="lb sec" href="${x.off[0]}" target="_blank" rel="noopener">${x.off[1]}</a>` : '';
-  const links = x.s === 'n' ? '' : `<div class="lk">${main}${off}</div>`;
+  const main = post ? `<a class="lb pri" href="${post}">자세한 글 보기 ›</a>` : '';
+  const off = x.off ? `<a class="lb ${post ? 'sec' : ''}" href="${x.off[0]}" target="_blank" rel="noopener">${x.off[1]}</a>` : '';
+  const note = post || x.s === 'n' ? '' : '<p class="mt" style="margin:0 0 8px">이 제도의 자세한 글은 준비하고 있어요.</p>';
+  const links = x.s === 'n' ? '' : `${note}<div class="lk">${main}${off}</div>`;
   return `<div class="res"><div class="rt"><span class="rn">${x.n}</span><span class="bd ${bd[0]}">${bd[1]}</span></div><p class="rd" style="margin-bottom:${links ? 10 : 0}px">${x.r}</p>${links}</div>`;
 }
 function candCard(r) {
