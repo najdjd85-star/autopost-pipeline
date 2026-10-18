@@ -38,7 +38,7 @@ CAND_LIMIT = 520  # 인기순 상위만 담는다(앱 파일 보기 한도 512KB
 SITES = {"gov": ("A", "정부지원금"), "life": ("B", "통신비"), "tax": ("C", "세금·연금")}
 # 판정 결과의 "자세한 글 보기" 연결용 제도별 키워드(발행 기록의 주제 키워드 또는 제목에서 찾는다)
 PROGRAM_KEYWORDS: Dict[str, Any] = {
-    "eitc": "근로장려금", "child_eitc": "자녀장려금", "pension": "기초연금", "rent": "청년월세", "parent": "부모급여",
+    "unemp": ("실업급여", "구직급여"), "eitc": "근로장려금", "child_eitc": "자녀장려금", "pension": "기초연금", "rent": "청년월세", "parent": "부모급여",
     "child_allow": "아동수당", "preg": ("임신·출산", "임신출산", "진료비 바우처", "임신"), "livelihood": "생계급여", "housing": "주거급여",
     "medical": "의료급여", "edu": "교육급여", "energy": "에너지바우처", "sp": "한부모", "job": "국민취업지원", "learn": "내일배움",
     "rent_credit": "월세 세액공제", "child_credit": ("자녀 세액공제", "자녀세액공제"), "pension_credit": "연금저축", "isa": "ISA",
@@ -65,7 +65,7 @@ _TAG_RE = {
     "low": r"기초생활|수급자|차상위|저소득|취약계층",
 }
 _TAG_RE = {k: re.compile(v) for k, v in _TAG_RE.items()}
-_VERIFIED_NAMES = re.compile(r"근로장려|자녀장려|기초연금|청년월세|부모급여|아동수당|생계급여|주거급여|의료급여|교육급여|에너지바우처|한부모|국민취업지원|내일배움")
+_VERIFIED_NAMES = re.compile(r"근로장려|자녀장려|기초연금|청년월세|부모급여|아동수당|생계급여|주거급여|의료급여|교육급여|에너지바우처|한부모|국민취업지원|내일배움|구직급여|실업급여")
 
 
 def _strip(text: str) -> str:

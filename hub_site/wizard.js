@@ -15,7 +15,11 @@ const QS = [
   {k: 'inc', t: '가구의 1년 소득(세전)은 어느 정도인가요?', h: '함께 사는 가족 소득을 합친 대략의 금액이면 됩니다.', o: INC_L.map((l, i) => [i, l])},
   {k: 'asset', t: '집·땅·예금 등 가구 재산은 얼마쯤인가요?', h: '전세보증금과 자동차도 포함해 대략 합산하세요.', o: [[0, '1억 2,200만 원 미만'], [1, '1억 2,200만 ~ 2억 4천만 원'], [2, '2억 4천만 원 이상']]},
   {k: 'flags', t: '가구 상황에서 해당하는 것을 모두 고르세요.', h: '없으면 그대로 다음으로 넘어가세요.', multi: true, o: [['rent', '월세로 살고 있어요'], ['apart', '부모님과 따로 살고 있어요'], ['disabled', '장애가 있는 가족이 있어요'], ['pregnant', '임신 중이에요'], ['baby', '만 2세 미만(0~23개월) 아이가 있어요'], ['child9', '만 9세 미만 아이가 있어요'], ['teen', '만 9~17세 자녀가 있어요']]},
-  {k: 'flags', t: '지금 상황은 어떠세요? 해당하는 것을 모두 고르세요.', h: '없으면 그대로 결과 보기를 누르세요.', multi: true, last: true, o: [['working', '일하고 있어요 (직장인·자영업)'], ['jobseek', '일자리를 구하는 중이에요'], ['recipient', '기초생활수급(생계·의료급여)을 받고 있어요'], ['student', '대학(원)에 다니고 있어요']]},
+  {k: 'flags', t: '지금 상황은 어떠세요? 해당하는 것을 모두 고르세요.', h: '없으면 그대로 결과 보기를 누르세요.', multi: true, last: true, o: [['working', '일하고 있어요 (직장인·자영업)'], ['jobseek', '일자리를 구하는 중이에요'], ['left', '최근 1년 안에 회사를 그만뒀어요 (실업급여 확인)'], ['recipient', '기초생활수급(생계·의료급여)을 받고 있어요'], ['student', '대학(원)에 다니고 있어요']]},
+  /* 실업급여(구직급여) 확인용 추가 질문: 위에서 '최근 1년 안에 회사를 그만뒀어요'를 고른 사람에게만 묻는다 */
+  {k: 'ins', t: '퇴사 전 고용보험에 가입한 기간은 얼마나 되나요?', h: '퇴사 전 18개월 안에서 합산해요. 계약직·아르바이트도 고용보험에 가입했다면 포함돼요.', extra: true, skip: (a) => !a.flags.includes('left'), o: [['yes', '180일(약 6개월) 이상'], ['no', '180일 미만'], ['unk', '잘 모르겠어요']]},
+  {k: 'why', t: '회사를 그만둔 이유는 무엇인가요?', h: '가장 가까운 것을 고르세요.', extra: true, skip: (a) => !a.flags.includes('left'), o: [['invol', '회사 사정이에요 (권고사직·해고·계약 만료·폐업 등)'], ['just', '제가 그만뒀지만 부득이했어요 (임금체불·괴롭힘·질병·통근 곤란 등)'], ['vol', '개인 사정이에요 (이직·자기 사업 준비·단순 퇴사 등)']]},
+  {k: 'will', t: '지금 바로 일할 수 있고, 일자리를 구하고 있나요?', h: '실업급여는 일할 의사와 능력이 있어야 받을 수 있어요.', extra: true, skip: (a) => !a.flags.includes('left'), last: true, o: [['yes', '네, 구하고 있어요'], ['no', '아니요 (쉬는 중·학업·건강 문제 등)']]},
 ];
 let step = 0, ans = {flags: []};
 function showHome() { setView('home'); }
@@ -34,9 +38,15 @@ function renderStep() {
   const q = QS[step];
   $('#back-t').textContent = step ? '이전 질문' : '홈으로';
   const on = (v) => q.multi ? ans.flags.includes(v) : ans[q.k] === v;
-  w.innerHTML = `<div class="pr"><span style="width:${(step + 1) / QS.length * 100}%"></span></div><p class="stp">${step + 1} / ${QS.length}</p><h1 class="q">${q.t}</h1><p class="hint">${q.h}</p>` +
+  const main = QS.filter((x) => !x.extra), extras = QS.filter((x) => x.extra);
+  const vis = main.map((x) => !(x.skip && x.skip(ans)));
+  const total = q.extra ? extras.length : vis.filter(Boolean).length;
+  const pos = q.extra ? extras.indexOf(q) + 1 : vis.slice(0, main.indexOf(q) + 1).filter(Boolean).length;
+  const stepLabel = q.extra ? `실업급여 확인 ${pos} / ${total}` : `${pos} / ${total}`;
+  const goLabel = q.last && !ans.flags.includes('left') ? '결과 보기' : '다음'; /* '회사를 그만뒀어요'를 고르면 실업급여 확인 질문 3개가 이어진다 */
+  w.innerHTML = `<div class="pr"><span style="width:${pos / total * 100}%"></span></div><p class="stp">${stepLabel}</p><h1 class="q">${q.t}</h1><p class="hint">${q.h}</p>` +
     q.o.map(([v, l]) => `<button class="opt${on(v) ? ' on' : ''}" data-v="${v}">${q.multi ? '<span class="box">' + (on(v) ? '✓' : '') + '</span>' : ''}${l}</button>`).join('') +
-    (q.multi ? `<button class="go" id="go">${q.last ? '결과 보기' : '다음'}</button>` : '');
+    (q.multi ? `<button class="go" id="go">${goLabel}</button>` : '');
   w.querySelectorAll('.opt').forEach((b) => b.addEventListener('click', () => {
     const raw = b.dataset.v, v = isNaN(raw) ? raw : Number(raw);
     if (q.multi) { const i = ans.flags.indexOf(v); i >= 0 ? ans.flags.splice(i, 1) : ans.flags.push(v); renderStep(); }
@@ -110,6 +120,15 @@ const PROGS = [
     if (p.lo >= 100) return N('가구 소득이 기준(중위소득 65%)을 크게 넘는 구간입니다.');
     return M('소득이 기준(중위소득 65%) 근처라 정확한 확인이 필요합니다.');
   }},
+  {k: 'unemp', n: '실업급여(구직급여)', kw: '실업급여', off: ['https://www.work24.go.kr', '고용24에서 확인'], fn: (a, has) => {
+    if (!has('left')) return N('최근 1년 안에 퇴사(이직)한 경우가 대상입니다(이직일 다음 날부터 12개월 안에 신청).');
+    if (a.ins === 'no') return N('퇴사 전 18개월 동안 고용보험 가입기간(피보험단위기간)이 180일 이상이어야 합니다.');
+    if (a.will === 'no') return N('지금 일할 의사와 능력이 있고 적극적으로 일자리를 구하는 중이어야 합니다.');
+    if (a.why === 'vol') return N('개인 사정으로 그만둔 경우는 원칙적으로 대상이 아닙니다. 임금체불·괴롭힘 등 정당한 사유가 있었다면 고용센터에 확인해 보세요.');
+    if (a.ins === 'unk') return M('고용보험 가입기간이 180일 이상인지 고용보험 사이트에서 확인해 보세요. 퇴사 사유와 재취업 의사는 조건에 맞아 보입니다.');
+    if (a.why === 'just') return M('본인이 그만뒀어도 임금체불·괴롭힘·질병·통근 곤란 같은 정당한 사유로 인정되면 받을 수 있습니다. 고용센터가 판단하니 증빙 서류를 준비하세요.');
+    return Y('권고사직·해고·계약 만료 같은 비자발적 퇴사이고 가입기간도 충분해, 조건에 맞을 가능성이 높습니다. 이직일 다음 날부터 12개월 안에 고용센터에 신청하세요(지급은 평균임금의 60%, 120~270일).');
+  }},
   {k: 'job', n: '국민취업지원제도', kw: '국민취업지원', off: ['https://www.work24.go.kr', '고용24에서 확인'], fn: (a, has) => has('jobseek') ? M('구직 중이라면 대상이 될 수 있습니다. 소득·재산·취업 경험에 따라 유형이 나뉘니 고용센터에서 확인하세요.') : N('구직 중인 경우가 대상입니다.')},
   {k: 'learn', n: '국민내일배움카드', kw: '내일배움', off: ['https://www.hrd.go.kr', 'HRD-Net에서 확인'], fn: (a, has) => (has('jobseek') || has('working')) ? Y('구직자뿐 아니라 재직자·자영업자도 요건을 충족하면 발급받을 수 있습니다(일부 대기업·공무원 등 제외).') : N('구직자·재직자·자영업자가 대상입니다.')},
   {k: 'rent_credit', n: '월세 세액공제', kw: '월세', off: ['https://www.hometax.go.kr', '홈택스에서 확인'], fn: (a, has) => {
@@ -150,7 +169,7 @@ function userMask(a) {
   if (a.age === 'e' || a.age === 's') s.add('senior');
   if (a.age === 'y') s.add('youth');
   if (a.hh === 'sp') s.add('sp');
-  if (has('jobseek')) s.add('job');
+  if (has('jobseek') || has('left')) s.add('job');
   if (has('recipient') || p.lo <= 60) s.add('low');
   return TG.reduce((m, t, i) => s.has(t) ? m | (1 << i) : m, 0);
 }
