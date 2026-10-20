@@ -22,6 +22,7 @@ from typing import Dict, List, Optional
 from urllib.parse import quote, urlencode
 
 from config import BASE_DIR, get_site, settings
+from affiliate_topics import must_for, queries_for
 from coupang_link_bank import pick_product
 from constants import (
     AFFILIATE_SLOT_BOT,
@@ -144,16 +145,18 @@ def _coupang_hmac_signature(
     return f"CEA algorithm=HmacSHA256, access-key={access_key}, signed-date={datetime_gmt}, signature={signature}"
 
 
-def build_coupang_deeplink(keyword: str) -> Optional[Dict[str, str]]:
+def build_coupang_deeplink(keyword: str, must: Optional[list] = None) -> Optional[Dict[str, str]]:
     """쿠팡 파트너스 Open API로 키워드 연관 상품 딥링크를 생성한다.
 
     COUPANG_ACCESS_KEY/SECRET_KEY가 없으면 None을 반환한다 (선택 기능).
+    must가 있으면 검색 결과 10개 중 상품 이름이 must 조건(affiliate_topics.name_matches)을 만족하는 첫 상품만 쓴다 -
+    검색어와 무관한 상품이 첫 결과로 나오는 경우를 걸러낸다. 만족하는 상품이 없으면 None.
     """
     if not settings.coupang_configured:
         return None
 
     url_path = "/v2/providers/affiliate_open_api/apis/openapi/products/search"
-    query = urlencode({"keyword": keyword, "limit": 1})
+    query = urlencode({"keyword": keyword, "limit": 10 if must else 1})
     full_path = f"{url_path}?{query}"
 
     try:
@@ -174,6 +177,14 @@ def build_coupang_deeplink(keyword: str) -> Optional[Dict[str, str]]:
         products = data.get("data", {}).get("productData", [])
         if not products:
             return None
+        if must:
+            from affiliate_topics import name_matches
+
+            matching = [p for p in products if name_matches(p.get("productName", ""), must)]
+            if not matching:
+                logger.info("쿠팡 검색 '%s': 상품 이름이 검색어와 맞는 결과가 없어 건너뜁니다.", keyword)
+                return None
+            products = matching
         product = products[0]
         return {
             "name": product.get("productName", keyword),
@@ -294,7 +305,17 @@ def _get_coupang_card_data(keyword: str, site: str) -> Optional[Dict[str, str]]:
     고정 링크는 실시간 상품명/이미지/가격 정보가 없으므로 name/image/price를
     비워 반환한다 - 카드 렌더링 쪽에서 이 경우 이미지/가격 줄을 생략한다.
     """
-    coupang = build_coupang_deeplink(keyword) if keyword else None
+    # 글 주제에 맞는 독자가 살 만한 상품 검색어가 정해져 있으면 그것으로 찾고(예: 교육급여 -> 학부모용 학용품),
+    # 없으면 글 키워드로 바로 검색한다(기존 방식).
+    topic_queries = queries_for(keyword)
+    coupang = None
+    if topic_queries:
+        for query in random.sample(topic_queries, k=len(topic_queries)):
+            coupang = build_coupang_deeplink(query, must=must_for(query))
+            if coupang and coupang.get("url"):
+                break
+    elif keyword:
+        coupang = build_coupang_deeplink(keyword)
     if coupang and coupang.get("url"):
         return coupang
 

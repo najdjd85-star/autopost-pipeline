@@ -14,6 +14,7 @@ import time
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
+from affiliate_topics import all_topic_queries, must_for, name_matches, queries_for
 from config import OUTPUT_DIR
 from utils.http import safe_get, safe_post
 from utils.logger import get_logger
@@ -165,14 +166,16 @@ def refresh_bank() -> Dict[str, int]:
     made = kept = failed = 0
     first_call = True
 
-    for site, queries in QUERIES.items():
+    all_queries = dict(QUERIES)
+    all_queries["T"] = all_topic_queries()  # 글 주제별(독자가 살 만한) 상품 - affiliate_topics.py
+    for site, queries in all_queries.items():
         old_items = {i.get("query"): i for i in previous.get("sites", {}).get(site, [])}
         items: List[Dict[str, Any]] = []
         for query in queries:
             if not first_call:
                 time.sleep(API_CALL_GAP_SECONDS)
             first_call = False
-            product = build_coupang_deeplink(query)
+            product = build_coupang_deeplink(query, must=must_for(query))  # 주제 검색어는 상품 이름이 검색어와 맞는지 확인
             if product and product.get("url"):
                 items.append(
                     {
@@ -184,8 +187,8 @@ def refresh_bank() -> Dict[str, int]:
                     }
                 )
                 made += 1
-            elif query in old_items:
-                items.append(old_items[query])  # 이번에 실패하면 이전 항목을 유지(7일 한도 안에서만 쓰임)
+            elif query in old_items and name_matches(old_items[query].get("name", ""), must_for(query)):
+                items.append(old_items[query])  # 이번에 실패하면 이전 항목을 유지(7일 한도 안에서만 쓰임) - 단, 상품이 검색어와 맞을 때만
                 kept += 1
             else:
                 failed += 1
@@ -238,13 +241,26 @@ def pick_product(site: str, keyword: str) -> Optional[Dict[str, str]]:
         return None
 
     cutoff = _now() - timedelta(days=min(BANK_MAX_AGE_DAYS, int(bank.get("max_age_days", BANK_MAX_AGE_DAYS))))
-    fresh: List[Dict[str, Any]] = []
-    for item in bank.get("sites", {}).get(site, []):
-        try:
-            if datetime.fromisoformat(item["generated_at"]) >= cutoff and item.get("url"):
-                fresh.append(item)
-        except (KeyError, ValueError):
-            continue
+
+    def _fresh(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        out: List[Dict[str, Any]] = []
+        for item in items:
+            try:
+                if datetime.fromisoformat(item["generated_at"]) >= cutoff and item.get("url"):
+                    out.append(item)
+            except (KeyError, ValueError):
+                continue
+        return out
+
+    # 글 주제에 맞는 독자용 상품이 있으면 그것을 먼저 쓴다(예: 교육급여 글 -> 학부모용 책가방·학용품)
+    topic_queries = set(queries_for(keyword))
+    if topic_queries:
+        topical = [i for i in _fresh(bank.get("sites", {}).get("T", [])) if i.get("query") in topic_queries]
+        if topical:
+            chosen = random.choice(topical)
+            return {"name": chosen.get("name", ""), "url": chosen["url"], "image": chosen.get("image", ""), "price": ""}
+
+    fresh = _fresh(bank.get("sites", {}).get(site, []))
     if not fresh:
         return None
 
