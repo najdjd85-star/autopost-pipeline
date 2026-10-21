@@ -43,6 +43,19 @@ def _wait_for_network() -> bool:
     return False
 
 
+def _notify(result: dict) -> None:
+    """결과를 텔레그램으로 알린다. 성공이면 한 줄, 실패(업로드 못 함)면 경고. 알림 실패는 무시."""
+    ok = bool(result.get("uploaded"))
+    head = "✅ 쿠팡 링크 갱신 완료" if ok else "⚠️ 쿠팡 링크 갱신 실패 (쿠팡 한도·접속 확인)"
+    text = f"{head}\n새 링크 {result.get('made', 0)}개 · 유지 {result.get('kept', 0)}개 · 실패 {result.get('failed', 0)}개"
+    try:
+        from utils.telegram_notify import send_message_sync
+
+        send_message_sync(text)
+    except Exception as exc:  # noqa: BLE001
+        logger.info("쿠팡 링크 갱신 알림 전송 실패(무시): %s", exc)
+
+
 def _keep_awake(on: bool) -> None:
     """Windows에서 실행 중 절전 진입을 막는다(ES_CONTINUOUS | ES_SYSTEM_REQUIRED). 다른 OS에서는 무시."""
     try:
@@ -62,6 +75,8 @@ if __name__ == "__main__":
             sys.exit(1)
         result = refresh_bank()
         logger.info("쿠팡 링크 은행 갱신 결과: %s", result)
+        if not result.get("skipped"):  # 한도 보호로 건너뛴 재시도는 알리지 않는다(스팸 방지)
+            _notify(result)
         sys.exit(0 if result.get("uploaded") else 1)
     finally:
         _keep_awake(False)
