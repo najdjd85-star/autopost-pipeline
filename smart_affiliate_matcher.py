@@ -21,7 +21,7 @@ from pathlib import Path
 from typing import Dict, List, Optional
 from urllib.parse import quote, urlencode
 
-from config import BASE_DIR, get_site, settings
+from config import BASE_DIR, OUTPUT_DIR, get_site, settings
 from affiliate_topics import must_for, queries_for
 from coupang_link_bank import pick_product
 from constants import (
@@ -55,6 +55,58 @@ _SLOT_LABELS = {
 }
 
 COUPANG_DOMAIN = "https://api-gateway.coupang.com"
+
+# 쿠팡은 시간당 호출 한도를 넘기면 경고를 세고, 3회 초과하면 파트너스 이용을 제한한다. 그래서 호출 기록을 파일에 남겨
+# (프로세스를 다시 켜도 이어지게) 한 시간에 보낼 수 있는 횟수를 막고, 한도 초과 응답이 한 번이라도 오면 일정 시간 호출을 끊는다.
+COUPANG_GUARD_PATH = OUTPUT_DIR / "coupang_api_guard.json"
+COUPANG_MAX_CALLS_PER_HOUR = 50  # 링크 갱신 1회(약 46개 검색어)가 한 시간 안에 두 번 나가지 못하게 하는 상한
+COUPANG_COOLDOWN_SECONDS = 3 * 3600
+_RATE_LIMIT_WORDS = ("초과", "제한", "too many", "rate limit")
+
+
+def _guard_load() -> Dict[str, object]:
+    try:
+        data = json.loads(COUPANG_GUARD_PATH.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        data = {}
+    now = time.time()
+    calls = [t for t in data.get("calls", []) if isinstance(t, (int, float)) and now - t < 3600]
+    return {"calls": calls, "blocked_until": float(data.get("blocked_until", 0) or 0)}
+
+
+def _guard_save(state: Dict[str, object]) -> None:
+    try:
+        COUPANG_GUARD_PATH.parent.mkdir(parents=True, exist_ok=True)
+        COUPANG_GUARD_PATH.write_text(json.dumps(state), encoding="utf-8")
+    except OSError:
+        pass
+
+
+def coupang_calls_left() -> int:
+    """지금 보낼 수 있는 쿠팡 API 호출 수. 한도 초과로 호출을 끊어 둔 동안에는 0."""
+    state = _guard_load()
+    if state["blocked_until"] > time.time():
+        return 0
+    return max(0, COUPANG_MAX_CALLS_PER_HOUR - len(state["calls"]))
+
+
+def coupang_blocked_minutes() -> int:
+    """한도 초과 응답을 받아 호출을 끊어 둔 경우 남은 분. 아니면 0."""
+    remaining = _guard_load()["blocked_until"] - time.time()
+    return int(remaining // 60) + 1 if remaining > 0 else 0
+
+
+def _guard_note_call() -> None:
+    state = _guard_load()
+    state["calls"].append(time.time())
+    _guard_save(state)
+
+
+def _guard_note_rate_limited() -> None:
+    state = _guard_load()
+    state["blocked_until"] = time.time() + COUPANG_COOLDOWN_SECONDS
+    _guard_save(state)
+    logger.warning("쿠팡 호출 한도 초과 응답을 받아 %s시간 동안 쿠팡 API 호출을 멈춥니다.", COUPANG_COOLDOWN_SECONDS // 3600)
 
 ADPICK_API_URL = "https://adpick.co.kr/apis/offers.php"
 # 애드픽 문서상 "최대 1분에 1회 이하로 호출"해야 하고 별도 캐시가 필수라서,
@@ -154,6 +206,10 @@ def build_coupang_deeplink(keyword: str, must: Optional[list] = None) -> Optiona
     """
     if not settings.coupang_configured:
         return None
+    if coupang_calls_left() <= 0:
+        logger.info("쿠팡 API 호출 한도 보호로 '%s' 조회를 건너뜁니다.", keyword)
+        return None
+    _guard_note_call()
 
     url_path = "/v2/providers/affiliate_open_api/apis/openapi/products/search"
     query = urlencode({"keyword": keyword, "limit": 10 if must else 1})
@@ -172,6 +228,8 @@ def build_coupang_deeplink(keyword: str, must: Optional[list] = None) -> Optiona
             status = getattr(resp, "status_code", "no_response")
             body = getattr(resp, "text", "")[:300] if resp is not None else ""
             logger.info("쿠팡 딥링크 조회 실패 (status=%s): %s", status, body)
+            if status == 429 or any(word in body.lower() for word in _RATE_LIMIT_WORDS):
+                _guard_note_rate_limited()
             return None
         data = resp.json()
         products = data.get("data", {}).get("productData", [])

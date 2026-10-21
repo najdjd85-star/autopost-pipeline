@@ -154,7 +154,23 @@ def run_probes(today_items: Optional[List[Dict[str, Any]]] = None) -> int:
 
 def refresh_bank() -> Dict[str, int]:
     """[데스크탑에서 실행] 모든 검색어의 상품 링크를 새로 만들어 업로드한다."""
-    from smart_affiliate_matcher import build_coupang_deeplink  # 순환 임포트 방지용 지연 임포트
+    from smart_affiliate_matcher import (  # 순환 임포트 방지용 지연 임포트
+        build_coupang_deeplink,
+        coupang_blocked_minutes,
+        coupang_calls_left,
+    )
+
+    all_queries = dict(QUERIES)
+    all_queries["T"] = all_topic_queries()  # 글 주제별(독자가 살 만한) 상품 - affiliate_topics.py
+    needed = sum(len(q) for q in all_queries.values())
+    blocked = coupang_blocked_minutes()
+    if blocked or coupang_calls_left() < needed:
+        # 한도를 넘기면 쿠팡이 경고를 세고 3회 초과 시 파트너스 이용을 제한하므로, 모자라면 한 건도 보내지 않고 끝낸다.
+        logger.warning(
+            "쿠팡 호출 한도 보호: 이번 갱신에 %s회가 필요하지만 지금은 %s회만 보낼 수 있어 건너뜁니다(%s).",
+            needed, coupang_calls_left(), f"차단 해제까지 약 {blocked}분" if blocked else "최근 1시간 호출 기록 때문",
+        )
+        return {"made": 0, "kept": 0, "failed": 0, "uploaded": 0, "skipped": 1}
 
     previous = load_remote_bank() or {}
     max_age_days = run_probes()  # 예전 표본 먼저 점검(오늘 표본은 아래에서 추가)
@@ -166,12 +182,17 @@ def refresh_bank() -> Dict[str, int]:
     made = kept = failed = 0
     first_call = True
 
-    all_queries = dict(QUERIES)
-    all_queries["T"] = all_topic_queries()  # 글 주제별(독자가 살 만한) 상품 - affiliate_topics.py
     for site, queries in all_queries.items():
         old_items = {i.get("query"): i for i in previous.get("sites", {}).get(site, [])}
         items: List[Dict[str, Any]] = []
         for query in queries:
+            if coupang_blocked_minutes():  # 도중에 한도 초과 응답이 오면 즉시 멈추고 이전 항목을 유지
+                if query in old_items and name_matches(old_items[query].get("name", ""), must_for(query)):
+                    items.append(old_items[query])
+                    kept += 1
+                else:
+                    failed += 1
+                continue
             if not first_call:
                 time.sleep(API_CALL_GAP_SECONDS)
             first_call = False
