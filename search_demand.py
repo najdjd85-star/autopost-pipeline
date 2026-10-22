@@ -123,6 +123,13 @@ def _to_count(value: Any) -> int:
     return 0
 
 
+def _item_volume(item: Dict[str, Any]) -> int:
+    """항목의 월간 검색량(PC+모바일). 네이버 필드 이름은 monthlyPcQcCnt/monthlyMobileQcCnt(QryCnt가 아님)."""
+    pc = item.get("monthlyPcQcCnt", item.get("monthlyPcQryCnt"))
+    mobile = item.get("monthlyMobileQcCnt", item.get("monthlyMobileQryCnt"))
+    return _to_count(pc) + _to_count(mobile)
+
+
 def _naver_ad_raw(hints: List[str]) -> Any:
     """점검용: 키워드 도구의 응답(상태 코드, 앞쪽 항목)을 그대로 돌려준다. 키는 포함되지 않는다."""
     timestamp = str(int(time.time() * 1000))
@@ -187,7 +194,7 @@ def _naver_ad_volumes(hints: List[str]) -> Dict[str, int]:
     for i in items:
         key = i.get("relKeyword")
         if key:  # 같은 키워드가 여러 번 올 수 있어(힌트가 여러 개일 때) 마지막 값으로 덮지 않고 가장 큰 값을 쓴다
-            volumes[key] = max(volumes.get(key, 0), _to_count(i.get("monthlyPcQryCnt")) + _to_count(i.get("monthlyMobileQryCnt")))
+            volumes[key] = max(volumes.get(key, 0), _item_volume(i))
     return volumes
 
 

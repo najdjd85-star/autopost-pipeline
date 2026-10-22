@@ -28,7 +28,7 @@ if args.probe:
     wanted = {h.replace(" ", "") for h in hints}
     for item in sd._naver_ad_items(hints):
         if item.get("relKeyword") in wanted:
-            print("  항목:", item.get("relKeyword"), repr(item.get("monthlyPcQryCnt")), repr(item.get("monthlyMobileQryCnt")), type(item.get("monthlyPcQryCnt")).__name__)
+            print("  항목:", item.get("relKeyword"), sd._item_volume(item))
     parsed = sd._naver_ad_volumes(hints)
     print("해석 결과:", {k: parsed.get(k.replace(" ", "")) for k in hints}, "/ 전체 항목 수", len(parsed))
 elif args.show:
