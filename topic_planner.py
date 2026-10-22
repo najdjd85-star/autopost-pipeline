@@ -217,7 +217,15 @@ def pick_keyword(site: str, seeds: List[str], recent_titles: List[str]) -> str:
     scored = [(seed, _recency(seed, history["keywords"], recent_titles)) for seed in seeds]
     eligible = [item for item in scored if family_of(item[0]) not in recent_families] or scored
     eligible.sort(key=lambda item: -item[1])
-    return random.choice([seed for seed, _ in eligible[:_PICK_FROM_OLDEST]])
+    pool = [seed for seed, _ in eligible[:_PICK_FROM_OLDEST]]
+    try:  # 검색 수요(자동완성·서치콘솔·검색량)가 큰 주제를 더 자주 고른다. 데이터가 없으면 모두 같은 가중치.
+        from search_demand import demand_weight
+
+        weights = [demand_weight(site, seed) for seed in pool]
+        return random.choices(pool, weights=weights, k=1)[0]
+    except Exception as exc:  # noqa: BLE001 - 선택 기능
+        logger.info("검색 수요 가중치 적용 실패, 무작위 선택: %s", exc)
+        return random.choice(pool)
 
 
 # 우선 주제: 허브 "내 지원금 확인"에서 연결할 글이 아직 없는 제도. 사이트별로 앞에서부터 하나씩, 아직 안 쓴 것을
@@ -383,6 +391,13 @@ def plan_topic(
 
     if unverified_seeds and keyword in unverified_seeds and not get_fact_sheet(keyword):
         block += _UNVERIFIED_CAUTION
+
+    try:  # 독자가 실제로 검색하는 말(자동완성·서치콘솔·검색량) - 데이터가 있을 때만
+        from search_demand import prompt_block
+
+        block += prompt_block(site, keyword)
+    except Exception as exc:  # noqa: BLE001 - 선택 기능
+        logger.info("검색 수요 블록 생략: %s", exc)
 
     return {
         "keyword": keyword,

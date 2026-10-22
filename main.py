@@ -309,6 +309,16 @@ def standards_update_job() -> None:
         logger.warning("기준 자동 갱신 중 오류(무시): %s", exc)
 
 
+def search_demand_job() -> None:
+    """검색 수요 갱신: 시드 키워드 자동완성(7일마다)·서치콘솔 검색어(매일)·네이버 검색량(키가 있을 때). 토큰 0."""
+    try:
+        import search_demand
+
+        search_demand.run_daily()
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("검색 수요 갱신 중 오류(무시): %s", exc)
+
+
 def hub_build_job() -> None:
     """허브 홈 페이지를 최신 글·제도 기준으로 다시 만든다(data/output/hub/index.html). 실제 허브에 올리는 것은 HUB_PUBLISH_PATH를 설정했을 때만."""
     try:
@@ -324,6 +334,7 @@ def _register_schedule_jobs() -> None:
     schedule.every().day.at("13:30").do(hub_build_job)  # 서버 UTC 13:30 = 한국 22:30 (글 발행이 끝난 뒤)
     schedule.every().day.at("00:20").do(policy_watch_job)  # 서버 UTC 00:20 = 한국 09:20
     schedule.every().day.at("00:40").do(standards_update_job)  # 서버 UTC 00:40 = 한국 09:40
+    schedule.every().day.at("00:50").do(search_demand_job)  # 서버 UTC 00:50 = 한국 09:50
     schedule.every(30).minutes.do(auto_publish_check_job)
     schedule.every(5).minutes.do(threads_queue_job)
     schedule.every(3).hours.do(threads_casual_job)

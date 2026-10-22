@@ -98,6 +98,9 @@ class Settings:
     # 네이버 / 공공데이터
     naver_client_id: str
     naver_client_secret: str
+    naver_ad_api_key: str  # 네이버 검색광고 키워드 도구(월간 검색량) - 선택
+    naver_ad_secret_key: str
+    naver_ad_customer_id: str
     public_data_api_key: str
 
     # 쿠팡 (선택)
@@ -192,6 +195,9 @@ def load_settings() -> Settings:
         newsletter_schedule_time=_get("NEWSLETTER_SCHEDULE_TIME", "Monday 08:00"),
         naver_client_id=_get("NAVER_CLIENT_ID"),
         naver_client_secret=_get("NAVER_CLIENT_SECRET"),
+        naver_ad_api_key=_get("NAVER_AD_API_KEY"),
+        naver_ad_secret_key=_get("NAVER_AD_SECRET_KEY"),
+        naver_ad_customer_id=_get("NAVER_AD_CUSTOMER_ID"),
         public_data_api_key=_get("PUBLIC_DATA_API_KEY"),
         coupang_access_key=_get("COUPANG_ACCESS_KEY"),
         coupang_secret_key=_get("COUPANG_SECRET_KEY"),
@@ -235,6 +241,7 @@ def validate_config(s: Settings = settings) -> Dict[str, List[str]]:
         "RESEND_API_KEY": s.resend_api_key,
         "NAVER_CLIENT_ID": s.naver_client_id,
         "NAVER_CLIENT_SECRET": s.naver_client_secret,
+        "NAVER_AD_API_KEY": s.naver_ad_api_key,
         "PUBLIC_DATA_API_KEY": s.public_data_api_key,
         "COUPANG_ACCESS_KEY": s.coupang_access_key,
         "THREADS_ACCESS_TOKEN": s.threads_access_token,
