@@ -114,10 +114,12 @@ def _to_count(value: Any) -> int:
         return int(value)
     if isinstance(value, str):
         text = value.replace(",", "").strip()
-        if text.isdigit():
-            return int(text)  # 숫자가 문자열로 오는 경우
         if "<" in text:
             return 5  # 네이버는 10 미만을 "< 10"으로 준다
+        try:
+            return int(float(text))  # 숫자가 문자열("1420", "1420.0")로 오는 경우
+        except ValueError:
+            return 0
     return 0
 
 
@@ -136,6 +138,24 @@ def _naver_ad_raw(hints: List[str]) -> Any:
     if resp is None:
         return "응답 없음"
     return resp.status_code, resp.text[:600]
+
+
+def _naver_ad_items(hints: List[str]) -> List[Dict[str, Any]]:
+    """키워드 도구 응답의 항목 목록(점검용). 실패하면 빈 리스트."""
+    timestamp = str(int(time.time() * 1000))
+    signature = base64.b64encode(
+        hmac.new(settings.naver_ad_secret_key.encode(), f"{timestamp}.GET./keywordstool".encode(), hashlib.sha256).digest()
+    ).decode()
+    resp = safe_get(
+        NAVER_AD_URL,
+        params={"hintKeywords": ",".join(h.replace(" ", "") for h in hints), "showDetail": 1},
+        headers={"X-Timestamp": timestamp, "X-API-KEY": settings.naver_ad_api_key, "X-Customer": settings.naver_ad_customer_id, "X-Signature": signature},
+        timeout=12,
+    )
+    try:
+        return resp.json().get("keywordList", []) if resp is not None and resp.status_code == 200 else []
+    except ValueError:
+        return []
 
 
 def _naver_ad_volumes(hints: List[str]) -> Dict[str, int]:
