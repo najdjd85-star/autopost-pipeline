@@ -163,11 +163,12 @@ def _naver_ad_volumes(hints: List[str]) -> Dict[str, int]:
         items = resp.json().get("keywordList", [])
     except ValueError:
         return {}
-    return {
-        i["relKeyword"]: _to_count(i.get("monthlyPcQryCnt")) + _to_count(i.get("monthlyMobileQryCnt"))
-        for i in items
-        if i.get("relKeyword")
-    }
+    volumes: Dict[str, int] = {}
+    for i in items:
+        key = i.get("relKeyword")
+        if key:  # 같은 키워드가 여러 번 올 수 있어(힌트가 여러 개일 때) 마지막 값으로 덮지 않고 가장 큰 값을 쓴다
+            volumes[key] = max(volumes.get(key, 0), _to_count(i.get("monthlyPcQryCnt")) + _to_count(i.get("monthlyMobileQryCnt")))
+    return volumes
 
 
 # ---------------------------------------------------------------------------
