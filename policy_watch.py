@@ -199,6 +199,15 @@ def run_monthly(now: Optional[datetime] = None, dry: bool = False) -> Dict[str, 
             body += "\n\n<b>🆕 신규 (조회수순)</b>\n" + _lines(new)
         if changed:
             body += "\n\n<b>✏️ 수정 (조회수순)</b>\n" + _lines(changed)
+        if changed:
+            try:  # 우리가 이미 쓴 제도가 수정됐으면 쿨다운과 상관없이 '개정 내용' 글을 다시 쓰도록 대기열에 넣는다
+                from topic_planner import queue_refresh_for_changes
+
+                queued = queue_refresh_for_changes([v[0] for _, v in changed], dry=dry)
+                if queued:
+                    body += "\n\n🔁 이미 쓴 글과 겹치는 수정 제도 → 개정 글 대기열" + (" (미리보기)" if dry else "") + ": " + html.escape(", ".join(queued))
+            except Exception as exc:  # noqa: BLE001 - 점검 알림이 이것 때문에 멈추면 안 된다
+                logger.info("개정 글 대기열 추가 실패(무시): %s", exc)
         if now.month in (6, 12):
             body += "\n\n<b>현재 인기 제도 상위</b>\n" + _lines(by_views)
         if not new and not changed:

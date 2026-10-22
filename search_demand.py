@@ -338,7 +338,7 @@ def demand_weight(site: str, keyword: str) -> float:
 def prompt_block(site: str, keyword: str) -> str:
     """글 작성 프롬프트에 붙일 '독자가 실제로 검색하는 말' 블록. 데이터가 없으면 빈 문자열."""
     entry = _fresh_keyword_entry(keyword)
-    suggest = entry.get("suggest", [])[:8]
+    suggest = [t for t in entry.get("suggest", []) if not any(w in t for w in _NOISE_WORDS)][:8]  # 커뮤니티 이름·지역명 등은 글감으로 쓰지 않는다
     related = entry.get("related_volume", [])[:5]
     rows = [r for r in _matching_gsc(site, keyword) if r["impressions"] >= 2][:5]
     if not (suggest or related or rows):
@@ -355,3 +355,42 @@ def prompt_block(site: str, keyword: str) -> str:
         "목록을 그대로 나열하지 말고, 목록에 없는 금액·조건·날짜를 지어내지 마세요(수치는 검증된 사실 메모와 공식 자료만 쓰세요).\n\n"
     )
     return "\n".join(lines)
+
+
+_NOISE_WORDS = (
+    "디시", "카페", "블로그", "유튜브", "커뮤니티", "나무위키", "썰", "후기", "결과", "공식", "홈페이지", "사이트",
+    "서울", "부산", "인천", "대구", "대전", "광주", "울산", "세종", "경기", "강원", "충북", "충남", "전북", "전남", "경북", "경남", "제주",
+)
+_CORE_STRIP = ("방법", "기간", "확인", "조회", "하기", "하는법", "알아보기")
+
+
+def _extra_of(keyword: str, text: str) -> str:
+    extra = text
+    for token in [keyword] + _tokens(keyword):
+        extra = extra.replace(token, " ")
+    return " ".join(extra.split())
+
+
+def subtopic_core(keyword: str, text: str) -> str:
+    """세부 질문의 '핵심'(공백·'방법/기간/확인' 같은 꼬리 제거). '신청', '신청방법', '신청 기간'을 같은 질문으로 본다."""
+    core = _extra_of(keyword, text).replace(" ", "")
+    for tail in _CORE_STRIP:
+        if core.endswith(tail) and len(core) > len(tail):
+            core = core[: -len(tail)]
+    return core
+
+
+def subtopic_candidates(keyword: str) -> List[tuple]:
+    """시드 키워드의 세부 질문 후보 [(자동완성 문장, 시드를 뺀 나머지, 월간 검색량)].
+    연도·금액·지역명·커뮤니티 이름이 붙은 것은 뺀다(근거 없는 수치나 지역 정보를 부르거나 글 주제로 어울리지 않는다)."""
+    entry = _load().get("keywords", {}).get(keyword, {})
+    if not entry or _age_days(entry.get("at", "")) > 60:
+        return []
+    volumes = {r.get("q", ""): r.get("v", 0) for r in entry.get("related_volume", [])}
+    out: List[tuple] = []
+    for text in entry.get("suggest", []):
+        extra = _extra_of(keyword, text)
+        if not extra or re.search(r"20\d\d|\d", extra) or any(w in extra for w in _NOISE_WORDS) or _AMOUNT_RE.search(text):
+            continue
+        out.append((text, extra, int(volumes.get(text.replace(" ", ""), 0) or 0)))
+    return out

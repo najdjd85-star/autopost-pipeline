@@ -9,14 +9,18 @@
 3. 최근 제목에 부정 어휘(탈락/오해/손해...)가 몰려 있으면 이번 제목에서 금지한다.
 4. 이번 주 정책 뉴스가 사이트 키워드와 맞으면 뉴스 풀이 유형으로 쓴다.
 5. 검증된 팩트 시트가 없는 확장 키워드는 수치를 지어내지 않도록 주의 문구를 붙인다.
+6. 같은 주제를 중복해서 쓰지 않는다: 쓴 주제는 90일 쿨다운. 쿨다운에 걸린 주제만 남으면 같은 제도의 "아직 안 쓴 세부 질문"
+   (자동완성)으로 쓰고, 정책이 바뀐 제도(팩트 시트 갱신·월간 점검에서 수정 감지·관련 뉴스)는 쿨다운과 상관없이 개정 내용 글로 다시 쓴다.
 
 토큰을 쓰지 않는다(전부 로컬 계산). 히스토리는 data/output/topic_history_{site}.json.
 """
 from __future__ import annotations
 
 import json
+import math
 import random
-from typing import Any, Dict, List, Optional  # noqa: F401
+from datetime import datetime, timedelta, timezone
+from typing import Any, Dict, List, Optional, Tuple  # noqa: F401
 
 from config import OUTPUT_DIR
 from fact_sheets import get_fact_sheet
@@ -30,6 +34,9 @@ _PICK_FROM_OLDEST = 4
 _HISTORY_KEEP = 30
 _NEGATIVE_WINDOW = 10
 _NEGATIVE_LIMIT = 4
+COOLDOWN_DAYS = 90  # 한 번 쓴 주제는 이 기간 동안 다시 뽑지 않는다(정책 변경으로 다시 쓰는 경우와 세부 주제 글은 예외)
+_LOG_KEEP = 600
+_KST = timezone(timedelta(hours=9))
 
 # 같은 계열로 묶을 첫 단어 (표기가 달라도 같은 주제 덩어리)
 _FAMILY_ALIASES = {
@@ -152,7 +159,41 @@ def _load_history(site: str) -> Dict[str, List[str]]:
         return {"keywords": [], "types": []}
 
 
-def record_pick(site: str, keyword: str, content_type: str) -> None:
+def _log_path(site: str):
+    return OUTPUT_DIR / f"topic_log_{site}.json"
+
+
+def _load_log(site: str) -> List[Dict[str, str]]:
+    """날짜가 있는 선정 기록 [{keyword, sub, type, date}]. (topic_history는 날짜가 없어 쿨다운 계산에 못 쓴다)"""
+    try:
+        data = json.loads(_log_path(site).read_text(encoding="utf-8"))
+        return data if isinstance(data, list) else []
+    except (OSError, ValueError):
+        return []
+
+
+def _append_log(site: str, keyword: str, content_type: str, subtopic: str) -> None:
+    entries = _load_log(site)
+    entries.append({"keyword": keyword, "sub": subtopic, "type": content_type, "date": datetime.now(_KST).date().isoformat()})
+    try:
+        OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+        _log_path(site).write_text(json.dumps(entries[-_LOG_KEEP:], ensure_ascii=False), encoding="utf-8")
+    except OSError as exc:
+        logger.info("주제 선정 기록 저장 실패(무시): %s", exc)
+
+
+def in_cooldown(site: str, seed: str, history_keywords: List[str], titles: List[str], days: int = COOLDOWN_DAYS) -> bool:
+    """이 주제를 최근(days일) 썼는가. 선정 기록(날짜 있음) + 선정 히스토리(최근 30건) + 최근 발행 제목 중 하나라도 걸리면 True."""
+    if seed in history_keywords:
+        return True
+    cutoff = (datetime.now(_KST).date() - timedelta(days=days)).isoformat()
+    if any(e.get("keyword") == seed and e.get("date", "") >= cutoff for e in _load_log(site)):
+        return True
+    return _title_distance(seed, titles) is not None
+
+
+def record_pick(site: str, keyword: str, content_type: str, subtopic: str = "") -> None:
+    _append_log(site, keyword, content_type, subtopic)
     history = _load_history(site)
     history["keywords"].append(keyword)
     history["types"].append(content_type)
@@ -293,14 +334,100 @@ def _consume_refresh(site: str, keyword: str) -> None:
         _save_refresh(kept)
 
 
+def queue_refresh_for_changes(names: List[str], limit: int = 3, dry: bool = False) -> List[str]:
+    """월간 점검에서 '수정'으로 잡힌 제도(조회수순 이름 목록) 중 우리가 이미 쓴 주제와 맞는 것을 개정 글 대기열에 넣는다.
+
+    아직 안 쓴 주제는 일반 선정이 알아서 쓰므로 넣지 않고, 최근 14일 안에 쓴 주제도 넣지 않는다. 한 번에 limit개까지.
+    """
+    from trend_scraper import SITE_SEED_KEYWORDS
+
+    site = "A"
+    seeds = list(dict.fromkeys(SITE_SEED_KEYWORDS.get(site, []) + PRIORITY_TOPICS.get(site, [])))
+    history = _load_history(site)["keywords"]
+    log = _load_log(site)
+    try:
+        from post_ledger import load as load_ledger
+
+        ledger = [e for e in load_ledger() if e.get("site") == site]
+    except Exception:  # noqa: BLE001
+        ledger = []
+    recent_cut = (datetime.now(_KST).date() - timedelta(days=14)).isoformat()
+
+    def written(seed: str) -> bool:
+        return seed in history or any(e.get("keyword") == seed for e in log + ledger)
+
+    def fresh(seed: str) -> bool:
+        return any(e.get("keyword") == seed and e.get("date", "") >= recent_cut for e in log + ledger)
+
+    queued: List[str] = []
+    for name in names:
+        flat = name.replace(" ", "")
+        for seed in seeds:
+            key = seed.replace(" ", "")
+            first = seed.split()[0] if seed.split() else seed
+            if seed in queued or not (key in flat or (len(first) >= 4 and first in flat)):
+                continue
+            if written(seed) and not fresh(seed):
+                queued.append(seed)
+                if not dry:
+                    add_refresh(seed)
+        if len(queued) >= limit:
+            break
+    return queued[:limit]
+
+
 def pick_priority(site: str, history: Dict[str, List[str]], recent_titles: List[str]) -> str:
     for kw in PRIORITY_TOPICS.get(site, []):
-        if kw in history["keywords"]:
-            continue
-        if _title_distance(kw, recent_titles) is not None:  # 최근 제목에 이미 다룬 흔적이 있으면 건너뜀
+        # 우선 주제는 한 번만 쓴다: 기록이 있으면(기간 무관) 다 쓴 것으로 본다(히스토리는 30건만 남아 예전 글을 잊기 때문)
+        if in_cooldown(site, kw, history["keywords"], recent_titles, days=3650):
             continue
         return kw
     return ""
+
+
+# 이미 개요를 쓴 제도의 "세부 질문" 글에 어울리는 유형(개요·개편 해설·뉴스 풀이는 제외)
+_SUBTOPIC_TYPES = ["checklist", "glossary", "problem_solve", "case_calc", "choose", "calendar"]
+
+
+def _recent_families(history: Dict[str, List[str]], seeds: List[str], recent_titles: List[str]) -> set:
+    families = {family_of(k) for k in history["keywords"][-_AVOID_RECENT_FAMILIES:]}
+    for title in recent_titles[:_AVOID_RECENT_FAMILIES]:
+        for seed in seeds:
+            if _title_distance(seed, [title]) == 0:
+                families.add(family_of(seed))
+    return families
+
+
+def pick_subtopic(
+    site: str, seeds: List[str], history: Dict[str, List[str]], recent_titles: List[str], cooldown_titles: List[str]
+) -> Tuple[str, str]:
+    """쿨다운에 걸리지 않은 새 주제가 없을 때: 이미 쓴 제도의 '아직 안 쓴 세부 질문'(자동완성)을 고른다. 없으면 ("", "")."""
+    try:
+        from search_demand import demand_weight, subtopic_candidates, subtopic_core
+    except Exception as exc:  # noqa: BLE001
+        logger.info("세부 주제 후보를 불러오지 못했습니다: %s", exc)
+        return "", ""
+
+    used_cores = {(e.get("keyword", ""), subtopic_core(e["keyword"], e["sub"])) for e in _load_log(site) if e.get("sub") and e.get("keyword")}
+    families = _recent_families(history, seeds, recent_titles)
+    flat_titles = [t.replace(" ", "") for t in cooldown_titles]
+    candidates: List[Tuple[str, str, float]] = []
+    for seed in seeds:
+        if family_of(seed) in families:
+            continue
+        seed_key = seed.replace(" ", "").split("·")[0]
+        for text, extra, volume in subtopic_candidates(seed):
+            core = subtopic_core(seed, text)
+            if (seed, core) in used_cores:
+                continue  # 같은 세부 질문('신청'과 '신청방법' 포함)을 이미 썼다
+            if core and any(seed_key in title and core in title for title in flat_titles):
+                continue  # 같은 세부 질문을 다룬 글이 이미 있다
+            weight = demand_weight(site, seed) * (1 + (math.log10(volume + 1) / 3 if volume else 0))
+            candidates.append((seed, text, weight))
+    if not candidates:
+        return "", ""
+    seed, text, _ = random.choices(candidates, weights=[c[2] for c in candidates], k=1)[0]
+    return seed, text
 
 
 def pick_content_type(site: str, news_available: bool, allowed: Optional[List[str]] = None) -> str:
@@ -343,10 +470,17 @@ def plan_topic(
     recent_titles: List[str],
     forced_keyword: Optional[str] = None,
     unverified_seeds: Optional[set] = None,
+    cooldown_titles: Optional[List[str]] = None,
 ) -> Dict[str, Any]:
-    """오늘 글의 키워드·유형·프롬프트 블록·어울리는 구조 목록을 정한다."""
+    """오늘 글의 키워드·유형·프롬프트 블록·어울리는 구조 목록을 정한다.
+
+    cooldown_titles: 90일치 발행 제목(중복 회피용). 없으면 recent_titles로 대신한다.
+    """
     history = _load_history(site)
-    priority = "" if forced_keyword else (pick_priority(site, history, recent_titles) or pick_refresh(site))
+    titles90 = cooldown_titles if cooldown_titles is not None else recent_titles
+    priority_pick = "" if forced_keyword else pick_priority(site, history, titles90)
+    refresh_pick = "" if (forced_keyword or priority_pick) else pick_refresh(site)  # 정책 기준이 바뀐 제도: 쿨다운 무시하고 다시 쓴다
+    priority = priority_pick or refresh_pick
     news = None if (forced_keyword or priority) else find_news_for_site(seeds, briefings)
     if news:
         families = {family_of(k) for k in history["keywords"][-_AVOID_RECENT_FAMILIES:]}
@@ -356,9 +490,23 @@ def plan_topic(
     content_type = pick_content_type(site, news_available=news is not None, allowed=_PRIORITY_TYPES if priority else None)
     if content_type != "news_hook":
         news = None
-    keyword = forced_keyword or priority or (news["keyword"] if news else pick_keyword(site, seeds, recent_titles))
+    subtopic = ""
+    if forced_keyword or priority or news:
+        keyword = forced_keyword or priority or news["keyword"]  # type: ignore[index]
+    else:
+        fresh = [s for s in seeds if not in_cooldown(site, s, history["keywords"], titles90)]
+        if fresh:
+            keyword = pick_keyword(site, fresh, recent_titles)
+        else:
+            keyword, subtopic = pick_subtopic(site, seeds, history, recent_titles, titles90)
+            if keyword:
+                logger.info("[Site %s] 새 주제가 쿨다운 중이라 세부 주제로 작성: %s / %s", site, keyword, subtopic)
+                if content_type not in _SUBTOPIC_TYPES:
+                    content_type = pick_content_type(site, news_available=False, allowed=_SUBTOPIC_TYPES)
+            else:
+                keyword = pick_keyword(site, seeds, recent_titles)  # 세부 주제 후보도 없으면 기존 방식(가장 오래된 것)
     if priority:
-        logger.info("[Site %s] 우선 주제 큐에서 선정: %s", site, priority)
+        logger.info("[Site %s] %s 주제 큐에서 선정: %s", site, "정책 변경 재작성" if refresh_pick else "우선", priority)
 
     spec = CONTENT_TYPES[content_type]
     block = ""
@@ -389,6 +537,22 @@ def plan_topic(
             "뉴스에 적힌 사실만 쓰고, 적혀 있지 않은 금액·일정·대상은 지어내지 마세요.\n\n"
         )
 
+    if refresh_pick:
+        block += (
+            "[이번 글을 다시 쓰는 이유 - 정책 변경]\n"
+            f"'{keyword}'는 이미 글을 쓴 제도인데 기준·금액·일정이 바뀌어 다시 씁니다. 이전 글과 같은 개요를 반복하지 말고 "
+            "'무엇이 달라졌는지'(바뀐 점, 바뀌기 전과 후, 해당·비해당 대상)를 중심에 두세요. 달라진 내용은 검증된 사실 메모와 "
+            "공식 자료에 있는 것만 쓰고, 확인되지 않은 변경은 지어내지 마세요.\n\n"
+        )
+    if subtopic:
+        block += (
+            "[이번 글의 세부 주제]\n"
+            f"- 이번 글은 '{keyword}' 제도 전체 안내가 아니라, 독자가 실제로 검색하는 질문 '{subtopic}'에 답하는 글입니다. "
+            "제목과 첫 단락에서 이 질문을 바로 다루고, 글 전체를 이 질문 중심으로 구성하세요.\n"
+            f"- 이미 '{keyword}'의 개요 글이 있으니, 제도 소개·자격 요건을 처음부터 다시 설명하지 말고 이 질문에 필요한 내용만 깊게 다루세요.\n"
+            "- 금액·기한 같은 수치는 검증된 사실 메모와 공식 자료 안에서만 쓰세요.\n\n"
+        )
+
     if unverified_seeds and keyword in unverified_seeds and not get_fact_sheet(keyword):
         block += _UNVERIFIED_CAUTION
 
@@ -401,6 +565,7 @@ def plan_topic(
 
     return {
         "keyword": keyword,
+        "subtopic": subtopic,
         "content_type": content_type,
         "block": block,
         "layouts": spec["layouts"],

@@ -248,11 +248,11 @@ category 필드에는 위 목록 중 오늘 글의 주제와 가장 가까운 �
 """
 
 
-def _fetch_recent_titles(site: str, days: int = 30) -> List[str]:
+def _fetch_recent_titles(site: str, days: int = 30, per_page: int = 30) -> List[str]:
     """최근 발행 글 제목 목록 (키워드 중복 회피 + Claude에게 반복 금지 지시용)."""
     try:
         wp = WordPressClient(site)
-        posts = wp.get_recent_posts(days=days, per_page=30)
+        posts = wp.get_recent_posts(days=days, per_page=per_page)
         return [
             html.unescape(p.get("title", {}).get("rendered", ""))
             for p in posts
@@ -431,6 +431,7 @@ def generate_post(
 
     hot = fetch_today_hot_topics(site)
     recent_titles = _fetch_recent_titles(site)
+    cooldown_titles = _fetch_recent_titles(site, days=90, per_page=100) or recent_titles  # 주제 중복 회피(90일 쿨다운)용
     plan: Optional[Dict[str, Any]] = None
     if os.environ.get("TOPIC_PLANNER_ENABLED", "1") != "0":
         try:
@@ -441,6 +442,7 @@ def generate_post(
                 recent_titles,
                 forced_keyword=base_keyword,
                 unverified_seeds=UNVERIFIED_SEEDS,
+                cooldown_titles=cooldown_titles,
             )
         except Exception as exc:  # noqa: BLE001 - 플래너 오류가 글 생성을 막으면 안 된다
             logger.warning("[Site %s] 주제 플래너 실패, 기존 키워드 선정으로 진행: %s", site, exc)
@@ -456,6 +458,9 @@ def generate_post(
         )
 
     longtail = expand_to_longtail(keyword)
+    subtopic = (plan or {}).get("subtopic", "")
+    if subtopic:  # 세부 질문 글: 제목·벤치마크·검색 의도가 이 질문을 따르도록 롱테일 맨 앞에 둔다
+        longtail = [subtopic] + [t for t in longtail if t != subtopic]
     references = get_top_blog_references(longtail[0] if longtail else keyword)
     benchmark_block = ""
     if os.environ.get("BENCHMARK_ENABLED", "1") != "0":
@@ -517,7 +522,7 @@ def generate_post(
     record_variant(site, variant)
     if plan:
         data["content_type"] = plan["content_type"]
-        record_pick(site, keyword, plan["content_type"])
+        record_pick(site, keyword, plan["content_type"], plan.get("subtopic", ""))
     if target_persona:
         data["target_persona"] = target_persona
         record_persona(site, target_persona)
