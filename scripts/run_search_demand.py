@@ -19,9 +19,12 @@ from trend_scraper import SITE_SEED_KEYWORDS
 parser = argparse.ArgumentParser()
 parser.add_argument("--force", action="store_true")
 parser.add_argument("--show", metavar="SITE", help="A/B/C 중 하나")
+parser.add_argument("--probe", metavar="KEYWORD", help="네이버 검색광고 키워드 도구 응답을 그대로 출력(점검용, 키는 출력되지 않음)")
 args = parser.parse_args()
 
-if args.show:
+if args.probe:
+    print(sd._naver_ad_raw([args.probe]))
+elif args.show:
     site = args.show.upper()
     print(f"[Site {site}] 네이버 검색광고 키: {'있음' if sd.naver_ad_configured() else '없음(자동완성·서치콘솔만 사용)'}")
     ranked = sorted(SITE_SEED_KEYWORDS.get(site, []), key=lambda k: -sd.demand_weight(site, k))

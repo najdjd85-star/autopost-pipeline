@@ -112,7 +112,30 @@ def naver_ad_configured() -> bool:
 def _to_count(value: Any) -> int:
     if isinstance(value, (int, float)):
         return int(value)
-    return 5 if isinstance(value, str) and "<" in value else 0  # 네이버는 10 미만을 "< 10"으로 준다
+    if isinstance(value, str):
+        text = value.replace(",", "").strip()
+        if text.isdigit():
+            return int(text)  # 숫자가 문자열로 오는 경우
+        if "<" in text:
+            return 5  # 네이버는 10 미만을 "< 10"으로 준다
+    return 0
+
+
+def _naver_ad_raw(hints: List[str]) -> Any:
+    """점검용: 키워드 도구의 응답(상태 코드, 앞쪽 항목)을 그대로 돌려준다. 키는 포함되지 않는다."""
+    timestamp = str(int(time.time() * 1000))
+    signature = base64.b64encode(
+        hmac.new(settings.naver_ad_secret_key.encode(), f"{timestamp}.GET./keywordstool".encode(), hashlib.sha256).digest()
+    ).decode()
+    resp = safe_get(
+        NAVER_AD_URL,
+        params={"hintKeywords": ",".join(h.replace(" ", "") for h in hints), "showDetail": 1},
+        headers={"X-Timestamp": timestamp, "X-API-KEY": settings.naver_ad_api_key, "X-Customer": settings.naver_ad_customer_id, "X-Signature": signature},
+        timeout=12,
+    )
+    if resp is None:
+        return "응답 없음"
+    return resp.status_code, resp.text[:600]
 
 
 def _naver_ad_volumes(hints: List[str]) -> Dict[str, int]:
