@@ -23,7 +23,10 @@ parser.add_argument("--probe", metavar="KEYWORD", help="네이버 검색광고 �
 args = parser.parse_args()
 
 if args.probe:
-    print(sd._naver_ad_raw([args.probe]))
+    hints = [h.strip() for h in args.probe.split(",") if h.strip()][:5]
+    print("원본 응답:", sd._naver_ad_raw(hints))
+    parsed = sd._naver_ad_volumes(hints)
+    print("해석 결과:", {k: parsed.get(k.replace(" ", "")) for k in hints}, "/ 전체 항목 수", len(parsed))
 elif args.show:
     site = args.show.upper()
     print(f"[Site {site}] 네이버 검색광고 키: {'있음' if sd.naver_ad_configured() else '없음(자동완성·서치콘솔만 사용)'}")
