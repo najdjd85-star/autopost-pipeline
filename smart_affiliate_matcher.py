@@ -14,6 +14,7 @@ import base64
 import hashlib
 import hmac
 import json
+import os
 import random
 import time
 from datetime import datetime, timedelta, timezone
@@ -60,6 +61,10 @@ COUPANG_DOMAIN = "https://api-gateway.coupang.com"
 # (프로세스를 다시 켜도 이어지게) 한 시간에 보낼 수 있는 횟수를 막고, 한도 초과 응답이 한 번이라도 오면 일정 시간 호출을 끊는다.
 COUPANG_GUARD_PATH = OUTPUT_DIR / "coupang_api_guard.json"
 COUPANG_MAX_CALLS_PER_HOUR = 50  # 링크 갱신 1회(약 46개 검색어)가 한 시간 안에 두 번 나가지 못하게 하는 상한
+COUPANG_MAX_CALLS_PER_DAY = int(os.environ.get("COUPANG_MAX_CALLS_PER_DAY", "60"))  # 하루 1회 갱신(46회) + 여유. 하루에 여러 번 돌려도 총량이 넘지 않게
+# 하루 상한의 '하루'는 24시간이 아니라 20시간이다: 매일 같은 시각(19시)에 도는 정기 갱신이 어제 호출(늦게 끝났거나 늦게 시작한 경우 포함) 때문에
+# 건너뛰어지지 않게 한다. 같은 날 여러 번 돌리는 것만 막으면 된다.
+COUPANG_DAY_WINDOW_SECONDS = 20 * 3600
 COUPANG_COOLDOWN_SECONDS = 3 * 3600
 _RATE_LIMIT_WORDS = ("초과", "제한", "too many", "rate limit")
 
@@ -70,7 +75,7 @@ def _guard_load() -> Dict[str, object]:
     except (OSError, ValueError):
         data = {}
     now = time.time()
-    calls = [t for t in data.get("calls", []) if isinstance(t, (int, float)) and now - t < 3600]
+    calls = [t for t in data.get("calls", []) if isinstance(t, (int, float)) and now - t < COUPANG_DAY_WINDOW_SECONDS]  # 하루 상한까지 세려고 20시간치를 남긴다
     return {"calls": calls, "blocked_until": float(data.get("blocked_until", 0) or 0)}
 
 
@@ -87,7 +92,9 @@ def coupang_calls_left() -> int:
     state = _guard_load()
     if state["blocked_until"] > time.time():
         return 0
-    return max(0, COUPANG_MAX_CALLS_PER_HOUR - len(state["calls"]))
+    now = time.time()
+    last_hour = sum(1 for t in state["calls"] if now - t < 3600)
+    return max(0, min(COUPANG_MAX_CALLS_PER_HOUR - last_hour, COUPANG_MAX_CALLS_PER_DAY - len(state["calls"])))
 
 
 def coupang_blocked_minutes() -> int:
