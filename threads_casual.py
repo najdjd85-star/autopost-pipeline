@@ -30,7 +30,7 @@ BATCH_SIZE = 10
 HISTORY_KEEP = 60
 SKIP_CHANCE = 0.25  # 일정하게 올리면 오히려 봇처럼 보여서 가끔 건너뛴다
 MIN_HOURS_BETWEEN = 20
-MAX_CHARS = 220
+MAX_CHARS = 70
 KST = timezone(timedelta(hours=9))
 
 TOOL = {
@@ -42,7 +42,7 @@ TOOL = {
             "posts": {
                 "type": "array",
                 "items": {"type": "string"},
-                "description": f"일상 글 {BATCH_SIZE}개. 각각 한 편(100자 안팎, 최대 {MAX_CHARS}자).",
+                "description": f"일상 글 {BATCH_SIZE}개. 각각 한 줄(줄바꿈 없이 한 문장, 40자 안팎, 최대 {MAX_CHARS}자).",
             }
         },
         "required": ["posts"],
@@ -57,9 +57,13 @@ SYSTEM_PROMPT = (
     "누구나 아는 일반 상식 팁, 퀴즈처럼 사실과 어긋날 수 없는 내용만 씁니다.\n"
     "3) 구체적인 금액·소득 기준·제도 조건·날짜를 단정하지 마세요(틀릴 수 있음). 제도 이름은 언급해도 되지만 내용은 일반론으로.\n"
     "4) URL, 해시태그 3개 이상, 이모지 남발, 구매·가입·신청 유도, 광고 문구는 금지합니다.\n"
-    "5) 글마다 형식을 다르게 섞습니다: 계절 환기형, 가벼운 질문형, 한 줄 생각형, 미니 팁형, 퀴즈형, 공감형.\n"
+    "5) 형식은 계절 환기, 가벼운 질문, 한 줄 생각, 한 줄 팁을 섞되 전부 딱 한 문장입니다.\n"
     "6) 서로 겹치는 문장·표현을 쓰지 말고, 이미 쓴 글 목록과 비슷한 글은 피합니다.\n"
-    "7) 글은 한두 문장에서 서너 문장, 최대 200자 안으로 씁니다."
+    f"7) 글은 반드시 한 줄(줄바꿈 없이 한 문장, 공백 포함 40자 안팎, 최대 {MAX_CHARS}자)입니다.\n"
+    "8) 읽는 사람 누구나 '맞아 그렇지' 하고 고개를 끄덕일 일상 소재만 씁니다(월급날 통장, 공과금·통신비 고지서, 환절기, "
+    "연말정산 시즌, 장 볼 때 물가 같은 것). 특정 상황에 사는 사람만 공감하는 얘기는 피합니다.\n"
+    "9) '공감 한 스푼', '공감하면', '~하신 분?', '좋아요/팔로우/댓글 달아줘' 같은 공감·반응을 요구하는 문구와 "
+    "공감이라는 단어 자체를 쓰지 않습니다. 그냥 담담하게 한 줄만 툭 던집니다."
 )
 
 
@@ -99,7 +103,9 @@ def _save_bank(bank: Dict[str, Any]) -> None:
 def clean_post(text: str) -> Optional[str]:
     """프롬프트를 어긴 글을 코드에서 한 번 더 거른다. 통과하면 정리된 글, 아니면 None."""
     text = (text or "").strip()
-    if not text or len(text) > MAX_CHARS:
+    if not text or len(text) > MAX_CHARS or "\n" in text:  # 한 줄만 허용
+        return None
+    if re.search(r"공감|스푼|하신\s*분|손\s*들어|좋아요|팔로우|댓글", text):  # 공감·반응을 요구하는 문구
         return None
     if re.search(r"https?://|www\.|\.com|\.kr", text, re.IGNORECASE):
         return None
@@ -171,6 +177,7 @@ def maybe_schedule_casual(now: Optional[datetime] = None, generate=None) -> Dict
         return {"status": "skip", "reason": "random_skip"}
 
     bank = _load_bank()
+    bank["pool"] = [p for p in bank["pool"] if clean_post(p)]  # 예전 말투(긴 글·공감 문구)로 쌓아 둔 글은 버린다
     if len(bank["pool"]) < REFILL_BELOW:
         try:
             make = generate or (lambda: generate_bank(_get_client(), now, bank["used"]))
