@@ -30,7 +30,9 @@ BATCH_SIZE = 10
 HISTORY_KEEP = 60
 SKIP_CHANCE = 0.25  # 일정하게 올리면 오히려 봇처럼 보여서 가끔 건너뛴다
 MIN_HOURS_BETWEEN = 20
-MAX_CHARS = 70
+MAX_CHARS = 140
+FIRST_LINE_MAX = 32  # 첫 줄은 짧고 세게
+MAX_LINES = 4
 KST = timezone(timedelta(hours=9))
 
 TOOL = {
@@ -42,7 +44,7 @@ TOOL = {
             "posts": {
                 "type": "array",
                 "items": {"type": "string"},
-                "description": f"일상 글 {BATCH_SIZE}개. 각각 한 줄(줄바꿈 없이 한 문장, 40자 안팎, 최대 {MAX_CHARS}자).",
+                "description": f"일상 글 {BATCH_SIZE}개. 각각 첫 줄이 짧고 임팩트 있는 글(첫 줄 {FIRST_LINE_MAX}자 이내, 전체 최대 {MAX_LINES}줄·{MAX_CHARS}자).",
             }
         },
         "required": ["posts"],
@@ -57,13 +59,13 @@ SYSTEM_PROMPT = (
     "누구나 아는 일반 상식 팁, 퀴즈처럼 사실과 어긋날 수 없는 내용만 씁니다.\n"
     "3) 구체적인 금액·소득 기준·제도 조건·날짜를 단정하지 마세요(틀릴 수 있음). 제도 이름은 언급해도 되지만 내용은 일반론으로.\n"
     "4) URL, 해시태그 3개 이상, 이모지 남발, 구매·가입·신청 유도, 광고 문구는 금지합니다.\n"
-    "5) 형식은 계절 환기, 가벼운 질문, 한 줄 생각, 한 줄 팁을 섞되 전부 딱 한 문장입니다.\n"
+    "5) 형식은 계절 환기, 가벼운 질문, 한 줄 생각, 미니 팁을 섞습니다.\n"
     "6) 서로 겹치는 문장·표현을 쓰지 말고, 이미 쓴 글 목록과 비슷한 글은 피합니다.\n"
-    f"7) 글은 반드시 한 줄(줄바꿈 없이 한 문장, 공백 포함 40자 안팎, 최대 {MAX_CHARS}자)입니다.\n"
+    f"7) 첫 줄이 승부입니다: 첫 줄은 {FIRST_LINE_MAX}자 안의 짧고 임팩트 있는 한 줄로, 스크롤을 멈추게 할 만큼 '나도 그런데' 싶은 상황이나 의외의 관점을 던집니다. 그 뒤에 이어지는 말은 1~2줄만 짧게 덧붙입니다(전체 최대 {MAX_LINES}줄, {MAX_CHARS}자).\n"
     "8) 읽는 사람 누구나 '맞아 그렇지' 하고 고개를 끄덕일 일상 소재만 씁니다(월급날 통장, 공과금·통신비 고지서, 환절기, "
     "연말정산 시즌, 장 볼 때 물가 같은 것). 특정 상황에 사는 사람만 공감하는 얘기는 피합니다.\n"
     "9) '공감 한 스푼', '공감하면', '~하신 분?', '좋아요/팔로우/댓글 달아줘' 같은 공감·반응을 요구하는 문구와 "
-    "공감이라는 단어 자체를 쓰지 않습니다. 그냥 담담하게 한 줄만 툭 던집니다."
+    "공감이라는 단어 자체를 쓰지 않습니다. 담담하게 툭 던지는 말투로 씁니다."
 )
 
 
@@ -103,8 +105,12 @@ def _save_bank(bank: Dict[str, Any]) -> None:
 def clean_post(text: str) -> Optional[str]:
     """프롬프트를 어긴 글을 코드에서 한 번 더 거른다. 통과하면 정리된 글, 아니면 None."""
     text = (text or "").strip()
-    if not text or len(text) > MAX_CHARS or "\n" in text:  # 한 줄만 허용
+    if not text or len(text) > MAX_CHARS:
         return None
+    lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
+    if not lines or len(lines) > MAX_LINES or len(lines[0]) > FIRST_LINE_MAX:  # 첫 줄은 짧고 세게
+        return None
+    text = "\n".join(lines)
     if re.search(r"공감|스푼|하신\s*분|손\s*들어|좋아요|팔로우|댓글", text):  # 공감·반응을 요구하는 문구
         return None
     if re.search(r"https?://|www\.|\.com|\.kr", text, re.IGNORECASE):
