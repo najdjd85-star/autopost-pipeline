@@ -243,7 +243,17 @@ def _is_blocked_response(resp: Any) -> bool:
     return bool(match and int(match.group(1)) in _BLOCK_ERROR_CODES)
 
 
+def plain_threads_text(text: str) -> str:
+    """스레드는 HTML을 해석하지 않으므로 <br> 같은 태그는 실제 줄바꿈으로 바꾸고 나머지 태그는 지운다."""
+    text = re.sub(r"<\s*br\s*/?\s*>", "\n", text or "", flags=re.IGNORECASE)
+    text = re.sub(r"</?\s*(p|div|li|ul|ol)\b[^>]*>", "\n", text, flags=re.IGNORECASE)
+    text = re.sub(r"<[^>]+>", "", text)
+    text = re.sub(r"[ \t]+\n", "\n", text)
+    return re.sub(r"\n{3,}", "\n\n", text).strip()
+
+
 def publish_threads_post(text: str) -> Dict[str, Any]:
+    text = plain_threads_text(text)
     if not settings.threads_access_token:
         logger.info("THREADS_ACCESS_TOKEN 미설정 - 스레드 게시를 건너뜁니다.")
         return {"status": "skipped", "reason": "not_configured"}
@@ -294,6 +304,7 @@ def publish_threads_post(text: str) -> Dict[str, Any]:
 
 
 def add_threads_first_comment(post_id: str, comment_text: str) -> Dict[str, Any]:
+    comment_text = plain_threads_text(comment_text)
     if not (settings.threads_access_token and post_id):
         return {"status": "skipped", "reason": "not_configured_or_no_post_id"}
 
