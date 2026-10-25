@@ -258,7 +258,8 @@ def pick_keyword(site: str, seeds: List[str], recent_titles: List[str]) -> str:
     scored = [(seed, _recency(seed, history["keywords"], recent_titles)) for seed in seeds]
     eligible = [item for item in scored if family_of(item[0]) not in recent_families] or scored
     eligible.sort(key=lambda item: -item[1])
-    pool = [seed for seed, _ in eligible[:_PICK_FROM_OLDEST]]
+    cutoff = eligible[min(_PICK_FROM_OLDEST, len(eligible)) - 1][1]
+    pool = [seed for seed, rec in eligible if rec >= cutoff]  # 4번째와 같은 순위(예: 아직 안 쓴 전부)도 후보에 넣어 수요가 큰 주제가 밀리지 않게
     try:  # 검색 수요(자동완성·서치콘솔·검색량)가 큰 주제를 더 자주 고른다. 데이터가 없으면 모두 같은 가중치.
         from search_demand import demand_weight
 

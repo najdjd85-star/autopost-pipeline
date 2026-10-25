@@ -31,6 +31,7 @@ DEMAND_PATH = OUTPUT_DIR / "search_demand.json"
 GOOGLE_SUGGEST_URL = "https://suggestqueries.google.com/complete/search"
 NAVER_AD_URL = "https://api.searchad.naver.com/keywordstool"
 KEYWORD_REFRESH_DAYS = 7
+LOW_VOLUME = 2000  # 월간 검색량(PC+모바일)이 이보다 작으면 주제 선정에서 크게 감점
 GSC_REFRESH_HOURS = 20
 USE_MAX_AGE_DAYS = 21  # 이보다 오래된 수요 데이터는 믿지 않고 무시한다
 REQUEST_GAP_SECONDS = 0.6
@@ -326,6 +327,9 @@ def demand_weight(site: str, keyword: str) -> float:
         volume = entry.get("volume")
         if volume:
             weight += min(math.log10(volume + 1) / 3, 2.0)  # 1,000건 ≈ +1, 100,000건 ≈ +1.7
+            weight *= (1 + math.log10(volume + 1)) ** 2 / 20  # 검색량 차이를 크게 반영(500건 ≈ 0.7배, 5만 건 ≈ 1.6배, 20만 건 ≈ 2배)
+            if volume < LOW_VOLUME:
+                weight *= 0.3  # 월 검색량이 너무 작은 주제는 거의 뽑지 않는다
     rows = _matching_gsc(site, keyword)
     if rows:
         impressions = sum(r["impressions"] for r in rows)
