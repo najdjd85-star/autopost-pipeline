@@ -25,6 +25,7 @@ from urllib.parse import quote
 from config import DATA_DIR, settings
 from llm_usage import image_generation_allowed, record_image
 from constants import IMAGE_SLOT_1, POLLINATIONS_IMAGE_SIZE
+from gemini_keys import call_with_rotation, has_keys
 from utils.http import safe_get, safe_post
 from utils.logger import get_logger
 from wp_client import WordPressClient
@@ -77,8 +78,8 @@ def generate_google_ai_image(
     prompt_en: str, width: int = POLLINATIONS_IMAGE_SIZE[0], height: int = POLLINATIONS_IMAGE_SIZE[1]
 ) -> Optional[bytes]:
     """Google AI Studio(Gemini) 이미지 생성 API로 프롬프트에 맞는 이미지를 생성한다."""
-    if not settings.google_ai_studio_api_key:
-        logger.info("GOOGLE_AI_STUDIO_API_KEY 미설정 - Gemini 이미지 생성을 건너뜁니다.")
+    if not has_keys():
+        logger.info("GEMINI_API_KEYS 미설정 - Gemini 이미지 생성을 건너뜁니다.")
         return None
 
     aspect_ratio = "16:9" if width >= height else "9:16"
@@ -103,14 +104,14 @@ def generate_google_ai_image(
             "image_size": "512",
         },
     }
-    resp = safe_post(
-        GEMINI_INTERACTIONS_URL,
-        headers={
-            "x-goog-api-key": settings.google_ai_studio_api_key,
-            "Content-Type": "application/json",
-        },
-        data=json.dumps(payload),
-        timeout=30,
+    # 키가 여러 개면 한도 초과 시 다음 키로 자동 전환한다(gemini_keys.py)
+    resp = call_with_rotation(
+        lambda key: safe_post(
+            GEMINI_INTERACTIONS_URL,
+            headers={"x-goog-api-key": key, "Content-Type": "application/json"},
+            data=json.dumps(payload),
+            timeout=30,
+        )
     )
     if resp is None or resp.status_code != 200:
         logger.warning(
