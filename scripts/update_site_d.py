@@ -1,7 +1,7 @@
 """[매일 18시, 내 PC] 냉장고 파먹기(사이트 D)의 '오늘 많이 찾은 요리'를 갱신하고 사이트를 다시 빌드한다.
 
 순서: 네이버 데이터랩에서 어제 검색 지수 받기 -> site_d/trending.json 저장 -> 사이트 빌드(site_d/dist) -> 텔레그램으로 결과 알림.
-키가 아직 없으면 조용히 건너뛴다(알림 없음). 배포(서버에 올리기)는 도메인·서버 설정 뒤에 이 파일의 deploy() 에 붙인다.
+키가 아직 없으면 조용히 건너뛴다(알림 없음). 끝나면 trending.json 을 깃에 올리고(deploy), 서버 예약 작업(scripts/publish_site_d.sh)이 18:10에 받아 사이트를 갱신한다.
 실행: venv\\Scripts\\python.exe scripts\\update_site_d.py     (예약 작업 'FridgeTrending' 이 매일 18:00 에 실행)
 """
 from __future__ import annotations
@@ -46,8 +46,21 @@ def _notify(text: str) -> None:
 
 
 def deploy() -> str:
-    """서버로 올리기(미정). 서브도메인·SSH 설정이 끝나면 여기서 dist 를 올린다."""
-    return "배포 설정 전(내 PC에서만 갱신됨)"
+    """오늘 인기 요리 파일(trending.json)만 깃에 올린다. 서버가 매일 18:10(한국시간)에 받아서 사이트를 다시 만든다."""
+    def git(*args: str) -> subprocess.CompletedProcess:
+        return subprocess.run(["git", *args], cwd=str(ROOT), capture_output=True, text=True, encoding="utf-8")
+
+    path = "site_d/trending.json"
+    if git("diff", "--quiet", "--", path).returncode == 0 and git("ls-files", "--error-unmatch", path).returncode == 0:
+        return "서버 반영: 어제와 같은 순위라 올릴 것 없음"
+    git("add", path)
+    msg = git("commit", "-m", "Site D: daily trending update", "--", path)
+    if msg.returncode != 0:
+        return "서버 반영 실패(커밋): " + (msg.stderr or msg.stdout)[-120:]
+    push = git("push", "origin", "HEAD")
+    if push.returncode != 0:
+        return "서버 반영 실패(푸시, 다음 날 다시 시도): " + (push.stderr or push.stdout)[-120:]
+    return "서버 반영: 깃에 올림(서버가 18:10에 사이트 갱신)"
 
 
 def main() -> int:

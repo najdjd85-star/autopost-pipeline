@@ -16,6 +16,7 @@ cd "$ROOT"
 SITE_D_BASE=https://cook.dailyfixpoint.com "$ROOT/venv/bin/python" -X utf8 site_d/build.py
 mkdir -p ~/site_d_backup
 tar -czf ~/site_d_backup/before_$(date +%Y%m%d_%H%M%S).tgz -C "$TARGET" . 2>/dev/null || true
+ls -t ~/site_d_backup/before_*.tgz 2>/dev/null | tail -n +8 | xargs -r rm -f   # 백업은 최근 7개만 남긴다
 cp -a site_d/dist/. "$TARGET"/
 # Cloudways 기본 페이지(index.php 등)가 있으면 우리 index.html 이 먼저 열리도록 이름만 바꿔 둔다(삭제 아님)
 for f in index.php; do [ -f "$TARGET/$f" ] && mv "$TARGET/$f" "$TARGET/$f.bak" || true; done
