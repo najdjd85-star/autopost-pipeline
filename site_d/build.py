@@ -663,7 +663,7 @@ def main() -> None:
             rail += "</details>"
         allink = '<a class="cb-link' + (" on" if rel == ("all.html",) else "") + '" href="' + prefix + 'all.html">📖 모든 레시피</a>'
         cur = ('<span class="cb-cur">' + cat_of[active][2] + " " + esc(cat_of[active][1]) + "</span>") if active in cat_of else ""
-        bar = '<nav class="catbar" aria-label="요리 카테고리">' + home + '<details class="catmenu"><summary>☰ 카테고리</summary><div class="catpanel">' + panel + "</div></details>" + allink + cur + "</nav>"
+        bar = '<nav class="catbar" aria-label="요리 카테고리">' + home + '<details class="catmenu"><summary' + (' class="on"' if active in cat_of else "") + '>☰ 카테고리</summary><div class="catpanel">' + panel + "</div></details>" + allink + cur + "</nav>"
         railhtml = '<nav class="catrail" aria-label="요리 카테고리"><b class="catnav-t">요리 카테고리</b>' + home.replace("cb-link", "rail-home") + allink.replace("cb-link", "rail-home") + rail + "</nav>"
         toprail = ""
         for i, r in enumerate(top, 1):
