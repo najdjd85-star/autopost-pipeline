@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{{SITE_NAME}} - 냉장고 재료로 만들 수 있는 요리 찾기</title>
-<meta name="description" content="냉장고에 있는 재료를 고르면 지금 만들 수 있는 요리와 재료 1~2개만 더 있으면 되는 요리를 알려드려요. 자취 집밥 레시피 {{COUNT}}개.">
+<meta name="description" content="냉장고에 있는 재료를 고르면 지금 만들 수 있는 요리와 재료 1~2개만 더 있으면 되는 요리를 알려드려요. 칼로리 표가 있는 자취 집밥 레시피 {{COUNT}}개.">
 <link rel="canonical" href="{{BASE}}/">
 <meta property="og:title" content="{{SITE_NAME}}">
 <meta property="og:description" content="냉장고 속 재료를 고르면 만들 수 있는 요리를 바로 찾아드려요.">
@@ -15,18 +15,18 @@
 <div class="wrap">
 <header class="top">
 <a class="brand" href="./">{{SITE_NAME}}</a>
-<p>냉장고 속 재료를 고르면 지금 만들 수 있는 요리를 알려드려요.</p>
 </header>
 <main>
-<h1>오늘 냉장고에 뭐가 있나요?</h1>
-<section class="panel" aria-label="재료 입력">
+<section class="hero">
+<h1>오늘 냉장고에 뭐가 있어?</h1>
+<p>눌러서 담으면 바로 만들 수 있는 요리가 나와요.</p>
 <div class="search">
-<input id="q" type="text" inputmode="text" autocomplete="off" placeholder="재료 입력 (예: 계란)" aria-label="재료 입력">
+<input id="q" type="text" inputmode="text" autocomplete="off" placeholder="직접 입력 (예: 계란, 김치)" aria-label="재료 입력">
 <button id="add" class="btn" type="button">추가</button>
 </div>
 <div id="sug" class="suggest" aria-live="polite"></div>
-<div id="cats"></div>
 </section>
+<div id="cats"></div>
 <section class="panel" aria-label="고른 재료">
 <div class="row">
 <strong>내가 고른 재료</strong>
@@ -41,7 +41,7 @@
 </main>
 <footer>
 {{DISCLOSURE}}
-<p>레시피는 1~2인분 기준 일반적인 조리법이며, 재료 상태와 불 세기에 따라 시간과 맛이 달라질 수 있어요. 알레르기가 있다면 재료를 꼭 확인하세요.</p>
+<p>레시피는 일반적인 조리법이며, 재료 상태와 불 세기에 따라 시간과 맛이 달라질 수 있어요. 칼로리는 식품성분표 평균값으로 계산한 추정치예요. 알레르기가 있다면 재료를 꼭 확인하세요.</p>
 </footer>
 </div>
 <script>window.FRIDGE={{DATA}};</script>

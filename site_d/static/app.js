@@ -39,19 +39,24 @@
 
   function toggle(name) { if (have[name]) { delete have[name]; } else { have[name] = true; } persist(); render(); }
 
+  var SHELF = ["1단", "2단", "3단", "4단", "5단"];
   function buildCats() {
     $cats.textContent = "";
-    Object.keys(D.categories).forEach(function (cat) {
-      $cats.appendChild(el("div", "cat", cat));
-      var box = el("div", "chips");
+    Object.keys(D.categories).forEach(function (cat, idx) {
+      var shelf = el("div", "shelf");
+      shelf.appendChild(el("p", "shelf-title", (SHELF[idx] || "") + " · " + cat));
+      var box = el("div", "tiles");
       D.categories[cat].forEach(function (n) {
-        var b = el("button", "chip" + (have[n] ? " on" : ""), n);
+        var b = el("button", "tile" + (have[n] ? " on" : ""));
         b.type = "button";
         b.setAttribute("aria-pressed", have[n] ? "true" : "false");
+        b.appendChild(el("span", "em", D.emoji[n] || "•"));
+        b.appendChild(el("span", null, n));
         b.addEventListener("click", function () { toggle(n); });
         box.appendChild(b);
       });
-      $cats.appendChild(box);
+      shelf.appendChild(box);
+      $cats.appendChild(shelf);
     });
   }
 
@@ -78,13 +83,17 @@
 
   function card(ev) {
     var a = el("div", "card");
+    a.appendChild(el("div", "ic", ev.r.icon));
+    var body = el("div", "body");
     var h3 = el("h3");
     var title = el("a", null, ev.r.name);
     title.href = "recipes/" + ev.r.slug + ".html";
     h3.appendChild(title);
-    a.appendChild(h3);
-    a.appendChild(el("div", "meta", ev.r.minutes + "분 · " + ev.r.level + " · 내 재료 " + ev.used + "개 사용"));
-    a.appendChild(el("p", null, ev.r.desc));
+    body.appendChild(h3);
+    var meta = el("div", "meta", ev.r.minutes + "분 · " + ev.r.level + " · 내 재료 " + ev.used + "개 사용 · ");
+    meta.appendChild(el("span", "kc", "1인분 약 " + ev.r.kcal + "kcal"));
+    body.appendChild(meta);
+    body.appendChild(el("p", null, ev.r.desc));
     if (ev.missing.length) {
       var row = el("div", "miss-row");
       row.appendChild(el("span", "meta", "부족한 재료"));
@@ -99,17 +108,18 @@
           row.appendChild(buy);
         }
       });
-      a.appendChild(row);
+      body.appendChild(row);
     }
     if (ev.optHave.length) {
       var o = el("div", "miss-row");
       o.appendChild(el("span", "meta", "있으면 더 좋은 재료 보유"));
       ev.optHave.forEach(function (n) { o.appendChild(el("span", "chip have", n + " ✓")); });
-      a.appendChild(o);
+      body.appendChild(o);
     }
     var go = el("a", "more", "레시피 보기 →");
     go.href = "recipes/" + ev.r.slug + ".html";
-    a.appendChild(go);
+    body.appendChild(go);
+    a.appendChild(body);
     return a;
   }
 
