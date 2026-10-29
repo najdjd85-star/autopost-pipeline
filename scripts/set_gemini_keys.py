@@ -52,8 +52,8 @@ def ask_keys(existing: list) -> list:
         k = getpass.getpass(f"  키 {len(keys) + 1}: ").strip().strip('"').strip("'")
         if not k:
             break
-        if not k.startswith("AIza") or len(k) < 30:
-            print("    ⚠ 보통 'AIza'로 시작하는 39자 키입니다. 잘못 붙여넣었다면 이 칸은 건너뛰고 다시 실행하세요.")
+        if len(k) < 20 or re.search(r"\s", k):  # 키 형식은 바뀔 수 있어 길이와 공백만 본다(유효성은 --test 로 확인)
+            print("    ⚠ 키가 너무 짧거나 공백이 있습니다. 잘못 붙여넣었다면 저장 후 --test 로 확인하세요.")
         if k in keys:
             print("    이미 넣은 키라 건너뜁니다.")
             continue
