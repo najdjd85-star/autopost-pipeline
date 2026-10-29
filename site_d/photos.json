@@ -230,5 +230,29 @@
   "artist": "Sharon Chen from Austin, United States",
   "license": "CC BY 2.0",
   "license_url": "https://creativecommons.org/licenses/by/2.0"
+ },
+ "sukju-pork-bokkeum": {
+  "file": "sukju-pork-bokkeum.jpg",
+  "title": "Fried Pork Bean Sprout.jpg",
+  "page": "https://commons.wikimedia.org/wiki/File:Fried_Pork_Bean_Sprout.jpg",
+  "artist": "권재원",
+  "license": "CC BY-SA 4.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+ },
+ "sukju-egg-bokkeum": {
+  "file": "sukju-egg-bokkeum.jpg",
+  "title": "SZ 深圳 Shenzhen 福田 Futian 味琪蒸飯 Wei Qi Restaurant food 炒豆芽菜 fried mung bean sprouts June 2024 R12S.jpg",
+  "page": "https://commons.wikimedia.org/wiki/File:SZ_%E6%B7%B1%E5%9C%B3_Shenzhen_%E7%A6%8F%E7%94%B0_Futian_%E5%91%B3%E7%90%AA%E8%92%B8%E9%A3%AF_Wei_Qi_Restaurant_food_%E7%82%92%E8%B1%86%E8%8A%BD%E8%8F%9C_fried_mung_bean_sprouts_June_2024_R12S.jpg",
+  "artist": "EYAMXAOLP",
+  "license": "CC0",
+  "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
+ },
+ "sukju-namul": {
+  "file": "sukju-namul.jpg",
+  "title": "Stir-fry Bean Sprouts in Indonesia Restaurant.jpg",
+  "page": "https://commons.wikimedia.org/wiki/File:Stir-fry_Bean_Sprouts_in_Indonesia_Restaurant.jpg",
+  "artist": "Bajinra",
+  "license": "CC0",
+  "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
  }
 }
