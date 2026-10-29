@@ -312,3 +312,14 @@ body{padding-top:58px}
 .initials{position:sticky;top:58px;z-index:20;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);padding:8px 0;margin-top:6px}
 
 .sugchip.rec{background:var(--accent-soft);border-color:transparent;color:var(--accent);font-weight:700}
+
+/* 카테고리 메뉴가 열려 있을 때: 뒤 화면은 움직이지 않고(스크롤 잠금) 어둡게, 메뉴 안에서만 스크롤 */
+html{scrollbar-gutter:stable}
+html.menu-open{overflow:hidden}
+html.menu-open body::after{content:"";position:fixed;left:0;right:0;top:58px;bottom:0;background:rgba(0,0,0,.38);z-index:40}
+.catpanel{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.catgroup{margin:18px 0 6px}.catgroup h3{margin:0 0 8px;font-size:14px;color:var(--mut);letter-spacing:-.01em}
+
+/* 위에 고정된 막대에 가려지지 않게: 결과 보기·바로가기로 이동할 때 막대 높이만큼 비워 둔다 */
+html{scroll-padding-top:74px}
+#results{scroll-margin-top:74px}

@@ -342,11 +342,27 @@ def recipe_card_html(r: dict, photos: dict, prefix: str = "../") -> str:
 
 
 def categories_section() -> str:
+    """메인의 카테고리: 상황·메뉴·나라별·건강·가족으로 묶어서 보여 준다(카드가 20개가 넘어도 한눈에 찾도록)."""
     count = {c[0]: sum(1 for r in RECIPES if c[0] in r["cats"]) for c in RECIPE_CATS}
-    cards = "".join(
-        f'<a class="catcard" href="category/{c[0]}.html"><span class="ce">{c[2]}</span><b>{esc(c[1])}</b><small>{count[c[0]]}개</small></a>' for c in RECIPE_CATS if count[c[0]]
+    cat_of = {c[0]: c for c in RECIPE_CATS}
+    seen = set()
+    out = '<h2>어떤 요리를 찾으세요? <small class="mut">카테고리</small></h2>'
+    for gname, xs in CAT_GROUPS:
+        cards = ""
+        for x in xs:
+            if x in cat_of and count.get(x):
+                c = cat_of[x]
+                seen.add(x)
+                cards += '<a class="catcard" href="category/' + x + '.html"><span class="ce">' + c[2] + "</span><b>" + esc(c[1]) + "</b><small>" + str(count[x]) + "개</small></a>"
+        if cards:
+            out += '<div class="catgroup"><h3>' + esc(gname) + '</h3><div class="catgrid">' + cards + "</div></div>"
+    rest = "".join(
+        '<a class="catcard" href="category/' + c[0] + '.html"><span class="ce">' + c[2] + "</span><b>" + esc(c[1]) + "</b><small>" + str(count[c[0]]) + "개</small></a>"
+        for c in RECIPE_CATS if count[c[0]] and c[0] not in seen
     )
-    return f'<h2>어떤 요리를 찾으세요? <small class="mut">카테고리</small></h2><div class="catgrid">{cards}</div>'
+    if rest:
+        out += '<div class="catgroup"><h3>기타</h3><div class="catgrid">' + rest + "</div></div>"
+    return out
 
 
 def category_page(tpl: str, cat: tuple, photos: dict) -> str:
@@ -675,8 +691,10 @@ def main() -> None:
             toprail += '<a href="' + prefix + "recipes/" + r["slug"] + '.html"><b>' + str(i) + "</b>" + esc(r["name"]) + "</a>"
         side = '<aside class="toprail" aria-label="오늘 많이 찾은 요리"><b class="catnav-t">오늘 많이 찾은 요리</b>' + toprail + "</aside>"
         close_js = (
-            "<script>document.addEventListener('click',function(e){var d=document.querySelector('.catmenu');"
-            "if(d&&d.open&&!e.target.closest('.catbar')){d.open=false;}});</script>"
+            "<script>(function(){var d=document.querySelector('.catmenu');if(!d){return;}"
+            "d.addEventListener('toggle',function(){document.documentElement.classList.toggle('menu-open',d.open);});"
+            "document.addEventListener('click',function(e){if(d.open&&!e.target.closest('.catbar')){d.open=false;}});"
+            "document.addEventListener('keydown',function(e){if(e.key==='Escape'&&d.open){d.open=false;}});})();</script>"
         )
         page.write_text(t.replace("</header>", "</header>" + chr(10) + bar + railhtml + side, 1).replace("</body>", close_js + "</body>", 1), encoding="utf-8")
     # 브라우저·서버 캐시가 옛 css/js 를 계속 쓰지 않도록 파일 주소에 내용 해시를 붙인다
