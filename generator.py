@@ -23,7 +23,7 @@ from fact_sheets import get_fact_sheet
 from llm_usage import call_message
 from layout_variants import VARIANTS, format_variant_prompt, pick_variant, record_variant
 from situational_personas import format_persona_prompt, pick_persona, record_persona
-from topic_planner import CONTENT_TYPES, plan_topic, record_pick
+from topic_planner import NoFreshTopic, CONTENT_TYPES, plan_topic, record_pick
 from trend_scraper import SITE_SEED_KEYWORDS, UNVERIFIED_SEEDS
 from config import settings
 from constants import (
@@ -37,6 +37,7 @@ from constants import (
     SITE_CATEGORIES,
     SITE_LABELS,
     SITE_OFFICIAL_URLS,
+    official_url_for,
 )
 from keyword_expander import expand_to_longtail
 from trend_scraper import fetch_today_hot_topics
@@ -148,9 +149,9 @@ def _get_client():
     return anthropic.Anthropic(api_key=settings.anthropic_api_key, max_retries=1)
 
 
-def build_system_prompt(site: str) -> str:
+def build_system_prompt(site: str, keyword: str = "") -> str:
     site_label = SITE_LABELS.get(site, site)
-    official_url = SITE_OFFICIAL_URLS.get(site, "")
+    official_url = official_url_for(site, keyword)  # 주제에 맞는 공식 기관(없으면 사이트 기본값)
     categories = SITE_CATEGORIES.get(site, ())
     category_list = ", ".join(f'"{c}"' for c in categories)
     calculator_choices = "\n".join(f"   - {k}: {d}" for k, d in CALCULATOR_CHOICES.items())
@@ -460,6 +461,8 @@ def generate_post(
                 unverified_seeds=UNVERIFIED_SEEDS,
                 cooldown_titles=cooldown_titles,
             )
+        except NoFreshTopic:
+            raise  # 새 주제가 없으면 억지로 비슷한 글을 쓰지 않고 오늘은 건너뛴다(main에서 알림)
         except Exception as exc:  # noqa: BLE001 - 플래너 오류가 글 생성을 막으면 안 된다
             logger.warning("[Site %s] 주제 플래너 실패, 기존 키워드 선정으로 진행: %s", site, exc)
     if plan and plan["keyword"]:
@@ -495,7 +498,7 @@ def generate_post(
     if target_persona:
         logger.info("[Site %s] 이번 글 타깃 상황: %s", site, target_persona)
 
-    system_prompt = build_system_prompt(site)
+    system_prompt = build_system_prompt(site, keyword)
     user_prompt = build_user_prompt(
         site,
         keyword,

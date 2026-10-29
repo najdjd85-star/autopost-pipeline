@@ -38,14 +38,14 @@ SITE_CLI_ALIASES = {
 }
 
 SITE_LABELS = {
-    SITE_A: "정부지원금",
-    SITE_B: "통신비/렌탈 비교",
-    SITE_C: "세금환급/연금",
+    SITE_A: "정부지원금·주거(청약·임대)·복지",
+    SITE_B: "생활비 절약(통신·교통·에너지·보험·금융)",
+    SITE_C: "세금·절세(개인·사업자·법인)",
 }
 
 SITE_BADGES = {
     SITE_A: "🏛️ 지원금",
-    SITE_B: "📶 통신/렌탈",
+    SITE_B: "💡 생활비 절약",
     SITE_C: "💰 세금환급",
 }
 
@@ -53,9 +53,9 @@ SITE_BADGES = {
 # 골라 반환하고, telegram_bot.py가 발행 시 그대로 넘긴다. 전부 "Uncategorized"로
 # 쌓이던 문제(발행 코드가 카테고리를 아예 안 넘겨서 생긴 버그) 수정의 일환. ----
 SITE_CATEGORIES = {
-    SITE_A: ("복지·지원금", "주거지원", "연금", "청년지원", "육아·출산", "고용·교육"),
-    SITE_B: ("통신비", "렌탈", "인터넷·결합", "해외로밍"),
-    SITE_C: ("연말정산", "종합소득세", "국민연금", "해외주식 세금", "증여·상속", "절세계좌", "부동산 세금", "개인연금·퇴직"),
+    SITE_A: ("복지·지원금", "주거지원", "연금", "청년지원", "육아·출산", "고용·교육", "주택청약·분양", "임대·주거금융", "건강·의료"),
+    SITE_B: ("통신비", "렌탈", "인터넷·결합", "해외로밍", "교통비", "에너지·공과금", "보험·금융", "생활비 절약"),
+    SITE_C: ("연말정산", "종합소득세", "국민연금", "해외주식 세금", "증여·상속", "절세계좌", "부동산 세금", "개인연금·퇴직", "개인사업자", "법인·절세"),
 }
 
 # ---- 사이트별 "공식 신청/조회 사이트" CTA용 실제 URL (전부 정부/공공기관 운영,
@@ -85,6 +85,51 @@ SITE_SOURCES = {
         ("국민연금공단", "https://www.nps.or.kr"),
     ),
 }
+
+# ---- 주제별 공식 사이트(글 하단 "공식 신청" 버튼 + 출처 박스). 키워드에 아래 낱말이 있으면 그 기관으로 연결한다.
+# 사이트 기본값은 위 SITE_OFFICIAL_URLS. 확실히 아는 공식 주소만 넣는다(모르면 넣지 않고 사이트 기본값 사용). ----
+OFFICIAL_URL_RULES = {
+    SITE_A: (
+        ("청약|분양|특별공급|신혼희망타운|무순위", "청약홈", "https://www.applyhome.co.kr"),
+        ("공공임대|행복주택|국민임대|통합공공임대|전세임대|매입임대|LH", "LH청약플러스", "https://apply.lh.or.kr"),
+        ("디딤돌|버팀목|전세자금|전세보증금|신생아 특례|월세대출|주택도시기금", "주택도시기금", "https://nhuf.molit.go.kr"),
+        ("전세사기", "국토교통부", "https://www.molit.go.kr"),
+        ("학자금|장학금", "한국장학재단", "https://www.kosaf.go.kr"),
+        ("육아휴직|출산휴가|고용보험|실업급여|일자리도약", "고용보험", "https://www.ei.go.kr"),
+        ("재난적의료비|본인부담상한|산정특례|의료급여|치매", "국민건강보험공단", "https://www.nhis.or.kr"),
+        ("장기요양", "노인장기요양보험", "https://www.longtermcare.or.kr"),
+    ),
+    SITE_B: (
+        ("전기요금|에너지캐시백|누진|공과금", "한전 사이버지점", "https://cyber.kepco.co.kr"),
+        ("실손|자동차보험|운전자보험", "보험다모아", "https://e-insmarket.or.kr"),
+        ("신용점수|금리인하|대출 갈아타기|중도상환|파킹통장|체크카드|연회비|주거래은행", "금융감독원 파인", "https://fine.fss.or.kr"),
+        ("K-패스|기후동행|알뜰교통|정기권|교통", "정부24", "https://www.gov.kr"),
+        ("구독|OTT|배달|장보기|주유|중고거래|폐가전|이사|가계부|고정비|병원비|직구|항공권|자취|난방비|수도요금|에너지효율|가전", "정부24", "https://www.gov.kr"),
+    ),
+    SITE_C: (
+        ("노란우산", "노란우산", "https://www.8899.or.kr"),
+        ("법인 설립|법인 폐업|청산", "인터넷등기소", "https://www.iros.go.kr"),
+        ("국민연금", "국민연금공단", "https://www.nps.or.kr"),
+        ("주택연금", "한국주택금융공사", "https://www.hf.go.kr"),
+        ("세액감면|세액공제|통합투자|연구인력|법인세|접대비|가지급금|업무용 승용차|법인", "국세청", "https://www.nts.go.kr"),
+    ),
+}
+
+
+def official_for(site: str, keyword: str):
+    """키워드에 맞는 공식 기관 (이름, 주소). 맞는 규칙이 없으면 None(사이트 기본값을 쓴다)."""
+    import re as _re
+
+    for pat, name, url in OFFICIAL_URL_RULES.get(site, ()):
+        if _re.search(pat, keyword or ""):
+            return name, url
+    return None
+
+
+def official_url_for(site: str, keyword: str) -> str:
+    hit = official_for(site, keyword)
+    return hit[1] if hit else SITE_OFFICIAL_URLS.get(site, "")
+
 
 THUMBNAIL_SIZE = (1000, 1500)  # 카드뉴스 썸네일
 

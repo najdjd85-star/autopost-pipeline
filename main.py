@@ -35,6 +35,7 @@ from config import BASE_DIR, OUTPUT_DIR, settings, validate_config
 from constants import SITE_BADGES, SITE_CLI_ALIASES, SITE_KEYS
 from content_updater import run_rank_check
 from generator import GeneratorNotConfiguredError, generate_post
+from topic_planner import NoFreshTopic
 from layout_variants import VARIANTS
 from llm_usage import format_summary
 from image_hybrid_engine import process_image_slots
@@ -74,6 +75,10 @@ def _run_site_pipeline(
     except GeneratorNotConfiguredError as exc:
         logger.warning("[Site %s] 콘텐츠 생성 불가: %s", site, exc)
         send_message_sync(f"⚠️ [Site {site}] ANTHROPIC_API_KEY 미설정으로 콘텐츠 생성을 건너뜁니다.")
+        return
+    except NoFreshTopic as exc:
+        logger.info("%s", exc)
+        send_message_sync(f"⏭️ [Site {site}] 오늘은 새 주제가 없어(이전 글과 비슷해질 것) 발행을 내일로 미룹니다.")
         return
     except Exception as exc:  # noqa: BLE001
         logger.exception("[Site %s] 콘텐츠 생성 중 예기치 못한 오류: %s", site, exc)

@@ -16,6 +16,8 @@
 """
 from __future__ import annotations
 
+import os
+
 import json
 import math
 import random
@@ -464,6 +466,10 @@ def _strip(text: str) -> str:
     return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", text or "")).strip()
 
 
+class NoFreshTopic(Exception):
+    """쿨다운 안에 쓰지 않은 주제도, 쓰지 않은 세부 질문도 없을 때: 이전 글과 비슷한 글을 쓰지 않고 오늘은 건너뛴다."""
+
+
 def plan_topic(
     site: str,
     seeds: List[str],
@@ -504,8 +510,10 @@ def plan_topic(
                 logger.info("[Site %s] 새 주제가 쿨다운 중이라 세부 주제로 작성: %s / %s", site, keyword, subtopic)
                 if content_type not in _SUBTOPIC_TYPES:
                     content_type = pick_content_type(site, news_available=False, allowed=_SUBTOPIC_TYPES)
+            elif os.environ.get("ALLOW_REPEAT_TOPIC", "0") == "1":
+                keyword = pick_keyword(site, seeds, recent_titles)  # (옵션) 예전 방식: 가장 오래된 주제를 다시 쓴다
             else:
-                keyword = pick_keyword(site, seeds, recent_titles)  # 세부 주제 후보도 없으면 기존 방식(가장 오래된 것)
+                raise NoFreshTopic(f"[Site {site}] 새 주제와 세부 질문이 모두 최근 글과 겹쳐 오늘 글은 건너뜁니다.")
     if priority:
         logger.info("[Site %s] %s 주제 큐에서 선정: %s", site, "정책 변경 재작성" if refresh_pick else "우선", priority)
 
