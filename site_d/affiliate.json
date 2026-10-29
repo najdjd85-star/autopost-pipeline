@@ -128,9 +128,46 @@
     "들기름": "https://link.coupang.com/a/ie5fcMgK84",
     "매실청": "https://link.coupang.com/a/ie5gtojtsG",
     "쯔유": "https://link.coupang.com/a/ie5h4QofAW",
-    "머스터드": "https://link.coupang.com/a/ie5i6WsG04"
+    "머스터드": "https://link.coupang.com/a/ie5i6WsG04",
+    "훈제오리": "https://link.coupang.com/a/ifa0zBkz7s",
+    "오리고기": "https://link.coupang.com/a/ifa1P8FRM4"
   },
   "tools": {
+    "에어프라이어": {
+      "label": "에어프라이어 보러가기",
+      "url": "https://link.coupang.com/a/ifa4wG6Brg",
+      "match": "에어프라이어"
+    },
+    "믹서": {
+      "label": "믹서 보러가기",
+      "url": "https://link.coupang.com/a/ifa7C2B1bM",
+      "match": "믹서|블렌더|곱게 갈"
+    },
+    "내열 유리 용기": {
+      "label": "내열 유리 용기 보러가기",
+      "url": "https://link.coupang.com/a/ifa5FJMxbg",
+      "match": "내열"
+    },
+    "면포": {
+      "label": "면포 보러가기",
+      "url": "https://link.coupang.com/a/ifa8rtfAWq",
+      "match": "면포"
+    },
+    "종이호일": {
+      "label": "종이호일 보러가기",
+      "url": "https://link.coupang.com/a/ifa9bC6sWi",
+      "match": "종이호일"
+    },
+    "절구·으깨기": {
+      "label": "으깨기(매셔)·절구 보러가기",
+      "url": "https://link.coupang.com/a/ifa3dDf0Ym",
+      "match": "으깨|으깹|절구"
+    },
+    "실리콘 주걱": {
+      "label": "실리콘 주걱 보러가기",
+      "url": "https://link.coupang.com/a/ifa6Rr1gwm",
+      "match": "실리콘 주걱|주걱으로"
+    },
     "프라이팬": {
       "label": "만능 후라이팬 보러가기",
       "url": "https://link.coupang.com/a/ieMzPOcS0O",
@@ -189,7 +226,7 @@
     "강판": {
       "label": "강판 보러가기",
       "url": "https://link.coupang.com/a/ieM5CCjns4",
-      "match": "강판|믹서"
+      "match": "강판"
     },
     "키친타월": {
       "label": "키친타월 보러가기",
