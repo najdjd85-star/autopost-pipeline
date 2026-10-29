@@ -309,6 +309,10 @@ def site_snapshot(site: str) -> Dict[str, Any]:
 def coupang_state() -> str:
     """내 PC의 쿠팡 호출 한도 상태(서버는 쿠팡을 부르지 않는다)."""
     try:
+        from constants import COUPANG_API_ENABLED
+
+        if not COUPANG_API_ENABLED:
+            return "API 꺼짐 · 고정 링크 7종"
         from smart_affiliate_matcher import coupang_blocked_minutes, coupang_calls_left
 
         blocked = coupang_blocked_minutes()

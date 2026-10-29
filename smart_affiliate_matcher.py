@@ -25,15 +25,15 @@ from urllib.parse import quote, urlencode
 from config import BASE_DIR, OUTPUT_DIR, get_site, settings
 from affiliate_topics import must_for, queries_for
 from coupang_link_bank import pick_product
+from coupang_static import pick_static_product
 from constants import (
     AFFILIATE_SLOT_BOT,
     AFFILIATE_SLOT_MID,
     CALCULATOR_DISCLAIMER_TEXT,
     AFFILIATE_SLOT_TOP,
-    COUPANG_FALLBACK_LINKS,
+    COUPANG_API_ENABLED,
     COUPANG_DISCLOSURE_TEXT,
     FTC_DISCLOSURE_TEXT,
-    LINKPRICE_EVENT_DISCLOSURE_TEXT,
     SITE_SOURCES,
 )
 from utils.http import safe_get
@@ -115,13 +115,6 @@ def _guard_note_rate_limited() -> None:
     _guard_save(state)
     logger.warning("쿠팡 호출 한도 초과 응답을 받아 %s시간 동안 쿠팡 API 호출을 멈춥니다.", COUPANG_COOLDOWN_SECONDS // 3600)
 
-ADPICK_API_URL = "https://adpick.co.kr/apis/offers.php"
-# 애드픽 문서상 "최대 1분에 1회 이하로 호출"해야 하고 별도 캐시가 필수라서,
-# 여유 있게 1시간 캐시한다 (글 하나 발행할 때마다 실시간 호출하지 않음).
-ADPICK_CACHE_PATH = BASE_DIR / "data" / "cache" / "adpick_offers.json"
-ADPICK_CACHE_TTL_SECONDS = 3600
-
-
 def build_utm_link(base_url: str, slot: str, post_id: int) -> str:
     """제휴 링크에 위치별 서브ID 추적 파라미터를 결합한다."""
     if not base_url:
@@ -138,11 +131,7 @@ def build_utm_link(base_url: str, slot: str, post_id: int) -> str:
 
 def _pick_site_affiliate_url(site: str) -> Optional[str]:
     """사이트별 제휴 카테고리 중 하나를 대표 링크로 선택한다 (get_primary_affiliate_link 전용)."""
-    site_cfg = get_site(site)
-    for value in site_cfg.affiliates.values():
-        if value:
-            return value
-    return None
+    return None  # 제휴 명의 변경: 쿠팡 고정 링크 외의 제휴 링크는 쓰지 않는다
 
 
 # 제휴 링크 종류(키)별로 실제 무엇을 확인/신청하는지 명시한 CTA 문구.
@@ -166,15 +155,7 @@ def _pick_slot_affiliate(site: str, slot: str) -> Tuple[str, Optional[str], str]
     """슬롯(top/mid/bot) 순서에 맞춰 사이트가 가진 제휴 링크를 하나씩 돌아가며
     배정한다. (제휴 키, URL, 버튼 라벨)을 반환하며, 설정된 제휴 링크가 하나도
     없으면 ("", None, 기본 라벨)을 반환한다."""
-    site_cfg = get_site(site)
-    keys = [k for k, v in site_cfg.affiliates.items() if v]
-    if not keys:
-        return "", None, _SLOT_LABELS.get(slot, "지금 확인하기")
-
-    slot_index = {"top": 0, "mid": 1, "bot": 2}.get(slot, 0)
-    key = keys[slot_index % len(keys)]
-    label = _AFFILIATE_KEY_LABELS.get(key, _SLOT_LABELS.get(slot, "지금 확인하기"))
-    return key, site_cfg.affiliates[key], label
+    return "", None, _SLOT_LABELS.get(slot, "지금 확인하기")  # 제휴 명의 변경: 사이트별 제휴 링크는 쓰지 않는다
 
 
 def get_primary_affiliate_link(site: str, slot: str, post_id: int) -> Optional[str]:
@@ -211,7 +192,7 @@ def build_coupang_deeplink(keyword: str, must: Optional[list] = None) -> Optiona
     must가 있으면 검색 결과 10개 중 상품 이름이 must 조건(affiliate_topics.name_matches)을 만족하는 첫 상품만 쓴다 -
     검색어와 무관한 상품이 첫 결과로 나오는 경우를 걸러낸다. 만족하는 상품이 없으면 None.
     """
-    if not settings.coupang_configured:
+    if not COUPANG_API_ENABLED or not settings.coupang_configured:
         return None
     if coupang_calls_left() <= 0:
         logger.info("쿠팡 API 호출 한도 보호로 '%s' 조회를 건너뜁니다.", keyword)
@@ -262,137 +243,27 @@ def build_coupang_deeplink(keyword: str, must: Optional[list] = None) -> Optiona
         return None
 
 
-def _load_adpick_cache() -> Optional[List[dict]]:
-    if not ADPICK_CACHE_PATH.exists():
-        return None
-    try:
-        data = json.loads(ADPICK_CACHE_PATH.read_text(encoding="utf-8"))
-        if time.time() - data.get("fetched_at", 0) > ADPICK_CACHE_TTL_SECONDS:
-            return None
-        return data.get("offers") or None
-    except (OSError, ValueError):
-        return None
-
-
-def _save_adpick_cache(offers: List[dict]) -> None:
-    try:
-        ADPICK_CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
-        ADPICK_CACHE_PATH.write_text(
-            json.dumps({"fetched_at": time.time(), "offers": offers}, ensure_ascii=False),
-            encoding="utf-8",
-        )
-    except OSError as exc:
-        logger.warning("애드픽 캠페인 캐시 저장 실패: %s", exc)
-
-
-def _fetch_adpick_offers() -> List[dict]:
-    """애드픽 캠페인 리스트를 가져온다. 1시간 이내 캐시가 있으면 그걸 그대로 쓴다
-    (API 정책상 1분에 1회 이하로만 호출해야 함)."""
-    cached = _load_adpick_cache()
-    if cached is not None:
-        return cached
-
-    if not settings.adpick_affid:
-        return []
-
-    resp = safe_get(
-        ADPICK_API_URL,
-        params={"affid": settings.adpick_affid, "category": "4", "order": "rand"},
-        timeout=8,
-    )
-    if resp is None or resp.status_code != 200:
-        return []
-    try:
-        offers = resp.json()
-    except ValueError:
-        return []
-    if not isinstance(offers, list):
-        return []
-
-    _save_adpick_cache(offers)
-    return offers
-
-
-# "생활" 카테고리로 필터링해도 데이팅/채팅 앱이 대부분이고, 심지어 애드픽
-# 자체 회원가입 홍보 캠페인까지 섞여 나오는 것을 실측으로 확인함. 블랙리스트
-# 방식은 "데이톡"처럼 정확한 금지어를 피해가는 이름이 계속 나와 안전하지
-# 않아서, 반대로 우리 사이트(정부지원금/통신비/세금환급) 주제와 조금이라도
-# 관련된 키워드가 있을 때만 통과시키는 화이트리스트 방식으로 바꿨다.
-_ADPICK_ALLOWLIST_KEYWORDS = (
-    "렌트", "리스", "대출", "보험", "환급", "연금", "통신", "요금제", "적금",
-    "예금", "카드", "전기", "가스", "차량", "자동차", "세금", "청약", "저축",
-)
-_ADPICK_BLOCKLIST_KEYWORDS = (
-    "채팅", "소개팅", "데이트", "매칭", "친구", "만남", "미팅", "썸", "이성",
-    "인연", "애드픽", "쇼핑메이트", "광고메이트",
-)
-
-
-def build_adpick_offer() -> Optional[Dict[str, str]]:
-    """애드픽 캠페인 리스트 API에서 광고 하나를 골라 카드 데이터로 반환한다.
-
-    앱 설치/가입형 광고 위주라 대출/세금환급 같은 콘텐츠와 결이 완전히 맞진
-    않지만, 쿠팡처럼 보너스 카드로 추가 수익 채널을 하나 더 확보하는 용도다.
-    AFFID 미설정이거나 API 실패 시, 또는 적절한 캠페인이 하나도 없으면
-    None을 반환한다(선택 기능).
-    """
-    if not settings.adpick_affid:
-        return None
-    try:
-        offers = _fetch_adpick_offers()
-        safe_offers = []
-        for o in offers:
-            text = f"{o.get('apAppTitle', '')} {o.get('apAppPromoText', '')} {o.get('apHeadline', '')}"
-            has_blocked = any(kw in text for kw in _ADPICK_BLOCKLIST_KEYWORDS)
-            has_allowed = any(kw in text for kw in _ADPICK_ALLOWLIST_KEYWORDS)
-            if has_allowed and not has_blocked:
-                safe_offers.append(o)
-        if not safe_offers:
-            return None
-        offer = random.choice(safe_offers)
-        images = offer.get("apImages") or {}
-        desc = offer.get("apAppPromoText") or offer.get("apHeadline", "")
-        return {
-            "name": offer.get("apAppTitle", "추천 앱"),
-            "url": offer.get("apTrackingLink", ""),
-            "image": images.get("icon114") or images.get("icon", ""),
-            "desc": desc[:80],  # 애드픽 자체 홍보문이 수백 자로 길게 오는 경우가 있어 카드에 맞게 자른다
-        }
-    except Exception as exc:  # noqa: BLE001
-        logger.warning("애드픽 캠페인 조회 실패: %s", exc)
-        return None
-
-
 def _get_coupang_card_data(keyword: str, site: str) -> Optional[Dict[str, str]]:
-    """쿠팡 API로 상품 딥링크를 먼저 시도하고, 실패하면(예: 서버가 해외 IP라
-    쿠팡이 차단하는 경우) 사이트별 고정 딥링크로 대체한다.
+    """카드에 넣을 쿠팡 상품을 고른다. 새 계정의 API 키가 나오기 전에는 고정 링크(coupang_static.py)만 쓴다.
 
-    고정 링크는 실시간 상품명/이미지/가격 정보가 없으므로 name/image/price를
-    비워 반환한다 - 카드 렌더링 쪽에서 이 경우 이미지/가격 줄을 생략한다.
+    COUPANG_API_ENABLED=1이면 API → 링크 은행 순서로 먼저 시도하고, 실패하면 고정 링크로 대체한다.
     """
-    # 글 주제에 맞는 독자가 살 만한 상품 검색어가 정해져 있으면 그것으로 찾고(예: 교육급여 -> 학부모용 학용품),
-    # 없으면 글 키워드로 바로 검색한다(기존 방식).
-    topic_queries = queries_for(keyword)
-    coupang = None
-    if topic_queries:
-        for query in random.sample(topic_queries, k=len(topic_queries)):
-            coupang = build_coupang_deeplink(query, must=must_for(query))
-            if coupang and coupang.get("url"):
-                break
-    elif keyword:
-        coupang = build_coupang_deeplink(keyword)
-    if coupang and coupang.get("url"):
-        return coupang
-
-    # 서버는 해외 IP라 위 호출이 막힌다 - 한국 IP(데스크탑)가 미리 만들어 둔 링크 은행에서 대신 꺼낸다.
-    banked = pick_product(site, keyword)
-    if banked:
-        return banked
-
-    fallback_url = COUPANG_FALLBACK_LINKS.get(site)
-    if fallback_url:
-        return {"name": "지금 쿠팡 인기 상품 확인하기", "url": fallback_url, "image": "", "price": ""}
-    return None
+    if COUPANG_API_ENABLED:
+        topic_queries = queries_for(keyword)
+        coupang = None
+        if topic_queries:
+            for query in random.sample(topic_queries, k=len(topic_queries)):
+                coupang = build_coupang_deeplink(query, must=must_for(query))
+                if coupang and coupang.get("url"):
+                    break
+        elif keyword:
+            coupang = build_coupang_deeplink(keyword)
+        if coupang and coupang.get("url"):
+            return coupang
+        banked = pick_product(site, keyword)
+        if banked:
+            return banked
+    return pick_static_product(keyword)
 
 
 _BAG_ICON_SVG = (
@@ -424,11 +295,11 @@ def build_affiliate_card(site: str, slot: str, post_id: int, keyword: str = "") 
 """.strip()
         )
     else:
-        logger.info("사이트 %s 슬롯 %s: 제휴 링크 미설정 - 카드 생략", site, slot)
+        logger.debug("사이트 %s 슬롯 %s: 제휴 링크 미설정 - 카드 생략", site, slot)
 
     coupang = _get_coupang_card_data(keyword, site)
     if coupang and coupang.get("url"):
-        cp_link = build_utm_link(coupang["url"], f"{slot}_coupang", post_id)
+        cp_link = coupang["url"] if coupang.get("static") else build_utm_link(coupang["url"], f"{slot}_coupang", post_id)
         # 실시간 상품 이미지가 있으면 그대로 쓰고, 폴백(고정 링크)이라 이미지가
         # 없으면 빈 자리 대신 아이콘 배지를 넣어 카드가 허전해 보이지 않게 한다.
         if coupang.get("image"):
@@ -441,6 +312,11 @@ def build_affiliate_card(site: str, slot: str, post_id: int, keyword: str = "") 
                 f"""<div style="width:56px;height:56px;border-radius:12px;background:#fff0ed;
        display:flex;align-items:center;justify-content:center;flex-shrink:0;">{_BAG_ICON_SVG}</div>"""
             )
+        desc_html = (
+            f"""<div style="font-size:12px;color:#888;margin-top:2px;">{coupang['desc']}</div>"""
+            if coupang.get("desc")
+            else ""
+        )
         price_html = (
             f"""<div style="font-size:13px;color:#e5533d;font-weight:700;margin-top:4px;">
       {coupang['price']}원</div>"""
@@ -455,29 +331,11 @@ def build_affiliate_card(site: str, slot: str, post_id: int, keyword: str = "") 
   {image_html}
   <div style="flex:1;text-align:left;">
     <div style="font-size:14px;font-weight:600;color:#222;">{coupang.get('name','')}</div>
-    {price_html}
+    {desc_html}{price_html}
   </div>
   <a href="{cp_link}" target="_blank" rel="{REL_ATTR}"
      style="padding:10px 18px;border-radius:999px;background:#111;color:#fff;
-     font-size:13px;font-weight:600;text-decoration:none;white-space:nowrap;">바로가기</a>
-</div>
-""".strip()
-        )
-
-    adpick = build_adpick_offer()
-    if adpick and adpick.get("url"):
-        ap_link = build_utm_link(adpick["url"], f"{slot}_adpick", post_id)
-        # 애드픽 CDN 이미지는 리퍼러 차단으로 우리 사이트에 임베드하면 깨져서
-        # 아예 이미지를 쓰지 않고 텍스트 카드로만 구성한다(실측으로 확인함).
-        cards.append(
-            f"""
-<div class="affiliate-card affiliate-card-adpick" style="margin:16px 0;padding:14px 16px;
-    border-radius:14px;background:#fafafa;border:1px solid #eee;">
-  <div style="font-size:13px;font-weight:600;color:#222;">{adpick.get('name','')}</div>
-  <div style="font-size:12px;color:#888;margin-top:2px;">{adpick.get('desc','')}</div>
-  <a href="{ap_link}" target="_blank" rel="{REL_ATTR}"
-     style="display:inline-block;margin-top:10px;padding:8px 16px;border-radius:999px;
-     background:#333;color:#fff;font-size:12px;font-weight:600;text-decoration:none;">확인하기</a>
+     font-size:13px;font-weight:600;text-decoration:none;white-space:nowrap;">쿠팡에서 보기</a>
 </div>
 """.strip()
         )
@@ -558,7 +416,7 @@ def inject_affiliate_slots(html: str, post_id: int, site: str, keyword: str = ""
                 any_coupang_content = True
 
     if any_affiliate_content:
-        disclosure_lines = [FTC_DISCLOSURE_TEXT, LINKPRICE_EVENT_DISCLOSURE_TEXT]
+        disclosure_lines = [FTC_DISCLOSURE_TEXT]
         if any_coupang_content:
             disclosure_lines.append(COUPANG_DISCLOSURE_TEXT)
         result += (

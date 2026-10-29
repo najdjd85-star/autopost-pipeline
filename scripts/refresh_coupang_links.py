@@ -77,6 +77,6 @@ if __name__ == "__main__":
         logger.info("쿠팡 링크 은행 갱신 결과: %s", result)
         if not result.get("skipped"):  # 한도 보호로 건너뛴 재시도는 알리지 않는다(스팸 방지)
             _notify(result)
-        sys.exit(0 if result.get("uploaded") else 1)
+        sys.exit(0 if (result.get("uploaded") or result.get("skipped")) else 1)
     finally:
         _keep_awake(False)

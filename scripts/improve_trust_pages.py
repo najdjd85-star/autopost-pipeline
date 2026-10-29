@@ -57,7 +57,7 @@ PRIVACY_AD_SECTION = f"""
 <p>본 사이트는 Google 등 제3자 광고 사업자가 광고를 게재할 수 있으며, 이 과정에서 쿠키(cookie)를 사용해 방문자의 이 사이트 및 다른 웹사이트 방문 기록을 바탕으로 광고를 제공할 수 있습니다. Google이 파트너 사이트의 정보를 이용하는 방식은 <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener noreferrer">Google 정책 페이지</a>에서 확인할 수 있습니다.</p>
 <p>맞춤 광고를 원하지 않으시면 <a href="https://adssettings.google.com" target="_blank" rel="noopener noreferrer">Google 광고 설정</a> 또는 <a href="https://www.aboutads.info" target="_blank" rel="noopener noreferrer">aboutads.info</a>에서 개인 최적화 광고를 해제할 수 있으며, 브라우저 설정에서 쿠키 저장을 거부할 수도 있습니다. 다만 쿠키를 차단하면 일부 기능이 제한될 수 있습니다.</p>
 <h2>제휴 마케팅 고지</h2>
-<p>일부 글에는 링크프라이스, 쿠팡 파트너스 등 제휴 링크가 포함되어 있으며, 해당 링크를 통해 이용·구매가 이루어지면 사이트 운영자가 일정액의 수수료를 받을 수 있습니다. 제휴 링크는 방문자에게 추가 비용을 발생시키지 않으며, 제휴 링크 클릭 시 제휴사가 자체 쿠키로 방문을 식별할 수 있습니다.</p>
+<p>일부 글에는 쿠팡 파트너스 제휴 링크가 포함되어 있으며, 해당 링크를 통해 이용·구매가 이루어지면 사이트 운영자가 일정액의 수수료를 받을 수 있습니다. 제휴 링크는 방문자에게 추가 비용을 발생시키지 않으며, 제휴 링크 클릭 시 제휴사가 자체 쿠키로 방문을 식별할 수 있습니다.</p>
 <h2>개인정보 관련 문의</h2>
 <p>개인정보 처리와 관련한 문의는 <a href="mailto:{CONTACT_EMAIL}">{CONTACT_EMAIL}</a>로 보내주세요.</p>
 """

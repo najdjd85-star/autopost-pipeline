@@ -154,6 +154,12 @@ def run_probes(today_items: Optional[List[Dict[str, Any]]] = None) -> int:
 
 def refresh_bank() -> Dict[str, int]:
     """[데스크탑에서 실행] 모든 검색어의 상품 링크를 새로 만들어 업로드한다."""
+    from constants import COUPANG_API_ENABLED
+
+    if not COUPANG_API_ENABLED:  # 제휴 명의 변경: 새 계정 API 키가 나올 때까지 갱신하지 않는다(옛 계정 호출 방지)
+        logger.info("쿠팡 API 사용 꺼짐(COUPANG_API_ENABLED=0): 링크 은행 갱신을 건너뜁니다.")
+        return {"made": 0, "kept": 0, "failed": 0, "uploaded": 0, "skipped": 1}
+
     from smart_affiliate_matcher import (  # 순환 임포트 방지용 지연 임포트
         build_coupang_deeplink,
         coupang_blocked_minutes,
@@ -253,6 +259,10 @@ def _load_bank_cached() -> Optional[Dict[str, Any]]:
 
 def pick_product(site: str, keyword: str) -> Optional[Dict[str, str]]:
     """사이트 은행에서 키워드와 맞는 상품을 고른다. 맞는 게 없으면 그 사이트의 아무 상품, 없으면 None."""
+    from constants import COUPANG_API_ENABLED
+
+    if not COUPANG_API_ENABLED:  # 옛 계정으로 만든 링크가 은행에 남아 있어도 쓰지 않는다
+        return None
     try:
         bank = _load_bank_cached()
     except Exception as exc:  # noqa: BLE001 - 은행 조회 실패가 글 발행을 막으면 안 된다

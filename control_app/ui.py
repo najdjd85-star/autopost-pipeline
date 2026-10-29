@@ -117,7 +117,7 @@ class Dashboard(Panel):
         top = tk.Frame(self.body, bg=BG)
         top.pack(fill="x")
         self.tiles: Dict[str, Tile] = {}
-        for i, (k, cap) in enumerate((("pub", "오늘 발행한 글"), ("queue", "스레드 대기"), ("coupang", "쿠팡 호출(내 PC)"), ("server", "서버 데몬"))):
+        for i, (k, cap) in enumerate((("pub", "오늘 발행한 글"), ("queue", "스레드 대기"), ("coupang", "쿠팡 제휴 상태"), ("server", "서버 데몬"))):
             t = Tile(top, cap)
             t.grid(row=0, column=i, sticky="nsew", padx=(0 if i == 0 else 8, 0))
             top.columnconfigure(i, weight=1, uniform="k")
