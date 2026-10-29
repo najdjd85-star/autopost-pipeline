@@ -375,9 +375,10 @@ def recipe_page(tpl: str, r: dict, aff: dict, photos: dict, tools: dict) -> str:
     )
     carb_base = {"밥", "라면", "소면", "떡", "만두", "식빵"}
     rice_note = "" if carb_base & {x["n"] for x in nut["rows"]} else "밥이나 면은 포함하지 않았어요(밥 1공기는 약 315kcal). "
+    total_note = f" · 총 {nut['servings']}인분 분량" if nut["servings"] > 1 else ""
     nutrition = (
         '<h2>영양성분표</h2><div class="panel nutri">'
-        f'<div class="kcal-big"><strong>{per["kcal"]:,}</strong> kcal <span>1인분 기준{f" · 총 {nut['servings']}인분 분량" if nut["servings"] > 1 else ""}</span></div>'
+        f'<div class="kcal-big"><strong>{per["kcal"]:,}</strong> kcal <span>1인분 기준{total_note}</span></div>'
         f'<table class="facts"><thead><tr><th>1인분 기준</th><th class="num">함량</th><th class="num">1일 기준치</th></tr></thead><tbody>{facts_rows}</tbody></table>'
         '<p class="note">1일 기준치는 식품표시 기준(열량 2,000kcal 성인 기준)이며, 개인의 필요량에 따라 다를 수 있어요.</p>'
         '<h3>재료별 열량·나트륨 (전체 분량)</h3>'
