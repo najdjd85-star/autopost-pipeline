@@ -237,17 +237,33 @@
     return a;
   }
 
-  function group(title, cls, list, openAll) {
+  function group(title, cls, list) {
     if (!list.length) { return; }
     var h = el("div", "group-title");
     h.appendChild(document.createTextNode(title + " "));
     h.appendChild(el("span", "badge " + cls, list.length + "개"));
     $res.appendChild(h);
-    list.forEach(function (ev, i) { if (openAll || i < 10) { $res.appendChild(card(ev)); } });
-    if (!openAll && list.length > 10) { $res.appendChild(el("p", "meta", "…외 " + (list.length - 10) + "개는 재료를 더 고르면 좁혀져요.")); }
+    var box = el("div", "glist");
+    $res.appendChild(box);
+    var shown = 0;
+    var more = el("button", "btn ghost morebtn");
+    more.type = "button";
+    function fill() {
+      list.slice(shown, shown + 12).forEach(function (ev) { box.appendChild(card(ev)); });
+      shown = Math.min(list.length, shown + 12);
+      if (shown >= list.length) { more.remove(); } else { more.textContent = "더 보기 (" + (list.length - shown) + "개)"; }
+    }
+    more.addEventListener("click", fill);
+    fill();
+    if (shown < list.length) { $res.appendChild(more); }
   }
 
+  var rafId = 0;
   function render() {
+    if (rafId) { return; }
+    rafId = setTimeout(function () { rafId = 0; renderNow(); }, 0);
+  }
+  function renderNow() {
     buildQuick();
     buildCats();
     buildSelected();
@@ -274,10 +290,10 @@
       $res.appendChild(el("div", "empty", "딱 맞는 요리를 못 찾았어요. 재료나 양념을 한두 개 더 골라 보세요."));
       return;
     }
-    group("지금 바로 만들 수 있어요", "", zero, true);
-    group("재료는 다 있어요 · 양념만 더 필요해요", "one", stap, true);
-    group("재료 1가지만 더 있으면", "one", one, true);
-    group("재료 2가지가 더 필요해요", "one", two, false);
+    group("지금 바로 만들 수 있어요", "", zero);
+    group("재료는 다 있어요 · 양념만 더 필요해요", "one", stap);
+    group("재료 1가지만 더 있으면", "one", one);
+    group("재료 2가지가 더 필요해요", "one", two);
   }
 
   function suggestFor(text) {
@@ -333,7 +349,7 @@
       document.body.classList.toggle("res-visible", entries[0].isIntersecting);
     }, { threshold: 0.05 }).observe($res);
   }
-  render();
+  renderNow();
 
   // 매일 갱신되는 trending.json 을 직접 읽어 최신으로 바꾼다(없거나 실패하면 빌드에 들어 있던 값을 그대로 쓴다)
   try {

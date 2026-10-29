@@ -33,8 +33,15 @@ def esc(s: str) -> str:
 
 
 def load_photos() -> dict:
+    """레시피 사진 {슬러그: 정보}. 위키미디어 CC 사진(photos.json)이 우선이고, 없는 레시피는 AI로 만든 참고 이미지(photos_ai/)를 쓴다."""
     path = HERE / "photos.json"
-    return json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+    photos = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+    ai_dir = HERE / "photos_ai"
+    if ai_dir.exists():
+        for f in sorted(ai_dir.glob("*.jpg")):
+            if not f.name.startswith("_") and f.stem not in photos:
+                photos[f.stem] = {"file": f.name, "dir": "photos_ai", "ai": True}
+    return photos
 
 
 _PART = "을를은는이가에와과로도의만"
@@ -111,6 +118,11 @@ def photo_html(slug: str, name: str, photos: dict) -> str:
     p = photos.get(slug)
     if not p:
         return ""
+    if p.get("ai"):
+        return (
+            f'<figure class="photo"><img src="../assets/img/{esc(p["file"])}" alt="{esc(name)} 참고 이미지" width="640" height="480" loading="eager" fetchpriority="high">'
+            '<figcaption>AI로 만든 참고 이미지예요. 실제 완성된 모습은 재료와 조리 방법에 따라 조금 다를 수 있어요.</figcaption></figure>'
+        )
     lic = f'<a href="{esc(p["license_url"])}" target="_blank" rel="noopener">{esc(p["license"])}</a>' if p.get("license_url") else esc(p["license"])
     return (
         f'<figure class="photo"><img src="../assets/img/{esc(p["file"])}" alt="{esc(name)} 사진" width="640" loading="eager">'
@@ -261,15 +273,35 @@ def all_recipes_html() -> str:
         )
         body += f'<div class="rgroup" data-i="{c}"><h3>{c} <small>{len(groups[c])}</small></h3><ul class="rlist">{lis}</ul></div>'
     return (
-        f'<h2>모든 레시피 <small class="mut">{len(RECIPES)}개 · 가나다순</small></h2>'
+        f'<details class="allrecipes" id="allrecipes"><summary><h2>모든 레시피 <small class="mut">{len(RECIPES)}개 · 가나다순 · 눌러서 펼치기</small></h2></summary>'
         '<div class="rsearch"><input id="rq" type="search" placeholder="요리 이름 검색 (초성도 돼요: ㄱㅊ)" aria-label="레시피 검색" autocomplete="off"></div>'
-        f'<div id="ri" class="initials">{chips}</div><div id="rl">{body}</div><p id="rnone" class="empty" hidden>일치하는 요리가 없어요.</p>'
+        f'<div id="ri" class="initials">{chips}</div><div id="rl">{body}</div><p id="rnone" class="empty" hidden>일치하는 요리가 없어요.</p></details>'
     )
+
+
+THUMBS = False  # PIL 이 있으면 main() 에서 켠다(없으면 원본 사진을 그대로 쓴다)
+
+
+def thumb_rel(p: dict) -> str:
+    return f'assets/img/t/{p["file"]}' if THUMBS else f'assets/img/{p["file"]}'
+
+
+def make_thumbs(photos: dict) -> bool:
+    try:
+        from PIL import Image
+    except ImportError:
+        return False
+    (DIST / "assets" / "img" / "t").mkdir(exist_ok=True)
+    for p in photos.values():
+        im = Image.open(HERE / p.get("dir", "photos") / p["file"]).convert("RGB")
+        im.thumbnail((192, 144))
+        im.save(DIST / "assets" / "img" / "t" / p["file"], quality=76, optimize=True)
+    return True
 
 
 def recipe_card_html(r: dict, photos: dict, prefix: str = "../") -> str:
     p = photos.get(r["slug"])
-    thumb = f'<img src="{prefix}assets/img/{esc(p["file"])}" alt="{esc(r["name"])}" loading="lazy" width="96" height="72">' if p else f'<span>{r["icon"]}</span>'
+    thumb = f'<img src="{prefix}{thumb_rel(p)}" alt="{esc(r["name"])}" loading="lazy" decoding="async" width="96" height="72">' if p else f'<span>{r["icon"]}</span>'
     return (
         f'<a class="rcard" href="{prefix}recipes/{r["slug"]}.html"><div class="rthumb">{thumb}</div>'
         f'<div class="rbody"><b>{esc(r["name"])}</b><small>{r["minutes"]}분 · {r["level"]} · 1인분 {compute(r["slug"])["per"]["kcal"]}kcal</small>'
@@ -448,7 +480,9 @@ def main() -> None:
         for f in (HERE / "stepimgs").glob("*.jpg"):
             shutil.copy(f, DIST / "assets" / "steps" / f.name)
     for p in photos.values():
-        shutil.copy(HERE / "photos" / p["file"], DIST / "assets" / "img" / p["file"])
+        shutil.copy(HERE / p.get("dir", "photos") / p["file"], DIST / "assets" / "img" / p["file"])
+    global THUMBS
+    THUMBS = make_thumbs(photos)
 
     data = {
         "staples": STAPLES,
@@ -461,7 +495,7 @@ def main() -> None:
         "labels": load_extras()[0],
         "recipes": [
             {"slug": r["slug"], "name": r["name"], "minutes": r["minutes"], "level": r["level"], "desc": r["desc"],
-             "icon": RECIPE_ICON[r["slug"]], "img": (f'assets/img/{photos[r["slug"]]["file"]}' if r["slug"] in photos else ""), "kcal": compute(r["slug"])["per"]["kcal"],
+             "icon": RECIPE_ICON[r["slug"]], "img": (thumb_rel(photos[r["slug"]]) if r["slug"] in photos else ""), "kcal": compute(r["slug"])["per"]["kcal"],
              "ingredients": [{"n": i["n"], "opt": i["opt"]} for i in r["ingredients"]]}
             for r in RECIPES
         ],
