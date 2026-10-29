@@ -271,7 +271,7 @@ def all_recipes_html() -> str:
     for c in order:
         lis = "".join(
             f'<li data-n="{esc(r["name"])}" data-c="{esc(initials_of(r["name"]))}"><a href="recipes/{r["slug"]}.html">{esc(r["name"])}</a>'
-            f'<span>{r["minutes"]}분 · {"반려동물" if is_pet(r) else format(compute(r["slug"])["per"]["kcal"], "") + "kcal"} · 약 {cost_per_serving(r):,}원</span></li>'
+            f'<span>{r["minutes"]}분 · {("반려동물" if is_pet(r) else "유아식") if is_special(r) else format(compute(r["slug"])["per"]["kcal"], "") + "kcal"} · 약 {cost_per_serving(r):,}원</span></li>'
             for r in groups[c]
         )
         body += f'<div class="rgroup" data-i="{c}"><h3>{c} <small>{len(groups[c])}</small></h3><ul class="rlist">{lis}</ul></div>'
@@ -307,7 +307,7 @@ def recipe_card_html(r: dict, photos: dict, prefix: str = "../") -> str:
     thumb = f'<img src="{prefix}{thumb_rel(p)}" alt="{esc(r["name"])}" loading="lazy" decoding="async" width="96" height="72">' if p else f'<span>{r["icon"]}</span>'
     return (
         f'<a class="rcard" href="{prefix}recipes/{r["slug"]}.html"><div class="rthumb">{thumb}</div>'
-        f'<div class="rbody"><b>{esc(r["name"])}</b><small>{r["minutes"]}분 · {r["level"]} · {("1회분 약 " + format(cost_per_serving(r), ",") + "원") if is_pet(r) else ("1인분 " + str(compute(r["slug"])["per"]["kcal"]) + "kcal · 약 " + format(cost_per_serving(r), ",") + "원")}</small>'
+        f'<div class="rbody"><b>{esc(r["name"])}</b><small>{r["minutes"]}분 · {r["level"]} · {("1회분 약 " + format(cost_per_serving(r), ",") + "원") if is_special(r) else ("1인분 " + str(compute(r["slug"])["per"]["kcal"]) + "kcal · 약 " + format(cost_per_serving(r), ",") + "원")}</small>'
         f'<p>{esc(r["desc"])}</p></div></a>'
     )
 
@@ -326,7 +326,7 @@ def category_page(tpl: str, cat: tuple, photos: dict) -> str:
     avg = round(sum(r["minutes"] for r in items) / len(items))
     cards = "".join(recipe_card_html(r, photos) for r in items)
     others = "".join(f'<a class="chip" href="{c[0]}.html" style="text-decoration:none">{c[2]} {esc(c[1])}</a>' for c in RECIPE_CATS if c[0] != slug)
-    intro = f"{esc(desc)} 이 카테고리에는 레시피 {len(items)}개가 있고, 평균 조리 시간은 약 {avg}분이에요. 시간이 짧은 순서로 정렬했고, 각 레시피에는 정확한 분량(ml·g), 단계별 조리 순서, " + ("급여할 때 주의사항이 있어요." if slug == "pet" else "칼로리와 영양성분표가 있어요.")
+    intro = f"{esc(desc)} 이 카테고리에는 레시피 {len(items)}개가 있고, 평균 조리 시간은 약 {avg}분이에요. 시간이 짧은 순서로 정렬했고, 각 레시피에는 정확한 분량(ml·g), 단계별 조리 순서, " + ("급여할 때 주의사항이 있어요." if slug == "pet" else ("월령별 주의사항이 있어요." if slug == "baby" else "칼로리와 영양성분표가 있어요."))
     out = tpl
     for k, v in {
         "SITE_NAME": SITE_NAME, "BASE": BASE, "NAME": esc(name), "SLUG": slug, "EMOJI": emoji, "INTRO": intro,
@@ -361,8 +361,47 @@ def related(recipe: dict, limit: int = 4) -> list:
     return [o for s, _m, o in scored[:limit] if s > 0]
 
 
+CAT_GROUPS = [
+    ("🍽️ 메뉴로 찾기", ["rice", "soup", "side", "noodle", "jeon", "anju", "dinner", "duck"]),
+    ("⏱️ 상황으로 찾기", ["quick5", "onepan", "brunch", "lunchbox"]),
+    ("🌏 나라별 요리", ["western", "japan", "china"]),
+    ("💪 건강·다이어트", ["diet", "protein", "light"]),
+    ("👨‍👩‍👧 가족·반려동물", ["baby", "kidsnack", "pet"]),
+]
+
+
 def is_pet(r: dict) -> bool:
     return "pet" in r["cats"]
+
+
+def is_special(r: dict) -> bool:
+    """반려동물·유아식: 사람 어른 기준 영양성분표를 보여 주지 않고 '1회분'으로 센다(재료 선택 결과에도 섞지 않는다)."""
+    return "pet" in r["cats"] or "baby" in r["cats"]
+
+
+BABY_NOTE = (
+    '<div class="petnote"><strong>👶 아이에게 먹이기 전에 꼭 읽어 주세요</strong><ul>'
+    "<li>12개월 미만 아이에게는 꿀을 주지 마세요. 소금·간장·양념은 넣지 않거나 아주 약하게만 쓰세요.</li>"
+    "<li>처음 먹이는 재료는 한 번에 한 가지씩, 소량으로 시작해 알레르기(계란·우유·생선·견과·밀)와 소화 반응을 살펴 주세요.</li>"
+    "<li>견과류·포도·방울토마토·떡·소시지는 통째로 주면 질식 위험이 있어요. 잘게 자르거나 으깨 주세요.</li>"
+    "<li>고기·생선·계란은 속까지 완전히 익히고, 가시와 뼈는 꼭 확인하세요. 만든 음식은 냉장 1일, 냉동 1주 안에 먹이세요.</li>"
+    "<li>월령별 이유식 단계와 알레르기 진단은 소아과 전문의와 상의하세요. 사람 어른용 영양성분표는 맞지 않아 표시하지 않았어요.</li></ul></div>"
+)
+KID_NOTE = (
+    '<div class="petnote"><strong>🧒 아이 간식 주의</strong><ul>'
+    "<li>견과류·떡·방울토마토 등은 아이 나이에 맞게 잘게 자르거나 으깨 주세요(질식 주의).</li>"
+    "<li>알레르기가 있는 재료(계란·우유·밀·견과)가 있는지 확인하고, 단맛은 줄여 주세요.</li></ul></div>"
+)
+
+
+def note_for(r: dict) -> str:
+    if "pet" in r["cats"]:
+        return PET_NOTE
+    if "baby" in r["cats"]:
+        return BABY_NOTE
+    if "kidsnack" in r["cats"]:
+        return KID_NOTE
+    return ""
 
 
 PET_NOTE = (
@@ -478,7 +517,7 @@ def recipe_page(tpl: str, r: dict, aff: dict, photos: dict, tools: dict) -> str:
         "SITE_NAME": SITE_NAME, "BASE": BASE, "NAME": esc(r["name"]), "SLUG": r["slug"], "MINUTES": str(r["minutes"]), "COST": f"{cost_per_serving(r):,}", "PRICE_NOTE": price_note(),
         "LEVEL": esc(r["level"]), "DESC": esc(r["desc"]), "INGREDIENTS": ing_html, "BUY": (f'<div id="buy">{buy}</div>' if buy else ""), "BUY_HINT": ('<p class="note buyhint"><a href="#buy">없는 재료·요리도구는 맨 아래에서 바로 살 수 있어요 ↓</a></p>' if buy else ""), "STEPS": steps, "STEPS_NOTE": steps_note, "TIP": tip, "CATS": cats_html, "MEASURE": measure,
         "RELATED": rel, "DISCLOSURE": disclosure(bool(buy_items or tool_items)),
-        "PHOTO": photo_html(r["slug"], r["name"], photos), "ICON": RECIPE_ICON[r["slug"]], "SERVINGS": (f'여러 번 나눠 {nut["servings"]}회분' if is_pet(r) else f'{nut["servings"]}인분'), "NUTRITION": ("" if is_pet(r) else nutrition), "PETNOTE": (PET_NOTE if is_pet(r) else ""), "COSTLABEL": ("1회분" if is_pet(r) else "1인분"),
+        "PHOTO": photo_html(r["slug"], r["name"], photos), "ICON": RECIPE_ICON[r["slug"]], "SERVINGS": (f'여러 번 나눠 {nut["servings"]}회분' if is_special(r) else f'{nut["servings"]}인분'), "NUTRITION": ("" if is_special(r) else nutrition), "PETNOTE": note_for(r), "COSTLABEL": ("1회분" if is_special(r) else "1인분"),
         "JSONLD": json.dumps(jsonld, ensure_ascii=False).replace("</", "<\\/"),
     }.items():
         out = out.replace("{{" + k + "}}", v)
@@ -521,7 +560,7 @@ def main() -> None:
         "labels": load_extras()[0],
         "recipes": [
             {"slug": r["slug"], "name": r["name"], "minutes": r["minutes"], "level": r["level"], "desc": r["desc"],
-             "icon": RECIPE_ICON[r["slug"]], "img": (thumb_rel(photos[r["slug"]]) if r["slug"] in photos else ""), "kcal": compute(r["slug"])["per"]["kcal"], "cost": cost_per_serving(r), "pet": is_pet(r),
+             "icon": RECIPE_ICON[r["slug"]], "img": (thumb_rel(photos[r["slug"]]) if r["slug"] in photos else ""), "kcal": compute(r["slug"])["per"]["kcal"], "cost": cost_per_serving(r), "pet": is_special(r),
              "ingredients": [{"n": i["n"], "opt": i["opt"]} for i in r["ingredients"]]}
             for r in RECIPES
         ],
@@ -552,28 +591,49 @@ def main() -> None:
     sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "\n".join(f"<url><loc>{u}</loc></url>" for u in urls) + "\n</urlset>\n"
     (DIST / "sitemap.xml").write_text(sitemap, encoding="utf-8")
     (DIST / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {BASE}/sitemap.xml\n", encoding="utf-8")
-    # 어느 화면에서나 보이는 카테고리 막대(좁은 화면은 위에 붙는 가로 막대, 넓은 화면은 왼쪽 고정) + 오른쪽 인기 요리 칸
+    # 어느 화면에서나 보이는 카테고리: 좁은 화면은 위에 붙는 '카테고리' 버튼(누르면 묶음별로 펼침), 넓은 화면은 왼쪽 고정(묶음 접기) + 오른쪽 인기 요리 칸
     nm = {r["slug"]: r for r in RECIPES}
     top = [nm[x] for x in load_trending()["slugs"] if x in nm][:5]
+    cat_of = {c[0]: c for c in RECIPE_CATS}
+    groups = [(g, [x for x in slugs_ if x in cat_of]) for g, slugs_ in CAT_GROUPS]
+    seen = {x for _g, xs in groups for x in xs}
+    rest = [c[0] for c in RECIPE_CATS if c[0] not in seen]
+    if rest:
+        groups[0] = (groups[0][0], groups[0][1] + rest)
     for page in DIST.rglob("*.html"):
         rel = page.relative_to(DIST).parts
         t = page.read_text(encoding="utf-8")
-        if "</header>" not in t or 'class="catnav"' in t:
+        if "</header>" not in t or 'class="catbar"' in t:
             continue
         prefix = "" if len(rel) == 1 else "../"
         active = page.stem if rel[0] == "category" else ""
         on = ' class="on"'
-        links = '<a href="' + (prefix or "./") + '"' + (on if len(rel) == 1 else "") + '><span>🧊</span>재료로 찾기</a>'
-        for c in RECIPE_CATS:
-            links += '<a href="' + prefix + "category/" + c[0] + '.html"' + (on if c[0] == active else "") + "><span>" + c[2] + "</span>" + esc(c[1]) + "</a>"
+        home = '<a class="cb-link"' if len(rel) != 1 else '<a class="cb-link on"'
+        home += ' href="' + (prefix or "./") + '">🧊 재료로 찾기</a>'
+        panel = ""
         rail = ""
+        for gname, xs in groups:
+            panel += "<h4>" + esc(gname) + "</h4><div class=\"catgrid2\">"
+            rail += "<details" + (" open" if (active in xs or (not active and gname == groups[0][0])) else "") + "><summary>" + esc(gname) + "</summary>"
+            for x in xs:
+                c = cat_of[x]
+                link = '<a href="' + prefix + "category/" + x + '.html"' + (on if x == active else "") + "><span>" + c[2] + "</span>" + esc(c[1]) + "</a>"
+                panel += link
+                rail += link
+            panel += "</div>"
+            rail += "</details>"
+        cur = ('<span class="cb-cur">' + cat_of[active][2] + " " + esc(cat_of[active][1]) + "</span>") if active in cat_of else ""
+        bar = '<nav class="catbar" aria-label="요리 카테고리">' + home + '<details class="catmenu"><summary>☰ 카테고리</summary><div class="catpanel">' + panel + "</div></details>" + cur + "</nav>"
+        railhtml = '<nav class="catrail" aria-label="요리 카테고리"><b class="catnav-t">요리 카테고리</b>' + home.replace("cb-link", "rail-home").replace("🧊 재료로 찾기", "🧊 재료로 찾기") + rail + "</nav>"
+        toprail = ""
         for i, r in enumerate(top, 1):
-            rail += '<a href="' + prefix + "recipes/" + r["slug"] + '.html"><b>' + str(i) + "</b>" + esc(r["name"]) + "</a>"
-        nav = (
-            '<nav class="catnav" aria-label="요리 카테고리"><b class="catnav-t">요리 카테고리</b>' + links + "</nav>"
-            '<aside class="toprail" aria-label="오늘 많이 찾은 요리"><b class="catnav-t">오늘 많이 찾은 요리</b>' + rail + "</aside>"
+            toprail += '<a href="' + prefix + "recipes/" + r["slug"] + '.html"><b>' + str(i) + "</b>" + esc(r["name"]) + "</a>"
+        side = '<aside class="toprail" aria-label="오늘 많이 찾은 요리"><b class="catnav-t">오늘 많이 찾은 요리</b>' + toprail + "</aside>"
+        close_js = (
+            "<script>document.addEventListener('click',function(e){var d=document.querySelector('.catmenu');"
+            "if(d&&d.open&&!e.target.closest('.catbar')){d.open=false;}});</script>"
         )
-        page.write_text(t.replace("</header>", "</header>" + chr(10) + nav, 1), encoding="utf-8")
+        page.write_text(t.replace("</header>", "</header>" + chr(10) + bar + railhtml + side, 1).replace("</body>", close_js + "</body>", 1), encoding="utf-8")
     # 브라우저·서버 캐시가 옛 css/js 를 계속 쓰지 않도록 파일 주소에 내용 해시를 붙인다
     import hashlib
 
