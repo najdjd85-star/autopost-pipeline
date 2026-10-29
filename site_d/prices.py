@@ -41,7 +41,9 @@ PRICE_BASE_100G: Dict[str, int] = {
 
 # 실시간 가격(tools/fetch_prices.py 가 매일 prices_live.json 에 저장)이 있으면 신선식품 가격을 덮어쓴다.
 PRICE_100G: Dict[str, int] = dict(PRICE_BASE_100G)
-LIVE_DATE = ""
+LIVE_DATE = ""         # 아무 실시간 값이나 있으면 그 기준일(둘 중 최신)
+KAMIS_DATE = ""
+ONLINE_DATE = ""
 _LIVE = Path(__file__).with_name("prices_live.json")
 if _LIVE.exists():
     try:
@@ -49,7 +51,9 @@ if _LIVE.exists():
         for _k, _v in (_d.get("per100g") or {}).items():
             if _k in PRICE_100G and _v and _v > 0:
                 PRICE_100G[_k] = int(_v)
-        LIVE_DATE = str(_d.get("date") or "")
+        KAMIS_DATE = str(_d.get("kamis_date") or "")
+        ONLINE_DATE = str(_d.get("online_date") or "")
+        LIVE_DATE = max(KAMIS_DATE, ONLINE_DATE)
     except Exception:  # noqa: BLE001 - 파일이 깨져 있으면 평균가 추정치로 계속
         pass
 

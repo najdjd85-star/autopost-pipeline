@@ -17,7 +17,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
 from nutrition_data import DAILY, EXTRA, NUTRI, compute  # noqa: E402
-from prices import LIVE_DATE, PRICE_100G, cost_per_serving  # noqa: E402
+from prices import KAMIS_DATE, LIVE_DATE, ONLINE_DATE, PRICE_100G, cost_per_serving  # noqa: E402
 from recipes_data import ALIASES, CATEGORIES, EMOJI, RECIPE_CATS, RECIPE_ICON, RECIPES, STAPLE_DEFAULTS, STAPLES  # noqa: E402
 
 STEP_IMAGES = os.environ.get("SITE_D_STEP_IMAGES", "0") == "1"  # AI 단계 이미지는 장면이 자주 틀려서 기본으로 끈다
@@ -446,7 +446,12 @@ PET_NOTE = (
 def price_note() -> str:
     base = "예상 재료비는 선택 재료까지 포함해 사용한 양만 계산한 어림값이에요. 지역·브랜드에 따라 달라지고, 재료를 한 팩 단위로 사야 해서 실제 지출은 더 클 수 있어요."
     if LIVE_DATE:
-        return f"{base} 채소·과일·고기·계란·생선 가격은 {LIVE_DATE} 기준 KAMIS(한국농수산식품유통공사) 소매가격을 반영했고, 나머지는 평균가 추정치예요."
+        parts = []
+        if KAMIS_DATE:
+            parts.append(f"채소·과일·고기·계란·생선은 {KAMIS_DATE} 기준 KAMIS(한국농수산식품유통공사) 소매가격")
+        if ONLINE_DATE:
+            parts.append(f"라면·양념·장류 등 마트 상품은 {ONLINE_DATE} 기준 통계청 온라인수집가격")
+        return f"{base} " + "과 ".join(parts) + "을 반영했고, 나머지는 평균가 추정치예요."
     return base + " 대형마트·온라인 평균가 기준이에요."
 
 

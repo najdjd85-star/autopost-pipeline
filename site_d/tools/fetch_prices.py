@@ -164,7 +164,16 @@ def main() -> int:
     print(f"기준일 {day}, 갱신 {len(prices)}개, 못 찾음 {len(missing)}개: {', '.join(missing)}")
     if report or not prices:
         return 0
-    data = {"date": day, "source": "KAMIS 소매가격(농·축·수산물), 나머지는 평균가 추정", "per100g": prices}
+    data = {}
+    if OUT.exists():
+        try:
+            data = json.loads(OUT.read_text(encoding="utf-8"))
+        except ValueError:
+            data = {}
+    per = data.get("per100g") or {}
+    per.update(prices)
+    data["per100g"] = per
+    data["kamis_date"] = day
     OUT.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
     return 0
 

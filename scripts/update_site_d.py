@@ -67,9 +67,16 @@ def update_prices() -> str:
     """KAMIS 소매가격으로 신선식품 가격을 갱신한다(키가 없거나 실패하면 예전 가격 그대로, 사이트는 계속 만들어진다)."""
     try:
         import fetch_prices
+        import fetch_prices_online
 
-        code = fetch_prices.main()
-        return "가격 갱신 시도 완료" if code == 0 else "가격 갱신 건너뜀(응답 없음)"
+        codes = []
+        for mod in (fetch_prices_online, fetch_prices):  # 온라인(마트 상품) 먼저, 신선식품 KAMIS 값이 있으면 그 품목은 KAMIS 가 덮어쓴다
+            try:
+                codes.append(mod.main())
+            except Exception as exc:  # noqa: BLE001
+                logger.warning("가격 도구 %s 실패(무시): %s", mod.__name__, exc)
+                codes.append(1)
+        return "가격 갱신 시도 완료" if 0 in codes else "가격 갱신 건너뜀(응답 없음)"
     except Exception as exc:  # noqa: BLE001
         logger.warning("가격 갱신 실패(무시): %s", exc)
         return "가격 갱신 실패(예전 가격 유지)"
