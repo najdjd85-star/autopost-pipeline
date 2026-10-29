@@ -34,9 +34,16 @@ def fingerprint(key: str) -> str:
     return hashlib.sha256(key.encode("utf-8")).hexdigest()[:10]
 
 
+def legacy_key() -> str:
+    """예전부터 쓰던 단일 키(GOOGLE_AI_STUDIO_API_KEY). 풀의 맨 뒤에 들어가며, GEMINI_INCLUDE_LEGACY_KEY=0 이면 쓰지 않는다."""
+    if os.environ.get("GEMINI_INCLUDE_LEGACY_KEY", "1").strip() == "0":
+        return ""
+    return os.environ.get("GOOGLE_AI_STUDIO_API_KEY", "").strip()
+
+
 def load_keys() -> List[str]:
-    """.env 에서 키를 읽어 중복 없이 순서대로 돌려준다."""
-    raw = os.environ.get("GEMINI_API_KEYS", "") + "," + os.environ.get("GOOGLE_AI_STUDIO_API_KEY", "")
+    """.env 에서 키를 읽어 중복 없이 순서대로 돌려준다(GEMINI_API_KEYS 먼저, 기존 단일 키는 맨 뒤)."""
+    raw = os.environ.get("GEMINI_API_KEYS", "") + "," + legacy_key()
     keys: List[str] = []
     for k in re.split(r"[,\s;]+", raw):
         k = k.strip().strip('"').strip("'")
@@ -146,5 +153,7 @@ def status_lines() -> List[str]:
         else:
             note = "사용 가능"
         mark = " ← 마지막으로 성공" if fingerprint(k) == last else ""
+        if k == legacy_key():
+            mark += "  [기존 GOOGLE_AI_STUDIO_API_KEY - 맨 뒤 예비]"
         lines.append(f"키 {i} (…{k[-4:]}): {note}{mark}")
     return lines
