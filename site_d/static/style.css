@@ -201,7 +201,7 @@ h2{letter-spacing:-.03em}
 .aisle.pantry{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px;box-shadow:var(--shadow)}
 .aisle.pantry summary{cursor:pointer;list-style:none;margin:0}.aisle.pantry summary::-webkit-details-marker{display:none}
 .aisle.pantry[open] summary{margin-bottom:8px}
-.aisle.pantry .aisle-h .no{background:transparent;font-size:16px}
+.aisle.pantry .aisle-h .no{font-size:12px}
 .aisle.pantry .tile{box-shadow:none}
 .aisle.recent .aisle-h .no{display:none}
 

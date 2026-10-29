@@ -165,9 +165,9 @@
     det.open = pantryOpen;
     det.addEventListener("toggle", function () { pantryOpen = det.open; });
     var sm = el("summary", "aisle-h");
-    sm.appendChild(el("span", "no", "🧂"));
+    sm.appendChild(el("span", "no", String(shelves().length + 1)));
     sm.appendChild(document.createTextNode("양념통"));
-    sm.appendChild(el("small", "cnt", PANTRY.filter(function (n) { return have[n]; }).length + "개 있음 · 눌러서 바꾸기"));
+    sm.appendChild(el("small", "cnt", PANTRY.filter(function (n) { return have[n]; }).length + "개 있음 · 집에 있는 양념을 눌러 고르세요"));
     det.appendChild(sm);
     det.appendChild(el("p", "shelf-note", "집에 있는 양념을 눌러 주세요. 없는 양념이 필요한 요리는 '양념만 더 필요해요'로 따로 보여 드려요."));
     var pbox = el("div", "tiles");
