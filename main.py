@@ -60,6 +60,41 @@ def _resolve_sites(site_arg: str) -> List[str]:
     raise ValueError(f"알 수 없는 site 인자: {site_arg!r} (site_a/site_b/site_c/all 중 하나)")
 
 
+def _is_api_limit_error(exc: Exception) -> bool:
+    """Anthropic 콘솔에서 정한 월 사용 한도에 걸린 오류인지(한도가 풀리기 전에는 재시도해도 소용없다)."""
+    return "reached your specified API usage limits" in str(exc)
+
+
+def _notify_api_limit_once(exc: Exception) -> None:
+    """같은 날 사이트 3개가 똑같은 오류를 3번 보내지 않도록 하루 한 번만 한도 안내를 보낸다(한도를 올리면 다음 실행부터 자동 재개)."""
+    import json
+    import re
+    from datetime import datetime, timedelta, timezone
+    from pathlib import Path
+
+    marker = Path(__file__).resolve().parent / "data" / "output" / "limit_notice.json"
+    today = datetime.now().strftime("%Y-%m-%d")
+    try:
+        if json.loads(marker.read_text(encoding="utf-8")).get("date") == today:
+            return
+    except Exception:  # noqa: BLE001
+        pass
+    when = ""
+    m = re.search(r"regain access on (\d{4})-(\d{2})-(\d{2}) at (\d{2}):(\d{2}) UTC", str(exc))
+    if m:
+        dt = datetime(*[int(x) for x in m.groups()], tzinfo=timezone.utc) + timedelta(hours=9)
+        when = f"{dt.month}/{dt.day} {dt.hour:02d}:{dt.minute:02d}(한국시간)부터 자동으로 다시 됩니다. "
+    try:
+        marker.parent.mkdir(parents=True, exist_ok=True)
+        marker.write_text(json.dumps({"date": today}), encoding="utf-8")
+    except OSError:
+        pass
+    send_message_sync(
+        "⏸️ Claude API 월 사용 한도에 도달해 오늘 글 생성을 건너뜁니다. " + when
+        + "지금 바로 쓰려면 Anthropic 콘솔 → Settings → Limits 에서 한도를 올리세요(올리면 다음 실행부터 자동 재개)."
+    )
+
+
 def _run_site_pipeline(
     site: str,
     keyword: Optional[str] = None,
@@ -81,6 +116,10 @@ def _run_site_pipeline(
         send_message_sync(f"⏭️ [Site {site}] 오늘은 새 주제가 없어(이전 글과 비슷해질 것) 발행을 내일로 미룹니다.")
         return
     except Exception as exc:  # noqa: BLE001
+        if _is_api_limit_error(exc):
+            logger.warning("[Site %s] Claude API 사용 한도 도달: %s", site, exc)
+            _notify_api_limit_once(exc)
+            return
         logger.exception("[Site %s] 콘텐츠 생성 중 예기치 못한 오류: %s", site, exc)
         send_message_sync(f"❌ [Site {site}] 콘텐츠 생성 중 오류: {exc}")
         return
