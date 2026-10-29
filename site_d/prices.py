@@ -6,9 +6,11 @@
 """
 from __future__ import annotations
 
+import json
+from pathlib import Path
 from typing import Dict
 
-PRICE_100G: Dict[str, int] = {
+PRICE_BASE_100G: Dict[str, int] = {
     # 채소
     "양파": 250, "대파": 300, "감자": 400, "당근": 350, "애호박": 600, "콩나물": 500, "시금치": 1500, "오이": 400,
     "토마토": 600, "양배추": 300, "무": 200, "부추": 1250, "청양고추": 1500, "고구마": 500, "버섯": 1000, "파프리카": 1000,
@@ -35,6 +37,21 @@ PRICE_100G: Dict[str, int] = {
     "통깨": 2700, "식초": 300, "굴소스": 900, "맛술": 700, "올리고당": 420, "케첩": 600, "전분": 500, "들깨가루": 4000,
     "국간장": 900, "올리브유": 1800, "들기름": 2500, "매실청": 800, "쯔유": 1200, "머스터드": 1250, "물": 0,
 }
+
+
+# 실시간 가격(tools/fetch_prices.py 가 매일 prices_live.json 에 저장)이 있으면 신선식품 가격을 덮어쓴다.
+PRICE_100G: Dict[str, int] = dict(PRICE_BASE_100G)
+LIVE_DATE = ""
+_LIVE = Path(__file__).with_name("prices_live.json")
+if _LIVE.exists():
+    try:
+        _d = json.loads(_LIVE.read_text(encoding="utf-8"))
+        for _k, _v in (_d.get("per100g") or {}).items():
+            if _k in PRICE_100G and _v and _v > 0:
+                PRICE_100G[_k] = int(_v)
+        LIVE_DATE = str(_d.get("date") or "")
+    except Exception:  # noqa: BLE001 - 파일이 깨져 있으면 평균가 추정치로 계속
+        pass
 
 
 def cost_per_serving(recipe: dict) -> int:

@@ -46,15 +46,15 @@ def _notify(text: str) -> None:
 
 
 def deploy() -> str:
-    """오늘 인기 요리 파일(trending.json)만 깃에 올린다. 서버가 매일 18:10(한국시간)에 받아서 사이트를 다시 만든다."""
+    """오늘 인기 요리(trending.json)와 재료 가격(prices_live.json)만 깃에 올린다. 서버가 매일 18:10(한국시간)에 받아서 사이트를 다시 만든다."""
     def git(*args: str) -> subprocess.CompletedProcess:
         return subprocess.run(["git", *args], cwd=str(ROOT), capture_output=True, text=True, encoding="utf-8")
 
-    path = "site_d/trending.json"
-    if git("diff", "--quiet", "--", path).returncode == 0 and git("ls-files", "--error-unmatch", path).returncode == 0:
-        return "서버 반영: 어제와 같은 순위라 올릴 것 없음"
-    git("add", path)
-    msg = git("commit", "-m", "Site D: daily trending update", "--", path)
+    changed = [p for p in ("site_d/trending.json", "site_d/prices_live.json") if (ROOT / p).exists() and git("status", "--porcelain", "--", p).stdout.strip()]
+    if not changed:
+        return "서버 반영: 어제와 같아 올릴 것 없음"
+    git("add", *changed)
+    msg = git("commit", "-m", "Site D: daily trending/price update", "--", *changed)
     if msg.returncode != 0:
         return "서버 반영 실패(커밋): " + (msg.stderr or msg.stdout)[-120:]
     push = git("push", "origin", "HEAD")
@@ -63,12 +63,25 @@ def deploy() -> str:
     return "서버 반영: 깃에 올림(서버가 18:10에 사이트 갱신)"
 
 
+def update_prices() -> str:
+    """KAMIS 소매가격으로 신선식품 가격을 갱신한다(키가 없거나 실패하면 예전 가격 그대로, 사이트는 계속 만들어진다)."""
+    try:
+        import fetch_prices
+
+        code = fetch_prices.main()
+        return "가격 갱신 시도 완료" if code == 0 else "가격 갱신 건너뜀(응답 없음)"
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("가격 갱신 실패(무시): %s", exc)
+        return "가격 갱신 실패(예전 가격 유지)"
+
+
 def main() -> int:
     import fetch_trending
 
     if not _network_ready():
         logger.warning("인터넷 연결이 없어 인기 요리 갱신을 건너뜁니다.")
         return 1
+    logger.info(update_prices())
     try:
         data = fetch_trending.build()
     except fetch_trending.NotConfigured as exc:
