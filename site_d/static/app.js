@@ -211,7 +211,7 @@
     title.href = "recipes/" + ev.r.slug + ".html";
     h3.appendChild(title);
     body.appendChild(h3);
-    body.appendChild(el("div", "meta", ev.r.minutes + "분 · 1인분 " + ev.r.kcal + "kcal"));
+    body.appendChild(el("div", "meta", ev.r.minutes + "분 · 1인분 " + ev.r.kcal + "kcal · 약 " + ev.r.cost.toLocaleString("ko-KR") + "원"));
     var lack = ev.mf.concat(ev.ms);
     if (lack.length) {
       var row = el("div", "miss-row");

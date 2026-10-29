@@ -17,6 +17,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
 from nutrition_data import DAILY, EXTRA, NUTRI, compute  # noqa: E402
+from prices import PRICE_100G, cost_per_serving  # noqa: E402
 from recipes_data import ALIASES, CATEGORIES, EMOJI, RECIPE_CATS, RECIPE_ICON, RECIPES, STAPLE_DEFAULTS, STAPLES  # noqa: E402
 
 STEP_IMAGES = os.environ.get("SITE_D_STEP_IMAGES", "0") == "1"  # AI 단계 이미지는 장면이 자주 틀려서 기본으로 끈다
@@ -214,6 +215,8 @@ def validate() -> None:
             if n not in known:
                 problems.append(f"{nm}: 알 수 없는 재료 '{n}' (ALIASES/STAPLES에 추가 필요)")
                 continue
+            if n not in PRICE_100G:
+                problems.append(f"{nm}: 가격표(prices.py)에 없는 재료 '{n}'")
             if n not in NUTRI or n not in EXTRA:
                 problems.append(f"{nm}: 영양 표에 없는 재료 '{n}'")
             if not i["g"] and n not in ("물", "후추"):
@@ -268,7 +271,7 @@ def all_recipes_html() -> str:
     for c in order:
         lis = "".join(
             f'<li data-n="{esc(r["name"])}" data-c="{esc(initials_of(r["name"]))}"><a href="recipes/{r["slug"]}.html">{esc(r["name"])}</a>'
-            f'<span>{r["minutes"]}분 · {compute(r["slug"])["per"]["kcal"]}kcal</span></li>'
+            f'<span>{r["minutes"]}분 · {compute(r["slug"])["per"]["kcal"]}kcal · 약 {cost_per_serving(r):,}원</span></li>'
             for r in groups[c]
         )
         body += f'<div class="rgroup" data-i="{c}"><h3>{c} <small>{len(groups[c])}</small></h3><ul class="rlist">{lis}</ul></div>'
@@ -304,7 +307,7 @@ def recipe_card_html(r: dict, photos: dict, prefix: str = "../") -> str:
     thumb = f'<img src="{prefix}{thumb_rel(p)}" alt="{esc(r["name"])}" loading="lazy" decoding="async" width="96" height="72">' if p else f'<span>{r["icon"]}</span>'
     return (
         f'<a class="rcard" href="{prefix}recipes/{r["slug"]}.html"><div class="rthumb">{thumb}</div>'
-        f'<div class="rbody"><b>{esc(r["name"])}</b><small>{r["minutes"]}분 · {r["level"]} · 1인분 {compute(r["slug"])["per"]["kcal"]}kcal</small>'
+        f'<div class="rbody"><b>{esc(r["name"])}</b><small>{r["minutes"]}분 · {r["level"]} · 1인분 {compute(r["slug"])["per"]["kcal"]}kcal · 약 {cost_per_serving(r):,}원</small>'
         f'<p>{esc(r["desc"])}</p></div></a>'
     )
 
@@ -451,7 +454,7 @@ def recipe_page(tpl: str, r: dict, aff: dict, photos: dict, tools: dict) -> str:
     }
     out = tpl
     for k, v in {
-        "SITE_NAME": SITE_NAME, "BASE": BASE, "NAME": esc(r["name"]), "SLUG": r["slug"], "MINUTES": str(r["minutes"]),
+        "SITE_NAME": SITE_NAME, "BASE": BASE, "NAME": esc(r["name"]), "SLUG": r["slug"], "MINUTES": str(r["minutes"]), "COST": f"{cost_per_serving(r):,}",
         "LEVEL": esc(r["level"]), "DESC": esc(r["desc"]), "INGREDIENTS": ing_html, "BUY": (f'<div id="buy">{buy}</div>' if buy else ""), "BUY_HINT": ('<p class="note buyhint"><a href="#buy">없는 재료·요리도구는 맨 아래에서 바로 살 수 있어요 ↓</a></p>' if buy else ""), "STEPS": steps, "STEPS_NOTE": steps_note, "TIP": tip, "CATS": cats_html, "MEASURE": measure,
         "RELATED": rel, "DISCLOSURE": disclosure(bool(buy_items or tool_items)),
         "PHOTO": photo_html(r["slug"], r["name"], photos), "ICON": RECIPE_ICON[r["slug"]], "SERVINGS": f'{nut["servings"]}인분', "NUTRITION": nutrition,
@@ -497,7 +500,7 @@ def main() -> None:
         "labels": load_extras()[0],
         "recipes": [
             {"slug": r["slug"], "name": r["name"], "minutes": r["minutes"], "level": r["level"], "desc": r["desc"],
-             "icon": RECIPE_ICON[r["slug"]], "img": (thumb_rel(photos[r["slug"]]) if r["slug"] in photos else ""), "kcal": compute(r["slug"])["per"]["kcal"],
+             "icon": RECIPE_ICON[r["slug"]], "img": (thumb_rel(photos[r["slug"]]) if r["slug"] in photos else ""), "kcal": compute(r["slug"])["per"]["kcal"], "cost": cost_per_serving(r),
              "ingredients": [{"n": i["n"], "opt": i["opt"]} for i in r["ingredients"]]}
             for r in RECIPES
         ],

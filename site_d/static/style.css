@@ -256,3 +256,5 @@ header.top a.brand{gap:8px}
 
 .hero .search .clearbtn{background:var(--chip);color:var(--ink);font-size:13px;padding:0 12px;white-space:nowrap}
 @media (max-width:420px){.hero .search{flex-wrap:wrap}.hero .search input{flex:1 0 100%;margin-bottom:6px}.hero .search .btn{flex:1}}
+
+.costline{margin:2px 0 0;font-size:14px;color:var(--mut)}.costline b{color:var(--accent)}
