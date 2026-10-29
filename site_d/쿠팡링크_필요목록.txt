@@ -1,194 +1,25 @@
-냉장고 파먹기 - 쿠팡 링크가 아직 없는 재료 (89개)
-붙여 주실 때 '재료이름 링크' 형식으로 주세요.
+냉장고 파먹기 - 쿠팡 링크가 아직 없는 재료 (2개)
+붙여 주실 때는 아래 '링크:' 뒤에 주소만 적어서 주세요(여러 상품이면 줄을 더 추가해도 돼요).
 
 [고기·해산물]
-  닭가슴살  (8개 레시피)  → 쿠팡 검색어 제안: 닭가슴살 
-  https://link.coupang.com/a/ie2yEr4kEe
-  소시지  (3개 레시피)  → 쿠팡 검색어 제안: 소시지
-  https://link.coupang.com/a/ie2BkSGw3w
-  미역  (1개 레시피)  → 쿠팡 검색어 제안: 미역
-  https://link.coupang.com/a/ie2CBi4JmS
-  멸치  (14개 레시피)  → 쿠팡 검색어 제안: 멸치
-  https://link.coupang.com/a/ie2EArwXcG
-  삼치  (2개 레시피)  → 쿠팡 검색어 제안: 삼치
-  https://link.coupang.com/a/ie2Hnq2zpk
-  명란  (3개 레시피)  → 쿠팡 검색어 제안: 저염 명란젓
-  https://link.coupang.com/a/ie2I40oXK0
-  오징어  (2개 레시피)  → 쿠팡 검색어 제안: 오징어
-  https://link.coupang.com/a/ie2NYPIUMu
-  고등어  (2개 레시피)  → 쿠팡 검색어 제안: 고등어
-  https://link.coupang.com/a/ie2RNaVf76
-  바지락  (1개 레시피)  → 쿠팡 검색어 제안: 바지락
-  https://link.coupang.com/a/ie2V9kgWWq
-  홍합  (1개 레시피)  → 쿠팡 검색어 제안: 홍합
-  https://link.coupang.com/a/ie2XCGgQpM
-  굴  (2개 레시피)  → 쿠팡 검색어 제안: 굴
-  https://link.coupang.com/a/ie20PYFlCe
-  게맛살  (2개 레시피)  → 쿠팡 검색어 제안: 게맛살
-  https://link.coupang.com/a/ie22I2MvzU
-  연어  (2개 레시피)  → 쿠팡 검색어 제안: 연어
-  https://link.coupang.com/a/ie24PlBcnA
-  북어  (1개 레시피)  → 쿠팡 검색어 제안: 북어채(황태채)
-  https://link.coupang.com/a/ie26lNpdOV
-  다시마  (1개 레시피)  → 쿠팡 검색어 제안: 국물용 다시마
-  https://link.coupang.com/a/ie28gbMw32
-  베이컨  (4개 레시피)  → 쿠팡 검색어 제안: 베이컨
-  https://link.coupang.com/a/ie3atqX9EW
-  새우  (5개 레시피)  → 쿠팡 검색어 제안: 새우
-  https://link.coupang.com/a/ie3dxBVHKS
-[계란·두부·유제품]
-  순두부  (3개 레시피)  → 쿠팡 검색어 제안: 순두부
-  https://link.coupang.com/a/ie3fttLnj2
-  낫또  (2개 레시피)  → 쿠팡 검색어 제안: 낫또
-  https://link.coupang.com/a/ie3gYa46Ds
-  두유  (1개 레시피)  → 쿠팡 검색어 제안: 무가당 두유
-  https://link.coupang.com/a/ie3iIgkNPO
-  요거트  (6개 레시피)  → 쿠팡 검색어 제안: 그릭요거트 플레인
-  https://link.coupang.com/a/ie3jXdCfee
-  생크림  (1개 레시피)  → 쿠팡 검색어 제안: 생크림
-  https://link.coupang.com/a/ie3lZC1bem
-  메추리알  (1개 레시피)  → 쿠팡 검색어 제안: 메추리알(삶은 것)
-  https://link.coupang.com/a/ie3nrIobFQ
-  버터  (5개 레시피)  → 쿠팡 검색어 제안: 버터
-  https://link.coupang.com/a/ie3qXeNNG8
-[채소]
-  당근  (29개 레시피)  → 쿠팡 검색어 제안: 당근
-  https://link.coupang.com/a/ie3sx7vhBY
-  콩나물  (6개 레시피)  → 쿠팡 검색어 제안: 콩나물
-  https://link.coupang.com/a/ie3ukVSnTw
-  시금치  (7개 레시피)  → 쿠팡 검색어 제안: 시금치
-  https://link.coupang.com/a/ie3vizUYjQ
-  오이  (21개 레시피)  → 쿠팡 검색어 제안: 오이
-  https://link.coupang.com/a/ie3wbpTMuO
-  토마토  (10개 레시피)  → 쿠팡 검색어 제안: 토마토
-  https://link.coupang.com/a/ie3w6qqWab
-  양배추  (13개 레시피)  → 쿠팡 검색어 제안: 양배추
-  https://link.coupang.com/a/ie3yzvU3um
-  무  (10개 레시피)  → 쿠팡 검색어 제안: 무
-  https://link.coupang.com/a/ie3zCPYNYi
-  파프리카  (7개 레시피)  → 쿠팡 검색어 제안: 파프리카
-  https://link.coupang.com/a/ie3APVfuXQ
-  청양고추  (15개 레시피)  → 쿠팡 검색어 제안: 청양고추
-  https://link.coupang.com/a/ie3BQzYXa8
-  케일  (2개 레시피)  → 쿠팡 검색어 제안: 케일
-  https://link.coupang.com/a/ie3DCo7pkq
-  파래  (2개 레시피)  → 쿠팡 검색어 제안: 파래
-  https://link.coupang.com/a/ie3G3RKOYu
-  숙주  (5개 레시피)  → 쿠팡 검색어 제안: 숙주
-  https://link.coupang.com/a/ie3Ia4bL1E
-  가지  (2개 레시피)  → 쿠팡 검색어 제안: 가지
-  https://link.coupang.com/a/ie3JeTqmdg
-  깻잎  (3개 레시피)  → 쿠팡 검색어 제안: 깻잎
-  https://link.coupang.com/a/ie3KevIn36
-  상추  (2개 레시피)  → 쿠팡 검색어 제안: 상추
-  https://link.coupang.com/a/ie3LvL0CpE
-  양상추  (7개 레시피)  → 쿠팡 검색어 제안: 양상추
-  https://link.coupang.com/a/ie3MWUUf3Q
-  브로콜리  (4개 레시피)  → 쿠팡 검색어 제안: 브로콜리
-  https://link.coupang.com/a/ie3NUMhvLo
-  단호박  (4개 레시피)  → 쿠팡 검색어 제안: 단호박
-  https://link.coupang.com/a/ie3OWIhLem
-  아보카도  (1개 레시피)  → 쿠팡 검색어 제안: 아보카도
-  https://link.coupang.com/a/ie3PNJDlcW
-  청경채  (1개 레시피)  → 쿠팡 검색어 제안: 청경채
-  https://link.coupang.com/a/ie3Q6IIgTY
-  미나리  (1개 레시피)  → 쿠팡 검색어 제안: 미나리
-  https://link.coupang.com/a/ie3R2dQAa4
-  생강  (2개 레시피)  → 쿠팡 검색어 제안: 생강
-  https://link.coupang.com/a/ie3SWi5OaO
-  연근  (1개 레시피)  → 쿠팡 검색어 제안: 연근
-  https://link.coupang.com/a/ie3TRHqeaa
-  우엉  (1개 레시피)  → 쿠팡 검색어 제안: 우엉
-  https://link.coupang.com/a/ie3UVWLUjI
-  도라지  (1개 레시피)  → 쿠팡 검색어 제안: 도라지
-  https://link.coupang.com/a/ie3VWNyKoC
-  고사리  (1개 레시피)  → 쿠팡 검색어 제안: 고사리
-  https://link.coupang.com/a/ie3Y9CZGuG
-  배추  (2개 레시피)  → 쿠팡 검색어 제안: 배추
-  https://link.coupang.com/a/ie31xtfEBw
-  옥수수  (2개 레시피)  → 쿠팡 검색어 제안: 옥수수 캔
-  https://link.coupang.com/a/ie329OBu8G
-[김치·장류·기타]
-  마요네즈  (7개 레시피)  → 쿠팡 검색어 제안: 마요네즈
-  https://link.coupang.com/a/ie34QPW4t2
-  김  (14개 레시피)  → 쿠팡 검색어 제안: 김
-  https://link.coupang.com/a/ie4cHFFHi0
-  김밥용 김 https://link.coupang.com/a/ie4aSrQdSm
-  부침가루  (9개 레시피)  → 쿠팡 검색어 제안: 부침가루
-  https://link.coupang.com/a/ie4ffwtQmi
-  밀가루  (8개 레시피)  → 쿠팡 검색어 제안: 밀가루
-  https://link.coupang.com/a/ie4geciZfE
-  쌈장  (1개 레시피)  → 쿠팡 검색어 제안: 쌈장
-  https://link.coupang.com/a/ie4g4i7lJY
-  청국장  (1개 레시피)  → 쿠팡 검색어 제안: 청국장
-  https://link.coupang.com/a/ie4jIoC0e4
-  빵가루  (2개 레시피)  → 쿠팡 검색어 제안: 튀김 빵가루
-  https://link.coupang.com/a/ie4lbX1zgG
-  단무지  (1개 레시피)  → 쿠팡 검색어 제안: 김밥용 단무지
-  https://link.coupang.com/a/ie4mEpkoGO
-  파스타소스  (2개 레시피)  → 쿠팡 검색어 제안: 파스타소스
-  토마토파스타소스 https://link.coupang.com/a/ie4n0J51XM
-  크림파스타소스 https://link.coupang.com/a/ie4pi8dAjc
-  알리오올리오소스 https://link.coupang.com/a/ie4rljfxIG
-  카레가루  (1개 레시피)  → 쿠팡 검색어 제안: 카레가루
-  https://link.coupang.com/a/ie4sPjyXu0
-  짜장가루  (2개 레시피)  → 쿠팡 검색어 제안: 짜장가루
-  https://link.coupang.com/a/ie4u08TOFg
-[밥·면·떡]
-  쫄면  (2개 레시피)  → 쿠팡 검색어 제안: 쫄면사리
-  https://link.coupang.com/a/ie4w7HffO0
-  찹쌀  (2개 레시피)  → 쿠팡 검색어 제안: 찹쌀
-  https://link.coupang.com/a/ie4CP74Jk4
-  곤약  (2개 레시피)  → 쿠팡 검색어 제안: 곤약면(곤약국수)
-  https://link.coupang.com/a/ie4F75AfGm
-  당면  (1개 레시피)  → 쿠팡 검색어 제안: 당면
-  https://link.coupang.com/a/ie4HRwePrE
-  쌀국수  (2개 레시피)  → 쿠팡 검색어 제안: 쌀국수면
-  https://link.coupang.com/a/ie4I4vPxPU
-  칼국수  (1개 레시피)  → 쿠팡 검색어 제안: 생 칼국수면
-  https://link.coupang.com/a/ie4MHRPDB6
-  스파게티면  (6개 레시피)  → 쿠팡 검색어 제안: 스파게티면
-  https://link.coupang.com/a/ie4N6UwAma
-  우동면  (3개 레시피)  → 쿠팡 검색어 제안: 우동면
-  https://link.coupang.com/a/ie4PiaJJMy
-  또띠아  (1개 레시피)  → 쿠팡 검색어 제안: 또띠아
-  https://link.coupang.com/a/ie4QpU9mDY
-[곡물·과일·견과]
-  현미밥  (7개 레시피)  → 쿠팡 검색어 제안: 현미 즉석밥
-  https://link.coupang.com/a/ie4RNa3yRo
-  오트밀  (4개 레시피)  → 쿠팡 검색어 제안: 오트밀
-  https://link.coupang.com/a/ie4UEM4LqS
-  견과류  (7개 레시피)  → 쿠팡 검색어 제안: 하루견과 / 믹스넛
-  https://link.coupang.com/a/ie4WvcpddZ
-  사과  (2개 레시피)  → 쿠팡 검색어 제안: 사과
-  https://link.coupang.com/a/ie4XSlV0a4
-  바나나  (2개 레시피)  → 쿠팡 검색어 제안: 바나나
-  https://link.coupang.com/a/ie4Zw7H7ka
-  
-[양념통]
-  소금  (109개 레시피)  → 쿠팡 검색어 제안: 소금
-  https://link.coupang.com/a/ie41ZtXNdI
-  후추  (77개 레시피)  → 쿠팡 검색어 제안: 후추
-  https://link.coupang.com/a/ie42WEIaOa
-  올리고당  (28개 레시피)  → 쿠팡 검색어 제안: 올리고당
-  https://link.coupang.com/a/ie44XavkFE
-  케첩  (8개 레시피)  → 쿠팡 검색어 제안: 케첩
-  https://link.coupang.com/a/ie451x0FDo
-  전분  (1개 레시피)  → 쿠팡 검색어 제안: 감자전분
-  https://link.coupang.com/a/ie47bhHoKi
-  들깨가루  (1개 레시피)  → 쿠팡 검색어 제안: 들깨가루
-  https://link.coupang.com/a/ie49Aw01Zs
-  국간장  (6개 레시피)  → 쿠팡 검색어 제안: 국간장(조선간장)
-  국간장 https://link.coupang.com/a/ie5btBL6aW
-  조선간장 https://link.coupang.com/a/ie5aEPcHrE
-  올리브유  (3개 레시피)  → 쿠팡 검색어 제안: 엑스트라버진 올리브유
-  https://link.coupang.com/a/ie5dUWrCV2
-  들기름  (2개 레시피)  → 쿠팡 검색어 제안: 들기름
-  https://link.coupang.com/a/ie5fcMgK84
-  매실청  (1개 레시피)  → 쿠팡 검색어 제안: 매실청
-  https://link.coupang.com/a/ie5gtojtsG
-  쯔유  (1개 레시피)  → 쿠팡 검색어 제안: 쯔유
-  https://link.coupang.com/a/ie5h4QofAW
-  머스터드  (2개 레시피)  → 쿠팡 검색어 제안: 머스터드 소스
-  https://link.coupang.com/a/ie5i6WsG04
-  치킨스톡 https://link.coupang.com/a/ie5kvWFqwe
+훈제오리  (5개 레시피)  검색어: 훈제오리 슬라이스
+  링크: 
+오리고기  (3개 레시피)  검색어: 오리 로스 슬라이스
+  링크: 
+
+
+[요리도구 후보 - 쓰이는 레시피가 많은 순, 이미 있는 도구(팬·냄비·도마·믹싱볼·계량스푼·뒤집개·주걱·체·조리도구 세트·전자레인지 용기·강판·키친타월)는 제외]
+절구·으깨기  (22개 레시피)
+  링크: 
+에어프라이어  (14개 레시피)
+  링크: 
+내열 유리 용기  (9개 레시피)
+  링크: 
+실리콘 주걱  (7개 레시피)
+  링크: 
+믹서  (6개 레시피)
+  링크: 
+면포  (4개 레시피)
+  링크: 
+종이호일  (3개 레시피)
+  링크: 
