@@ -14,3 +14,6 @@ youtube_token.json
 .pytest_cache/
 .claude/
 *.lnk
+
+# 개인 메모 (배포 대상 아님)
+notes/

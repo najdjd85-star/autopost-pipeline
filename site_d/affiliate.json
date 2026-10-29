@@ -1,18 +1,105 @@
 {
-  "_설명": "쿠팡 파트너스 링크. ingredients: 재료 이름 -> 링크(없는 재료 사러가기에 쓰임). tools: 요리도구 -> label(버튼 글자), url(링크), match(이 도구가 쓰이는 조리 순서의 단어). 링크(url)가 비어 있는 항목은 화면에 나오지 않습니다. 채운 뒤 site_d/build.py 를 다시 실행하세요.",
+  "_설명": "쿠팡 파트너스 링크. ingredients: 재료 이름 -> 링크(없는 재료 사러가기에 쓰임). tools: 요리도구 -> label(버튼 글자), url(링크), match(이 도구가 쓰이는 조리 순서의 단어). 링크(url)가 비어 있는 항목은 화면에 나오지 않습니다. 한 레시피에는 도구 버튼이 최대 5개까지만 나옵니다. 채운 뒤 site_d/build.py 를 다시 실행하세요.",
   "ingredients": {
-    "계란": "https://link.coupang.com/a/iets8XvF4m"
+    "계란": "https://link.coupang.com/a/iets8XvF4m",
+    "김치": "https://link.coupang.com/a/ieLJrC3DVc",
+    "두부": "https://link.coupang.com/a/ieLLdrPMYK",
+    "대파": "https://link.coupang.com/a/ieLMSxtPem",
+    "양파": "https://link.coupang.com/a/ieLPrh4Ivs",
+    "감자": "https://link.coupang.com/a/ieLQJNUtX2",
+    "참치캔": "https://link.coupang.com/a/ieLS6O8PAW",
+    "햄": "https://link.coupang.com/a/ieLTYu10zk",
+    "스팸": "https://link.coupang.com/a/ieLUCSrBW9",
+    "라면": "https://link.coupang.com/a/ieLWoJEZUq",
+    "소면": "https://link.coupang.com/a/ieLYat1NhQ",
+    "식빵": "https://link.coupang.com/a/ieLZkUMQcU",
+    "고추장": "https://link.coupang.com/a/ieL1ebKEY8",
+    "된장": "https://link.coupang.com/a/ieL2o71blk",
+    "떡": "https://link.coupang.com/a/ieL4kwTLDU",
+    "만두": "https://link.coupang.com/a/ieL6m8VhLM",
+    "어묵": "https://link.coupang.com/a/ieL7mq7T3s",
+    "밥": "https://link.coupang.com/a/ieL8p9PIfA",
+    "쌀": "https://link.coupang.com/a/ieL9HoDQhp",
+    "애호박": "https://link.coupang.com/a/ieMbm81SRo",
+    "부추": "https://link.coupang.com/a/ieMclV1HX2",
+    "돼지고기": "https://link.coupang.com/a/ieMeQw03xs",
+    "소고기": "https://link.coupang.com/a/ieMf8teJk4",
+    "닭": "https://link.coupang.com/a/ieMhZXtNRI",
+    "떡국떡": "https://link.coupang.com/a/ieMjqVnNo4",
+    "참기름": "https://link.coupang.com/a/ieMleA7t8K",
+    "다진마늘": "https://link.coupang.com/a/ieMmLCGXYa",
+    "고춧가루": "https://link.coupang.com/a/ieMnEDs0Vo",
+    "통깨": "https://link.coupang.com/a/ieMoSX80C4",
+    "설탕": "https://link.coupang.com/a/ieMp2Em1JY",
+    "식초": "https://link.coupang.com/a/ieMqYGkXOC",
+    "간장": "https://link.coupang.com/a/ieMsNMhb2G",
+    "식용유": "https://link.coupang.com/a/ieMt24Vf9E"
   },
   "tools": {
-    "프라이팬": {"label": "만능 후라이팬 보러가기", "url": "", "match": "팬"},
-    "냄비": {"label": "냄비 보러가기", "url": "", "match": "냄비"},
-    "칼·도마": {"label": "칼·도마 보러가기", "url": "", "match": "썰|썹니다|다집니다|다져|송송|채 "},
-    "믹싱볼": {"label": "스테인리스 볼 보러가기", "url": "", "match": "볼에|섞|무치|버무"},
-    "계량스푼": {"label": "계량스푼 보러가기", "url": "", "match": "큰술|작은술"},
-    "조리도구 세트": {"label": "조리도구 세트 보러가기", "url": "", "match": "주걱|뒤집|저어"},
-    "체·채반": {"label": "체·채반 보러가기", "url": "", "match": "체에|채반|건져"},
-    "전자레인지 용기": {"label": "전자레인지 용기 보러가기", "url": "", "match": "전자레인지"},
-    "강판": {"label": "강판 보러가기", "url": "", "match": "강판|믹서"},
-    "키친타월": {"label": "키친타월 보러가기", "url": "", "match": "키친타월"}
+    "프라이팬": {
+      "label": "만능 후라이팬 보러가기",
+      "url": "https://link.coupang.com/a/ieMzPOcS0O",
+      "match": "팬"
+    },
+    "냄비": {
+      "label": "냄비 보러가기",
+      "url": "https://link.coupang.com/a/ieMP6IyJ2a",
+      "match": "냄비"
+    },
+    "칼·도마": {
+      "label": "도마 보러가기",
+      "url": "https://link.coupang.com/a/ieMLCq7pGC",
+      "match": "썰|썹니다|다집니다|다져|송송|채 "
+    },
+    "믹싱볼": {
+      "label": "스테인리스 믹싱볼 보러가기",
+      "url": "https://link.coupang.com/a/ieMRErvkke",
+      "match": "볼에|섞|무치|버무"
+    },
+    "계량스푼": {
+      "label": "계량스푼·계량컵 세트 보러가기",
+      "url": "https://link.coupang.com/a/ieMwg9DD1o",
+      "match": "큰술|작은술|ml"
+    },
+    "뒤집개": {
+      "label": "뒤집개 보러가기",
+      "url": "https://link.coupang.com/a/ieMZhP0Wf6",
+      "match": "뒤집|부치|굽"
+    },
+    "주걱": {
+      "label": "주걱 보러가기",
+      "url": "https://link.coupang.com/a/ieMX5qZq2K",
+      "match": "주걱|비벼|풀면서"
+    },
+    "체·채반": {
+      "label": "체망 세트 보러가기",
+      "url": "https://link.coupang.com/a/ieMTuQY8Qu",
+      "match": "체에|채반|건져|걸러"
+    },
+    "조리도구 세트 1": {
+      "label": "조리도구 세트 보러가기",
+      "url": "https://link.coupang.com/a/ieMJvjsy72",
+      "match": "볶|저어"
+    },
+    "조리도구 세트 2": {
+      "label": "조리도구 세트(다른 구성) 보러가기",
+      "url": "https://link.coupang.com/a/ieMWCc3st3",
+      "match": "국자|젓가락|집게"
+    },
+    "전자레인지 용기": {
+      "label": "전자레인지 용기 보러가기",
+      "url": "https://link.coupang.com/a/ieM3m6oeNo",
+      "match": "전자레인지"
+    },
+    "강판": {
+      "label": "강판 보러가기",
+      "url": "https://link.coupang.com/a/ieM5CCjns4",
+      "match": "강판|믹서"
+    },
+    "키친타월": {
+      "label": "키친타월 보러가기",
+      "url": "https://link.coupang.com/a/ieM0BGJzHw",
+      "match": "키친타월"
+    }
   }
 }

@@ -16,8 +16,8 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
-from nutrition_data import DAILY, GRAMS, compute  # noqa: E402
-from recipes_data import ALIASES, CATEGORIES, EMOJI, PRESETS, RECIPE_ICON, RECIPES, STAPLE_DEFAULTS, STAPLES  # noqa: E402
+from nutrition_data import DAILY, EXTRA, NUTRI, compute  # noqa: E402
+from recipes_data import ALIASES, CATEGORIES, EMOJI, RECIPE_CATS, RECIPE_ICON, RECIPES, STAPLE_DEFAULTS, STAPLES  # noqa: E402
 
 STEP_IMAGES = os.environ.get("SITE_D_STEP_IMAGES", "0") == "1"  # AI 단계 이미지는 장면이 자주 틀려서 기본으로 끈다
 BASE = os.environ.get("SITE_D_BASE", "https://fridge.dailyfixpoint.com").rstrip("/")
@@ -170,35 +170,42 @@ def tools_for(recipe: dict, tools: dict) -> list:
     import re as _re
 
     text = " ".join(recipe["steps"]) + " " + " ".join(i["q"] for i in recipe["ingredients"])
-    return [(k, t) for k, t in tools.items() if t.get("match") and _re.search(t["match"], text)]
+    return [(k, t) for k, t in tools.items() if t.get("match") and _re.search(t["match"], text)][:5]  # 한 레시피에 도구 버튼은 최대 5개
 
 
 def validate() -> None:
-    """레시피 데이터가 앱에서 깨지지 않는지 검사한다(모르는 재료 이름, 빈 순서, 중복 슬러그)."""
+    """레시피 데이터가 앱에서 깨지지 않는지 검사한다(모르는 재료, 무게 누락, 모호한 분량, 빈 순서, 중복 슬러그 등)."""
+    import re as _re
+
     known = set(ALIASES) | set(STAPLES)
+    cat_slugs = {c[0] for c in RECIPE_CATS}
     slugs, problems = set(), []
     for r in RECIPES:
+        nm = r["name"]
         if r["slug"] in slugs:
             problems.append(f"슬러그 중복: {r['slug']}")
         slugs.add(r["slug"])
-        if len(r["steps"]) < 3:
-            problems.append(f"{r['name']}: 순서가 너무 짧음")
+        if len(r["steps"]) < 4:
+            problems.append(f"{nm}: 순서가 너무 짧음(4단계 이상)")
+        if len(r["tips"]) < 1:
+            problems.append(f"{nm}: 팁 없음")
+        if not r["cats"] or any(c not in cat_slugs for c in r["cats"]):
+            problems.append(f"{nm}: 카테고리 오류 {r['cats']}")
         for i in r["ingredients"]:
-            if i["n"] not in known:
-                problems.append(f"{r['name']}: 알 수 없는 재료 '{i['n']}' (ALIASES에 추가 필요)")
-    for r in RECIPES:
-        if r["slug"] not in GRAMS:
-            problems.append(f"{r['name']}: 영양 데이터(GRAMS) 없음")
-            continue
-        grams = GRAMS[r["slug"]][1]
-        for i in r["ingredients"]:
-            if i["n"] not in ("물", "소금", "후추") and i["n"] not in grams:
-                problems.append(f"{r['name']}: 영양 계산에 '{i['n']}' 사용량 없음")
-        for n in grams:
-            if n not in {i["n"] for i in r["ingredients"]}:
-                problems.append(f"{r['name']}: 영양 데이터에만 있는 재료 '{n}'")
+            n, q = i["n"], i["q"]
+            if n not in known:
+                problems.append(f"{nm}: 알 수 없는 재료 '{n}' (ALIASES/STAPLES에 추가 필요)")
+                continue
+            if n not in NUTRI or n not in EXTRA:
+                problems.append(f"{nm}: 영양 표에 없는 재료 '{n}'")
+            if not i["g"] and n not in ("물", "후추"):
+                problems.append(f"{nm}: '{n}' 무게(g) 누락")
+            if "컵" in q and not _re.search(r"\d\s*(ml|g|kg|L)", q):
+                problems.append(f"{nm}: '{n}' 분량 '{q}' - 컵만 적지 말고 ml 또는 g을 함께 적으세요")
+            if _re.search(r"약간|적당|조금|한 줌|한줌", q) and n not in ("후추",):
+                problems.append(f"{nm}: '{n}' 분량이 모호함 '{q}'")
         if r["slug"] not in RECIPE_ICON:
-            problems.append(f"{r['name']}: 아이콘 없음")
+            problems.append(f"{nm}: 아이콘 없음")
     listed = {n for names in CATEGORIES.values() for n in names}
     for n in ALIASES:
         if n not in EMOJI:
@@ -208,8 +215,11 @@ def validate() -> None:
     for n in listed:
         if n not in ALIASES:
             problems.append(f"ALIASES에 없는 분류 재료: {n}")
+    for n in STAPLES:
+        if n != "물" and n not in EMOJI:
+            problems.append(f"이모지 없음(양념): {n}")
     if problems:
-        raise SystemExit("데이터 오류:\n- " + "\n- ".join(problems))
+        raise SystemExit("데이터 오류:\n- " + "\n- ".join(problems[:60]) + (f"\n... 외 {len(problems) - 60}건" if len(problems) > 60 else ""))
 
 
 _CHO = "ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ"
@@ -251,6 +261,40 @@ def all_recipes_html() -> str:
     )
 
 
+def recipe_card_html(r: dict, photos: dict, prefix: str = "../") -> str:
+    p = photos.get(r["slug"])
+    thumb = f'<img src="{prefix}assets/img/{esc(p["file"])}" alt="{esc(r["name"])}" loading="lazy" width="96" height="72">' if p else f'<span>{r["icon"]}</span>'
+    return (
+        f'<a class="rcard" href="{prefix}recipes/{r["slug"]}.html"><div class="rthumb">{thumb}</div>'
+        f'<div class="rbody"><b>{esc(r["name"])}</b><small>{r["minutes"]}분 · {r["level"]} · 1인분 {compute(r["slug"])["per"]["kcal"]}kcal</small>'
+        f'<p>{esc(r["desc"])}</p></div></a>'
+    )
+
+
+def categories_section() -> str:
+    count = {c[0]: sum(1 for r in RECIPES if c[0] in r["cats"]) for c in RECIPE_CATS}
+    cards = "".join(
+        f'<a class="catcard" href="category/{c[0]}.html"><span class="ce">{c[2]}</span><b>{esc(c[1])}</b><small>{count[c[0]]}개</small></a>' for c in RECIPE_CATS if count[c[0]]
+    )
+    return f'<h2>어떤 요리를 찾으세요? <small class="mut">카테고리</small></h2><div class="catgrid">{cards}</div>'
+
+
+def category_page(tpl: str, cat: tuple, photos: dict) -> str:
+    slug, name, emoji, desc = cat
+    items = sorted([r for r in RECIPES if slug in r["cats"]], key=lambda r: (r["minutes"], r["name"]))
+    avg = round(sum(r["minutes"] for r in items) / len(items))
+    cards = "".join(recipe_card_html(r, photos) for r in items)
+    others = "".join(f'<a class="chip" href="{c[0]}.html" style="text-decoration:none">{c[2]} {esc(c[1])}</a>' for c in RECIPE_CATS if c[0] != slug)
+    intro = f"{esc(desc)} 이 카테고리에는 레시피 {len(items)}개가 있고, 평균 조리 시간은 약 {avg}분이에요. 시간이 짧은 순서로 정렬했고, 각 레시피에는 정확한 분량(ml·g), 단계별 조리 순서, 칼로리와 영양성분표가 있어요."
+    out = tpl
+    for k, v in {
+        "SITE_NAME": SITE_NAME, "BASE": BASE, "NAME": esc(name), "SLUG": slug, "EMOJI": emoji, "INTRO": intro,
+        "COUNT": str(len(items)), "CARDS": cards, "OTHERS": others,
+    }.items():
+        out = out.replace("{{" + k + "}}", v)
+    return out
+
+
 def sorted_categories() -> dict:
     """분류 안의 재료를 레시피에 많이 쓰이는 순서로 정렬한다(자주 쓰는 재료가 앞에 오게)."""
     use: dict = {}
@@ -285,7 +329,7 @@ def recipe_page(tpl: str, r: dict, aff: dict, photos: dict, tools: dict) -> str:
     buy = ""
     if buy_items:
         links = "".join(f'<a class="buy" href="{esc(u)}" target="_blank" rel="{REL}">{esc(n)} 사러가기</a> ' for n, u in buy_items)
-        buy += f'<div class="panel"><strong>없는 재료 사러가기</strong><div class="chips" style="margin-top:8px">{links}</div></div>'
+        buy += f'<div class="panel"><strong>재료 사러가기</strong><div class="chips" style="margin-top:8px">{links}</div></div>'
     if tool_items:
         links = "".join(f'<a class="buy" href="{esc(t["url"])}" target="_blank" rel="{REL}">{esc(t["label"])}</a> ' for _k, t in tool_items)
         buy += f'<div class="panel"><strong>이 요리에 쓰는 요리도구</strong><div class="chips" style="margin-top:8px">{links}</div></div>'
@@ -299,7 +343,10 @@ def recipe_page(tpl: str, r: dict, aff: dict, photos: dict, tools: dict) -> str:
     steps_note = (
         '<p class="note">※ 단계별 이미지는 AI로 만든 참고 이미지라 실제 모습과 다를 수 있어요.</p>' if (STEP_IMAGES and any((step_imgs / f'{r["slug"]}-{n}.jpg').exists() for n in range(1, len(r["steps"]) + 1))) else ""
     )
-    tip = f'<div class="tip">💡 {esc(r["tip"])}</div>' if r.get("tip") else ""
+    tip = ('<h2>요리 팁</h2><ul class="tips">' + "".join(f"<li>{esc(t)}</li>" for t in r["tips"]) + "</ul>") if r.get("tips") else ""
+    cat_names = {c[0]: (c[1], c[2]) for c in RECIPE_CATS}
+    cats_html = "".join(f'<a class="chip" href="../category/{c}.html" style="text-decoration:none">{cat_names[c][1]} {esc(cat_names[c][0])}</a>' for c in r["cats"])
+    measure = '<p class="note">계량 기준: 1컵 = 200ml, 1큰술 = 15ml, 1작은술 = 5ml. 숟가락은 가득 채워 윗면을 평평하게 깎은 양이에요. 괄호 안 g(그램)은 대략의 무게입니다.</p>' 
     rel = "".join(f'<a class="chip" href="{esc(o["slug"])}.html" style="text-decoration:none">{esc(o["name"])}</a>' for o in related(r))
     nut = compute(r["slug"])
     per = nut["per"]
@@ -347,6 +394,7 @@ def recipe_page(tpl: str, r: dict, aff: dict, photos: dict, tools: dict) -> str:
         "description": r["desc"],
         "totalTime": f"PT{r['minutes']}M",
         "recipeYield": f'{nut["servings"]}인분',
+        "prepTime": f"PT{max(5, r['minutes'] // 3)}M",
         "nutrition": {"@type": "NutritionInformation", "calories": f'{per["kcal"]} kcal', "servingSize": "1인분",
                       "carbohydrateContent": f'{per["carb"]} g', "proteinContent": f'{per["protein"]} g', "fatContent": f'{per["fat"]} g',
                       "sodiumContent": f'{per["sodium"]} mg', "sugarContent": f'{per["sugar"]} g', "fiberContent": f'{per["fiber"]} g',
@@ -354,13 +402,14 @@ def recipe_page(tpl: str, r: dict, aff: dict, photos: dict, tools: dict) -> str:
         "recipeIngredient": [f'{i["n"]} {i["q"]}' for i in r["ingredients"]],
         "recipeInstructions": [{"@type": "HowToStep", "text": s} for s in r["steps"]],
         **({"image": f'{BASE}/assets/img/{photos[r["slug"]]["file"]}'} if r["slug"] in photos else {}),
-        "recipeCategory": "집밥",
+        "recipeCategory": cat_names[r["cats"][0]][0],
+        "keywords": ", ".join([r["name"], "레시피", cat_names[r["cats"][0]][0]]),
         "recipeCuisine": "한식",
     }
     out = tpl
     for k, v in {
         "SITE_NAME": SITE_NAME, "BASE": BASE, "NAME": esc(r["name"]), "SLUG": r["slug"], "MINUTES": str(r["minutes"]),
-        "LEVEL": esc(r["level"]), "DESC": esc(r["desc"]), "INGREDIENTS": ing_html, "BUY": buy, "STEPS": steps, "STEPS_NOTE": steps_note, "TIP": tip,
+        "LEVEL": esc(r["level"]), "DESC": esc(r["desc"]), "INGREDIENTS": ing_html, "BUY": buy, "STEPS": steps, "STEPS_NOTE": steps_note, "TIP": tip, "CATS": cats_html, "MEASURE": measure,
         "RELATED": rel, "DISCLOSURE": disclosure(bool(buy_items or tool_items)),
         "PHOTO": photo_html(r["slug"], r["name"], photos), "ICON": RECIPE_ICON[r["slug"]], "SERVINGS": f'{nut["servings"]}인분', "NUTRITION": nutrition,
         "JSONLD": json.dumps(jsonld, ensure_ascii=False).replace("</", "<\\/"),
@@ -377,6 +426,7 @@ def main() -> None:
         shutil.rmtree(DIST)
     (DIST / "assets").mkdir(parents=True)
     (DIST / "recipes").mkdir()
+    (DIST / "category").mkdir()
     for name in ("style.css", "app.js"):
         shutil.copy(HERE / "static" / name, DIST / "assets" / name)
     (DIST / "assets" / "img").mkdir()
@@ -405,8 +455,9 @@ def main() -> None:
         ],
     }
     intro = (
-        "<h2>이렇게 쓰세요</h2><p>냉장고에 있는 재료를 눌러 고르면, 부족한 재료가 없는 요리와 1~2가지만 더 있으면 되는 요리를 나눠서 보여드려요. "
-        "소금·간장 같은 기본 양념은 집에 있다고 보고 계산하고, 없다면 체크를 풀면 됩니다.</p>"
+        categories_section()
+        + "<h2>이렇게 쓰세요</h2><p>냉장고에 있는 재료를 눌러 고르면, 부족한 재료가 없는 요리와 1~2가지만 더 있으면 되는 요리를 나눠서 보여드려요. "
+        "양념은 마지막 칸 '양념통'에서 집에 있는 것만 고르면 됩니다.</p>"
         + all_recipes_html()
     )
     index = (HERE / "templates" / "index.html").read_text(encoding="utf-8")
@@ -421,7 +472,11 @@ def main() -> None:
     for r in RECIPES:
         (DIST / "recipes" / f"{r['slug']}.html").write_text(recipe_page(tpl, r, aff, photos, tools), encoding="utf-8")
 
-    urls = [f"{BASE}/"] + [f"{BASE}/recipes/{r['slug']}.html" for r in RECIPES]
+    ctpl = (HERE / "templates" / "category.html").read_text(encoding="utf-8")
+    for cat in RECIPE_CATS:
+        if any(cat[0] in r["cats"] for r in RECIPES):
+            (DIST / "category" / f"{cat[0]}.html").write_text(category_page(ctpl, cat, photos), encoding="utf-8")
+    urls = [f"{BASE}/"] + [f"{BASE}/category/{c[0]}.html" for c in RECIPE_CATS if any(c[0] in r["cats"] for r in RECIPES)] + [f"{BASE}/recipes/{r['slug']}.html" for r in RECIPES]
     sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "\n".join(f"<url><loc>{u}</loc></url>" for u in urls) + "\n</urlset>\n"
     (DIST / "sitemap.xml").write_text(sitemap, encoding="utf-8")
     (DIST / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {BASE}/sitemap.xml\n", encoding="utf-8")

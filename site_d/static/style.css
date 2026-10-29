@@ -145,3 +145,12 @@ ol.steps li .sact{display:block;width:max-content}
 .buylist summary{display:inline-block;cursor:pointer;list-style:none}
 .buylist summary::-webkit-details-marker{display:none}
 .buyinner{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+
+.catgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:10px 0 6px}
+.catcard{display:flex;flex-direction:column;gap:2px;text-decoration:none;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.catcard .ce{font-size:26px;line-height:1.2}.catcard b{font-size:15px}.catcard small{color:var(--mut);font-size:12px}
+.rcard{display:flex;gap:12px;align-items:center;text-decoration:none;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px;margin:8px 0}
+.rcard .rthumb{flex:0 0 auto;width:84px;height:64px;border-radius:10px;overflow:hidden;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;font-size:30px}
+.rcard .rthumb img{width:100%;height:100%;object-fit:cover;display:block}
+.rcard .rbody{min-width:0}.rcard b{display:block;font-size:16px}.rcard small{display:block;color:var(--mut);font-size:12px}.rcard p{margin:2px 0 0;font-size:13px;color:var(--mut);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+ul.tips{margin:0 0 8px;padding-left:20px}ul.tips li{margin:6px 0}
