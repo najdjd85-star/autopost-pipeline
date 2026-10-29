@@ -2,6 +2,8 @@
   var D = window.FRIDGE;
   var STAPLES = {};
   D.staples.forEach(function (s) { STAPLES[s] = true; });
+  STAPLES["물"] = true;
+  var PANTRY = D.staples.filter(function (s) { return s !== "물"; });   // 양념통에 보여 줄 양념(물은 늘 있다고 본다)
   var alias = {};
   Object.keys(D.aliases).forEach(function (canon) {
     D.aliases[canon].forEach(function (a) { alias[a.replace(/\s/g, "").toLowerCase()] = canon; });
@@ -9,25 +11,27 @@
   var bySlug = {};
   D.recipes.forEach(function (r) { bySlug[r.slug] = r; });
   var have = {};
-  var staplesOn = true;
   var undo = {};       // 한 번에 담기 버튼별로 '그 버튼이 새로 담은' 재료(해제하면 이것만 뺀다)
   var openIdx = 0;     // 지금 열려 있는 냉장고 칸
 
   function store(get, val) {
-    try { if (get) { return JSON.parse(localStorage.getItem("fridge_v1") || "null"); } localStorage.setItem("fridge_v1", JSON.stringify(val)); } catch (e) {}
+    try { if (get) { return JSON.parse(localStorage.getItem("fridge_v2") || "null"); } localStorage.setItem("fridge_v2", JSON.stringify(val)); } catch (e) {}
     return null;
   }
   var saved = store(true);
-  if (saved) { (saved.have || []).forEach(function (n) { have[n] = true; }); if (saved.staplesOn === false) { staplesOn = false; } undo = saved.undo || {}; }
-  function persist() { store(false, { have: Object.keys(have), staplesOn: staplesOn, undo: undo }); }
+  if (saved) { (saved.have || []).forEach(function (n) { have[n] = true; }); undo = saved.undo || {}; }
+  else { (D.stapleDefaults || []).forEach(function (n) { have[n] = true; }); }   // 처음 열면 흔한 양념만 미리 켜 둔다
+  function persist() { store(false, { have: Object.keys(have), undo: undo }); }
 
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) { e.className = cls; } if (text != null) { e.textContent = text; } return e; }
+  function foods() { return Object.keys(have).filter(function (n) { return !STAPLES[n]; }); }
   function resolve(text) {
     var k = text.replace(/\s/g, "").toLowerCase();
     if (!k) { return null; }
     if (alias[k]) { return alias[k]; }
     var found = null;
     Object.keys(alias).forEach(function (a) { if (!found && a.length >= 2 && k.length >= 2 && (a.indexOf(k) === 0 || k.indexOf(a) === 0)) { found = alias[a]; } });
+    if (!found) { PANTRY.forEach(function (p) { if (p.replace(/\s/g, "") === k) { found = p; } }); }
     return found;
   }
 
@@ -35,13 +39,10 @@
   var $sel = document.getElementById("selected");
   var $cats = document.getElementById("cats");
   var $res = document.getElementById("results");
-  var $staples = document.getElementById("staples");
   var $sug = document.getElementById("sug");
   var $quick = document.getElementById("quick");
   var $bar = document.getElementById("bar");
   var $barText = document.getElementById("barText");
-  document.getElementById("stapleList").textContent = D.staples.filter(function (s) { return s !== "물"; }).join(", ");
-  $staples.checked = staplesOn;
 
   function toggle(name) { if (have[name]) { delete have[name]; } else { have[name] = true; } persist(); render(); }
 
@@ -63,13 +64,12 @@
     return r.ingredients.filter(function (i) { return !i.opt && !STAPLES[i.n]; }).map(function (i) { return i.n; });
   }
 
-  function packButton(key, label, items, icon, extra) {
+  function packButton(key, label, items, icon) {
     var b = el("button", "preset" + (allOn(items) ? " on" : ""));
     b.type = "button";
     b.setAttribute("aria-pressed", allOn(items) ? "true" : "false");
     if (icon) { b.appendChild(el("span", "pi", icon)); }
     b.appendChild(document.createTextNode(label));
-    if (extra) { b.appendChild(el("small", null, " " + extra)); }
     b.addEventListener("click", function () { togglePack(key, items); });
     return b;
   }
@@ -108,27 +108,34 @@
     }
   }
 
-  // ---- 냉장고 칸: 한 칸씩 열린다. '다음'을 누르면 다음 칸이 열리고 이전 칸은 접혀 고른 재료만 보인다 ----
+  // ---- 냉장고 칸: 한 칸씩 열린다. 마지막 칸은 '양념통'이고, 집에 있는 양념을 직접 고른다 ----
+  function shelves() {
+    var list = Object.keys(D.categories).map(function (c) { return { name: c, items: D.categories[c], pantry: false }; });
+    list.push({ name: "양념통", items: PANTRY, pantry: true });
+    return list;
+  }
+
   function buildCats() {
     $cats.textContent = "";
-    var cats = Object.keys(D.categories);
-    cats.forEach(function (cat, idx) {
-      var names = D.categories[cat];
-      var picked = names.filter(function (n) { return have[n]; });
+    var all = shelves();
+    all.forEach(function (sh, idx) {
+      var picked = sh.items.filter(function (n) { return have[n]; });
       var shelf = el("div", "shelf" + (idx === openIdx ? " open" : "") + (picked.length ? " done" : ""));
       var head = el("button", "shelf-head");
       head.type = "button";
       head.setAttribute("aria-expanded", idx === openIdx ? "true" : "false");
       head.appendChild(el("span", "no", String(idx + 1)));
-      head.appendChild(el("span", null, cat));
-      head.appendChild(el("span", "sum", picked.length ? picked.map(function (n) { return (D.emoji[n] || "") + n; }).join(" ") : "눌러서 열기"));
+      head.appendChild(el("span", null, sh.name));
+      var sum = sh.pantry ? (picked.length + "개 있음") : (picked.length ? picked.map(function (n) { return (D.emoji[n] || "") + n; }).join(" ") : "눌러서 열기");
+      head.appendChild(el("span", "sum", sum));
       head.appendChild(el("span", "chev", "▾"));
       head.addEventListener("click", function () { openIdx = (openIdx === idx) ? -1 : idx; buildCats(); });
       shelf.appendChild(head);
       var body = el("div", "shelf-body");
+      if (sh.pantry) { body.appendChild(el("p", "shelf-note", "집에 있는 양념을 눌러 주세요. 없는 양념이 필요한 요리는 '없음'으로 표시돼요. (소금·설탕·간장·식용유·후추는 미리 켜 뒀어요)")); }
       var box = el("div", "tiles");
-      names.forEach(function (n) {
-        var b = el("button", "tile" + (have[n] ? " on" : ""));
+      sh.items.forEach(function (n) {
+        var b = el("button", "tile" + (have[n] ? " on" : "") + (sh.pantry ? " staple" : ""));
         b.type = "button";
         b.setAttribute("aria-pressed", have[n] ? "true" : "false");
         b.appendChild(el("span", "em", D.emoji[n] || "•"));
@@ -137,8 +144,8 @@
         box.appendChild(b);
       });
       body.appendChild(box);
-      var last = idx === cats.length - 1;
-      var next = el("button", "btn ghost next", last ? "다 골랐어요 → 결과 보기" : "다음: " + cats[idx + 1] + " ▶");
+      var last = idx === all.length - 1;
+      var next = el("button", "btn ghost next", last ? "다 골랐어요 → 결과 보기" : "다음: " + all[idx + 1].name + " ▶");
       next.type = "button";
       next.addEventListener("click", function () {
         if (last) { openIdx = -1; buildCats(); $res.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
@@ -155,7 +162,7 @@
 
   function buildSelected() {
     $sel.textContent = "";
-    var names = Object.keys(have);
+    var names = foods();
     if (!names.length) { $sel.appendChild(el("span", "sel-empty", "위에서 재료를 눌러 담아 보세요")); return; }
     names.forEach(function (n) {
       var b = el("button", "chip on", (D.emoji[n] || "") + " " + n + " ✕");
@@ -167,7 +174,7 @@
   }
 
   function evaluate(r) {
-    var need = r.ingredients.filter(function (i) { return !i.opt && !(staplesOn && STAPLES[i.n]); });
+    var need = r.ingredients.filter(function (i) { return !i.opt && i.n !== "물"; });   // 양념도 집에 있는 것만 인정한다
     var missing = need.filter(function (i) { return !have[i.n]; });
     var used = r.ingredients.filter(function (i) { return have[i.n] && !STAPLES[i.n]; }).length;
     return { r: r, missing: missing, used: used };
@@ -229,7 +236,7 @@
     buildCats();
     buildSelected();
     $res.textContent = "";
-    var count = Object.keys(have).length;
+    var count = foods().length;
     if (!count) {
       $bar.hidden = true;
       $res.appendChild(el("div", "empty", "재료를 고르면 만들 수 있는 요리가 여기에 나와요."));
@@ -243,7 +250,7 @@
     $barText.textContent = "재료 " + count + "개 · 바로 " + zero.length + "개 · 1가지만 더 " + one.length + "개";
     $bar.hidden = false;
     if (!zero.length && !one.length && !two.length) {
-      $res.appendChild(el("div", "empty", "딱 맞는 요리를 못 찾았어요. 재료를 한두 개 더 골라 보세요."));
+      $res.appendChild(el("div", "empty", "딱 맞는 요리를 못 찾았어요. 재료나 양념을 한두 개 더 골라 보세요."));
       return;
     }
     group("지금 바로 만들 수 있어요", "", zero, true);
@@ -264,9 +271,12 @@
 
   document.getElementById("add").addEventListener("click", addFromText);
   $q.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); addFromText(); } });
-  document.getElementById("clear").addEventListener("click", function () { have = {}; undo = {}; persist(); render(); });
+  // 모두 지우기: 재료만 지우고, 고른 양념은 그대로 둔다
+  document.getElementById("clear").addEventListener("click", function () {
+    Object.keys(have).forEach(function (n) { if (!STAPLES[n]) { delete have[n]; } });
+    undo = {}; persist(); render();
+  });
   document.getElementById("barGo").addEventListener("click", function () { $res.scrollIntoView({ behavior: "smooth", block: "start" }); });
-  $staples.addEventListener("change", function () { staplesOn = $staples.checked; persist(); render(); });
 
   // 결과가 화면에 보이면 아래 고정 바는 숨긴다
   if ("IntersectionObserver" in window) {
@@ -275,4 +285,35 @@
     }, { threshold: 0.05 }).observe($res);
   }
   render();
+
+  // ---- 모든 레시피: 초성 필터 + 검색(초성만 입력해도 됨) ----
+  var $rq = document.getElementById("rq");
+  if ($rq) {
+    var curI = "";
+    var items = [].slice.call(document.querySelectorAll("#rl li"));
+    var groups = [].slice.call(document.querySelectorAll("#rl .rgroup"));
+    var $none = document.getElementById("rnone");
+    var onlyCons = function (t) { return /^[ㄱ-ㅎ]+$/.test(t); };
+    var filterList = function () {
+      var q = $rq.value.replace(/\s/g, "");
+      var shown = 0;
+      items.forEach(function (li) {
+        var n = li.getAttribute("data-n");
+        var okQ = !q || (onlyCons(q) ? li.getAttribute("data-c").indexOf(q) > -1 : n.indexOf(q) > -1);
+        var okI = !curI || li.parentNode.parentNode.getAttribute("data-i") === curI;
+        li.hidden = !(okQ && okI);
+        if (!li.hidden) { shown++; }
+      });
+      groups.forEach(function (g) { g.hidden = !g.querySelector("li:not([hidden])"); });
+      $none.hidden = shown > 0;
+    };
+    $rq.addEventListener("input", filterList);
+    document.getElementById("ri").addEventListener("click", function (e) {
+      var b = e.target.closest ? e.target.closest("button") : null;
+      if (!b) { return; }
+      curI = b.getAttribute("data-i") || "";
+      [].forEach.call(document.querySelectorAll("#ri .chip"), function (c) { c.classList.toggle("on", c === b); });
+      filterList();
+    });
+  }
 })();

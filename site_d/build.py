@@ -17,8 +17,9 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
 from nutrition_data import DAILY, GRAMS, compute  # noqa: E402
-from recipes_data import ALIASES, CATEGORIES, EMOJI, PRESETS, RECIPE_ICON, RECIPES, STAPLES  # noqa: E402
+from recipes_data import ALIASES, CATEGORIES, EMOJI, PRESETS, RECIPE_ICON, RECIPES, STAPLE_DEFAULTS, STAPLES  # noqa: E402
 
+STEP_IMAGES = os.environ.get("SITE_D_STEP_IMAGES", "0") == "1"  # AI 단계 이미지는 장면이 자주 틀려서 기본으로 끈다
 BASE = os.environ.get("SITE_D_BASE", "https://fridge.dailyfixpoint.com").rstrip("/")
 SITE_NAME = "냉장고 파먹기"
 DIST = HERE / "dist"
@@ -74,6 +75,30 @@ def annotate_step(text: str, recipe: dict, used: set) -> str:
         pos = m.end()
     out.append(esc(text[pos:]))
     return "".join(out)
+
+
+# 단계 글의 동사로 정하는 동작 배지(그림이 틀릴 일이 없는 안내용). 앞에서부터 처음 맞는 것을 쓴다.
+_STEP_ACTIONS = [
+    (r"데쳐|데칩니다|삶", "♨️", "데치기·삶기"),
+    (r"불려|불린|담가", "💧", "불리기"),
+    (r"썰|썹니다|다집니다|다져|송송|채 ", "🔪", "손질하기"),
+    (r"섞|무치|무칩|버무|풀어|풉니다|재웁|비벼|비빕", "🥣", "섞기·무치기"),
+    (r"볶", "🍳", "볶기"),
+    (r"부칩니다|부쳐|부치|굽", "🥞", "굽기·부치기"),
+    (r"끓|졸", "🍲", "끓이기"),
+    (r"전자레인지|돌려", "⏲️", "전자레인지"),
+    (r"간을|간하|간합니다", "👅", "간 맞추기"),
+    (r"뿌립니다|뿌려|올립니다|올려|담습니다|담아|마무리|두릅니다", "🍽️", "마무리"),
+]
+
+
+def step_action(text: str) -> str:
+    import re as _re
+
+    for pat, emoji, label in _STEP_ACTIONS:
+        if _re.search(pat, text):
+            return f'<span class="sact">{emoji} {label}</span>'
+    return ""
 
 
 def annotated_steps(recipe: dict) -> list:
@@ -150,6 +175,45 @@ def validate() -> None:
         raise SystemExit("데이터 오류:\n- " + "\n- ".join(problems))
 
 
+_CHO = "ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ"
+_CHO_BASE = {"ㄲ": "ㄱ", "ㄸ": "ㄷ", "ㅃ": "ㅂ", "ㅆ": "ㅅ", "ㅉ": "ㅈ"}
+
+
+def initial(ch: str) -> str:
+    """한글 낱말의 첫 글자 초성(쌍자음은 기본 자음으로 묶는다). 한글이 아니면 '기타'."""
+    if "가" <= ch <= "힣":
+        c = _CHO[(ord(ch) - 0xAC00) // 588]
+        return _CHO_BASE.get(c, c)
+    return "기타"
+
+
+def initials_of(name: str) -> str:
+    return "".join(_CHO_BASE.get(_CHO[(ord(c) - 0xAC00) // 588], _CHO[(ord(c) - 0xAC00) // 588]) if "가" <= c <= "힣" else c for c in name if c != " ")
+
+
+def all_recipes_html() -> str:
+    """모든 레시피를 가나다순(초성별 묶음)으로 보여 주는 목록. 레시피가 많아져도 초성 필터·검색으로 좁힐 수 있다."""
+    ordered = sorted(RECIPES, key=lambda r: r["name"])
+    groups: dict = {}
+    for r in ordered:
+        groups.setdefault(initial(r["name"][0]), []).append(r)
+    order = [c for c in "ㄱㄴㄷㄹㅁㅂㅅㅇㅈㅊㅋㅌㅍㅎ" if c in groups] + (["기타"] if "기타" in groups else [])
+    chips = '<button type="button" class="chip on" data-i="">전체</button>' + "".join(f'<button type="button" class="chip" data-i="{c}">{c}<small>{len(groups[c])}</small></button>' for c in order)
+    body = ""
+    for c in order:
+        lis = "".join(
+            f'<li data-n="{esc(r["name"])}" data-c="{esc(initials_of(r["name"]))}"><a href="recipes/{r["slug"]}.html">{esc(r["name"])}</a>'
+            f'<span>{r["minutes"]}분 · {compute(r["slug"])["per"]["kcal"]}kcal</span></li>'
+            for r in groups[c]
+        )
+        body += f'<div class="rgroup" data-i="{c}"><h3>{c} <small>{len(groups[c])}</small></h3><ul class="rlist">{lis}</ul></div>'
+    return (
+        f'<h2>모든 레시피 <small class="mut">{len(RECIPES)}개 · 가나다순</small></h2>'
+        '<div class="rsearch"><input id="rq" type="search" placeholder="요리 이름 검색 (초성도 돼요: ㄱㅊ)" aria-label="레시피 검색" autocomplete="off"></div>'
+        f'<div id="ri" class="initials">{chips}</div><div id="rl">{body}</div><p id="rnone" class="empty" hidden>일치하는 요리가 없어요.</p>'
+    )
+
+
 def sorted_categories() -> dict:
     """분류 안의 재료를 레시피에 많이 쓰이는 순서로 정렬한다(자주 쓰는 재료가 앞에 오게)."""
     use: dict = {}
@@ -184,7 +248,16 @@ def recipe_page(tpl: str, r: dict, aff: dict, photos: dict) -> str:
     if buy_items:
         links = "".join(f'<a class="buy" href="{esc(u)}" target="_blank" rel="{REL}">{esc(n)} 쿠팡에서 보기</a> ' for n, u in buy_items)
         buy = f'<div class="panel"><strong>재료가 모자라면</strong><div class="chips" style="margin-top:8px">{links}</div></div>'
-    steps = "".join(f"<li>{s}</li>" for s in annotated_steps(r))
+    step_imgs = HERE / "stepimgs"
+    li = []
+    for n, s_html in enumerate(annotated_steps(r), 1):
+        img = step_imgs / f'{r["slug"]}-{n}.jpg'
+        pic = f'<img class="stepimg" src="../assets/steps/{r["slug"]}-{n}.jpg" alt="{esc(r["name"])} {n}단계 참고 이미지" width="640" height="427" loading="lazy">' if (STEP_IMAGES and img.exists()) else ""
+        li.append(f'<li>{step_action(r["steps"][n - 1])}{s_html}{pic}</li>')
+    steps = "".join(li)
+    steps_note = (
+        '<p class="note">※ 단계별 이미지는 AI로 만든 참고 이미지라 실제 모습과 다를 수 있어요.</p>' if (STEP_IMAGES and any((step_imgs / f'{r["slug"]}-{n}.jpg').exists() for n in range(1, len(r["steps"]) + 1))) else ""
+    )
     tip = f'<div class="tip">💡 {esc(r["tip"])}</div>' if r.get("tip") else ""
     rel = "".join(f'<a class="chip" href="{esc(o["slug"])}.html" style="text-decoration:none">{esc(o["name"])}</a>' for o in related(r))
     nut = compute(r["slug"])
@@ -246,7 +319,7 @@ def recipe_page(tpl: str, r: dict, aff: dict, photos: dict) -> str:
     out = tpl
     for k, v in {
         "SITE_NAME": SITE_NAME, "BASE": BASE, "NAME": esc(r["name"]), "SLUG": r["slug"], "MINUTES": str(r["minutes"]),
-        "LEVEL": esc(r["level"]), "DESC": esc(r["desc"]), "INGREDIENTS": ing_html, "BUY": buy, "STEPS": steps, "TIP": tip,
+        "LEVEL": esc(r["level"]), "DESC": esc(r["desc"]), "INGREDIENTS": ing_html, "BUY": buy, "STEPS": steps, "STEPS_NOTE": steps_note, "TIP": tip,
         "RELATED": rel, "DISCLOSURE": disclosure(bool(buy_items)),
         "PHOTO": photo_html(r["slug"], r["name"], photos), "ICON": RECIPE_ICON[r["slug"]], "SERVINGS": f'{nut["servings"]}인분', "NUTRITION": nutrition,
         "JSONLD": json.dumps(jsonld, ensure_ascii=False).replace("</", "<\\/"),
@@ -266,11 +339,16 @@ def main() -> None:
     for name in ("style.css", "app.js"):
         shutil.copy(HERE / "static" / name, DIST / "assets" / name)
     (DIST / "assets" / "img").mkdir()
+    if STEP_IMAGES:
+        (DIST / "assets" / "steps").mkdir()
+        for f in (HERE / "stepimgs").glob("*.jpg"):
+            shutil.copy(f, DIST / "assets" / "steps" / f.name)
     for p in photos.values():
         shutil.copy(HERE / "photos" / p["file"], DIST / "assets" / "img" / p["file"])
 
     data = {
         "staples": STAPLES,
+        "stapleDefaults": STAPLE_DEFAULTS,
         "emoji": EMOJI,
         "presets": PRESETS,
         "popular": load_popular(),
@@ -288,9 +366,7 @@ def main() -> None:
     intro = (
         "<h2>이렇게 쓰세요</h2><p>냉장고에 있는 재료를 눌러 고르면, 부족한 재료가 없는 요리와 1~2가지만 더 있으면 되는 요리를 나눠서 보여드려요. "
         "소금·간장 같은 기본 양념은 집에 있다고 보고 계산하고, 없다면 체크를 풀면 됩니다.</p>"
-        "<h2>모든 레시피</h2><div class=\"chips\">"
-        + "".join(f'<a class="chip" href="recipes/{r["slug"]}.html" style="text-decoration:none">{esc(r["name"])}</a>' for r in RECIPES)
-        + "</div>"
+        + all_recipes_html()
     )
     index = (HERE / "templates" / "index.html").read_text(encoding="utf-8")
     for k, v in {

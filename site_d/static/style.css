@@ -118,3 +118,24 @@ footer{margin-top:34px;color:var(--mut);font-size:12px}
 .shelf .shelf-body{display:none;padding:0 10px 10px}
 .shelf.open .shelf-body{display:block}
 .shelf .next{display:block;width:100%;margin-top:8px}
+
+h2 small.mut{font-size:13px;font-weight:400}
+.rsearch input{width:100%;font-size:16px;padding:11px 14px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink)}
+.initials{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.initials .chip{min-height:34px;padding:5px 11px;font-size:14px}
+.initials .chip small{margin-left:3px;opacity:.7;font-size:11px}
+.rgroup h3{font-size:15px;margin:14px 0 4px;color:var(--accent)}
+.rgroup h3 small{color:var(--mut);font-weight:400;font-size:12px}
+.rlist{list-style:none;margin:0;padding:0;background:var(--card);border:1px solid var(--line);border-radius:12px}
+.rlist li{display:flex;justify-content:space-between;gap:10px;padding:9px 12px;border-bottom:1px solid var(--line)}
+.rlist li:last-child{border-bottom:0}
+.rlist a{color:var(--ink);text-decoration:none;font-weight:600}
+.rlist span{color:var(--mut);font-size:12px;white-space:nowrap;align-self:center}
+
+ol.steps li img.stepimg{display:block;width:100%;max-width:440px;height:auto;border-radius:10px;margin-top:10px;background:var(--chip)}
+.note{font-size:12px;color:var(--mut);margin:4px 0 8px}
+
+.sact{display:inline-block;font-size:12px;font-weight:700;color:var(--accent);background:var(--accent-soft);border-radius:999px;padding:1px 9px;margin:0 0 6px;line-height:1.7}
+ol.steps li .sact{display:block;width:max-content}
+.shelf-note{font-size:12px;color:var(--mut);margin:0 0 8px}
+.tile.staple{min-height:50px}
