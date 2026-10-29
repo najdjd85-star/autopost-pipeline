@@ -118,6 +118,24 @@ def photo_html(slug: str, name: str, photos: dict) -> str:
     )
 
 
+def load_trending() -> dict:
+    """화면의 '인기 요리' 줄 데이터. trending.json(데이터랩 일별 추정, 매일 18시 갱신)이 있으면 그것을, 없으면 월간 검색량 순위를 쓴다."""
+    known = {r["slug"] for r in RECIPES}
+    path = HERE / "trending.json"
+    if path.exists():
+        try:
+            d = json.loads(path.read_text(encoding="utf-8"))
+            slugs = [i["slug"] for i in d.get("items", []) if i.get("slug") in known][:8]
+            if slugs:
+                return {"kind": "daily", "slugs": slugs, "date": d.get("date", ""), "updated": d.get("updated", "")}
+        except (ValueError, KeyError):
+            pass
+    slugs = load_popular()
+    pop = HERE / "popularity.json"
+    upd = json.loads(pop.read_text(encoding="utf-8")).get("updated", "") if pop.exists() else ""
+    return {"kind": "monthly", "slugs": slugs, "date": upd, "updated": upd}
+
+
 def load_popular() -> list:
     """site_d/popularity.json: {"updated": "YYYY-MM-DD", "volumes": {슬러그: 월간 검색량}} -> 검색량 큰 순서의 슬러그 목록."""
     path = HERE / "popularity.json"
@@ -362,6 +380,8 @@ def main() -> None:
     for name in ("style.css", "app.js"):
         shutil.copy(HERE / "static" / name, DIST / "assets" / name)
     (DIST / "assets" / "img").mkdir()
+    if (HERE / "trending.json").exists():  # 페이지가 직접 읽는 파일(매일 이 파일만 바꿔도 화면이 갱신된다)
+        shutil.copy(HERE / "trending.json", DIST / "trending.json")
     if STEP_IMAGES:
         (DIST / "assets" / "steps").mkdir()
         for f in (HERE / "stepimgs").glob("*.jpg"):
@@ -373,9 +393,7 @@ def main() -> None:
         "staples": STAPLES,
         "stapleDefaults": STAPLE_DEFAULTS,
         "emoji": EMOJI,
-        "presets": PRESETS,
-        "popular": load_popular(),
-        "popularUpdated": (json.loads((HERE / "popularity.json").read_text(encoding="utf-8")).get("updated", "") if (HERE / "popularity.json").exists() else ""),
+        "trending": load_trending(),
         "aliases": ALIASES,
         "categories": sorted_categories(),
         "affiliate": aff,

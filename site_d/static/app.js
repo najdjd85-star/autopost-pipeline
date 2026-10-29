@@ -74,38 +74,25 @@
     return b;
   }
 
-  function seededPick(count) {
-    var d = new Date();
-    var seed = d.getFullYear() * 400 + d.getMonth() * 31 + d.getDate();
-    var order = D.recipes.map(function (r, i) { return { r: r, k: ((i + 1) * 2654435761 + seed * 40503) % 1009 }; });
-    order.sort(function (a, b) { return a.k - b.k; });
-    return order.slice(0, count).map(function (o) { return o.r; });
-  }
-
+  // ---- 인기 요리 한 줄: 누르면 그 요리의 재료가 담기고, 다시 누르면 원래대로 돌아간다 ----
   function buildQuick() {
     $quick.textContent = "";
-    function row(label, note) {
-      var wrap = el("div", "qrow");
-      var l = el("p", "qlabel", label);
-      if (note) { l.appendChild(el("small", null, " " + note)); }
-      wrap.appendChild(l);
-      var box = el("div", "presets");
-      wrap.appendChild(box);
-      $quick.appendChild(wrap);
-      return box;
-    }
-    var r1 = row("한 번에 담기");
-    D.presets.forEach(function (p) { r1.appendChild(packButton("p:" + p.name, p.name, p.items)); });
-    var d = new Date();
-    var r2 = row("오늘의 추천 메뉴", (d.getMonth() + 1) + "/" + d.getDate() + " · 누르면 재료가 담겨요");
-    seededPick(3).forEach(function (r) { r2.appendChild(packButton("r:" + r.slug, r.name, recipeItems(r), r.icon)); });
-    if (D.popular && D.popular.length) {
-      var r3 = row("많이 찾는 요리", (D.popularUpdated ? D.popularUpdated + " 기준 · " : "") + "네이버 월간 검색량 순");
-      D.popular.slice(0, 6).forEach(function (slug, i) {
-        var r = bySlug[slug];
-        if (r) { r3.appendChild(packButton("r:" + r.slug, r.name, recipeItems(r), String(i + 1))); }
-      });
-    }
+    var t = D.trending;
+    if (!t || !t.slugs || !t.slugs.length) { return; }
+    var daily = t.kind === "daily";
+    var wrap = el("div", "qrow");
+    var l = el("p", "qlabel", daily ? "오늘 많이 찾은 요리" : "많이 찾는 요리");
+    var note = daily ? (t.date ? t.date.slice(5).replace("-", "/") + " 기준 · 네이버 검색 · 누르면 재료가 담겨요" : "네이버 검색 · 누르면 재료가 담겨요")
+                     : "네이버 월간 검색량 순 · 누르면 재료가 담겨요";
+    l.appendChild(el("small", null, " " + note));
+    wrap.appendChild(l);
+    var box = el("div", "presets");
+    t.slugs.forEach(function (slug, i) {
+      var r = bySlug[slug];
+      if (r) { box.appendChild(packButton("r:" + r.slug, r.name, recipeItems(r), String(i + 1))); }
+    });
+    wrap.appendChild(box);
+    $quick.appendChild(wrap);
   }
 
   // ---- 냉장고 칸: 한 칸씩 열린다. 마지막 칸은 '양념통'이고, 집에 있는 양념을 직접 고른다 ----
@@ -297,6 +284,15 @@
     }, { threshold: 0.05 }).observe($res);
   }
   render();
+
+  // 매일 갱신되는 trending.json 을 직접 읽어 최신으로 바꾼다(없거나 실패하면 빌드에 들어 있던 값을 그대로 쓴다)
+  try {
+    fetch("trending.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+      if (!d || !d.items || !d.items.length) { return; }
+      var slugs = d.items.map(function (i) { return i.slug; }).filter(function (s) { return bySlug[s]; }).slice(0, 8);
+      if (slugs.length) { D.trending = { kind: "daily", slugs: slugs, date: d.date || "", updated: d.updated || "" }; buildQuick(); }
+    }).catch(function () {});
+  } catch (e) {}
 
   // ---- 모든 레시피: 초성 필터 + 검색(초성만 입력해도 됨) ----
   var $rq = document.getElementById("rq");
