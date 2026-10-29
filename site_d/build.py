@@ -20,7 +20,7 @@ from nutrition_data import DAILY, EXTRA, NUTRI, compute  # noqa: E402
 from recipes_data import ALIASES, CATEGORIES, EMOJI, RECIPE_CATS, RECIPE_ICON, RECIPES, STAPLE_DEFAULTS, STAPLES  # noqa: E402
 
 STEP_IMAGES = os.environ.get("SITE_D_STEP_IMAGES", "0") == "1"  # AI 단계 이미지는 장면이 자주 틀려서 기본으로 끈다
-BASE = os.environ.get("SITE_D_BASE", "https://fridge.dailyfixpoint.com").rstrip("/")
+BASE = os.environ.get("SITE_D_BASE", "https://cook.dailyfixpoint.com").rstrip("/")
 SITE_NAME = "냉장고 파먹기"
 DIST = HERE / "dist"
 COUPANG_DISCLOSURE = "이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다."
