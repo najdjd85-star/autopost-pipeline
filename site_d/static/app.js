@@ -190,6 +190,14 @@
     return ic;
   }
 
+  function buyLink(url, label) {
+    var buy = el("a", "buy", label);
+    buy.href = url;
+    buy.target = "_blank";
+    buy.rel = "sponsored nofollow noopener noreferrer";
+    return buy;
+  }
+
   function card(ev) {
     var a = el("div", "card");
     a.appendChild(thumb(ev.r));
@@ -202,18 +210,22 @@
     body.appendChild(el("div", "meta", ev.r.minutes + "분 · 1인분 " + ev.r.kcal + "kcal"));
     if (ev.missing.length) {
       var row = el("div", "miss-row");
+      var links = [];
       ev.missing.forEach(function (m) {
         row.appendChild(el("span", "chip miss", m.n + " 없음"));
-        var url = D.affiliate[m.n];
-        if (url) {
-          var buy = el("a", "buy", "쿠팡");
-          buy.href = url;
-          buy.target = "_blank";
-          buy.rel = "sponsored nofollow noopener noreferrer";
-          row.appendChild(buy);
-        }
+        if (D.affiliate[m.n]) { links.push({ n: m.n, url: D.affiliate[m.n] }); }
       });
       body.appendChild(row);
+      if (links.length === 1) {   // 링크가 하나면 바로 연결, 여럿이면 눌러서 펼친다
+        body.appendChild(buyLink(links[0].url, "없는 재료 사러가기"));
+      } else if (links.length > 1) {
+        var det = el("details", "buylist");
+        det.appendChild(el("summary", "buy", "없는 재료 사러가기 ▾"));
+        var inner = el("div", "buyinner");
+        links.forEach(function (l) { inner.appendChild(buyLink(l.url, l.n + " 사러가기")); });
+        det.appendChild(inner);
+        body.appendChild(det);
+      }
     } else {
       body.appendChild(el("span", "chip have", "재료 다 있어요"));
     }

@@ -131,9 +131,28 @@ def load_popular() -> list:
     return [s for s, v in sorted(vols.items(), key=lambda t: -t[1]) if s in known and v][:8]
 
 
-def load_affiliate() -> dict:
+def load_affiliate_all() -> tuple:
+    """affiliate.json -> (재료 링크 {이름: url}, 도구 {이름: {label, url, match}}). 링크가 빈 항목은 뺀다. 예전의 평평한 형식도 읽는다."""
     data = json.loads((HERE / "affiliate.json").read_text(encoding="utf-8"))
-    return {k: v for k, v in data.items() if not k.startswith("_") and v}
+    if "ingredients" in data or "tools" in data:
+        ing = {k: v for k, v in (data.get("ingredients") or {}).items() if v}
+        tools = {k: t for k, t in (data.get("tools") or {}).items() if t.get("url")}
+    else:
+        ing = {k: v for k, v in data.items() if not k.startswith("_") and isinstance(v, str) and v}
+        tools = {}
+    return ing, tools
+
+
+def load_affiliate() -> dict:
+    return load_affiliate_all()[0]
+
+
+def tools_for(recipe: dict, tools: dict) -> list:
+    """이 레시피의 조리 순서에 쓰이는 도구 중 링크가 있는 것."""
+    import re as _re
+
+    text = " ".join(recipe["steps"]) + " " + " ".join(i["q"] for i in recipe["ingredients"])
+    return [(k, t) for k, t in tools.items() if t.get("match") and _re.search(t["match"], text)]
 
 
 def validate() -> None:
@@ -239,15 +258,19 @@ def related(recipe: dict, limit: int = 4) -> list:
     return [o for s, _m, o in scored[:limit] if s > 0]
 
 
-def recipe_page(tpl: str, r: dict, aff: dict, photos: dict) -> str:
+def recipe_page(tpl: str, r: dict, aff: dict, photos: dict, tools: dict) -> str:
     ing_html = "".join(
         f'<li><span>{esc(i["n"])}{" (선택)" if i["opt"] else ""}</span><span class="q">{esc(i["q"])}</span></li>' for i in r["ingredients"]
     )
     buy_items = [(i["n"], aff[i["n"]]) for i in r["ingredients"] if i["n"] in aff]
+    tool_items = tools_for(r, tools)
     buy = ""
     if buy_items:
-        links = "".join(f'<a class="buy" href="{esc(u)}" target="_blank" rel="{REL}">{esc(n)} 쿠팡에서 보기</a> ' for n, u in buy_items)
-        buy = f'<div class="panel"><strong>재료가 모자라면</strong><div class="chips" style="margin-top:8px">{links}</div></div>'
+        links = "".join(f'<a class="buy" href="{esc(u)}" target="_blank" rel="{REL}">{esc(n)} 사러가기</a> ' for n, u in buy_items)
+        buy += f'<div class="panel"><strong>없는 재료 사러가기</strong><div class="chips" style="margin-top:8px">{links}</div></div>'
+    if tool_items:
+        links = "".join(f'<a class="buy" href="{esc(t["url"])}" target="_blank" rel="{REL}">{esc(t["label"])}</a> ' for _k, t in tool_items)
+        buy += f'<div class="panel"><strong>이 요리에 쓰는 요리도구</strong><div class="chips" style="margin-top:8px">{links}</div></div>'
     step_imgs = HERE / "stepimgs"
     li = []
     for n, s_html in enumerate(annotated_steps(r), 1):
@@ -320,7 +343,7 @@ def recipe_page(tpl: str, r: dict, aff: dict, photos: dict) -> str:
     for k, v in {
         "SITE_NAME": SITE_NAME, "BASE": BASE, "NAME": esc(r["name"]), "SLUG": r["slug"], "MINUTES": str(r["minutes"]),
         "LEVEL": esc(r["level"]), "DESC": esc(r["desc"]), "INGREDIENTS": ing_html, "BUY": buy, "STEPS": steps, "STEPS_NOTE": steps_note, "TIP": tip,
-        "RELATED": rel, "DISCLOSURE": disclosure(bool(buy_items)),
+        "RELATED": rel, "DISCLOSURE": disclosure(bool(buy_items or tool_items)),
         "PHOTO": photo_html(r["slug"], r["name"], photos), "ICON": RECIPE_ICON[r["slug"]], "SERVINGS": f'{nut["servings"]}인분', "NUTRITION": nutrition,
         "JSONLD": json.dumps(jsonld, ensure_ascii=False).replace("</", "<\\/"),
     }.items():
@@ -330,7 +353,7 @@ def recipe_page(tpl: str, r: dict, aff: dict, photos: dict) -> str:
 
 def main() -> None:
     validate()
-    aff = load_affiliate()
+    aff, tools = load_affiliate_all()
     photos = load_photos()
     if DIST.exists():
         shutil.rmtree(DIST)
@@ -371,20 +394,20 @@ def main() -> None:
     index = (HERE / "templates" / "index.html").read_text(encoding="utf-8")
     for k, v in {
         "SITE_NAME": SITE_NAME, "BASE": BASE, "COUNT": str(len(RECIPES)), "INTRO": intro,
-        "DISCLOSURE": disclosure(bool(aff)), "DATA": json.dumps(data, ensure_ascii=False).replace("</", "<\\/"),
+        "DISCLOSURE": disclosure(bool(aff or tools)), "DATA": json.dumps(data, ensure_ascii=False).replace("</", "<\\/"),
     }.items():
         index = index.replace("{{" + k + "}}", v)
     (DIST / "index.html").write_text(index, encoding="utf-8")
 
     tpl = (HERE / "templates" / "recipe.html").read_text(encoding="utf-8")
     for r in RECIPES:
-        (DIST / "recipes" / f"{r['slug']}.html").write_text(recipe_page(tpl, r, aff, photos), encoding="utf-8")
+        (DIST / "recipes" / f"{r['slug']}.html").write_text(recipe_page(tpl, r, aff, photos, tools), encoding="utf-8")
 
     urls = [f"{BASE}/"] + [f"{BASE}/recipes/{r['slug']}.html" for r in RECIPES]
     sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "\n".join(f"<url><loc>{u}</loc></url>" for u in urls) + "\n</urlset>\n"
     (DIST / "sitemap.xml").write_text(sitemap, encoding="utf-8")
     (DIST / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {BASE}/sitemap.xml\n", encoding="utf-8")
-    print(f"빌드 완료: 레시피 {len(RECIPES)}개, 제휴 링크가 있는 재료 {len(aff)}개 -> {DIST}")
+    print(f"빌드 완료: 레시피 {len(RECIPES)}개, 제휴 링크: 재료 {len(aff)}개, 도구 {len(tools)}개 -> {DIST}")
 
 
 if __name__ == "__main__":

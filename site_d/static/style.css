@@ -139,3 +139,9 @@ ol.steps li img.stepimg{display:block;width:100%;max-width:440px;height:auto;bor
 ol.steps li .sact{display:block;width:max-content}
 .shelf-note{font-size:12px;color:var(--mut);margin:0 0 8px}
 .tile.staple{min-height:50px}
+
+.card .buy{display:inline-block;margin-top:6px}
+.buylist{position:relative;z-index:2;margin-top:6px}
+.buylist summary{display:inline-block;cursor:pointer;list-style:none}
+.buylist summary::-webkit-details-marker{display:none}
+.buyinner{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
