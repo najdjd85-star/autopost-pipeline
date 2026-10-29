@@ -263,7 +263,7 @@ header.top a.brand{gap:8px}
 .morelink:hover{color:var(--ink);border-color:var(--ink)}
 
 /* 카테고리: 좁은 화면은 '카테고리' 버튼 하나(누르면 묶음별로 펼침), 넓은 화면은 왼쪽 고정 + 묶음 접기 */
-.catbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:8px;margin:6px -16px 0;padding:8px 16px;background:color-mix(in srgb,var(--bg) 92%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.catbar{position:fixed;top:0;left:0;right:0;z-index:60;display:flex;align-items:center;gap:8px;margin:0;padding:8px max(16px,calc(50% - 364px));background:color-mix(in srgb,var(--bg) 92%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
 .catbar .cb-link,.catbar summary{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;text-decoration:none;color:var(--ink);font-size:14px;font-weight:700;padding:8px 14px;border-radius:999px;background:var(--card);border:1px solid var(--line);cursor:pointer;list-style:none}
 .catbar summary::-webkit-details-marker{display:none}
 .catbar .cb-link.on,.catbar details[open] summary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
@@ -277,8 +277,7 @@ header.top a.brand{gap:8px}
 .catrail,.toprail{display:none}
 .catnav-t{display:block;font-size:12px;letter-spacing:.06em;color:var(--mut);margin:0 0 6px 10px}
 @media (min-width:1280px){
- .catbar{display:none}
- .catrail{display:block;position:fixed;top:92px;left:calc(50% - 380px - 232px);width:208px;max-height:calc(100vh - 110px);overflow-y:auto}
+ .catrail{display:block;position:fixed;top:80px;left:calc(50% - 380px - 232px);width:208px;max-height:calc(100vh - 110px);overflow-y:auto}
  .catrail>a{display:flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink);font-size:14px;font-weight:700;padding:8px 12px;border-radius:12px;margin-bottom:4px}
  .catrail>a.on{background:var(--ink);color:var(--bg)}
  .catrail details{margin:0 0 2px}
@@ -290,7 +289,7 @@ header.top a.brand{gap:8px}
  .catrail details a{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink);font-size:13.5px;font-weight:600;padding:6px 12px 6px 22px;border-radius:10px}
  .catrail details a:hover{background:var(--chip)}
  .catrail details a.on{background:var(--ink);color:var(--bg)}
- .toprail{display:flex;flex-direction:column;position:fixed;top:92px;right:calc(50% - 380px - 232px);width:208px;gap:3px}
+ .toprail{display:flex;flex-direction:column;position:fixed;top:80px;right:calc(50% - 380px - 232px);width:208px;gap:3px}
  .toprail a{display:flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink);font-size:14px;font-weight:600;padding:8px 12px;border-radius:12px}
  .toprail a:hover{background:var(--chip)}
  .toprail a b{width:22px;height:22px;border-radius:7px;background:var(--ink);color:var(--bg);font-size:12px;line-height:22px;text-align:center}
@@ -299,3 +298,8 @@ header.top a.brand{gap:8px}
 
 .petnote{background:var(--accent-soft);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin:14px 0;font-size:14px}
 .petnote ul{margin:8px 0 0;padding-left:18px}.petnote li{margin:4px 0}
+
+/* 위 막대는 항상 떠 있다(스크롤·화면 이동과 관계없이). 막대 높이만큼 본문을 아래로 민다 */
+body{padding-top:58px}
+.catrail,.toprail{top:80px}
+#buy{scroll-margin-top:72px}
