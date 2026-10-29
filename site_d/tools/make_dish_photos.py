@@ -122,6 +122,10 @@ SCENE = {
     "shrimp-fried-rice": "Chinese shrimp fried rice with egg, green onions and carrot pieces and whole shrimp, in a bowl",
 }
 
+from dish_scenes_extra import SCENE_EXTRA  # noqa: E402
+
+SCENE.update(SCENE_EXTRA)
+
 STYLE = ("appetizing food photograph, overhead 45-degree angle, Korean home cooking, served on a ceramic dish on a light wooden table, "
          "soft natural window light, shallow depth of field, realistic, high detail, no text, no watermark, no people")
 

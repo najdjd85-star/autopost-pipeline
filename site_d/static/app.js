@@ -33,9 +33,9 @@
     if (!k) { return null; }
     if (alias[k]) { return alias[k]; }
     var found = null;
-    Object.keys(alias).forEach(function (a) { if (!found && a.length >= 2 && k.length >= 2 && (a.indexOf(k) === 0 || k.indexOf(a) === 0)) { found = alias[a]; } });
+    Object.keys(alias).forEach(function (a) { if (!found && a.length >= 2 && k.length >= 2 && k.indexOf(a) === 0) { found = alias[a]; } });
     if (!found) { PANTRY.forEach(function (p) { if (p.replace(/\s/g, "") === k) { found = p; } }); }
-    var SYN = { "마늘": "다진마늘", "깨": "통깨", "깨소금": "통깨", "참깨": "통깨", "기름": "식용유", "후춧가루": "후추", "미림": "맛술", "물엿": "올리고당", "케찹": "케첩", "토마토케첩": "케첩" };
+    var SYN = { "마늘": "다진마늘", "들깨": "들깨가루", "깨": "통깨", "머스타드": "머스터드", "깨소금": "통깨", "참깨": "통깨", "기름": "식용유", "후춧가루": "후추", "미림": "맛술", "물엿": "올리고당", "케찹": "케첩", "토마토케첩": "케첩" };
     if (!found && SYN[k]) { found = SYN[k]; }
     return found;
   }
@@ -342,10 +342,12 @@
   $q.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); addFromText(); } });
   $q.addEventListener("input", showSuggest);
   // 모두 지우기: 재료만 지우고, 고른 양념은 그대로 둔다
-  document.getElementById("clear").addEventListener("click", function () {
+  function clearFoods() {
     Object.keys(have).forEach(function (n) { if (!STAPLES[n]) { delete have[n]; } });
-    undo = {}; focus = ""; persist(); render();
-  });
+    undo = {}; focus = ""; $q.value = ""; $sug.textContent = ""; persist(); render();
+  }
+  document.getElementById("clear").addEventListener("click", clearFoods);
+  document.getElementById("clear2").addEventListener("click", clearFoods);
   document.getElementById("barGo").addEventListener("click", function () { $res.scrollIntoView({ behavior: "smooth", block: "start" }); });
 
   // 결과가 화면에 보이면 아래 고정 바는 숨긴다
