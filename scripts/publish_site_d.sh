@@ -17,7 +17,7 @@ SITE_D_BASE=https://cook.dailyfixpoint.com "$ROOT/venv/bin/python" -X utf8 site_
 mkdir -p ~/site_d_backup
 tar -czf ~/site_d_backup/before_$(date +%Y%m%d_%H%M%S).tgz -C "$TARGET" . 2>/dev/null || true
 ls -t ~/site_d_backup/before_*.tgz 2>/dev/null | tail -n +8 | xargs -r rm -f   # 백업은 최근 7개만 남긴다
-cp -a site_d/dist/. "$TARGET"/
+cp -rf site_d/dist/. "$TARGET"/   # -a 는 폴더 시간 복사 권한 오류로 중단되므로 쓰지 않는다
 # Cloudways 기본 화면(index.php)이 index.html 보다 먼저 열리므로 치운다(이름만 바꿈, 안 되면 지움)
 if [ -f "$TARGET/index.php" ]; then
   mv -f "$TARGET/index.php" "$TARGET/index.php.bak" 2>/dev/null || rm -f "$TARGET/index.php" 2>/dev/null     || echo "경고: index.php 를 치우지 못했습니다(권한). Cloudways 기본 화면이 계속 보일 수 있습니다."
