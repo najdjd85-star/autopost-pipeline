@@ -335,6 +335,16 @@ def build(out: Optional[Path] = None) -> Dict[str, Any]:
     return {"path": str(target), "bytes": len(page.encode("utf-8")), "posts": len(data["posts"]), "linked": linked, "programs": len(PROGRAM_KEYWORDS), "cand": len(data["cand"]), "files": extra}
 
 
+def purge_cache() -> None:
+    """서버 앞단 캐시(Varnish)가 옛 허브·옛 404를 내주지 않도록 올린 주소들을 PURGE 요청으로 비운다(안 되는 환경이면 로그만 남기고 넘어간다)."""
+    for path in ("/", "/about", "/about/", "/contact/", "/privacy/", "/robots.txt", "/sitemap.xml", "/sitemap-hub.xml"):
+        try:
+            r = requests.request("PURGE", f"{SITE_URL}{path}", timeout=10)
+            logger.info("캐시 비우기 %s -> HTTP %s", path, r.status_code)
+        except Exception as exc:  # noqa: BLE001
+            logger.info("캐시 비우기 %s 실패(무시): %s", path, exc)
+
+
 def publish_if_enabled(built: Path) -> bool:
     """HUB_PUBLISH_PATH가 있을 때만 실제 허브 위치로 복사한다(기본: 올리지 않음 - 애드센스 심사 중에는 건드리지 않는다)."""
     import os
@@ -351,6 +361,7 @@ def publish_if_enabled(built: Path) -> bool:
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(src / rel, target)
         logger.info("허브 사이트 파일을 %s 에 반영했습니다.", dest_dir)
+        purge_cache()
         return True
     dest = os.environ.get("HUB_PUBLISH_PATH", "").strip()
     if not dest:
