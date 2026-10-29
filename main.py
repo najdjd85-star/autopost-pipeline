@@ -31,7 +31,7 @@ from typing import Any, Dict, List, Optional
 import schedule
 
 import telegram_bot
-from config import OUTPUT_DIR, settings, validate_config
+from config import BASE_DIR, OUTPUT_DIR, settings, validate_config
 from constants import SITE_BADGES, SITE_CLI_ALIASES, SITE_KEYS
 from content_updater import run_rank_check
 from generator import GeneratorNotConfiguredError, generate_post
@@ -367,7 +367,29 @@ def start_scheduler_loop() -> None:
         time.sleep(30)
 
 
+_LEGACY_AFFILIATE_FILES = (
+    "data/cache/adpick_offers.json",
+    "data/output/coupang_bank_cache.json",
+    "data/output/coupang_probes.json",
+    "data/output/coupang_api_guard.json",
+    "data/output/coupang_link_check.log",
+)
+
+
+def _remove_legacy_affiliate_files() -> None:
+    """제휴 명의 변경으로 안 쓰는 옛 계정 캐시를 지운다(데몬 계정 소유 파일은 SSH 계정이 못 지우므로 데몬이 직접)."""
+    for rel in _LEGACY_AFFILIATE_FILES:
+        try:
+            (BASE_DIR / rel).unlink()
+            logger.info("옛 제휴 캐시 삭제: %s", rel)
+        except FileNotFoundError:
+            pass
+        except OSError as exc:
+            logger.info("옛 제휴 캐시 삭제 실패(무시): %s %s", rel, exc)
+
+
 def cmd_daemon() -> None:
+    _remove_legacy_affiliate_files()
     try:
         from generator import _get_client
         from llm_usage import reap_orphan_batches
