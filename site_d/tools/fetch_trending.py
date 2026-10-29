@@ -38,9 +38,11 @@ class NotConfigured(Exception):
 
 
 def keys() -> tuple:
-    cid, sec = os.environ.get("NAVER_CLIENT_ID", "").strip(), os.environ.get("NAVER_CLIENT_SECRET", "").strip()
+    # 데이터랩 전용 키(NAVER_DATALAB_ID/SECRET)를 먼저 보고, 없으면 예전 이름(NAVER_CLIENT_ID/SECRET)을 쓴다
+    cid = (os.environ.get("NAVER_DATALAB_ID") or os.environ.get("NAVER_CLIENT_ID") or "").strip()
+    sec = (os.environ.get("NAVER_DATALAB_SECRET") or os.environ.get("NAVER_CLIENT_SECRET") or "").strip()
     if not cid or not sec:
-        raise NotConfigured("NAVER_CLIENT_ID / NAVER_CLIENT_SECRET 이 .env 에 없습니다 (Naver_datalab_input.bat 로 입력).")
+        raise NotConfigured("NAVER_DATALAB_ID / NAVER_DATALAB_SECRET 이 .env 에 없습니다 (바탕화면 'Naver 데이터랩 키 입력' 으로 입력).")
     return cid, sec
 
 
