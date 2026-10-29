@@ -36,6 +36,51 @@ def load_photos() -> dict:
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
 
 
+_PART = "을를은는이가에와과로도의만"
+_SKIP_Q = ("약간", "적당", "조금")
+
+
+def annotate_step(text: str, recipe: dict, used: set) -> str:
+    """순서 글에서 재료가 처음 나올 때 그 재료의 분량을 괄호로 붙인다(이미 분량이 적혀 있거나 '계란후라이'처럼 다른 낱말의 일부면 건너뜀)."""
+    import re as _re
+
+    names = []  # (찾을 낱말, 재료)
+    for i in recipe["ingredients"]:
+        if any(w in i["q"] for w in _SKIP_Q) and not _re.search(r"\d", i["q"]):
+            continue
+        for alias in ALIASES.get(i["n"], [i["n"]]) + [i["n"]]:
+            if i["n"] != "물":  # 물은 데칠 물·육수 등 쓰임이 달라 분량을 붙이지 않는다
+                names.append((alias, i))
+    names.sort(key=lambda t: -len(t[0]))
+    out, pos = [], 0
+    pattern = _re.compile("|".join(_re.escape(a) for a, _ in names)) if names else None
+    while pattern:
+        m = pattern.search(text, pos)
+        if not m:
+            break
+        word = m.group()
+        ing = next(i for a, i in names if a == word)
+        nxt = text[m.end():m.end() + 14]
+        prev = text[m.start() - 1] if m.start() else ""
+        ok_follow = (not nxt) or nxt[0] in " ,.·/" or (nxt[0] in _PART and (len(nxt) == 1 or not ("가" <= nxt[1] <= "힣")))
+        has_amount = _re.match(r"\s*[\d(]|\s*(약간|한 |조금|몇|넉넉|반 )", nxt) is not None
+        glued = bool(prev) and "가" <= prev <= "힣" and len(word) == 1  # 한 글자 재료(떡·밥·무…)는 다른 낱말 안에 든 경우를 건너뛴다
+        if ok_follow and not has_amount and not glued and ing["n"] not in used:
+            used.add(ing["n"])
+            qd = _re.sub(r"\s*\(([^)]*)\)", lambda mo: " " + mo.group(1), ing["q"]).strip()  # 분량 안의 괄호는 풀어서 겹치지 않게
+            out.append(esc(text[pos:m.end()]) + f'<b class="amt">({esc(qd)})</b>')
+        else:
+            out.append(esc(text[pos:m.end()]))
+        pos = m.end()
+    out.append(esc(text[pos:]))
+    return "".join(out)
+
+
+def annotated_steps(recipe: dict) -> list:
+    used: set = set()
+    return [annotate_step(st, recipe, used) for st in recipe["steps"]]
+
+
 def photo_html(slug: str, name: str, photos: dict) -> str:
     """레시피 사진과 출처 표기(작성자·라이선스·원본 링크). CC 라이선스는 출처 표기가 조건이다."""
     p = photos.get(slug)
@@ -46,6 +91,19 @@ def photo_html(slug: str, name: str, photos: dict) -> str:
         f'<figure class="photo"><img src="../assets/img/{esc(p["file"])}" alt="{esc(name)} 사진" width="640" loading="eager">'
         f'<figcaption>사진: {esc(p["artist"])} · {lic} · <a href="{esc(p["page"])}" target="_blank" rel="noopener">Wikimedia Commons</a></figcaption></figure>'
     )
+
+
+def load_popular() -> list:
+    """site_d/popularity.json: {"updated": "YYYY-MM-DD", "volumes": {슬러그: 월간 검색량}} -> 검색량 큰 순서의 슬러그 목록."""
+    path = HERE / "popularity.json"
+    if not path.exists():
+        return []
+    try:
+        vols = json.loads(path.read_text(encoding="utf-8")).get("volumes", {})
+    except ValueError:
+        return []
+    known = {r["slug"] for r in RECIPES}
+    return [s for s, v in sorted(vols.items(), key=lambda t: -t[1]) if s in known and v][:8]
 
 
 def load_affiliate() -> dict:
@@ -126,7 +184,7 @@ def recipe_page(tpl: str, r: dict, aff: dict, photos: dict) -> str:
     if buy_items:
         links = "".join(f'<a class="buy" href="{esc(u)}" target="_blank" rel="{REL}">{esc(n)} 쿠팡에서 보기</a> ' for n, u in buy_items)
         buy = f'<div class="panel"><strong>재료가 모자라면</strong><div class="chips" style="margin-top:8px">{links}</div></div>'
-    steps = "".join(f"<li>{esc(s)}</li>" for s in r["steps"])
+    steps = "".join(f"<li>{s}</li>" for s in annotated_steps(r))
     tip = f'<div class="tip">💡 {esc(r["tip"])}</div>' if r.get("tip") else ""
     rel = "".join(f'<a class="chip" href="{esc(o["slug"])}.html" style="text-decoration:none">{esc(o["name"])}</a>' for o in related(r))
     nut = compute(r["slug"])
@@ -215,6 +273,8 @@ def main() -> None:
         "staples": STAPLES,
         "emoji": EMOJI,
         "presets": PRESETS,
+        "popular": load_popular(),
+        "popularUpdated": (json.loads((HERE / "popularity.json").read_text(encoding="utf-8")).get("updated", "") if (HERE / "popularity.json").exists() else ""),
         "aliases": ALIASES,
         "categories": sorted_categories(),
         "affiliate": aff,

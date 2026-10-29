@@ -62,7 +62,7 @@ def ask_keys(existing: list) -> list:
 
 
 def test_key(key: str) -> str:
-    url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent"
+    url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent"
     body = json.dumps({"contents": [{"parts": [{"text": "OK라고만 답해"}]}], "generationConfig": {"maxOutputTokens": 5}}).encode()
     req = urllib.request.Request(url, data=body, headers={"x-goog-api-key": key, "Content-Type": "application/json"})
     try:

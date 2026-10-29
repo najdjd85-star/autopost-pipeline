@@ -99,3 +99,22 @@ footer{margin-top:34px;color:var(--mut);font-size:12px}
 .photo figcaption{font-size:11px;color:var(--mut);padding:6px 10px}
 .photo figcaption a{color:var(--mut)}
 @media (min-width:640px){h1{font-size:28px}.tiles{grid-template-columns:repeat(8,minmax(0,1fr))}}
+
+.amt{color:var(--accent);font-weight:700;font-size:.92em}
+.qrow{margin:8px 0 2px}
+.qlabel{font-size:12px;color:var(--mut);font-weight:700;margin:0 0 2px}
+.qlabel small{font-weight:400}
+.preset{transition:background .12s,color .12s,box-shadow .12s}
+.preset.on{background:var(--accent);color:#fff;box-shadow:inset 0 2px 5px rgba(0,0,0,.28)}
+.preset .pi{margin-right:4px}
+.shelf{padding:0;overflow:hidden}
+.shelf-head{display:flex;align-items:center;gap:8px;width:100%;border:0;background:transparent;color:var(--ink);font-family:inherit;font-size:14px;font-weight:800;padding:11px 12px;text-align:left;cursor:pointer;min-height:44px}
+.shelf-head .no{flex:0 0 auto;width:22px;height:22px;border-radius:50%;background:var(--chip);color:var(--mut);font-size:12px;line-height:22px;text-align:center}
+.shelf.done .shelf-head .no{background:var(--ok);color:#fff}
+.shelf.open .shelf-head .no{background:var(--accent);color:#fff}
+.shelf-head .sum{flex:1;min-width:0;font-size:12px;font-weight:400;color:var(--mut);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.shelf-head .chev{flex:0 0 auto;color:var(--mut);transition:transform .15s}
+.shelf.open .chev{transform:rotate(180deg)}
+.shelf .shelf-body{display:none;padding:0 10px 10px}
+.shelf.open .shelf-body{display:block}
+.shelf .next{display:block;width:100%;margin-top:8px}
