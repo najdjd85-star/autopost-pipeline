@@ -1,5 +1,5 @@
 {
-  "_설명": "쿠팡 파트너스 링크. ingredients: 재료 이름 -> 링크(없는 재료 사러가기에 쓰임). tools: 요리도구 -> label(버튼 글자), url(링크), match(이 도구가 쓰이는 조리 순서의 단어). 링크(url)가 비어 있는 항목은 화면에 나오지 않습니다. 한 레시피에는 도구 버튼이 최대 5개까지만 나옵니다. 채운 뒤 site_d/build.py 를 다시 실행하세요.",
+  "_설명": "쿠팡 파트너스 링크. ingredients: 재료 이름 -> 링크(없는 재료 사러가기에 쓰임). tools: 요리도구 -> label(버튼 글자), url(링크), match(이 도구가 쓰이는 조리 순서의 단어). 링크(url)가 비어 있는 항목은 화면에 나오지 않습니다. 한 레시피에는 도구 버튼이 최대 5개까지만 나옵니다. 채운 뒤 site_d/build.py 를 다시 실행하세요. ingredient_labels: 버튼에 재료 이름 대신 쓸 이름(예: 버섯 -> 새송이버섯). extras: 같은 재료의 다른 상품 버튼을 레시피 페이지에 더 보여 줍니다.",
   "ingredients": {
     "계란": "https://link.coupang.com/a/iets8XvF4m",
     "김치": "https://link.coupang.com/a/ieLJrC3DVc",
@@ -33,7 +33,13 @@
     "설탕": "https://link.coupang.com/a/ieMp2Em1JY",
     "식초": "https://link.coupang.com/a/ieMqYGkXOC",
     "간장": "https://link.coupang.com/a/ieMsNMhb2G",
-    "식용유": "https://link.coupang.com/a/ieMt24Vf9E"
+    "식용유": "https://link.coupang.com/a/ieMt24Vf9E",
+    "고구마": "https://link.coupang.com/a/ieXwMv4r1w",
+    "버섯": "https://link.coupang.com/a/ieXz16XAwm",
+    "우유": "https://link.coupang.com/a/ieXBsWcceq",
+    "치즈": "https://link.coupang.com/a/ieXCKc280i",
+    "굴소스": "https://link.coupang.com/a/ieXFwYEpPN",
+    "맛술": "https://link.coupang.com/a/ieXGVMu100"
   },
   "tools": {
     "프라이팬": {
@@ -101,5 +107,23 @@
       "url": "https://link.coupang.com/a/ieM0BGJzHw",
       "match": "키친타월"
     }
+  },
+  "ingredient_labels": {
+    "버섯": "새송이버섯",
+    "치즈": "체다치즈"
+  },
+  "extras": {
+    "버섯": [
+      {
+        "label": "팽이버섯",
+        "url": "https://link.coupang.com/a/ieXyr5SCPs"
+      }
+    ],
+    "치즈": [
+      {
+        "label": "모짜렐라치즈",
+        "url": "https://link.coupang.com/a/ieXD3LJGwu"
+      }
+    ]
   }
 }

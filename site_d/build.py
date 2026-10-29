@@ -161,6 +161,12 @@ def load_affiliate_all() -> tuple:
     return ing, tools
 
 
+def load_extras() -> tuple:
+    """affiliate.json -> (버튼에 쓸 재료 표시 이름 {재료: 이름}, 같은 재료의 다른 상품 {재료: [{label, url}]})."""
+    data = json.loads((HERE / "affiliate.json").read_text(encoding="utf-8"))
+    return data.get("ingredient_labels") or {}, data.get("extras") or {}
+
+
 def load_affiliate() -> dict:
     return load_affiliate_all()[0]
 
@@ -328,7 +334,11 @@ def recipe_page(tpl: str, r: dict, aff: dict, photos: dict, tools: dict) -> str:
     tool_items = tools_for(r, tools)
     buy = ""
     if buy_items:
-        links = "".join(f'<a class="buy" href="{esc(u)}" target="_blank" rel="{REL}">{esc(n)} 사러가기</a> ' for n, u in buy_items)
+        labels, extras = load_extras()
+        pairs = [(labels.get(n, n), u) for n, u in buy_items]
+        for i in r["ingredients"]:  # 같은 재료의 다른 상품(예: 새송이버섯 외에 팽이버섯)
+            pairs += [(x["label"], x["url"]) for x in extras.get(i["n"], []) if x.get("url")]
+        links = "".join(f'<a class="buy" href="{esc(u)}" target="_blank" rel="{REL}">{esc(n)} 사러가기</a> ' for n, u in pairs)
         buy += f'<div class="panel"><strong>재료 사러가기</strong><div class="chips" style="margin-top:8px">{links}</div></div>'
     if tool_items:
         links = "".join(f'<a class="buy" href="{esc(t["url"])}" target="_blank" rel="{REL}">{esc(t["label"])}</a> ' for _k, t in tool_items)
@@ -448,6 +458,7 @@ def main() -> None:
         "aliases": ALIASES,
         "categories": sorted_categories(),
         "affiliate": aff,
+        "labels": load_extras()[0],
         "recipes": [
             {"slug": r["slug"], "name": r["name"], "minutes": r["minutes"], "level": r["level"], "desc": r["desc"],
              "icon": RECIPE_ICON[r["slug"]], "img": (f'assets/img/{photos[r["slug"]]["file"]}' if r["slug"] in photos else ""), "kcal": compute(r["slug"])["per"]["kcal"],
@@ -481,6 +492,15 @@ def main() -> None:
     sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "\n".join(f"<url><loc>{u}</loc></url>" for u in urls) + "\n</urlset>\n"
     (DIST / "sitemap.xml").write_text(sitemap, encoding="utf-8")
     (DIST / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {BASE}/sitemap.xml\n", encoding="utf-8")
+    # 브라우저·서버 캐시가 옛 css/js 를 계속 쓰지 않도록 파일 주소에 내용 해시를 붙인다
+    import hashlib
+
+    ver = hashlib.md5((HERE / "static" / "app.js").read_bytes() + (HERE / "static" / "style.css").read_bytes()).hexdigest()[:8]
+    for page in DIST.rglob("*.html"):
+        t = page.read_text(encoding="utf-8")
+        t2 = t.replace('assets/style.css"', f'assets/style.css?v={ver}"').replace('assets/app.js"', f'assets/app.js?v={ver}"')
+        if t2 != t:
+            page.write_text(t2, encoding="utf-8")
     print(f"빌드 완료: 레시피 {len(RECIPES)}개, 제휴 링크: 재료 {len(aff)}개, 도구 {len(tools)}개 -> {DIST}")
 
 
