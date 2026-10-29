@@ -128,6 +128,18 @@ button.lb{font-family:inherit}
 details.smap{margin:18px 0 8px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px}details.smap summary{cursor:pointer;font-weight:600}
 details.smap h3{font-size:14px;margin:14px 0 4px}details.smap ul{margin:0;padding-left:18px;font-size:14px;line-height:1.9;color:var(--sub)}details.smap a{color:var(--acc)}
 .sx{margin:0 0 10px;padding:0;list-style:none}.sx li{padding:8px 0;border-bottom:1px solid var(--line)}.sx a{font-weight:600}.sx small{display:block;color:var(--mute);font-size:13px;line-height:1.5}
+
+.cta{position:relative;background:linear-gradient(135deg,#ff7a1a 0%,#e8430c 100%);padding:22px 18px;border:2px solid rgba(255,255,255,.55);box-shadow:0 6px 0 #a63a07,0 14px 26px rgba(232,67,12,.38);animation:ctaPulse 2.4s ease-in-out infinite}
+.cta .ci{width:54px;height:54px}
+.cta .ct2 b{font-size:22px;line-height:1.3;font-weight:800;letter-spacing:-.4px}
+.cta .ct2 em{font-size:13.5px;margin-top:4px;opacity:1}
+.cta .cbadge{display:inline-block;background:#fff;color:#c2410c;font-size:12px;font-weight:800;padding:2px 10px;border-radius:999px;margin-bottom:7px}
+.cta .ca{width:42px;height:42px;font-size:30px;background:#fff;color:#e8430c;font-weight:800;animation:ctaNudge 1.2s ease-in-out infinite}
+@keyframes ctaPulse{0%,100%{box-shadow:0 6px 0 #a63a07,0 14px 26px rgba(232,67,12,.38),0 0 0 0 rgba(255,122,26,.55)}50%{box-shadow:0 6px 0 #a63a07,0 14px 26px rgba(232,67,12,.38),0 0 0 12px rgba(255,122,26,0)}}
+@keyframes ctaNudge{0%,100%{transform:translateX(0)}50%{transform:translateX(5px)}}
+@media (prefers-reduced-motion:reduce){.cta,.cta .ca{animation:none}}
+@media (max-width:380px){.cta .ct2 b{font-size:19px}.cta .ca{display:none}}
+.cta:hover{filter:brightness(1.05)}
 </style>
 </head>
 <body>
@@ -144,7 +156,7 @@ details.smap h3{font-size:14px;margin:14px 0 4px}details.smap ul{margin:0;paddin
    <form class="sform" id="sform" role="search"><label class="search"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="9" r="6"/><path d="M14 14l4 4"/></svg><input id="q" type="search" enterkeyhint="search" placeholder="제도나 키워드 검색" aria-label="검색"></label><button class="sbtn" type="submit">검색</button></form>
    <p class="serr" id="serr" role="alert"></p>
    <div class="kw" id="kw"><span>자주 찾는 검색어</span><button type="button">근로장려금</button><button type="button">기초연금</button><button type="button">청년월세</button><button type="button">부모급여</button><button type="button">연말정산</button></div></div>
-  <div class="ctas"><button class="cta" id="open-check"><span class="ci" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span class="ct2"><b>내 지원금, 1분 만에 확인하기</b><em>질문 몇 개로 주요 제도를 한꺼번에 살펴봐요</em></span><i class="ca" aria-hidden="true">›</i></button>
+  <div class="ctas"><button class="cta" id="open-check"><span class="ci" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span class="ct2"><span class="cbadge">무료 · 가입 없이</span><b>여기를 눌러 바로 1분 만에 확인!</b><em>질문 몇 개만 답하면 내 지원금 대상 여부를 한꺼번에 알려드려요</em></span><i class="ca" aria-hidden="true">›</i></button>
   <button class="cta2" id="open-unemp" type="button"><span class="ct3"><b>실업급여, 받을 수 있을까요?</b><em>고용 형태·나이·가입기간·퇴사 사유 등 6개 질문으로 확인</em></span><i aria-hidden="true">›</i></button></div>
  </div></section>
 

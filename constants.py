@@ -91,7 +91,7 @@ SITE_SOURCES = {
 OFFICIAL_URL_RULES = {
     SITE_A: (
         ("청약|분양|특별공급|신혼희망타운|무순위", "청약홈", "https://www.applyhome.co.kr"),
-        ("공공임대|행복주택|국민임대|통합공공임대|전세임대|매입임대|LH", "LH청약플러스", "https://apply.lh.or.kr"),
+        ("공공임대|영구임대|행복주택|국민임대|통합공공임대|전세임대|매입임대|장기전세|LH", "LH청약플러스", "https://apply.lh.or.kr"),
         ("디딤돌|버팀목|전세자금|전세보증금|신생아 특례|월세대출|주택도시기금", "주택도시기금", "https://nhuf.molit.go.kr"),
         ("전세사기", "국토교통부", "https://www.molit.go.kr"),
         ("학자금|장학금", "한국장학재단", "https://www.kosaf.go.kr"),
