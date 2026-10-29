@@ -258,3 +258,6 @@ header.top a.brand{gap:8px}
 @media (max-width:420px){.hero .search{flex-wrap:wrap}.hero .search input{flex:1 0 100%;margin-bottom:6px}.hero .search .btn{flex:1}}
 
 .costline{margin:2px 0 0;font-size:14px;color:var(--mut)}.costline b{color:var(--accent)}
+
+.morelink{display:block;width:100%;margin-top:8px;padding:11px 12px;font-family:inherit;font-size:14px;font-weight:700;color:var(--mut);background:transparent;border:1px dashed var(--line);border-radius:14px;cursor:pointer}
+.morelink:hover{color:var(--ink);border-color:var(--ink)}

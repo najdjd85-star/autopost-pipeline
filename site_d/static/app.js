@@ -15,6 +15,10 @@
   var recent = [];     // 최근에 고른 재료(다음에 한 번에 다시 담을 수 있게 맨 위에 보여 준다)
   var focus = "";      // 방금 눌러 담은 인기 요리(결과 맨 위에 따로 보여 준다)
   var pantryOpen = false;
+  var TOP = 10;        // 칸마다 먼저 보여 주는 재료 수(레시피에 많이 쓰이는 순)
+  var moreOpen = {};   // '더 보기'를 펼친 칸
+  var usage = {};      // 재료별로 쓰이는 레시피 수
+  D.recipes.forEach(function (r) { r.ingredients.forEach(function (i) { usage[i.n] = (usage[i.n] || 0) + 1; }); });
 
   function store(get, val) {
     try { if (get) { return JSON.parse(localStorage.getItem("fridge_v2") || "null"); } localStorage.setItem("fridge_v2", JSON.stringify(val)); } catch (e) {}
@@ -141,9 +145,20 @@
       h.appendChild(document.createTextNode(sh.name));
       if (picked) { h.appendChild(el("small", "cnt", picked + "개 선택")); }
       sec.appendChild(h);
+      // 자주 쓰이는 재료 위주로 먼저 보여 주고, 나머지는 '더 보기'로 펼친다(고른 재료는 늘 보인다)
+      var sorted = sh.items.slice().sort(function (a, b) { return (usage[b] || 0) - (usage[a] || 0); });
+      var open = !!moreOpen[sh.name];
+      var shown = sorted.filter(function (n, i) { return open || i < TOP || have[n]; });
+      var hidden = sh.items.length - shown.length;
       var box = el("div", "tiles");
-      sh.items.forEach(function (n) { box.appendChild(tile(n)); });
+      shown.forEach(function (n) { box.appendChild(tile(n)); });
       sec.appendChild(box);
+      if (hidden > 0 || (open && sh.items.length > TOP)) {
+        var more = el("button", "morelink", open ? "접기 ▴" : "다른 재료 " + hidden + "개 더 보기 ▾");
+        more.type = "button";
+        more.addEventListener("click", function () { moreOpen[sh.name] = !open; buildCats(); });
+        sec.appendChild(more);
+      }
       $cats.appendChild(sec);
     });
     var det = el("details", "aisle pantry");
