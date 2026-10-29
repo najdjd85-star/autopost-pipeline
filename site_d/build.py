@@ -259,7 +259,16 @@ def initials_of(name: str) -> str:
     return "".join(_CHO_BASE.get(_CHO[(ord(c) - 0xAC00) // 588], _CHO[(ord(c) - 0xAC00) // 588]) if "가" <= c <= "힣" else c for c in name if c != " ")
 
 
-def all_recipes_html() -> str:
+def ingredient_keys(r: dict) -> str:
+    """검색용: 레시피 재료 이름과 그 별칭(숙주 -> 숙주나물 등)을 공백 없이 이어 붙인다."""
+    out = []
+    for i in r["ingredients"]:
+        out.append(i["n"])
+        out += ALIASES.get(i["n"], [])
+    return " ".join(dict.fromkeys(out)).replace(" ", "")
+
+
+def all_recipes_html(page: bool = False) -> str:
     """모든 레시피를 가나다순(초성별 묶음)으로 보여 주는 목록. 레시피가 많아져도 초성 필터·검색으로 좁힐 수 있다."""
     ordered = sorted(RECIPES, key=lambda r: r["name"])
     groups: dict = {}
@@ -270,11 +279,16 @@ def all_recipes_html() -> str:
     body = ""
     for c in order:
         lis = "".join(
-            f'<li data-n="{esc(r["name"])}" data-c="{esc(initials_of(r["name"]))}"><a href="recipes/{r["slug"]}.html">{esc(r["name"])}</a>'
+            f'<li data-n="{esc(r["name"])}" data-c="{esc(initials_of(r["name"]))}"{(" data-k=" + chr(34) + esc(ingredient_keys(r)) + chr(34)) if page else ""}><a href="recipes/{r["slug"]}.html">{esc(r["name"])}</a>'
             f'<span>{r["minutes"]}분 · {("반려동물" if is_pet(r) else "유아식") if is_special(r) else format(compute(r["slug"])["per"]["kcal"], "") + "kcal"} · 약 {cost_per_serving(r):,}원</span></li>'
             for r in groups[c]
         )
         body += f'<div class="rgroup" data-i="{c}"><h3>{c} <small>{len(groups[c])}</small></h3><ul class="rlist">{lis}</ul></div>'
+    if page:
+        return (
+            '<div class="rsearch"><input id="rq" type="search" placeholder="요리 이름·재료 검색 (초성도 돼요: ㄱㅊ)" aria-label="레시피 검색" autocomplete="off"></div>'
+            f'<div id="ri" class="initials">{chips}</div><div id="rl">{body}</div><p id="rnone" class="empty" hidden>일치하는 요리가 없어요.</p>'
+        )
     return (
         f'<details class="allrecipes" id="allrecipes"><summary><h2>모든 레시피 <small class="mut">{len(RECIPES)}개 · 가나다순 · 눌러서 펼치기</small></h2></summary>'
         '<div class="rsearch"><input id="rq" type="search" placeholder="요리 이름 검색 (초성도 돼요: ㄱㅊ)" aria-label="레시피 검색" autocomplete="off"></div>'
@@ -587,7 +601,12 @@ def main() -> None:
     for cat in RECIPE_CATS:
         if any(cat[0] in r["cats"] for r in RECIPES):
             (DIST / "category" / f"{cat[0]}.html").write_text(category_page(ctpl, cat, photos), encoding="utf-8")
-    urls = [f"{BASE}/"] + [f"{BASE}/category/{c[0]}.html" for c in RECIPE_CATS if any(c[0] in r["cats"] for r in RECIPES)] + [f"{BASE}/recipes/{r['slug']}.html" for r in RECIPES]
+    atpl = (HERE / "templates" / "all.html").read_text(encoding="utf-8")
+    for k, v in {"SITE_NAME": SITE_NAME, "BASE": BASE, "COUNT": str(len(RECIPES)), "LIST": all_recipes_html(True)}.items():
+        atpl = atpl.replace("{{" + k + "}}", v)
+    (DIST / "all.html").write_text(atpl, encoding="utf-8")
+    shutil.copy(HERE / "static" / "list.js", DIST / "assets" / "list.js")
+    urls = [f"{BASE}/", f"{BASE}/all.html"] + [f"{BASE}/category/{c[0]}.html" for c in RECIPE_CATS if any(c[0] in r["cats"] for r in RECIPES)] + [f"{BASE}/recipes/{r['slug']}.html" for r in RECIPES]
     sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "\n".join(f"<url><loc>{u}</loc></url>" for u in urls) + "\n</urlset>\n"
     (DIST / "sitemap.xml").write_text(sitemap, encoding="utf-8")
     (DIST / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {BASE}/sitemap.xml\n", encoding="utf-8")
@@ -608,7 +627,7 @@ def main() -> None:
         prefix = "" if len(rel) == 1 else "../"
         active = page.stem if rel[0] == "category" else ""
         on = ' class="on"'
-        home = '<a class="cb-link"' if len(rel) != 1 else '<a class="cb-link on"'
+        home = '<a class="cb-link"' if rel != ("index.html",) else '<a class="cb-link on"'
         home += ' href="' + (prefix or "./") + '">🧊 재료로 찾기</a>'
         panel = ""
         rail = ""
@@ -622,9 +641,10 @@ def main() -> None:
                 rail += link
             panel += "</div>"
             rail += "</details>"
+        allink = '<a class="cb-link' + (" on" if rel == ("all.html",) else "") + '" href="' + prefix + 'all.html">📖 모든 레시피</a>'
         cur = ('<span class="cb-cur">' + cat_of[active][2] + " " + esc(cat_of[active][1]) + "</span>") if active in cat_of else ""
-        bar = '<nav class="catbar" aria-label="요리 카테고리">' + home + '<details class="catmenu"><summary>☰ 카테고리</summary><div class="catpanel">' + panel + "</div></details>" + cur + "</nav>"
-        railhtml = '<nav class="catrail" aria-label="요리 카테고리"><b class="catnav-t">요리 카테고리</b>' + home.replace("cb-link", "rail-home").replace("🧊 재료로 찾기", "🧊 재료로 찾기") + rail + "</nav>"
+        bar = '<nav class="catbar" aria-label="요리 카테고리">' + home + '<details class="catmenu"><summary>☰ 카테고리</summary><div class="catpanel">' + panel + "</div></details>" + allink + cur + "</nav>"
+        railhtml = '<nav class="catrail" aria-label="요리 카테고리"><b class="catnav-t">요리 카테고리</b>' + home.replace("cb-link", "rail-home") + allink.replace("cb-link", "rail-home") + rail + "</nav>"
         toprail = ""
         for i, r in enumerate(top, 1):
             toprail += '<a href="' + prefix + "recipes/" + r["slug"] + '.html"><b>' + str(i) + "</b>" + esc(r["name"]) + "</a>"
@@ -637,10 +657,10 @@ def main() -> None:
     # 브라우저·서버 캐시가 옛 css/js 를 계속 쓰지 않도록 파일 주소에 내용 해시를 붙인다
     import hashlib
 
-    ver = hashlib.md5((HERE / "static" / "app.js").read_bytes() + (HERE / "static" / "style.css").read_bytes()).hexdigest()[:8]
+    ver = hashlib.md5((HERE / "static" / "app.js").read_bytes() + (HERE / "static" / "style.css").read_bytes() + (HERE / "static" / "list.js").read_bytes()).hexdigest()[:8]
     for page in DIST.rglob("*.html"):
         t = page.read_text(encoding="utf-8")
-        t2 = t.replace('assets/style.css"', f'assets/style.css?v={ver}"').replace('assets/app.js"', f'assets/app.js?v={ver}"')
+        t2 = t.replace('assets/style.css"', f'assets/style.css?v={ver}"').replace('assets/app.js"', f'assets/app.js?v={ver}"').replace('assets/list.js"', f'assets/list.js?v={ver}"')
         if t2 != t:
             page.write_text(t2, encoding="utf-8")
     print(f"빌드 완료: 레시피 {len(RECIPES)}개, 제휴 링크: 재료 {len(aff)}개, 도구 {len(tools)}개 -> {DIST}")
