@@ -261,3 +261,27 @@ header.top a.brand{gap:8px}
 
 .morelink{display:block;width:100%;margin-top:8px;padding:11px 12px;font-family:inherit;font-size:14px;font-weight:700;color:var(--mut);background:transparent;border:1px dashed var(--line);border-radius:14px;cursor:pointer}
 .morelink:hover{color:var(--ink);border-color:var(--ink)}
+
+/* 카테고리 막대: 좁은 화면은 위에 붙는 가로 막대 */
+.catnav{position:sticky;top:0;z-index:30;display:flex;gap:7px;overflow-x:auto;margin:6px -16px 0;padding:8px 16px;background:color-mix(in srgb,var(--bg) 90%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);scrollbar-width:none}
+.catnav::-webkit-scrollbar{display:none}
+.catnav-t{display:none}
+.catnav a{flex:none;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;text-decoration:none;color:var(--ink);font-size:13px;font-weight:600;padding:7px 12px;border-radius:999px;background:var(--card);border:1px solid var(--line)}
+.catnav a.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.toprail{display:none}
+/* 넓은 화면(1280px 이상): 왼쪽에 카테고리, 오른쪽에 인기 요리를 고정 */
+@media (min-width:1280px){
+ .catnav{position:fixed;top:92px;left:calc(50% - 380px - 232px);width:208px;margin:0;padding:0;flex-direction:column;overflow:visible;background:none;border:0;-webkit-backdrop-filter:none;backdrop-filter:none;gap:3px;max-height:calc(100vh - 110px);overflow-y:auto}
+ .catnav-t{display:block;font-size:12px;letter-spacing:.06em;color:var(--mut);margin:0 0 6px 10px}
+ .catnav a{white-space:normal;border:0;background:transparent;padding:8px 12px;border-radius:12px;font-size:14px;font-weight:600}
+ .catnav a span{width:22px;text-align:center}
+ .catnav a:hover{background:var(--chip)}
+ .catnav a.on{background:var(--ink);color:var(--bg)}
+ .toprail{display:flex;flex-direction:column;position:fixed;top:92px;right:calc(50% - 380px - 232px);width:208px;gap:3px}
+ .toprail a{display:flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink);font-size:14px;font-weight:600;padding:8px 12px;border-radius:12px}
+ .toprail a:hover{background:var(--chip)}
+ .toprail a b{width:22px;height:22px;border-radius:7px;background:var(--ink);color:var(--bg);font-size:12px;line-height:22px;text-align:center}
+}
+
+.petnote{background:var(--accent-soft);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin:14px 0;font-size:14px}
+.petnote ul{margin:8px 0 0;padding-left:18px}.petnote li{margin:4px 0}

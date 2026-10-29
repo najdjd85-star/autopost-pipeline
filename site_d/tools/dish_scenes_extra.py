@@ -109,3 +109,62 @@ SCENE_EXTRA.update({
     "honey-mustard-chicken-salad": "a salad with sliced chicken breast, lettuce, tomato and cucumber with yellow honey mustard dressing in a bowl",
     "ham-mustard-sandwich": "a ham, cheese and lettuce sandwich cut in half on a plate",
 })
+
+# 사진 점검에서 요리와 달라 보여 다시 만든 것들(장면을 더 구체적으로 적음)
+SCENE_OVERRIDE = {
+    "egg-drop-soup": "a bowl of clear light Korean egg drop soup gyeran-guk with fluffy pale yellow egg ribbons floating in thin broth and chopped green onions, only soup, no noodles, no rice cakes",
+    "kimchi-kongnamul-guk": "a bowl of Korean kimchi bean sprout soup with lots of pale bean sprouts with small yellow heads and a few chopped red kimchi pieces in clear red-tinged broth, no noodles",
+    "gamja-sujebi": "Korean potato sujebi soup, irregular thin hand-torn flat dough flakes with potato slices and zucchini in clear broth in a bowl",
+    "kimchi-jjim": "braised aged kimchi jjim in a pot, whole red napa cabbage kimchi leaves layered over thick pork belly slices, glossy red sauce",
+    "duruchigi": "Korean spicy stir-fried pork duruchigi with kimchi and bean sprouts and green onions in red sauce in a wide pan, no noodles",
+    "myeolchi-bokkeum": "Korean stir-fried tiny dried anchovies myeolchi-bokkeum, a pile of many very small thumb-sized glossy brown fish with sesame seeds in a small dish, tiny fish only",
+    "fish-cake-soup": "Korean fish cake soup eomuk-tang in a pot with several wavy flat fish cakes folded onto bamboo skewers, radish slices and green onions in clear broth",
+    "rabokki": "rabokki, chewy cylindrical rice cakes tteok and instant ramen noodles with fish cake and a boiled egg in thick red gochujang sauce in a shallow pan",
+    "jumeokbap": "round and triangle Korean rice balls jumeokbap partly wrapped in black nori sheets with tuna mayo filling, sesame seeds, on a plate, only food, no animals or figures",
+    "potato-salad": "creamy mashed Korean potato salad, pale yellow mashed potato with mayonnaise and tiny diced carrot and cucumber specks, in a bowl",
+    "sukju-namul": "Korean seasoned mung bean sprout namul sukju namul, a mound of short white crunchy bean sprouts with tiny yellow heads, sesame seeds and chopped green onion, in a small white bowl, not noodles",
+    "sukju-egg-bokkeum": "stir-fried mung bean sprouts with scrambled egg, short white sprouts with tiny yellow heads mixed with soft yellow egg pieces and green onion on a plate, not noodles",
+    "sukju-pork-bokkeum": "stir-fried sliced pork with a large amount of crunchy mung bean sprouts and onion in a pan, short sprouts with tiny yellow heads, not noodles",
+    "salmon-steak": "pan-seared orange-pink salmon fillet with crispy skin glazed with glossy soy garlic sauce on a plate with green beans, the salmon flesh clearly orange",
+    "minari-muchim": "Korean seasoned water dropwort minari muchim, bundles of bright green slender hollow stems lightly tossed with red gochujang dressing and sesame seeds, green stems clearly visible, in a bowl",
+    "gosari-bokkeum": "Korean stir-fried bracken fern gosari namul, dark brown and olive curled fern stems with sesame seeds and green onion pieces, brownish, in a bowl",
+    "danmuji-muchim": "seasoned yellow pickled radish danmuji, thin bright yellow slices with red chili flakes and sesame seeds in a small dish",
+    "myeongran-pasta": "mentaiko spaghetti, spaghetti coated in a pink-orange cod roe sauce with shredded nori on top and a small piece of butter, on a plate",
+    "tofu-steak": "pan-fried round tofu steak patties golden brown with glossy soy glaze and mixed vegetables on a plate",
+    "konjac-bokkeum": "soy-glazed stir-fried konjac pieces, translucent gray-white konjac cubes with carrot and green onion in a pan",
+    "brown-rice-veg-porridge": "a bowl of thick soupy brown rice porridge with small diced carrot and zucchini and a swirl of egg, porridge consistency, not plain rice",
+    "ham-egg-jeon": "slices of ham coated in yellow egg batter pan-fried until golden, egg-coated ham jeon on a plate",
+    "broccoli-egg-salad": "broccoli florets mixed with chopped boiled egg whites and yolks and creamy white yogurt dressing in a bowl",
+    "kimchi-jjigae": "Korean kimchi jjigae, red bubbling stew with kimchi pieces, thin pork slices, tofu slices and green onions in a small black pot, no meatballs, no egg",
+    "tofu-egg-soup": "a bowl of clear soup with tofu cubes, soft egg ribbons and green onions, no lemon",
+    "yaki-udon": "Japanese yaki udon, thick white plump udon noodles stir-fried with cabbage, pork slices and carrot, sesame on top, on a plate",
+}
+
+SCENE_EXTRA.update({
+    "oori-bulgogi": "Korean spicy duck bulgogi stir-fried with onion and chives in red sauce in a pan",
+    "hunje-oori-buchu-bokkeum": "stir-fried smoked duck slices with chives and onion on a plate",
+    "oori-baeksuk": "a large pot of Korean duck baeksuk soup with duck pieces, potato and green onion in milky broth",
+    "hunje-oori-ssam": "smoked duck slices on a plate with lettuce, perilla leaves, onion and ssamjang for wrapping",
+    "oori-deulkkae-tang": "a bowl of creamy perilla seed duck soup with duck pieces, radish and green onion",
+    "hunje-oori-deopbap": "a rice bowl topped with sliced smoked duck and onion and a fried egg",
+    "hunje-oori-salad": "a salad with smoked duck slices, lettuce and tomato with mustard dressing in a bowl",
+    "hunje-oori-fried-rice": "fried rice with smoked duck pieces, egg and green onion in a bowl",
+    "dog-chicken-sweetpotato-jerky": "homemade dried chicken breast strips and dried sweet potato slices on a plate, pet treats",
+    "dog-chicken-veg-porridge": "a bowl of plain homemade chicken and rice porridge with tiny carrot and broccoli pieces, unseasoned pet meal",
+    "dog-pumpkin-oat-cookie": "small round homemade pumpkin oat cookies on parchment paper, dog treats",
+    "dog-tofu-chicken-ball": "small round homemade chicken and tofu balls on a plate, pet treats",
+    "dog-salmon-potato-bite": "small round homemade salmon and potato bites on a plate, pet treats",
+    "dog-beef-veg-stew": "a bowl of plain unseasoned beef and vegetable soup with tiny carrot, sweet potato and broccoli pieces, pet meal",
+    "dog-egg-sweetpotato-steam": "steamed sweet potato and egg squares in small portions on a plate, pet treat",
+    "dog-yogurt-banana-ice": "an ice cube tray with frozen yogurt and banana cubes, pet treat",
+    "cat-chicken-broth": "a small bowl of plain chicken broth with shredded chicken, unseasoned pet meal",
+    "cat-salmon-treat": "small bite-sized pieces of plain boiled salmon on a small plate, pet treat",
+    "cat-chicken-egg-pudding": "small steamed chicken and egg pudding cups in small ramekins, pet treat",
+    "dog-sweetpotato-chew": "chewy dried sweet potato slices on a plate, dog treats",
+})
+
+# AI 가 요리를 제대로 그리지 못해(숙주를 국수로 그림) 사진 없이 아이콘만 쓰는 레시피
+NO_PHOTO = {"sukju-namul", "sukju-egg-bokkeum", "sukju-pork-bokkeum"}
+
+SCENE_OVERRIDE["cat-salmon-treat"] = "small bite-sized pieces of plain boiled cooked salmon, opaque light pink flakes, on a small plain plate, pet treat, no garnish"
+SCENE_OVERRIDE["dog-salmon-potato-bite"] = "small round homemade cooked salmon and potato bites, pale golden, on a plain plate, pet treats, no garnish"

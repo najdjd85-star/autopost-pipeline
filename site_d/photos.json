@@ -214,5 +214,21 @@
   "artist": "대경라이프",
   "license": "CC BY-SA 4.0",
   "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+ },
+ "duruchigi": {
+  "file": "duruchigi.jpg",
+  "title": "Dwaeji-gogi-duruchigi.jpg",
+  "page": "https://commons.wikimedia.org/wiki/File:Dwaeji-gogi-duruchigi.jpg",
+  "artist": "lazy fri13th",
+  "license": "CC BY 2.0",
+  "license_url": "https://creativecommons.org/licenses/by/2.0"
+ },
+ "egg-drop-soup": {
+  "file": "egg-drop-soup.jpg",
+  "title": "5-Minute Egg Drop Soup-5 (32079790121).jpg",
+  "page": "https://commons.wikimedia.org/wiki/File:5-Minute_Egg_Drop_Soup-5_(32079790121).jpg",
+  "artist": "Sharon Chen from Austin, United States",
+  "license": "CC BY 2.0",
+  "license_url": "https://creativecommons.org/licenses/by/2.0"
  }
 }

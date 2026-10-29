@@ -122,9 +122,10 @@ SCENE = {
     "shrimp-fried-rice": "Chinese shrimp fried rice with egg, green onions and carrot pieces and whole shrimp, in a bowl",
 }
 
-from dish_scenes_extra import SCENE_EXTRA  # noqa: E402
+from dish_scenes_extra import NO_PHOTO, SCENE_EXTRA, SCENE_OVERRIDE  # noqa: E402
 
 SCENE.update(SCENE_EXTRA)
+SCENE.update(SCENE_OVERRIDE)
 
 STYLE = ("appetizing food photograph, overhead 45-degree angle, Korean home cooking, served on a ceramic dish on a light wooden table, "
          "soft natural window light, shallow depth of field, realistic, high detail, no text, no watermark, no people")
@@ -155,7 +156,7 @@ def save(slug: str, seed: int) -> None:
 
 def todo() -> list:
     cc = json.loads((HERE / "photos.json").read_text(encoding="utf-8"))
-    return [r["slug"] for r in RECIPES if r["slug"] not in cc]
+    return [r["slug"] for r in RECIPES if r["slug"] not in cc and r["slug"] not in NO_PHOTO]
 
 
 def sheet(path: Path, slugs: list) -> None:

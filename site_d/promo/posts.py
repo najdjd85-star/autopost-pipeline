@@ -33,7 +33,7 @@ def recipes_for(foods: set, n: int = 3, exclude: set = ()) -> List[str]:
     ok = []
     for r in R.RECIPES:
         need = {i["n"] for i in r["ingredients"] if not i["opt"] and i["n"] not in R.STAPLES and i["n"] != "물"}
-        if need and need <= foods and r["slug"] not in exclude:
+        if need and need <= foods and r["slug"] not in exclude and "pet" not in r["cats"]:
             ok.append(r["slug"])
     ok.sort(key=lambda s: -vol.get(s, 0))
     return ok[:n]

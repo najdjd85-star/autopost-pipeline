@@ -294,7 +294,7 @@
       $res.appendChild(empty);
       return;
     }
-    var evs = D.recipes.map(evaluate).filter(function (e) { return e.used >= 1; });
+    var evs = D.recipes.filter(function (r) { return !r.pet; }).map(evaluate).filter(function (e) { return e.used >= 1; });
     function sortFn(a, b) { return b.used - a.used || a.ms.length - b.ms.length || a.r.minutes - b.r.minutes; }
     var picked = focus ? evs.filter(function (e) { return e.r.slug === focus; })[0] : null;
     var rest = picked ? evs.filter(function (e) { return e !== picked; }) : evs;
