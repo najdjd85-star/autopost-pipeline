@@ -18,6 +18,10 @@ mkdir -p ~/site_d_backup
 tar -czf ~/site_d_backup/before_$(date +%Y%m%d_%H%M%S).tgz -C "$TARGET" . 2>/dev/null || true
 ls -t ~/site_d_backup/before_*.tgz 2>/dev/null | tail -n +8 | xargs -r rm -f   # 백업은 최근 7개만 남긴다
 cp -a site_d/dist/. "$TARGET"/
-# Cloudways 기본 페이지(index.php 등)가 있으면 우리 index.html 이 먼저 열리도록 이름만 바꿔 둔다(삭제 아님)
-for f in index.php; do [ -f "$TARGET/$f" ] && mv "$TARGET/$f" "$TARGET/$f.bak" || true; done
+# Cloudways 기본 화면(index.php)이 index.html 보다 먼저 열리므로 치운다(이름만 바꿈, 안 되면 지움)
+if [ -f "$TARGET/index.php" ]; then
+  mv -f "$TARGET/index.php" "$TARGET/index.php.bak" 2>/dev/null || rm -f "$TARGET/index.php" 2>/dev/null     || echo "경고: index.php 를 치우지 못했습니다(권한). Cloudways 기본 화면이 계속 보일 수 있습니다."
+fi
+[ -f "$TARGET/.htaccess" ] || printf 'DirectoryIndex index.html index.php
+' > "$TARGET/.htaccess"
 echo "반영 완료: $TARGET ($(ls "$TARGET"/recipes | wc -l)개 레시피 페이지)"
