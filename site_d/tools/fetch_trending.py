@@ -25,7 +25,8 @@ sys.path.insert(0, str(HERE.parent))
 import config  # noqa: E402,F401  (.env 를 환경변수로 불러온다)
 from recipes_data import RECIPES  # noqa: E402
 
-URL = "https://openapi.naver.com/v1/datalab/search"
+URL = "https://openapi.naver.com/v1/datalab/search"                      # 네이버 개발자센터(developers.naver.com) 앱 키: ID 20자 / Secret 10자
+NCP_URL = "https://naveropenapi.apigw.ntruss.com/datalab/v1/search"        # 네이버 클라우드(NCP) Application 키: ID 10자 / Secret 40자
 ANCHOR_SLUG = "tteokbokki"
 SEARCH_NAME = {
     "tuna-kimchi-stew": "참치김치찌개", "egg-ramen": "계란라면", "ham-fried-rice": "햄볶음밥",
@@ -47,11 +48,19 @@ def keys() -> tuple:
 
 
 def query(cid: str, sec: str, names: list, start: str, end: str) -> dict:
-    """키워드 그룹(최대 5)의 일별 지수를 받아 {이름: {날짜: 지수}} 로 돌려준다."""
+    """키워드 그룹(최대 5)의 일별 지수를 받아 {이름: {날짜: 지수}} 로 돌려준다. 키 종류(NCP/개발자센터)는 ID 길이로 구분한다."""
+    ncp = len(cid) <= 12
+    url = NCP_URL if ncp else URL
+    headers = ({"X-NCP-APIGW-API-KEY-ID": cid, "X-NCP-APIGW-API-KEY": sec} if ncp else {"X-Naver-Client-Id": cid, "X-Naver-Client-Secret": sec})
     body = {"startDate": start, "endDate": end, "timeUnit": "date", "keywordGroups": [{"groupName": n, "keywords": [n]} for n in names]}
-    r = requests.post(URL, headers={"X-Naver-Client-Id": cid, "X-Naver-Client-Secret": sec, "Content-Type": "application/json"}, data=json.dumps(body), timeout=30)
+    r = requests.post(url, headers={**headers, "Content-Type": "application/json"}, data=json.dumps(body), timeout=30)
+    if r.status_code == 429 or (r.status_code == 401 and "subscription" in r.text.lower()):
+        raise RuntimeError(
+            "키는 맞지만 이 Application에 '검색어 트렌드(데이터랩)' API가 선택되어 있지 않습니다. "
+            "네이버 클라우드 콘솔 > AI·NAVER API > Application > 해당 앱 [수정] 에서 '검색어 트렌드'를 체크하고 저장하세요."
+        )
     if r.status_code in (401, 403):
-        raise RuntimeError(f"데이터랩 인증 실패(HTTP {r.status_code}): 앱에 '검색어 트렌드' API가 선택돼 있는지, ID/Secret 이 맞는지 확인하세요. {r.text[:120]}")
+        raise RuntimeError(f"데이터랩 인증 실패(HTTP {r.status_code}, {'NCP' if ncp else '개발자센터'} 방식): ID/Secret 이 맞는지 확인하세요. {r.text[:120]}")
     if r.status_code != 200:
         raise RuntimeError(f"데이터랩 조회 실패(HTTP {r.status_code}): {r.text[:160]}")
     return {g["title"]: {p["period"]: float(p["ratio"]) for p in g.get("data", [])} for g in r.json().get("results", [])}
