@@ -1,0 +1,50 @@
+:root{--bg:#fffaf3;--card:#ffffff;--ink:#2b2622;--mut:#8a7f76;--line:#eee3d6;--accent:#e8590c;--accent-soft:#fff0e5;--ok:#2f9e44;--ok-soft:#e8f7ec;--warn:#d9480f;--chip:#f5ede2}
+@media (prefers-color-scheme:dark){:root{--bg:#1b1815;--card:#26221e;--ink:#f1e9df;--mut:#a39a90;--line:#3a342d;--accent:#ff8c42;--accent-soft:#3a2a1e;--ok:#69db7c;--ok-soft:#1f3326;--warn:#ffa94d;--chip:#332d27}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;line-height:1.7;word-break:keep-all;overflow-wrap:break-word}
+a{color:var(--accent)}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px 48px}
+header.top{padding:22px 0 8px}
+header.top a.brand{color:var(--ink);text-decoration:none;font-weight:800;font-size:20px}
+header.top p{margin:4px 0 0;color:var(--mut);font-size:14px}
+h1{font-size:24px;line-height:1.35;margin:10px 0 6px}
+h2{font-size:18px;margin:26px 0 10px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:12px 0}
+.search{display:flex;gap:8px}
+.search input{flex:1;min-width:0;font-size:16px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+.btn{font-size:15px;border:0;border-radius:10px;padding:12px 16px;background:var(--accent);color:#fff;font-weight:700;cursor:pointer;min-height:44px}
+.btn.ghost{background:var(--chip);color:var(--ink);font-weight:500}
+.suggest{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:14px;border:1px solid var(--line);background:var(--chip);color:var(--ink);border-radius:999px;padding:8px 13px;cursor:pointer;min-height:38px}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+.chip.miss{background:var(--accent-soft);border-color:var(--accent);color:var(--warn);cursor:default}
+.chip.have{background:var(--ok-soft);border-color:var(--ok);color:var(--ok);cursor:default}
+.cat{font-size:13px;color:var(--mut);margin:14px 0 6px;font-weight:700}
+.row{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+label.chk{font-size:14px;color:var(--mut);display:flex;gap:8px;align-items:center;min-height:36px}
+.sel-empty{color:var(--mut);font-size:14px}
+.group-title{display:flex;align-items:center;gap:8px;margin:26px 0 8px;font-size:18px;font-weight:800}
+.badge{font-size:12px;border-radius:999px;padding:2px 9px;background:var(--ok-soft);color:var(--ok);font-weight:700}
+.badge.one{background:var(--accent-soft);color:var(--warn)}
+.card{display:block;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:10px 0}
+.card h3{margin:0 0 2px;font-size:17px}
+.card h3 a{color:inherit;text-decoration:none}
+.card a.more{display:inline-block;margin-top:8px}
+.card .meta{font-size:13px;color:var(--mut)}
+.card p{margin:6px 0;font-size:14px;color:var(--mut)}
+.card .miss-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center}
+.buy{font-size:12px;border-radius:999px;padding:6px 11px;background:#111;color:#fff;text-decoration:none;font-weight:600;white-space:nowrap}
+.empty{text-align:center;color:var(--mut);padding:26px 8px}
+.notice{font-size:12px;color:var(--mut);margin-top:26px;line-height:1.6}
+ol.steps{padding-left:0;list-style:none;counter-reset:s}
+ol.steps li{counter-increment:s;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px 12px 50px;margin:8px 0;position:relative}
+ol.steps li:before{content:counter(s);position:absolute;left:14px;top:12px;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;text-align:center;line-height:26px;font-size:14px}
+ul.ing{list-style:none;padding:0;margin:0}
+ul.ing li{display:flex;justify-content:space-between;gap:12px;padding:9px 2px;border-bottom:1px dashed var(--line)}
+ul.ing li span.q{color:var(--mut);text-align:right}
+.tip{background:var(--accent-soft);border-radius:12px;padding:12px 14px;margin:14px 0;font-size:15px}
+.more{font-size:14px}
+footer{margin-top:34px;color:var(--mut);font-size:12px}
+@media (min-width:640px){h1{font-size:28px}}
