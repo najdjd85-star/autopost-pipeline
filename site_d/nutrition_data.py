@@ -94,20 +94,62 @@ GRAMS: Dict[str, Tuple[int, Dict[str, float]]] = {
 }
 
 
+# (당류 g, 식이섬유 g, 포화지방 g, 콜레스테롤 mg, 나트륨 mg) / 100g  - 식품성분표 평균을 반올림한 추정치.
+# 나트륨은 소금·간장·장류의 양과 국물을 얼마나 먹는지에 따라 가장 크게 달라진다.
+EXTRA: Dict[str, Tuple[float, float, float, float, float]] = {
+    "밥": (0, 0.3, 0.1, 0, 2), "김치": (1.5, 1.6, 0.05, 0, 650), "계란": (0.4, 0, 3.3, 410, 140),
+    "대파": (3.0, 2.3, 0, 0, 5), "양파": (4.5, 1.5, 0, 0, 3), "감자": (1.0, 1.3, 0, 0, 5),
+    "당근": (4.5, 2.8, 0, 0, 40), "애호박": (2.0, 1.0, 0, 0, 3), "콩나물": (0.5, 1.5, 0.2, 0, 10),
+    "시금치": (0.4, 2.4, 0, 0, 40), "오이": (1.5, 0.6, 0, 0, 2), "토마토": (2.6, 1.0, 0, 0, 5),
+    "양배추": (3.0, 2.0, 0, 0, 20), "무": (2.5, 1.4, 0, 0, 15), "두부": (0.5, 0.7, 0.8, 0, 10),
+    "순두부": (0.5, 0.3, 0.5, 0, 12), "돼지고기": (0, 0, 6.0, 70, 60), "소고기": (0, 0, 5.0, 65, 60),
+    "닭": (0, 0, 4.0, 90, 80), "햄": (1.0, 0, 10.0, 60, 1300), "참치캔": (0, 0, 2.5, 40, 350),
+    "어묵": (3.0, 0.5, 1.0, 20, 900), "멸치": (0, 0, 1.5, 250, 3500), "미역": (0, 35.0, 0.3, 0, 2500),
+    "떡": (0.5, 0.6, 0.1, 0, 10), "만두": (3.0, 1.5, 3.0, 25, 450), "식빵": (4.0, 2.5, 1.0, 0, 500),
+    "소면": (1.0, 2.5, 0.2, 0, 400), "라면": (3.0, 2.5, 7.0, 0, 1600), "마요네즈": (2.0, 0, 11.0, 70, 600),
+    "김": (0.5, 33.0, 0.8, 0, 1000), "부침가루": (1.0, 2.5, 0.2, 0, 700), "고추장": (12.0, 3.5, 0.3, 0, 2500),
+    "된장": (2.0, 4.0, 0.8, 0, 4800), "식용유": (0, 0, 14.0, 0, 0), "참기름": (0, 0, 15.0, 0, 0),
+    "설탕": (100, 0, 0, 0, 0), "간장": (3.0, 0.4, 0, 0, 5500), "고춧가루": (10.0, 35.0, 2.0, 0, 30),
+    "다진마늘": (1.0, 2.0, 0.1, 0, 15), "통깨": (0.3, 10.0, 7.0, 0, 10), "식초": (0, 0, 0, 0, 8),
+    "소금": (0, 0, 0, 0, 39300), "후추": (0, 0, 0, 0, 0), "물": (0, 0, 0, 0, 0),
+}
+
+# 레시피에 적힌 소금 분량(g). 1/3작은술≈1.7g, 1/2작은술≈2.5g, 1작은술≈5g, '약간'≈0.5~1g (오이무침은 절인 뒤 짠 물은 버려 일부만 반영)
+SALT: Dict[str, float] = {
+    "rolled-omelet": 1.0, "steamed-egg": 1.7, "bean-sprout-soup": 5.0, "seasoned-bean-sprouts": 2.5, "seasoned-spinach": 1.7,
+    "beef-seaweed-soup": 1.0, "stir-fried-potato": 1.7, "stir-fried-zucchini": 1.7, "zucchini-jeon": 1.0, "potato-pancake": 1.7,
+    "cucumber-salad": 1.5, "tomato-egg": 1.7, "egg-toast": 0.5, "dumpling-soup": 1.0, "janchi-noodles": 1.0, "ham-fried-rice": 0.5,
+}
+
+# 한국 식품표시 기준 1일 영양성분 기준치
+DAILY = {"kcal": 2000, "sodium": 2000, "carb": 324, "sugar": 100, "fiber": 25, "fat": 54, "satfat": 15, "chol": 300, "protein": 55}
+
+
 def compute(slug: str) -> dict:
-    """레시피 한 개의 재료별 열량과 1인분 열량·영양을 계산한다."""
-    servings, grams = GRAMS[slug]
-    rows, tot = [], [0.0, 0.0, 0.0, 0.0]
+    """레시피 한 개의 재료별 열량·나트륨과 1인분 영양(열량, 탄수화물, 당류, 식이섬유, 단백질, 지방, 포화지방, 콜레스테롤, 나트륨)을 계산한다."""
+    servings, base = GRAMS[slug]
+    grams = dict(base)
+    if slug in SALT:
+        grams["소금"] = SALT[slug]
+    rows = []
+    t = {"kcal": 0.0, "carb": 0.0, "protein": 0.0, "fat": 0.0, "sugar": 0.0, "fiber": 0.0, "satfat": 0.0, "chol": 0.0, "sodium": 0.0}
     for name, g in grams.items():
         kcal, c, p, f = NUTRI[name]
-        v = [kcal * g / 100, c * g / 100, p * g / 100, f * g / 100]
-        for i in range(4):
-            tot[i] += v[i]
-        rows.append({"n": name, "g": g, "kcal": round(v[0])})
-    per = [x / servings for x in tot]
+        sg, fb, sf, ch, na = EXTRA[name]
+        k = g / 100
+        for key, val in (("kcal", kcal), ("carb", c), ("protein", p), ("fat", f), ("sugar", sg), ("fiber", fb), ("satfat", sf), ("chol", ch), ("sodium", na)):
+            t[key] += val * k
+        rows.append({"n": name, "g": g, "kcal": round(kcal * k), "sodium": round(na * k)})
+    per = {k: v / servings for k, v in t.items()}
     return {
         "servings": servings,
         "rows": rows,
-        "total_kcal": round(tot[0]),
-        "per": {"kcal": int(round(per[0] / 5.0) * 5), "carb": round(per[1]), "protein": round(per[2]), "fat": round(per[3])},
+        "total_kcal": round(t["kcal"]),
+        "total_sodium": round(t["sodium"]),
+        "per": {
+            "kcal": int(round(per["kcal"] / 5.0) * 5),
+            "carb": round(per["carb"]), "protein": round(per["protein"]), "fat": round(per["fat"]),
+            "sugar": round(per["sugar"]), "fiber": round(per["fiber"], 1), "satfat": round(per["satfat"], 1),
+            "chol": int(round(per["chol"] / 5.0) * 5), "sodium": int(round(per["sodium"] / 10.0) * 10),
+        },
     }

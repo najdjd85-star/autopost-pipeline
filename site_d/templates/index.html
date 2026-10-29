@@ -26,24 +26,25 @@
 </div>
 <div id="sug" class="suggest" aria-live="polite"></div>
 </section>
+<div class="presets-wrap"><span class="mut">한 번에 담기</span><div id="presets" class="presets"></div></div>
 <div id="cats"></div>
 <section class="panel" aria-label="고른 재료">
 <div class="row">
 <strong>내가 고른 재료</strong>
-<button id="clear" class="btn ghost" type="button">모두 지우기</button>
+<button id="clear" class="btn ghost small" type="button">모두 지우기</button>
 </div>
 <div id="selected" class="chips" style="margin-top:10px"></div>
-<p style="margin:12px 0 0"><a id="jump" class="btn" href="#results" style="text-decoration:none;display:none"></a></p>
-<label class="chk"><input id="staples" type="checkbox" checked> 기본 양념(<span id="stapleList"></span>)은 집에 있어요</label>
+<label class="chk"><input id="staples" type="checkbox" checked><span>기본 양념은 집에 있어요 <small>(<span id="stapleList"></span>)</small></span></label>
 </section>
 <section id="results" aria-live="polite"></section>
 {{INTRO}}
 </main>
 <footer>
 {{DISCLOSURE}}
-<p>레시피는 일반적인 조리법이며, 재료 상태와 불 세기에 따라 시간과 맛이 달라질 수 있어요. 칼로리는 식품성분표 평균값으로 계산한 추정치예요. 알레르기가 있다면 재료를 꼭 확인하세요.</p>
+<p>레시피는 일반적인 조리법이며, 재료 상태와 불 세기에 따라 시간과 맛이 달라질 수 있어요. 영양성분은 식품성분표 평균값으로 계산한 추정치예요. 레시피 사진은 위키미디어 커먼즈의 CC 라이선스 사진이며 출처는 각 레시피 페이지에 적었어요. 알레르기가 있다면 재료를 꼭 확인하세요.</p>
 </footer>
 </div>
+<div id="bar" class="bar" hidden><span id="barText"></span><button id="barGo" class="btn" type="button">결과 보기 ↓</button></div>
 <script>window.FRIDGE={{DATA}};</script>
 <script src="assets/app.js"></script>
 </body>

@@ -227,3 +227,13 @@ RECIPE_ICON: Dict[str, str] = {
     "tomato-egg": "🍅", "cucumber-salad": "🥒", "tofu-kimchi": "🥬", "egg-toast": "🍞", "soft-tofu-stew": "🍲",
     "dumpling-soup": "🥟",
 }
+
+
+# 30초 안에 고르기 위한 한 번에 담기 묶음
+PRESETS = [
+    {"name": "자취 기본", "items": ["계란", "양파", "대파", "김치", "밥"]},
+    {"name": "찌개 재료", "items": ["두부", "애호박", "양파", "대파", "감자"]},
+    {"name": "면 요리", "items": ["라면", "소면", "계란", "대파"]},
+    {"name": "고기 반찬", "items": ["돼지고기", "양파", "대파", "감자"]},
+    {"name": "냉동·간편", "items": ["만두", "떡", "어묵", "햄"]},
+]
