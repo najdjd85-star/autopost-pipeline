@@ -107,8 +107,6 @@ class Settings:
     coupang_access_key: str
     coupang_secret_key: str
 
-    # 애드픽 (선택) - 캠페인 리스트 API용 회원 식별자(affid)
-    adpick_affid: str
 
     # 소셜
     threads_access_token: str
@@ -138,10 +136,6 @@ def _load_sites() -> Dict[str, SiteConfig]:
             wp_url=_get("WP_A_URL"),
             wp_user=_get("WP_A_USER"),
             wp_pass=_get("WP_A_PASS"),
-            affiliates={
-                "loan": _get("AFF_A_LOAN"),
-                "welfare": _get("AFF_A_WELFARE"),
-            },
         ),
         "B": SiteConfig(
             key="B",
@@ -149,11 +143,6 @@ def _load_sites() -> Dict[str, SiteConfig]:
             wp_url=_get("WP_B_URL"),
             wp_user=_get("WP_B_USER"),
             wp_pass=_get("WP_B_PASS"),
-            affiliates={
-                "mvno": _get("AFF_B_MVNO"),
-                "rental": _get("AFF_B_RENTAL"),
-                "internet": _get("AFF_B_INTERNET"),
-            },
         ),
         "C": SiteConfig(
             key="C",
@@ -161,10 +150,6 @@ def _load_sites() -> Dict[str, SiteConfig]:
             wp_url=_get("WP_C_URL"),
             wp_user=_get("WP_C_USER"),
             wp_pass=_get("WP_C_PASS"),
-            affiliates={
-                "refund": _get("AFF_C_REFUND"),
-                "pension": _get("AFF_C_PENSION"),
-            },
         ),
     }
 
@@ -201,7 +186,6 @@ def load_settings() -> Settings:
         public_data_api_key=_get("PUBLIC_DATA_API_KEY"),
         coupang_access_key=_get("COUPANG_ACCESS_KEY"),
         coupang_secret_key=_get("COUPANG_SECRET_KEY"),
-        adpick_affid=_get("ADPICK_AFFID"),
         threads_access_token=_get("THREADS_ACCESS_TOKEN"),
         ig_access_token=_get("IG_ACCESS_TOKEN"),
         ig_user_id=_get("IG_USER_ID"),
