@@ -324,8 +324,32 @@
       var hit = c.indexOf(k) > -1 || (D.aliases[c] || []).some(function (a) { return a.replace(/\s/g, "").toLowerCase().indexOf(k) > -1; });
       if (hit && out.indexOf(c) < 0 && !have[c]) { out.push(c); }
     });
-    return out.slice(0, 8);
+    return out.slice(0, 6);
   }
+
+  // ---- 요리 이름으로도 찾는다(초성도 됨). 누르면 그 요리의 재료가 담기고 결과 맨 위에 나온다 ----
+  function findRecipes(text, limit) {
+    var k = text.replace(/\s/g, "").toLowerCase();
+    if (!k) { return []; }
+    var cons = /^[ㄱ-ㅎ]+$/.test(k);
+    if (cons) { k = k.replace(/ㄲ/g, "ㄱ").replace(/ㄸ/g, "ㄷ").replace(/ㅃ/g, "ㅂ").replace(/ㅆ/g, "ㅅ").replace(/ㅉ/g, "ㅈ"); }
+    var hits = D.recipes.filter(function (r) { return cons ? (r.ini || "").indexOf(k) > -1 : r.name.replace(/\s/g, "").toLowerCase().indexOf(k) > -1; });
+    hits.sort(function (a, b) {
+      var ea = a.name === text ? 0 : 1, eb = b.name === text ? 0 : 1;
+      var sa = a.name.indexOf(text) === 0 ? 0 : 1, sb = b.name.indexOf(text) === 0 ? 0 : 1;
+      return (ea - eb) || (sa - sb) || (a.name.length - b.name.length);
+    });
+    return hits.slice(0, limit || 5);
+  }
+  function pickRecipe(r) {
+    if (r.pet) { location.href = "recipes/" + r.slug + ".html"; return; }   // 반려동물·유아식은 사람 재료 선택 결과에 섞지 않고 레시피로 바로 간다
+    recipeItems(r).forEach(function (n) { have[n] = true; markRecent(n); });
+    focus = r.slug;
+    $q.value = ""; $sug.textContent = "";
+    persist(); renderNow();
+    $res.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
   function showSuggest() {
     $sug.textContent = "";
     var last = $q.value.split(/[,\s]+/).filter(Boolean).pop() || "";
@@ -340,17 +364,36 @@
       });
       $sug.appendChild(b);
     });
+    findRecipes(last, 5).forEach(function (r) {
+      var b = el("button", "sugchip rec", "🍳 " + r.name);
+      b.type = "button";
+      b.title = r.pet ? "레시피 보기" : "이 요리 재료 담기";
+      b.addEventListener("click", function () { pickRecipe(r); });
+      $sug.appendChild(b);
+    });
   }
   function addFromText() {
     var raw = $q.value.split(/[,\s]+/).filter(Boolean);
     var unknown = [];
-    raw.forEach(function (t) { var c = resolve(t); if (c) { have[c] = true; markRecent(c); } else { unknown.push(t); } });
+    var picked = null;
+    raw.forEach(function (t) {
+      var c = resolve(t);
+      if (c) { have[c] = true; markRecent(c); return; }
+      var rs = findRecipes(t, 1);
+      if (rs.length) { picked = rs[0]; return; }
+      unknown.push(t);
+    });
     $q.value = unknown.join(" ");
-    focus = "";
-    persist();
-    render();
     $sug.textContent = "";
-    if (unknown.length) { $sug.appendChild(el("span", "sugnote", "아직 모르는 재료예요: " + unknown.join(", "))); }
+    if (picked) {
+      if (picked.pet) { persist(); location.href = "recipes/" + picked.slug + ".html"; return; }
+      recipeItems(picked).forEach(function (n) { have[n] = true; markRecent(n); });
+      focus = picked.slug;
+    } else { focus = ""; }
+    persist();
+    renderNow();
+    if (picked) { $res.scrollIntoView({ behavior: "smooth", block: "start" }); }
+    if (unknown.length) { $sug.appendChild(el("span", "sugnote", "아직 모르는 재료·요리예요: " + unknown.join(", "))); }
   }
 
   document.getElementById("add").addEventListener("click", addFromText);

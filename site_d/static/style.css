@@ -308,3 +308,5 @@ body{padding-top:58px}
 @media (max-width:480px){.catbar{gap:6px;padding-left:12px;padding-right:12px}.catbar .cb-link,.catbar summary{font-size:13px;padding:7px 11px}.catbar .cb-cur{display:none}}
 .catrail>a.on,.catrail>a.rail-home.on{background:var(--ink);color:var(--bg)}
 .initials{position:sticky;top:58px;z-index:20;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);padding:8px 0;margin-top:6px}
+
+.sugchip.rec{background:var(--accent-soft);border-color:transparent;color:var(--accent);font-weight:700}
