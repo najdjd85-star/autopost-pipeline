@@ -271,7 +271,12 @@
     var count = foods().length;
     if (!count) {
       $bar.hidden = true;
-      $res.appendChild(el("div", "empty", "재료를 고르면 만들 수 있는 요리가 여기에 나와요."));
+      var empty = el("div", "empty withmascot");
+      var pic = el("img", "mascot");
+      pic.src = "assets/mascot/open.png"; pic.alt = ""; pic.width = 132; pic.height = 147; pic.loading = "lazy";
+      empty.appendChild(pic);
+      empty.appendChild(el("p", null, "재료를 고르면 만들 수 있는 요리가 여기에 나와요."));
+      $res.appendChild(empty);
       return;
     }
     var evs = D.recipes.map(evaluate).filter(function (e) { return e.used >= 1; });

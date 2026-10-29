@@ -473,6 +473,8 @@ def main() -> None:
     for name in ("style.css", "app.js"):
         shutil.copy(HERE / "static" / name, DIST / "assets" / name)
     (DIST / "assets" / "img").mkdir()
+    if (HERE / "static" / "mascot").exists():  # 캐릭터(투명 PNG) 와 파비콘
+        shutil.copytree(HERE / "static" / "mascot", DIST / "assets" / "mascot")
     if (HERE / "trending.json").exists():  # 페이지가 직접 읽는 파일(매일 이 파일만 바꿔도 화면이 갱신된다)
         shutil.copy(HERE / "trending.json", DIST / "trending.json")
     if STEP_IMAGES:
