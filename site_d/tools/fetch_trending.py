@@ -26,7 +26,7 @@ import config  # noqa: E402,F401  (.env 를 환경변수로 불러온다)
 from recipes_data import RECIPES  # noqa: E402
 
 URL = "https://openapi.naver.com/v1/datalab/search"                      # 네이버 개발자센터(developers.naver.com) 앱 키: ID 20자 / Secret 10자
-NCP_URL = "https://naveropenapi.apigw.ntruss.com/datalab/v1/search"        # 네이버 클라우드(NCP) Application 키: ID 10자 / Secret 40자
+NCP_URL = "https://naverapihub.apigw.ntruss.com/search-trend/v1/search"    # NAVER API Hub(네이버 클라우드) Application 키: ID 10자 / Secret 40자
 ANCHOR_SLUG = "tteokbokki"
 SEARCH_NAME = {
     "tuna-kimchi-stew": "참치김치찌개", "egg-ramen": "계란라면", "ham-fried-rice": "햄볶음밥",
@@ -57,7 +57,7 @@ def query(cid: str, sec: str, names: list, start: str, end: str) -> dict:
     if r.status_code == 429 or (r.status_code == 401 and "subscription" in r.text.lower()):
         raise RuntimeError(
             "키는 맞지만 이 Application에 '검색어 트렌드(데이터랩)' API가 선택되어 있지 않습니다. "
-            "네이버 클라우드 콘솔 > AI·NAVER API > Application > 해당 앱 [수정] 에서 '검색어 트렌드'를 체크하고 저장하세요."
+            "NAVER API Hub 콘솔의 해당 Application에서 '검색어 트렌드'를 선택하고 저장하세요."
         )
     if r.status_code in (401, 403):
         raise RuntimeError(f"데이터랩 인증 실패(HTTP {r.status_code}, {'NCP' if ncp else '개발자센터'} 방식): ID/Secret 이 맞는지 확인하세요. {r.text[:120]}")
