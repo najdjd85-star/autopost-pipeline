@@ -1,5 +1,5 @@
 {
-  "_설명": "쿠팡 파트너스 링크. ingredients: 재료 이름 -> 링크(없는 재료 사러가기에 쓰임). tools: 요리도구 -> label(버튼 글자), url(링크), match(이 도구가 쓰이는 조리 순서의 단어). 링크(url)가 비어 있는 항목은 화면에 나오지 않습니다. 한 레시피에는 도구 버튼이 최대 5개까지만 나옵니다. 채운 뒤 site_d/build.py 를 다시 실행하세요. ingredient_labels: 버튼에 재료 이름 대신 쓸 이름(예: 버섯 -> 새송이버섯). extras: 같은 재료의 다른 상품 버튼을 레시피 페이지에 더 보여 줍니다.",
+  "_설명": "쿠팡 파트너스 링크. ingredients: 재료 이름 -> 링크(없는 재료 사러가기에 쓰임). tools: 요리도구 -> label(버튼 글자), url(링크), match(이 도구가 쓰이는 조리 순서의 단어). 링크(url)가 비어 있는 항목은 화면에 나오지 않습니다. 한 레시피에는 도구 버튼이 최대 5개까지만 나옵니다. 채운 뒤 site_d/build.py 를 다시 실행하세요. ingredient_labels: 버튼에 재료 이름 대신 쓸 이름(예: 버섯 -> 새송이버섯). extras: 같은 재료의 다른 상품 버튼을 레시피 페이지에 더 보여 줍니다. variants: 요리 이름이 when(정규식)에 맞으면 그 재료 버튼을 label/url 로 바꿉니다(예: 김밥 레시피의 '김' -> 김밥용 김).",
   "ingredients": {
     "계란": "https://link.coupang.com/a/iets8XvF4m",
     "김치": "https://link.coupang.com/a/ieLJrC3DVc",
@@ -252,22 +252,6 @@
         "url": "https://link.coupang.com/a/ieXD3LJGwu"
       }
     ],
-    "김": [
-      {
-        "label": "김밥용 김",
-        "url": "https://link.coupang.com/a/ie4aSrQdSm"
-      }
-    ],
-    "파스타소스": [
-      {
-        "label": "크림파스타소스",
-        "url": "https://link.coupang.com/a/ie4pi8dAjc"
-      },
-      {
-        "label": "알리오올리오소스",
-        "url": "https://link.coupang.com/a/ie4rljfxIG"
-      }
-    ],
     "국간장": [
       {
         "label": "조선간장",
@@ -277,5 +261,26 @@
   },
   "unused_links": {
     "치킨스톡": "https://link.coupang.com/a/ie5kvWFqwe"
+  },
+  "variants": {
+    "김": [
+      {
+        "when": "김밥|주먹밥",
+        "label": "김밥용 김",
+        "url": "https://link.coupang.com/a/ie4aSrQdSm"
+      }
+    ],
+    "파스타소스": [
+      {
+        "when": "크림",
+        "label": "크림파스타소스",
+        "url": "https://link.coupang.com/a/ie4pi8dAjc"
+      },
+      {
+        "when": "알리오올리오",
+        "label": "알리오올리오소스",
+        "url": "https://link.coupang.com/a/ie4rljfxIG"
+      }
+    ]
   }
 }

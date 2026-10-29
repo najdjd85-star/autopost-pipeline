@@ -180,6 +180,21 @@ def load_extras() -> tuple:
     return data.get("ingredient_labels") or {}, data.get("extras") or {}
 
 
+def load_variants() -> dict:
+    """affiliate.json 의 variants: {재료: [{when(정규식), label, url}]} - 요리 이름에 따라 다른 상품 버튼을 쓴다."""
+    data = json.loads((HERE / "affiliate.json").read_text(encoding="utf-8"))
+    return data.get("variants") or {}
+
+
+def pick_variant(ingredient: str, recipe_name: str, variants: dict):
+    import re as _re
+
+    for v in variants.get(ingredient, []):
+        if _re.search(v["when"], recipe_name):
+            return v
+    return None
+
+
 def load_affiliate() -> dict:
     return load_affiliate_all()[0]
 
@@ -444,7 +459,11 @@ def recipe_page(tpl: str, r: dict, aff: dict, photos: dict, tools: dict) -> str:
     buy = ""
     if buy_items:
         labels, extras = load_extras()
-        pairs = [(labels.get(n, n), u) for n, u in buy_items]
+        variants = load_variants()
+        pairs = []
+        for n, u in buy_items:
+            v = pick_variant(n, r["name"], variants)
+            pairs.append((v["label"], v["url"]) if v else (labels.get(n, n), u))
         for i in r["ingredients"]:  # 같은 재료의 다른 상품(예: 새송이버섯 외에 팽이버섯)
             pairs += [(x["label"], x["url"]) for x in extras.get(i["n"], []) if x.get("url")]
         links = "".join(f'<a class="buy" href="{esc(u)}" target="_blank" rel="{REL}">{esc(n)} 사러가기</a> ' for n, u in pairs)
@@ -572,6 +591,7 @@ def main() -> None:
         "categories": sorted_categories(),
         "affiliate": aff,
         "labels": load_extras()[0],
+        "variants": load_variants(),
         "recipes": [
             {"slug": r["slug"], "name": r["name"], "minutes": r["minutes"], "level": r["level"], "desc": r["desc"],
              "icon": RECIPE_ICON[r["slug"]], "img": (thumb_rel(photos[r["slug"]]) if r["slug"] in photos else ""), "kcal": compute(r["slug"])["per"]["kcal"], "cost": cost_per_serving(r), "pet": is_special(r), "ini": initials_of(r["name"]),

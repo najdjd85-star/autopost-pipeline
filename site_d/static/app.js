@@ -233,7 +233,15 @@
       var links = [];
       ev.mf.forEach(function (m) { row.appendChild(el("span", "chip miss", m.n + " 없음")); });
       ev.ms.forEach(function (m) { row.appendChild(el("span", "chip miss soft", m.n + " 없음")); });
-      lack.forEach(function (m) { if (D.affiliate[m.n]) { links.push({ n: (D.labels && D.labels[m.n]) || m.n, url: D.affiliate[m.n] }); } });
+      lack.forEach(function (m) {
+        if (!D.affiliate[m.n]) { return; }
+        var link = { n: (D.labels && D.labels[m.n]) || m.n, url: D.affiliate[m.n] };
+        ((D.variants && D.variants[m.n]) || []).some(function (v) {
+          if (new RegExp(v.when).test(ev.r.name)) { link = { n: v.label, url: v.url }; return true; }
+          return false;
+        });
+        links.push(link);
+      });
       body.appendChild(row);
       if (links.length === 1) {   // 링크가 하나면 바로 연결, 여럿이면 눌러서 펼친다
         body.appendChild(buyLink(links[0].url, "없는 재료 사러가기"));
