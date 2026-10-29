@@ -24,4 +24,8 @@ if [ -f "$TARGET/index.php" ]; then
 fi
 [ -f "$TARGET/.htaccess" ] || printf 'DirectoryIndex index.html index.php
 ' > "$TARGET/.htaccess"
+# 앞단 캐시(Varnish)가 옛 화면을 내주지 않도록 주요 주소를 비운다(실패해도 무시)
+for u in / /index.html /robots.txt /sitemap.xml /trending.json; do
+  curl -s -m 10 -o /dev/null -X PURGE "http://cook.dailyfixpoint.com$u" || true
+done
 echo "반영 완료: $TARGET ($(ls "$TARGET"/recipes | wc -l)개 레시피 페이지)"
