@@ -452,7 +452,7 @@ def recipe_page(tpl: str, r: dict, aff: dict, photos: dict, tools: dict) -> str:
     out = tpl
     for k, v in {
         "SITE_NAME": SITE_NAME, "BASE": BASE, "NAME": esc(r["name"]), "SLUG": r["slug"], "MINUTES": str(r["minutes"]),
-        "LEVEL": esc(r["level"]), "DESC": esc(r["desc"]), "INGREDIENTS": ing_html, "BUY": buy, "STEPS": steps, "STEPS_NOTE": steps_note, "TIP": tip, "CATS": cats_html, "MEASURE": measure,
+        "LEVEL": esc(r["level"]), "DESC": esc(r["desc"]), "INGREDIENTS": ing_html, "BUY": (f'<div id="buy">{buy}</div>' if buy else ""), "BUY_HINT": ('<p class="note buyhint"><a href="#buy">없는 재료·요리도구는 맨 아래에서 바로 살 수 있어요 ↓</a></p>' if buy else ""), "STEPS": steps, "STEPS_NOTE": steps_note, "TIP": tip, "CATS": cats_html, "MEASURE": measure,
         "RELATED": rel, "DISCLOSURE": disclosure(bool(buy_items or tool_items)),
         "PHOTO": photo_html(r["slug"], r["name"], photos), "ICON": RECIPE_ICON[r["slug"]], "SERVINGS": f'{nut["servings"]}인분', "NUTRITION": nutrition,
         "JSONLD": json.dumps(jsonld, ensure_ascii=False).replace("</", "<\\/"),

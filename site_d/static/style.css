@@ -240,3 +240,6 @@ details.allrecipes>summary::after{content:"▾";margin-left:auto;color:var(--mut
 details.allrecipes[open]>summary::after{transform:rotate(180deg)}
 .morebtn{display:block;width:100%;margin:10px 0 4px}
 .glist{content-visibility:auto}
+
+.buyhint{margin:6px 2px 0}.buyhint a{color:var(--mut);text-decoration:underline;text-underline-offset:3px}
+#buy{scroll-margin-top:16px}
