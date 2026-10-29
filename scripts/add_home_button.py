@@ -3,7 +3,7 @@
 계산기를 쓰거나 글을 읽고 나면 허브 메인으로 돌아갈 길이 햄버거 메뉴 안에만 있어서, 연세 드신 분들이 찾기 어렵다는
 지적에 따라 메뉴를 열지 않아도 보이는 큰 버튼(집 아이콘 + 글자)을 헤더에 달고, 푸터에도 큰 버튼을 단다.
 
-실행: venv/bin/python scripts/add_home_button.py   (푸터는 fix_footer_and_identity.py가 같은 버튼을 포함해 다시 만든다)
+실행: venv/bin/python scripts/add_home_button.py   (푸터에는 넣지 않는다 - 본문 아래 버튼과 중복)
 """
 from __future__ import annotations
 
@@ -35,6 +35,7 @@ HEADER_BUTTON = (
     + "메인</a>\n<!-- /wp:html -->\n"
 )
 
+# (더 이상 푸터에 넣지 않는다: 본문 아래 버튼과 중복되어 제거함. 원복용 참고로만 남김)
 FOOTER_BUTTON = (
     '<!-- wp:html -->\n'
     '<div style="margin:0 0 20px">'

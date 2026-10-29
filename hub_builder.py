@@ -237,15 +237,15 @@ def intro_html(data: Dict[str, Any]) -> str:
 
 
 def sitemap_html(data: Dict[str, Any]) -> str:
-    out = ['<details class="smap" id="sitemap" open><summary>사이트 지도 · 전체 글 보기</summary>']
+    out = ['<details class="smap" id="sitemap"><summary>사이트 지도 · 전체 글 보기 (총 ' + str(len(data["posts"])) + '개)</summary><div class="sg">']
     for key, (_k, label) in SITES.items():
         mine = [p for p in data["posts"] if p["site"] == key]
         if not mine:
             continue
-        out.append(f'<h3>{_esc(label)} 안내소 ({len(mine)})</h3><ul>')
+        out.append(f'<div class="sc"><h3>{_esc(label)} 안내소 ({len(mine)})</h3><ul>')
         out += [f'<li><a href="{_esc(p["link"])}">{_esc(p["title"])}</a></li>' for p in mine]
-        out.append("</ul>")
-    out.append("</details>")
+        out.append("</ul></div>")
+    out.append("</div></details>")
     return "".join(out)
 
 
