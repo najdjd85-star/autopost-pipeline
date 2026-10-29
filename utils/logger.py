@@ -25,6 +25,10 @@ def _configure_root() -> None:
     console.setFormatter(fmt)
     root.addHandler(console)
 
+    # httpx/httpcore는 요청 주소를 INFO로 남기는데, 텔레그램 주소에는 봇 토큰이 들어 있어 로그 파일에 토큰이 새 나간다
+    for noisy in ("httpx", "httpcore", "telegram"):
+        logging.getLogger(noisy).setLevel(logging.WARNING)
+
     try:
         log_path = LOG_DIR / "pipeline.log"
         file_handler = RotatingFileHandler(
