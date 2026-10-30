@@ -50,7 +50,7 @@ def deploy() -> str:
     def git(*args: str) -> subprocess.CompletedProcess:
         return subprocess.run(["git", *args], cwd=str(ROOT), capture_output=True, text=True, encoding="utf-8")
 
-    changed = [p for p in ("site_d/trending.json", "site_d/prices_live.json", "site_d/links_broken.json") if (ROOT / p).exists() and git("status", "--porcelain", "--", p).stdout.strip()]
+    changed = [p for p in ("site_d/trending.json", "site_d/prices_live.json", "site_d/links_broken.json", "site_d/i18n/en/recipes.json", "site_d/i18n/en/ingredients.json", "site_d/i18n/en/quantities.json") if (ROOT / p).exists() and git("status", "--porcelain", "--", p).stdout.strip()]
     if not changed:
         return "서버 반영: 어제와 같아 올릴 것 없음"
     git("add", *changed)
@@ -80,6 +80,25 @@ def update_prices() -> str:
     except Exception as exc:  # noqa: BLE001
         logger.warning("가격 갱신 실패(무시): %s", exc)
         return "가격 갱신 실패(예전 가격 유지)"
+
+
+def translate_new() -> str:
+    """새로 생긴 레시피·재료·분량만 영어로 번역해 둔다(Gemini 무료 키 풀, 키가 없거나 실패하면 건너뜀 - 번역이 없는 레시피는 영어 사이트에서만 빠진다)."""
+    import os
+
+    os.environ["GEMINI_INCLUDE_LEGACY_KEY"] = "0"
+    try:
+        import gemini_keys
+
+        if not gemini_keys.has_keys():
+            return "영어 번역: Gemini 키 없음, 건너뜀"
+        res = subprocess.run([sys.executable, "-X", "utf8", str(ROOT / "site_d" / "tools" / "translate_i18n.py"), "--lang", "en", "--model", "gemini-flash-lite-latest"],
+                             capture_output=True, text=True, encoding="utf-8", cwd=str(ROOT), timeout=1500)
+        tail = (res.stdout or "").strip().splitlines()[-1:] or [""]
+        return "영어 번역 확인: " + tail[0][:100]
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("영어 번역 실패(무시): %s", exc)
+        return "영어 번역 실패(무시)"
 
 
 def check_links_weekly() -> str:
@@ -112,6 +131,7 @@ def main() -> int:
         return 1
     logger.info(update_prices())
     logger.info(check_links_weekly())
+    logger.info(translate_new())
     try:
         data = fetch_trending.build()
     except fetch_trending.NotConfigured as exc:

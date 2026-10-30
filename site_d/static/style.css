@@ -374,3 +374,14 @@ html{scroll-padding-top:74px}
 @view-transition{navigation:auto}
 .catbar{view-transition-name:catbar}
 ::view-transition-old(root),::view-transition-new(root){animation-duration:.14s}
+
+/* 언어 선택(머리말 오른쪽 위) */
+header.top{position:relative}
+.langsw{position:absolute;right:0;top:18px;z-index:30}
+.langmenu summary{display:inline-flex;align-items:center;gap:6px;list-style:none;cursor:pointer;font-size:13px;font-weight:700;padding:7px 12px;border-radius:999px;background:var(--card);border:1px solid var(--line);color:var(--ink);white-space:nowrap}
+.langmenu summary::-webkit-details-marker{display:none}
+.langpanel{position:absolute;right:0;top:calc(100% + 6px);min-width:150px;display:flex;flex-direction:column;padding:6px;border-radius:14px;background:var(--card);border:1px solid var(--line);box-shadow:0 14px 28px -12px rgba(31,27,24,.35)}
+.langpanel a{display:block;text-decoration:none;color:var(--ink);font-size:14px;font-weight:600;padding:9px 12px;border-radius:10px}
+.langpanel a:hover{background:var(--chip)}
+.langpanel a.on{background:var(--ink);color:var(--bg)}
+@media (max-width:480px){.catbar .cb-link,.catbar summary{letter-spacing:-.02em}}

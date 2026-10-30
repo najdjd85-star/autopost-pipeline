@@ -1,5 +1,9 @@
 (function () {
   var D = window.FRIDGE;
+  var U = D.ui || {};
+  var EN = !!D.lang && D.lang !== "ko";   // 영어판: 여러 단어 재료(soy sauce)와 쉼표 구분 입력을 처리한다
+  function L(k, v) { var s = U[k] != null ? U[k] : k; if (v) { Object.keys(v).forEach(function (n) { s = s.split("{" + n + "}").join(v[n]); }); } return s; }
+  function nm(n) { return (D.names && D.names[n]) || n; }   // 재료 표시 이름(한국어판은 그대로)
   var STAPLES = {};
   D.staples.forEach(function (s) { STAPLES[s] = true; });
   STAPLES["물"] = true;
@@ -92,9 +96,9 @@
     if (!t || !t.slugs || !t.slugs.length) { return; }
     var daily = t.kind === "daily";
     var wrap = el("div", "qrow");
-    var l = el("p", "qlabel", daily ? "오늘 많이 찾은 요리" : "많이 찾는 요리");
-    var note = daily ? (t.date ? t.date.slice(5).replace("-", "/") + " 기준 · 네이버 검색 · 누르면 재료가 담겨요" : "네이버 검색 · 누르면 재료가 담겨요")
-                     : "네이버 월간 검색량 순 · 누르면 재료가 담겨요";
+    var l = el("p", "qlabel", daily ? L("qDaily") : L("qMonthly"));
+    var note = daily ? (t.date ? L("qNoteD", { d: t.date.slice(5).replace("-", "/") }) : L("qNote"))
+                     : L("qNoteM");
     l.appendChild(el("small", null, " " + note));
     wrap.appendChild(l);
     var box = el("div", "presets");
@@ -116,7 +120,7 @@
     b.type = "button";
     b.setAttribute("aria-pressed", have[n] ? "true" : "false");
     b.appendChild(el("span", "em", D.emoji[n] || "•"));
-    b.appendChild(el("span", "tn", n));
+    b.appendChild(el("span", "tn", nm(n)));
     b.addEventListener("click", function () { toggle(n); });
     return b;
   }
@@ -130,15 +134,16 @@
     det.addEventListener("toggle", function () { pantryOpen = det.open; });
     var sm = el("summary", "pl-sum");
     sm.appendChild(el("span", "pl-em", "🧂"));
-    sm.appendChild(el("span", "pl-txt", mine.length ? "기본 양념 " + mine.length + "개 있음 (" + mine.slice(0, 3).join("·") + (mine.length > 3 ? " 외" : "") + ")" : "집에 있는 양념을 알려 주세요"));
-    sm.appendChild(el("span", "pl-btn", "바꾸기"));
+    var plist = mine.slice(0, 3).map(nm).join(L("sep")) + (mine.length > 3 ? L("pantryMore") : "");
+    sm.appendChild(el("span", "pl-txt", mine.length ? L("pantryHave", { n: mine.length, list: plist }) : L("pantryNone")));
+    sm.appendChild(el("span", "pl-btn", L("change")));
     det.appendChild(sm);
-    det.appendChild(el("p", "shelf-note", "집에 있는 양념을 눌러 주세요. 없는 양념이 필요한 요리는 '양념만 더 필요해요'로 따로 보여 드려요."));
+    det.appendChild(el("p", "shelf-note", L("shelfNote")));
     var acts = el("div", "pl-acts");   // 양념을 한 번에 비우거나 처음 상태로 되돌린다
-    var wipeS = el("button", "linkbtn", "모두 비우기");
+    var wipeS = el("button", "linkbtn", L("wipeAll"));
     wipeS.type = "button";
     wipeS.addEventListener("click", function () { PANTRY.forEach(function (n) { delete have[n]; }); focus = ""; pantryOpen = true; persist(); render(); });
-    var baseS = el("button", "linkbtn", "기본 양념으로");
+    var baseS = el("button", "linkbtn", L("baseSpice"));
     baseS.type = "button";
     baseS.addEventListener("click", function () { PANTRY.forEach(function (n) { delete have[n]; }); (D.stapleDefaults || []).forEach(function (n) { have[n] = true; }); focus = ""; pantryOpen = true; persist(); render(); });
     acts.appendChild(wipeS); acts.appendChild(baseS);
@@ -150,14 +155,14 @@
     var redo = recent.filter(function (n) { return !have[n]; }).slice(0, 8);
     if (redo.length) {   // 자주 쓰는 재료는 맨 위에서 한 번에 다시 담는다
       var rr = el("section", "aisle recent");
-      var rh = el("h2", "aisle-h", "최근에 고른 재료");
-      var all = el("button", "linkbtn", "모두 담기");
+      var rh = el("h2", "aisle-h", L("recentH"));
+      var all = el("button", "linkbtn", L("addAll"));
       all.type = "button";
       all.addEventListener("click", function () { redo.forEach(function (n) { have[n] = true; }); focus = ""; persist(); render(); });
       rh.appendChild(all);
-      var wipe = el("button", "linkbtn linkbtn2", "모두 비우기");
+      var wipe = el("button", "linkbtn linkbtn2", L("wipeAll"));
       wipe.type = "button";
-      wipe.setAttribute("aria-label", "최근에 고른 재료 기록 모두 지우기");
+      wipe.setAttribute("aria-label", L("recentWipeAria"));
       wipe.addEventListener("click", function () { recent = []; persist(); buildCats(); });
       rh.appendChild(wipe);
       rr.appendChild(rh);
@@ -167,7 +172,7 @@
         cell.appendChild(tile(n));
         var x = el("button", "rx", "✕");
         x.type = "button";
-        x.setAttribute("aria-label", n + " 기록에서 지우기");
+        x.setAttribute("aria-label", L("removeRecentAria", { n: nm(n) }));
         x.addEventListener("click", function (e) { e.stopPropagation(); recent = recent.filter(function (m) { return m !== n; }); persist(); buildCats(); });
         cell.appendChild(x);
         rbox.appendChild(cell);
@@ -181,7 +186,7 @@
       var h = el("h2", "aisle-h");
       h.appendChild(el("span", "no", String(idx + 1)));
       h.appendChild(document.createTextNode(sh.name));
-      if (picked) { h.appendChild(el("small", "cnt", picked + "개 선택")); }
+      if (picked) { h.appendChild(el("small", "cnt", L("nSelected", { n: picked }))); }
       sec.appendChild(h);
       // 자주 쓰이는 재료 위주로 먼저 보여 주고, 나머지는 '더 보기'로 펼친다(고른 재료는 늘 보인다)
       var sorted = sh.items.slice().sort(function (a, b) { return (usage[b] || 0) - (usage[a] || 0); });
@@ -192,7 +197,7 @@
       shown.forEach(function (n) { box.appendChild(tile(n)); });
       sec.appendChild(box);
       if (hidden > 0 || (open && sh.items.length > TOP)) {
-        var more = el("button", "morelink", open ? "접기 ▴" : "다른 재료 " + hidden + "개 더 보기 ▾");
+        var more = el("button", "morelink", open ? L("less") : L("more", { n: hidden }));
         more.type = "button";
         more.addEventListener("click", function () { moreOpen[sh.name] = !open; buildCats(); });
         sec.appendChild(more);
@@ -204,11 +209,11 @@
   function buildSelected() {
     $sel.textContent = "";
     var names = foods();
-    if (!names.length) { $sel.appendChild(el("span", "sel-empty", "위에서 재료를 눌러 담아 보세요")); return; }
+    if (!names.length) { $sel.appendChild(el("span", "sel-empty", L("selEmpty"))); return; }
     names.forEach(function (n) {
-      var b = el("button", "chip on", (D.emoji[n] || "") + " " + n + " ✕");
+      var b = el("button", "chip on", (D.emoji[n] || "") + " " + nm(n) + " ✕");
       b.type = "button";
-      b.setAttribute("aria-label", n + " 빼기");
+      b.setAttribute("aria-label", L("removeAria", { n: nm(n) }));
       b.addEventListener("click", function () { toggle(n); });
       $sel.appendChild(b);
     });
@@ -245,22 +250,22 @@
     var a = el("div", "card" + (pick ? " pick" : ""));
     a.appendChild(thumb(ev.r));
     var body = el("div", "body");
-    if (pick) { body.appendChild(el("span", "pickbadge", "방금 고른 요리")); }
+    if (pick) { body.appendChild(el("span", "pickbadge", L("justPicked"))); }
     var h3 = el("h3");
     var title = el("a", null, ev.r.name);
     title.href = "recipes/" + ev.r.slug + ".html";
     h3.appendChild(title);
     body.appendChild(h3);
-    body.appendChild(el("div", "meta", ev.r.minutes + "분 · 1인분 " + ev.r.kcal + "kcal · 약 " + ev.r.cost.toLocaleString("ko-KR") + "원"));
+    body.appendChild(el("div", "meta", L("meta", { m: ev.r.minutes, k: ev.r.kcal, won: L("won", { c: ev.r.cost.toLocaleString(D.loc || "ko-KR") }) })));
     var lack = ev.mf.concat(ev.ms);
     if (lack.length) {
       var row = el("div", "miss-row");
       var links = [];
-      ev.mf.forEach(function (m) { row.appendChild(el("span", "chip miss", m.n + " 없음")); });
-      ev.ms.forEach(function (m) { row.appendChild(el("span", "chip miss soft", m.n + " 없음")); });
+      ev.mf.forEach(function (m) { row.appendChild(el("span", "chip miss", L("lack", { n: nm(m.n) }))); });
+      ev.ms.forEach(function (m) { row.appendChild(el("span", "chip miss soft", L("lack", { n: nm(m.n) }))); });
       lack.forEach(function (m) {
         if (!D.affiliate[m.n]) { return; }
-        var link = { n: (D.labels && D.labels[m.n]) || m.n, url: D.affiliate[m.n] };
+        var link = { n: (D.labels && D.labels[m.n]) || nm(m.n), url: D.affiliate[m.n] };
         ((D.variants && D.variants[m.n]) || []).some(function (v) {
           if (new RegExp(v.when).test(ev.r.name)) { link = { n: v.label, url: v.url }; return true; }
           return false;
@@ -269,17 +274,17 @@
       });
       body.appendChild(row);
       if (links.length === 1) {   // 링크가 하나면 바로 연결, 여럿이면 눌러서 펼친다
-        body.appendChild(buyLink(links[0].url, "없는 재료 사러가기"));
+        body.appendChild(buyLink(links[0].url, L("buyMissing")));
       } else if (links.length > 1) {
         var det = el("details", "buylist");
-        det.appendChild(el("summary", "buy", "없는 재료 사러가기 ▾"));
+        det.appendChild(el("summary", "buy", L("buyMissingMore")));
         var inner = el("div", "buyinner");
-        links.forEach(function (l) { inner.appendChild(buyLink(l.url, l.n + " 사러가기")); });
+        links.forEach(function (l) { inner.appendChild(buyLink(l.url, L("buyOne", { n: l.n }))); });
         det.appendChild(inner);
         body.appendChild(det);
       }
     } else {
-      body.appendChild(el("span", "chip have", "재료 다 있어요"));
+      body.appendChild(el("span", "chip have", L("allHave")));
     }
     a.appendChild(body);
     return a;
@@ -289,7 +294,7 @@
     if (!list.length) { return; }
     var h = el("div", "group-title");
     h.appendChild(document.createTextNode(title + " "));
-    h.appendChild(el("span", "badge " + cls, list.length + "개"));
+    h.appendChild(el("span", "badge " + cls, L("nItems", { n: list.length })));
     $res.appendChild(h);
     var box = el("div", "glist");
     $res.appendChild(box);
@@ -299,7 +304,7 @@
     function fill() {
       list.slice(shown, shown + 12).forEach(function (ev) { box.appendChild(card(ev)); });
       shown = Math.min(list.length, shown + 12);
-      if (shown >= list.length) { more.remove(); } else { more.textContent = "더 보기 (" + (list.length - shown) + "개)"; }
+      if (shown >= list.length) { more.remove(); } else { more.textContent = L("moreN", { n: list.length - shown }); }
     }
     more.addEventListener("click", fill);
     fill();
@@ -321,9 +326,9 @@
       $bar.hidden = true;
       var empty = el("div", "empty withmascot");
       var pic = el("img", "mascot");
-      pic.src = "assets/mascot/open.png"; pic.alt = ""; pic.width = 132; pic.height = 147; pic.loading = "lazy";
+      pic.src = (D.asset || "") + "assets/mascot/open.png"; pic.alt = ""; pic.width = 132; pic.height = 147; pic.loading = "lazy";
       empty.appendChild(pic);
-      empty.appendChild(el("p", null, "재료를 고르면 만들 수 있는 요리가 여기에 나와요."));
+      empty.appendChild(el("p", null, L("emptyHint")));
       $res.appendChild(empty);
       return;
     }
@@ -336,17 +341,17 @@
     var one = rest.filter(function (e) { return e.mf.length === 1; }).sort(sortFn);
     var two = rest.filter(function (e) { return e.mf.length === 2; }).sort(sortFn);
     var nowCount = zero.length + (picked && !picked.mf.length && !picked.ms.length ? 1 : 0);
-    $barText.textContent = "재료 " + count + "개 · 바로 " + nowCount + "개 · 양념만 더 " + stap.length + "개 · 1가지만 더 " + one.length + "개";
+    $barText.textContent = L("barText", { a: count, b: nowCount, c: stap.length, d: one.length });
     $bar.hidden = false;
     if (picked) { $res.appendChild(card(picked, true)); }
     if (!picked && !zero.length && !stap.length && !one.length && !two.length) {
-      $res.appendChild(el("div", "empty", "딱 맞는 요리를 못 찾았어요. 재료나 양념을 한두 개 더 골라 보세요."));
+      $res.appendChild(el("div", "empty", L("nothing")));
       return;
     }
-    group("지금 바로 만들 수 있어요", "", zero);
-    group("재료는 다 있어요 · 양념만 더 필요해요", "one", stap);
-    group("재료 1가지만 더 있으면", "one", one);
-    group("재료 2가지가 더 필요해요", "one", two);
+    group(L("g0"), "", zero);
+    group(L("g1"), "one", stap);
+    group(L("g2"), "one", one);
+    group(L("g3"), "one", two);
   }
 
   // 한글을 쓰는 도중(예: '두부조리'까지만 친 상태)에도 '두부조림'을 찾도록, 글자를 자음·모음으로 풀어서 비교한다
@@ -374,7 +379,7 @@
     var cons = /^[ㄱ-ㅎ]+$/.test(k);
     if (cons) { k = k.replace(/ㄲ/g, "ㄱ").replace(/ㄸ/g, "ㄷ").replace(/ㅃ/g, "ㅂ").replace(/ㅆ/g, "ㅅ").replace(/ㅉ/g, "ㅈ"); }
     var jk = jn(text);
-    var hits = D.recipes.filter(function (r) { return cons ? (r.ini || "").indexOf(k) > -1 : jn(r.name).indexOf(jk) > -1; });
+    var hits = D.recipes.filter(function (r) { return cons ? (r.ini || "").indexOf(k) > -1 : (jn(r.name).indexOf(jk) > -1 || (r.ko && jn(r.ko).indexOf(jk) > -1)); });
     hits.sort(function (a, b) {
       var ea = a.name === text ? 0 : 1, eb = b.name === text ? 0 : 1;
       var sa = jn(a.name).indexOf(jk) === 0 ? 0 : 1, sb = jn(b.name).indexOf(jk) === 0 ? 0 : 1;
@@ -391,16 +396,31 @@
     $res.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
+  // 영어판: 쉼표로 나눈 마지막 덩어리에서 뒤쪽 1~3단어 중 추천이 나오는 가장 긴 것을 입력 중인 낱말로 본다("soy sa" → soy sauce)
+  function lastQuery() {
+    var v = $q.value;
+    if (!EN) { return v.split(/[,\s]+/).filter(Boolean).pop() || ""; }
+    var words = (v.match(/[^,;\n]*$/)[0] || "").trim().split(/\s+/).filter(Boolean);
+    for (var n = Math.min(3, words.length); n >= 1; n--) {
+      var q = words.slice(-n).join(" ");
+      if (suggestFor(q).length || findRecipes(q, 1).length) { return q; }
+    }
+    return words.slice(-1).join(" ");
+  }
+  function dropTail(q) {
+    if (!EN) { var parts = $q.value.split(/[,\s]+/).filter(Boolean); parts.pop(); return parts.join(" "); }
+    var i = $q.value.toLowerCase().lastIndexOf(q.toLowerCase());
+    return (i < 0 ? "" : $q.value.slice(0, i)).replace(/[\s,;]+$/, "");
+  }
   function showSuggest() {
     $sug.textContent = "";
-    var last = $q.value.split(/[,\s]+/).filter(Boolean).pop() || "";
+    var last = lastQuery();
     suggestFor(last).forEach(function (c) {
-      var b = el("button", "sugchip", (D.emoji[c] || "") + " " + c);
+      var b = el("button", "sugchip", (D.emoji[c] || "") + " " + nm(c));
       b.type = "button";
       b.addEventListener("click", function () {
         have[c] = true; markRecent(c); focus = "";
-        var parts = $q.value.split(/[,\s]+/).filter(Boolean); parts.pop();
-        $q.value = parts.join(" ");
+        $q.value = dropTail(last);
         persist(); render(); showSuggest(); $q.focus();
       });
       $sug.appendChild(b);
@@ -408,7 +428,7 @@
     findRecipes(last, 5).forEach(function (r) {
       var b = el("button", "sugchip rec", "🍳 " + r.name);
       b.type = "button";
-      b.title = r.pet ? "레시피 보기" : "이 요리 재료 담기";
+      b.title = r.pet ? L("viewRecipe") : L("addIngs");
       b.addEventListener("click", function () { pickRecipe(r); });
       $sug.appendChild(b);
     });
@@ -421,17 +441,38 @@
     var top = box.getBoundingClientRect().top;
     if (top > 90 || top < 50) { box.scrollIntoView({ behavior: "smooth", block: "start" }); }
   }
+  function exactAlias(p) { return alias[p.replace(/\s/g, "").toLowerCase()] || null; }
   function addFromText() {
-    var raw = $q.value.split(/[,\s]+/).filter(Boolean);
     var unknown = [];
     var picked = null;
-    raw.forEach(function (t) {
+    if (EN) {   // 영어: "soy sauce, tofu"처럼 쉼표로 나누고, 덩어리 안에서는 긴 재료 이름부터 맞춰 본다
+      $q.value.split(/[,;\n]+/).map(function (s) { return s.trim(); }).filter(Boolean).forEach(function (ch) {
+        var rs0 = findRecipes(ch, 1);
+        if (rs0.length && jn(rs0[0].name) === jn(ch)) { picked = rs0[0]; return; }   // 요리 이름을 그대로 쳤다
+        var words = ch.split(/\s+/);
+        var i = 0;
+        while (i < words.length) {
+          var hit = false;
+          for (var j = Math.min(words.length, i + 4); j > i; j--) {
+            var c2 = j - i > 1 ? exactAlias(words.slice(i, j).join(" ")) : resolve(words[i]);
+            if (c2) { have[c2] = true; markRecent(c2); i = j; hit = true; break; }
+          }
+          if (!hit) {
+            var r1 = findRecipes(words[i], 1);
+            if (r1.length) { picked = r1[0]; } else { unknown.push(words[i]); }
+            i++;
+          }
+        }
+      });
+    } else {
+    $q.value.split(/[,\s]+/).filter(Boolean).forEach(function (t) {
       var c = resolve(t);
       if (c) { have[c] = true; markRecent(c); return; }
       var rs = findRecipes(t, 1);
       if (rs.length) { picked = rs[0]; return; }
       unknown.push(t);
     });
+    }
     $q.value = unknown.join(" ");
     $sug.textContent = "";
     if (picked) {
@@ -442,7 +483,7 @@
     persist();
     renderNow();
     if (picked) { $res.scrollIntoView({ behavior: "smooth", block: "start" }); }
-    if (unknown.length) { $sug.appendChild(el("span", "sugnote", "아직 모르는 재료·요리예요: " + unknown.join(", "))); }
+    if (unknown.length) { $sug.appendChild(el("span", "sugnote", L("unknown", { list: unknown.join(", ") }))); }
   }
 
   document.getElementById("add").addEventListener("click", addFromText);
@@ -469,7 +510,7 @@
 
   // 매일 갱신되는 trending.json 을 직접 읽어 최신으로 바꾼다(없거나 실패하면 빌드에 들어 있던 값을 그대로 쓴다)
   try {
-    fetch("trending.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+    fetch((D.asset || "") + "trending.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
       if (!d || !d.items || !d.items.length) { return; }
       var slugs = d.items.map(function (i) { return i.slug; }).filter(function (s) { return bySlug[s]; }).slice(0, 8);
       if (slugs.length) { D.trending = { kind: "daily", slugs: slugs, date: d.date || "", updated: d.updated || "" }; buildQuick(); }

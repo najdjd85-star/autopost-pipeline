@@ -1,5 +1,8 @@
 (function () {
   // 모든 레시피 페이지: 이름·재료·초성 검색 + 종류·재료·초성 칩 + 정렬(가나다순 기본). 입력하면 목록이 바로 걸러진다
+  var UI = window.LISTUI || {};
+  var LOC = UI.loc || "ko";
+  var fmt = function (s, v) { Object.keys(v).forEach(function (k) { s = s.split("{" + k + "}").join(v[k]); }); return s; };
   var $rq = document.getElementById("rq");
   if (!$rq) { return; }
   var $rl = document.getElementById("rl");
@@ -36,7 +39,7 @@
     });
     groups.forEach(function (g) { g.hidden = !g.querySelector("li:not([hidden])"); });
     if ($none) { $none.hidden = shown > 0; }
-    if ($cnt) { $cnt.textContent = (q || curI || curT || curG) ? shown + "개 보이는 중 (전체 " + total + "개)" : "전체 " + total + "개"; }
+    if ($cnt) { $cnt.textContent = (q || curI || curT || curG) ? fmt(UI.shownOf || "{s}개 보이는 중 (전체 {t}개)", { s: shown, t: total }) : fmt(UI.total || "전체 {t}개", { t: total }); }
   }
 
   // 가나다순이 아니면 초성 묶음을 풀어 한 줄로 늘어놓고 정렬한다. 가나다순으로 돌아오면 원래 묶음으로 되돌린다
@@ -51,7 +54,7 @@
       $rl.classList.add("flat");
       var arr = items.slice().sort(function (a, b) {
         var d = (parseFloat(a.getAttribute("data-" + key)) || 0) - (parseFloat(b.getAttribute("data-" + key)) || 0);
-        return d || (a.getAttribute("data-n") || "").localeCompare(b.getAttribute("data-n") || "", "ko");
+        return d || (a.getAttribute("data-n") || "").localeCompare(b.getAttribute("data-n") || "", LOC);
       });
       arr.forEach(function (li) { $flat.appendChild(li); });
     }

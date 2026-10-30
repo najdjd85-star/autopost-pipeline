@@ -1,12 +1,12 @@
 <!doctype html>
-<html lang="ko">
+<html lang="{{LANG}}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{{NAME}} 만드는 법, {{MINUTES}}분 - {{SITE_NAME}}</title>
-<meta name="description" content="{{NAME}} 레시피. {{DESC}} 재료와 순서를 한눈에 정리했어요.">
-<link rel="canonical" href="{{BASE}}/recipes/{{SLUG}}.html">
-<meta property="og:title" content="{{NAME}} 만드는 법">
+<title>{%t {{NAME}} 만드는 법, {{MINUTES}}분%} - {{SITE_NAME}}</title>
+<meta name="description" content="{%t {{NAME}} 레시피. {{DESC}} 재료와 순서를 한눈에 정리했어요.%}">
+<link rel="canonical" href="{{BASE}}/{{PFX}}recipes/{{SLUG}}.html">{{ALT}}{{ROBOTS}}
+<meta property="og:title" content="{%t {{NAME}} 만드는 법%}">
 <meta property="og:description" content="{{DESC}}">
 <meta property="og:type" content="article">
 <link rel="icon" type="image/png" sizes="32x32" href="../assets/mascot/favicon-32.png">
@@ -21,34 +21,34 @@
 <div class="wrap">
 <header class="top">
 <a class="brand" href="../"><img class="brand-face" src="../assets/mascot/face.png" width="30" height="30" alt="">{{SITE_NAME}}</a>
-<p><a href="../">← 내 냉장고 재료로 다시 찾기</a></p>
+<p><a href="../">{%t ← 내 냉장고 재료로 다시 찾기%}</a></p>
 </header>
 <main>
-<div class="rhead"><span class="ricon" aria-hidden="true">{{ICON}}</span><div><h1>{{NAME}} 만드는 법</h1>
-<p class="meta">{{MINUTES}}분 · {{LEVEL}} · {{SERVINGS}} 분량</p>
-<p class="costline">{{COSTLABEL}} 예상 재료비 <b>약 {{COST}}원</b></p></div></div>
+<div class="rhead"><span class="ricon" aria-hidden="true">{{ICON}}</span><div><h1>{%t {{NAME}} 만드는 법%}</h1>
+<p class="meta">{%t {{MINUTES}}분 · {{LEVEL}} · {{SERVINGS}} 분량%}</p>
+<p class="costline">{%t {{COSTLABEL}} 예상 재료비 <b>약 {{COST}}원</b>%}</p></div></div>
 <div class="chips" style="margin:8px 0">{{CATS}}</div>
 <p>{{DESC}}</p>
 {{PETNOTE}}
 {{PHOTO}}
-<h2>재료</h2>
+<h2>{%t 재료%}</h2>
 <div class="panel"><ul class="ing">{{INGREDIENTS}}</ul></div>
 {{MEASURE}}
 <p class="note">{{PRICE_NOTE}}</p>
 {{BUY_HINT}}
-<h2>만드는 순서</h2>
+<h2>{%t 만드는 순서%}</h2>
 {{STEPS_NOTE}}
 <ol class="steps">{{STEPS}}</ol>
 {{TIP}}
 {{BUY}}
 {{NUTRITION}}
-<h2>비슷한 요리</h2>
+<h2>{%t 비슷한 요리%}</h2>
 <div class="chips">{{RELATED}}</div>
-<p style="margin-top:22px"><a class="btn" href="../" style="text-decoration:none;display:inline-block">내 재료로 만들 수 있는 요리 찾기</a></p>
+<p style="margin-top:22px"><a class="btn" href="../" style="text-decoration:none;display:inline-block">{%t 내 재료로 만들 수 있는 요리 찾기%}</a></p>
 </main>
 <footer>
 {{DISCLOSURE}}
-<p>레시피는 일반적인 조리법이며 재료 상태와 불 세기에 따라 달라질 수 있어요. 알레르기가 있다면 재료를 꼭 확인하세요.</p>
+{%t <p>레시피는 일반적인 조리법이며 재료 상태와 불 세기에 따라 달라질 수 있어요. 알레르기가 있다면 재료를 꼭 확인하세요.</p>%}
 </footer>
 </div>
 </body>

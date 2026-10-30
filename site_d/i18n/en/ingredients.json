@@ -1,0 +1,1687 @@
+{
+ "가자미": {
+  "aliases": [
+   "flatfish",
+   "sole",
+   "plaice",
+   "yellowfin sole"
+  ],
+  "name": "flounder"
+ },
+ "가지": {
+  "aliases": [
+   "eggplants",
+   "aubergine",
+   "asian eggplant",
+   "chinese eggplant"
+  ],
+  "name": "eggplant"
+ },
+ "간장": {
+  "aliases": [
+   "regular soy sauce",
+   "dark soy sauce",
+   "shoyu",
+   "all-purpose soy sauce"
+  ],
+  "name": "soy sauce"
+ },
+ "갈치": {
+  "aliases": [
+   "cutlassfish",
+   "beltfish",
+   "largehead hairtail",
+   "ribbonfish"
+  ],
+  "name": "hairtail"
+ },
+ "감자": {
+  "aliases": [
+   "potatoes",
+   "russet potato",
+   "white potato",
+   "yukon gold potato"
+  ],
+  "name": "potato"
+ },
+ "건새우": {
+  "aliases": [
+   "dried shrimps",
+   "dried prawns",
+   "dried baby shrimp"
+  ],
+  "name": "dried shrimp"
+ },
+ "게맛살": {
+  "aliases": [
+   "crab stick",
+   "crab sticks",
+   "surimi",
+   "krab"
+  ],
+  "name": "imitation crab"
+ },
+ "견과류": {
+  "aliases": [
+   "nuts",
+   "almonds",
+   "walnuts",
+   "cashews",
+   "peanuts"
+  ],
+  "name": "mixed nuts"
+ },
+ "계란": {
+  "aliases": [
+   "eggs",
+   "chicken egg",
+   "egg yolk",
+   "egg white"
+  ],
+  "name": "egg"
+ },
+ "고구마": {
+  "aliases": [
+   "sweet potatoes",
+   "korean sweet potato",
+   "yam",
+   "purple sweet potato"
+  ],
+  "name": "sweet potato"
+ },
+ "고등어": {
+  "aliases": [
+   "pacific mackerel",
+   "chub mackerel",
+   "salted mackerel"
+  ],
+  "name": "mackerel"
+ },
+ "고사리": {
+  "aliases": [
+   "gosari",
+   "bracken",
+   "bracken fiddleheads",
+   "fernbrake"
+  ],
+  "name": "fiddlehead fern"
+ },
+ "고추장": {
+  "aliases": [
+   "korean chili paste",
+   "red pepper paste",
+   "hot pepper paste",
+   "fermented chili paste"
+  ],
+  "name": "gochujang"
+ },
+ "고춧가루": {
+  "aliases": [
+   "gochugaru",
+   "korean chili powder",
+   "korean chili flakes",
+   "red pepper flakes",
+   "chili flakes"
+  ],
+  "name": "Korean red pepper flakes"
+ },
+ "곤드레": {
+  "aliases": [
+   "korean thistle",
+   "dried thistle greens",
+   "thistle greens",
+   "gondre namul"
+  ],
+  "name": "gondre"
+ },
+ "곤약": {
+  "aliases": [
+   "shirataki",
+   "konjac jelly",
+   "konnyaku",
+   "shirataki noodles"
+  ],
+  "name": "konjac"
+ },
+ "과메기": {
+  "aliases": [
+   "gwamegi",
+   "dried saury",
+   "semi-dried herring",
+   "dried herring"
+  ],
+  "name": "semi-dried saury"
+ },
+ "국간장": {
+  "aliases": [
+   "korean soup soy sauce",
+   "guk-ganjang",
+   "joseon soy sauce"
+  ],
+  "name": "soup soy sauce"
+ },
+ "굴": {
+  "aliases": [
+   "oysters",
+   "fresh oyster",
+   "raw oyster",
+   "shucked oysters"
+  ],
+  "name": "oyster"
+ },
+ "굴소스": {
+  "aliases": [
+   "oyster flavored sauce",
+   "chinese oyster sauce"
+  ],
+  "name": "oyster sauce"
+ },
+ "귤": {
+  "aliases": [
+   "tangerine",
+   "clementine",
+   "mandarin",
+   "mandarins",
+   "satsuma"
+  ],
+  "name": "mandarin orange"
+ },
+ "김": {
+  "aliases": [
+   "nori",
+   "gim",
+   "seaweed sheet",
+   "laver",
+   "dried laver",
+   "seaweed snack"
+  ],
+  "name": "roasted seaweed"
+ },
+ "김치": {
+  "aliases": [
+   "baechu kimchi",
+   "cabbage kimchi",
+   "napa cabbage kimchi",
+   "aged kimchi"
+  ],
+  "name": "kimchi"
+ },
+ "깻잎": {
+  "aliases": [
+   "perilla leaves",
+   "sesame leaves",
+   "korean perilla",
+   "kkaennip"
+  ],
+  "name": "perilla leaf"
+ },
+ "꼬막": {
+  "aliases": [
+   "cockles",
+   "blood clam",
+   "blood cockle",
+   "ark shell"
+  ],
+  "name": "cockle"
+ },
+ "꽁치캔": {
+  "aliases": [
+   "saury",
+   "canned pacific saury",
+   "canned mackerel pike"
+  ],
+  "name": "canned saury"
+ },
+ "꽃게": {
+  "aliases": [
+   "swimming crab",
+   "horse crab",
+   "blue swimming crab",
+   "gazami crab"
+  ],
+  "name": "blue crab"
+ },
+ "꿀": {
+  "aliases": [
+   "pure honey",
+   "raw honey",
+   "wildflower honey",
+   "liquid honey"
+  ],
+  "name": "honey"
+ },
+ "낙지": {
+  "aliases": [
+   "nakji",
+   "baby octopus",
+   "long-arm octopus"
+  ],
+  "name": "small octopus"
+ },
+ "낫또": {
+  "aliases": [
+   "fermented soybeans",
+   "natto beans",
+   "japanese natto"
+  ],
+  "name": "natto"
+ },
+ "냉면": {
+  "aliases": [
+   "naengmyeon",
+   "cold noodles",
+   "korean cold noodles"
+  ],
+  "name": "naengmyeon noodles"
+ },
+ "냉이": {
+  "aliases": [
+   "naengi",
+   "shepherds purse",
+   "wild greens",
+   "capsella"
+  ],
+  "name": "shepherd's purse"
+ },
+ "녹두": {
+  "aliases": [
+   "mung beans",
+   "green gram",
+   "moong dal"
+  ],
+  "name": "mung bean"
+ },
+ "다시다": {
+  "aliases": [
+   "dashida",
+   "beef dashida",
+   "korean beef seasoning",
+   "beef stock powder",
+   "beef soup base"
+  ],
+  "name": "beef bouillon powder"
+ },
+ "다시마": {
+  "aliases": [
+   "dashima",
+   "dried kelp",
+   "kelp",
+   "sea tangle"
+  ],
+  "name": "kombu"
+ },
+ "다진마늘": {
+  "aliases": [
+   "garlic",
+   "chopped garlic",
+   "crushed garlic",
+   "garlic paste"
+  ],
+  "name": "minced garlic"
+ },
+ "단무지": {
+  "aliases": [
+   "danmuji",
+   "takuan",
+   "pickled daikon",
+   "yellow pickled radish"
+  ],
+  "name": "pickled yellow radish"
+ },
+ "단호박": {
+  "aliases": [
+   "kabocha",
+   "sweet pumpkin",
+   "japanese pumpkin",
+   "buttercup squash"
+  ],
+  "name": "kabocha squash"
+ },
+ "달래": {
+  "aliases": [
+   "dallae",
+   "korean wild chive",
+   "wild garlic",
+   "field garlic"
+  ],
+  "name": "wild chive"
+ },
+ "닭": {
+  "aliases": [
+   "whole chicken",
+   "chicken meat",
+   "chicken thigh",
+   "chicken drumstick",
+   "chicken pieces"
+  ],
+  "name": "chicken"
+ },
+ "닭가슴살": {
+  "aliases": [
+   "chicken breasts",
+   "boneless chicken breast",
+   "skinless chicken breast"
+  ],
+  "name": "chicken breast"
+ },
+ "당근": {
+  "aliases": [
+   "carrots",
+   "diced carrot",
+   "shredded carrot"
+  ],
+  "name": "carrot"
+ },
+ "당면": {
+  "aliases": [
+   "dangmyeon",
+   "cellophane noodles",
+   "sweet potato noodles",
+   "sweet potato glass noodles",
+   "vermicelli"
+  ],
+  "name": "glass noodles"
+ },
+ "대파": {
+  "aliases": [
+   "scallion",
+   "scallions",
+   "green onions",
+   "spring onion",
+   "spring onions",
+   "daepa",
+   "large green onion",
+   "leek"
+  ],
+  "name": "green onion"
+ },
+ "더덕": {
+  "aliases": [
+   "codonopsis root",
+   "bonnet bellflower root",
+   "lance asiabell root"
+  ],
+  "name": "deodeok"
+ },
+ "도라지": {
+  "aliases": [
+   "doraji",
+   "platycodon root",
+   "balloon flower root"
+  ],
+  "name": "bellflower root"
+ },
+ "도토리묵": {
+  "aliases": [
+   "dotorimuk",
+   "acorn starch jelly",
+   "acorn curd"
+  ],
+  "name": "acorn jelly"
+ },
+ "돈가스소스": {
+  "aliases": [
+   "katsu sauce",
+   "donkatsu sauce",
+   "japanese cutlet sauce",
+   "pork cutlet sauce"
+  ],
+  "name": "tonkatsu sauce"
+ },
+ "동태": {
+  "aliases": [
+   "pollack",
+   "pollock",
+   "frozen pollock",
+   "alaska pollock"
+  ],
+  "name": "frozen pollack"
+ },
+ "돼지고기": {
+  "aliases": [
+   "pork belly",
+   "ground pork",
+   "pork shoulder",
+   "pork meat"
+  ],
+  "name": "pork"
+ },
+ "된장": {
+  "aliases": [
+   "korean soybean paste",
+   "fermented soybean paste",
+   "bean paste",
+   "soybean paste"
+  ],
+  "name": "doenjang"
+ },
+ "두부": {
+  "aliases": [
+   "firm tofu",
+   "bean curd",
+   "pressed tofu"
+  ],
+  "name": "tofu"
+ },
+ "두유": {
+  "aliases": [
+   "soymilk",
+   "unsweetened soy milk",
+   "plain soy milk"
+  ],
+  "name": "soy milk"
+ },
+ "들기름": {
+  "aliases": [
+   "wild sesame oil",
+   "perilla seed oil",
+   "korean perilla oil",
+   "deulgireum"
+  ],
+  "name": "perilla oil"
+ },
+ "들깨가루": {
+  "aliases": [
+   "ground perilla seeds",
+   "wild sesame powder",
+   "deulkkae powder"
+  ],
+  "name": "perilla seed powder"
+ },
+ "딸기": {
+  "aliases": [
+   "strawberries",
+   "fresh strawberries",
+   "berry"
+  ],
+  "name": "strawberry"
+ },
+ "떡": {
+  "aliases": [
+   "rice cakes",
+   "tteok",
+   "garaetteok",
+   "korean rice cake",
+   "cylinder rice cake"
+  ],
+  "name": "rice cake"
+ },
+ "떡국떡": {
+  "aliases": [
+   "rice cake slices",
+   "tteokguk tteok",
+   "oval rice cakes",
+   "soup rice cakes"
+  ],
+  "name": "sliced rice cake"
+ },
+ "또띠아": {
+  "aliases": [
+   "tortilla",
+   "tortillas",
+   "soft tortilla",
+   "wrap"
+  ],
+  "name": "flour tortilla"
+ },
+ "라면": {
+  "aliases": [
+   "ramen noodles",
+   "instant ramen",
+   "instant noodles",
+   "ramyun",
+   "korean ramen"
+  ],
+  "name": "ramen"
+ },
+ "라이스페이퍼": {
+  "aliases": [
+   "rice paper sheet",
+   "rice paper wrapper",
+   "spring roll wrapper"
+  ],
+  "name": "rice paper"
+ },
+ "레몬": {
+  "aliases": [
+   "lemons",
+   "fresh lemon",
+   "lemon juice",
+   "whole lemon"
+  ],
+  "name": "lemon"
+ },
+ "마요네즈": {
+  "aliases": [
+   "mayo",
+   "kewpie mayo"
+  ],
+  "name": "mayonnaise"
+ },
+ "만두": {
+  "aliases": [
+   "dumplings",
+   "mandoo",
+   "mandu",
+   "potstickers",
+   "frozen dumplings"
+  ],
+  "name": "dumpling"
+ },
+ "맛술": {
+  "aliases": [
+   "cooking wine",
+   "cooking rice wine",
+   "matsool",
+   "sweet cooking wine"
+  ],
+  "name": "mirin"
+ },
+ "매실청": {
+  "aliases": [
+   "plum extract",
+   "maesil syrup",
+   "maesil-cheong",
+   "korean plum extract"
+  ],
+  "name": "green plum syrup"
+ },
+ "머스터드": {
+  "aliases": [
+   "yellow mustard",
+   "dijon mustard",
+   "prepared mustard",
+   "mustard sauce"
+  ],
+  "name": "mustard"
+ },
+ "메밀가루": {
+  "aliases": [
+   "buckwheat powder",
+   "ground buckwheat"
+  ],
+  "name": "buckwheat flour"
+ },
+ "메밀국수": {
+  "aliases": [
+   "soba noodles",
+   "buckwheat noodles",
+   "buckwheat noodle",
+   "memil guksu"
+  ],
+  "name": "soba noodle"
+ },
+ "메추리알": {
+  "aliases": [
+   "quail eggs",
+   "canned quail eggs",
+   "boiled quail eggs"
+  ],
+  "name": "quail egg"
+ },
+ "멸치": {
+  "aliases": [
+   "anchovies",
+   "dried anchovy",
+   "dried anchovies",
+   "soup anchovies"
+  ],
+  "name": "anchovy"
+ },
+ "명란": {
+  "aliases": [
+   "myeongnan",
+   "salted pollock roe",
+   "spicy pollock roe",
+   "mentaiko",
+   "cod roe"
+  ],
+  "name": "pollock roe"
+ },
+ "모닝빵": {
+  "aliases": [
+   "dinner rolls",
+   "soft roll",
+   "morning bread",
+   "milk bread roll"
+  ],
+  "name": "dinner roll"
+ },
+ "무": {
+  "aliases": [
+   "mu",
+   "daikon",
+   "daikon radish",
+   "white radish",
+   "radish"
+  ],
+  "name": "Korean radish"
+ },
+ "문어": {
+  "aliases": [
+   "giant octopus",
+   "boiled octopus"
+  ],
+  "name": "octopus"
+ },
+ "물": {
+  "aliases": [
+   "cold water",
+   "warm water",
+   "tap water"
+  ],
+  "name": "water"
+ },
+ "미나리": {
+  "aliases": [
+   "water parsley",
+   "minari",
+   "korean watercress",
+   "chinese celery"
+  ],
+  "name": "water dropwort"
+ },
+ "미역": {
+  "aliases": [
+   "wakame",
+   "miyeok",
+   "sea mustard",
+   "seaweed",
+   "brown seaweed"
+  ],
+  "name": "dried seaweed"
+ },
+ "밀가루": {
+  "aliases": [
+   "all-purpose flour",
+   "wheat flour",
+   "plain flour",
+   "white flour"
+  ],
+  "name": "flour"
+ },
+ "바게트": {
+  "aliases": [
+   "french bread",
+   "french baguette",
+   "baguettes"
+  ],
+  "name": "baguette"
+ },
+ "바나나": {
+  "aliases": [
+   "bananas",
+   "ripe banana",
+   "fresh banana"
+  ],
+  "name": "banana"
+ },
+ "바지락": {
+  "aliases": [
+   "clam",
+   "clams",
+   "littleneck clam",
+   "baby clam"
+  ],
+  "name": "manila clam"
+ },
+ "밤": {
+  "aliases": [
+   "chestnuts",
+   "roasted chestnut",
+   "shelled chestnut"
+  ],
+  "name": "chestnut"
+ },
+ "밥": {
+  "aliases": [
+   "rice",
+   "steamed rice",
+   "white rice",
+   "instant rice",
+   "cooked white rice"
+  ],
+  "name": "cooked rice"
+ },
+ "배": {
+  "aliases": [
+   "asian pear",
+   "nashi pear",
+   "pear",
+   "bae"
+  ],
+  "name": "Korean pear"
+ },
+ "배추": {
+  "aliases": [
+   "chinese cabbage",
+   "wombok",
+   "baechu",
+   "celery cabbage"
+  ],
+  "name": "napa cabbage"
+ },
+ "버섯": {
+  "aliases": [
+   "mushrooms",
+   "shiitake mushroom",
+   "oyster mushroom",
+   "button mushroom",
+   "enoki mushroom"
+  ],
+  "name": "mushroom"
+ },
+ "버터": {
+  "aliases": [
+   "unsalted butter",
+   "salted butter",
+   "dairy butter",
+   "sweet cream butter"
+  ],
+  "name": "butter"
+ },
+ "베이컨": {
+  "aliases": [
+   "bacon strips",
+   "smoked bacon",
+   "streaky bacon",
+   "sliced bacon"
+  ],
+  "name": "bacon"
+ },
+ "병아리콩": {
+  "aliases": [
+   "chickpeas",
+   "garbanzo bean",
+   "garbanzo beans",
+   "gram"
+  ],
+  "name": "chickpea"
+ },
+ "부추": {
+  "aliases": [
+   "garlic chives",
+   "asian chives",
+   "chinese chives",
+   "chives",
+   "buchu"
+  ],
+  "name": "garlic chive"
+ },
+ "부침가루": {
+  "aliases": [
+   "buchimgae mix",
+   "savory pancake mix",
+   "korean pancake flour",
+   "buchim garu"
+  ],
+  "name": "Korean pancake mix"
+ },
+ "북어": {
+  "aliases": [
+   "dried pollock",
+   "bugeo",
+   "hwangtae",
+   "shredded dried pollack"
+  ],
+  "name": "dried pollack"
+ },
+ "브로콜리": {
+  "aliases": [
+   "broccoli florets",
+   "broccoli crown",
+   "fresh broccoli",
+   "calabrese"
+  ],
+  "name": "broccoli"
+ },
+ "블랙올리브": {
+  "aliases": [
+   "black olives",
+   "pitted black olive",
+   "ripe olive"
+  ],
+  "name": "black olive"
+ },
+ "블루베리": {
+  "aliases": [
+   "blueberries",
+   "fresh blueberries",
+   "wild blueberries"
+  ],
+  "name": "blueberry"
+ },
+ "비트": {
+  "aliases": [
+   "beets",
+   "beetroot",
+   "red beet",
+   "fresh beet"
+  ],
+  "name": "beet"
+ },
+ "빵가루": {
+  "aliases": [
+   "panko",
+   "panko bread crumbs",
+   "bread crumbs",
+   "dry bread crumbs"
+  ],
+  "name": "breadcrumbs"
+ },
+ "사과": {
+  "aliases": [
+   "apples",
+   "red apple",
+   "fuji apple",
+   "gala apple"
+  ],
+  "name": "apple"
+ },
+ "삼치": {
+  "aliases": [
+   "samchi",
+   "king mackerel"
+  ],
+  "name": "Spanish mackerel"
+ },
+ "상추": {
+  "aliases": [
+   "lettuce",
+   "red leaf lettuce",
+   "green leaf lettuce",
+   "wrap lettuce",
+   "sangchu"
+  ],
+  "name": "leaf lettuce"
+ },
+ "새우": {
+  "aliases": [
+   "prawn",
+   "prawns",
+   "cocktail shrimp",
+   "frozen shrimp"
+  ],
+  "name": "shrimp"
+ },
+ "생강": {
+  "aliases": [
+   "ginger root",
+   "fresh ginger",
+   "ginger slice",
+   "knob ginger"
+  ],
+  "name": "ginger"
+ },
+ "생크림": {
+  "aliases": [
+   "heavy whipping cream",
+   "whipping cream",
+   "fresh cream",
+   "double cream"
+  ],
+  "name": "heavy cream"
+ },
+ "선지": {
+  "aliases": [
+   "beef blood",
+   "congealed blood",
+   "blood curd",
+   "cattle blood"
+  ],
+  "name": "ox blood"
+ },
+ "설탕": {
+  "aliases": [
+   "white sugar",
+   "granulated sugar",
+   "cane sugar"
+  ],
+  "name": "sugar"
+ },
+ "셀러리": {
+  "aliases": [
+   "celery stalks",
+   "celery stick",
+   "celery ribs"
+  ],
+  "name": "celery"
+ },
+ "소고기": {
+  "aliases": [
+   "ground beef",
+   "beef slices",
+   "beef brisket",
+   "steak",
+   "stew beef"
+  ],
+  "name": "beef"
+ },
+ "소금": {
+  "aliases": [
+   "sea salt",
+   "table salt",
+   "kosher salt",
+   "fine salt"
+  ],
+  "name": "salt"
+ },
+ "소면": {
+  "aliases": [
+   "somyeon",
+   "somen",
+   "somen noodles",
+   "wheat noodles"
+  ],
+  "name": "thin wheat noodles"
+ },
+ "소시지": {
+  "aliases": [
+   "sausages",
+   "vienna sausage",
+   "hot dog",
+   "frankfurter"
+  ],
+  "name": "sausage"
+ },
+ "숙주": {
+  "aliases": [
+   "mung bean sprouts",
+   "bean sprouts",
+   "fresh mung sprouts",
+   "sukju"
+  ],
+  "name": "mung bean sprout"
+ },
+ "순대": {
+  "aliases": [
+   "soondae",
+   "sundae",
+   "blood sausage",
+   "blood pudding"
+  ],
+  "name": "Korean blood sausage"
+ },
+ "순두부": {
+  "aliases": [
+   "silken tofu",
+   "sundubu",
+   "extra soft tofu",
+   "soft bean curd"
+  ],
+  "name": "soft tofu"
+ },
+ "스파게티면": {
+  "aliases": [
+   "spaghetti noodles",
+   "pasta",
+   "dry spaghetti",
+   "spaghetti pasta"
+  ],
+  "name": "spaghetti"
+ },
+ "스팸": {
+  "aliases": [
+   "spam",
+   "canned ham",
+   "luncheon meat",
+   "canned meat"
+  ],
+  "name": "Spam"
+ },
+ "시금치": {
+  "aliases": [
+   "baby spinach",
+   "spinach leaves",
+   "fresh spinach"
+  ],
+  "name": "spinach"
+ },
+ "시래기": {
+  "aliases": [
+   "siraegi",
+   "dried radish leaves",
+   "radish greens",
+   "dried turnip greens"
+  ],
+  "name": "dried radish greens"
+ },
+ "식빵": {
+  "aliases": [
+   "white bread",
+   "sliced bread",
+   "toast bread",
+   "loaf bread"
+  ],
+  "name": "sandwich bread"
+ },
+ "식용유": {
+  "aliases": [
+   "vegetable oil",
+   "neutral oil",
+   "canola oil",
+   "frying oil"
+  ],
+  "name": "cooking oil"
+ },
+ "식초": {
+  "aliases": [
+   "white vinegar",
+   "rice vinegar",
+   "apple cider vinegar"
+  ],
+  "name": "vinegar"
+ },
+ "쌀": {
+  "aliases": [
+   "raw rice",
+   "short grain rice",
+   "white rice",
+   "rice grains",
+   "sushi rice"
+  ],
+  "name": "uncooked rice"
+ },
+ "쌀국수": {
+  "aliases": [
+   "rice vermicelli",
+   "pho noodles",
+   "rice sticks",
+   "pad thai noodles"
+  ],
+  "name": "rice noodles"
+ },
+ "쌈장": {
+  "aliases": [
+   "korean dipping sauce",
+   "seasoned soybean paste",
+   "ssam paste"
+  ],
+  "name": "ssamjang"
+ },
+ "쑥": {
+  "aliases": [
+   "korean mugwort",
+   "wormwood",
+   "ssuk"
+  ],
+  "name": "mugwort"
+ },
+ "쑥갓": {
+  "aliases": [
+   "chrysanthemum greens",
+   "garland chrysanthemum",
+   "ssukgat",
+   "tung ho"
+  ],
+  "name": "crown daisy"
+ },
+ "아귀": {
+  "aliases": [
+   "anglerfish",
+   "monk fish",
+   "goosefish"
+  ],
+  "name": "monkfish"
+ },
+ "아보카도": {
+  "aliases": [
+   "avocados",
+   "haas avocado",
+   "hass avocado",
+   "alligator pear"
+  ],
+  "name": "avocado"
+ },
+ "아스파라거스": {
+  "aliases": [
+   "asparagus spears",
+   "asparagus stalk",
+   "fresh asparagus"
+  ],
+  "name": "asparagus"
+ },
+ "애호박": {
+  "aliases": [
+   "aehobak",
+   "zucchini",
+   "courgette",
+   "squash",
+   "summer squash"
+  ],
+  "name": "Korean zucchini"
+ },
+ "액젓": {
+  "aliases": [
+   "anchovy fish sauce",
+   "korean fish sauce",
+   "aekjeot",
+   "fermented fish sauce"
+  ],
+  "name": "fish sauce"
+ },
+ "양배추": {
+  "aliases": [
+   "green cabbage",
+   "shredded cabbage",
+   "white cabbage",
+   "cabbages"
+  ],
+  "name": "cabbage"
+ },
+ "양상추": {
+  "aliases": [
+   "head lettuce",
+   "crisphead lettuce"
+  ],
+  "name": "iceberg lettuce"
+ },
+ "양파": {
+  "aliases": [
+   "onions",
+   "yellow onion",
+   "white onion",
+   "sweet onion"
+  ],
+  "name": "onion"
+ },
+ "어묵": {
+  "aliases": [
+   "fish cakes",
+   "korean fish cake",
+   "odeng",
+   "eomuk",
+   "sheet fish cake"
+  ],
+  "name": "fish cake"
+ },
+ "연근": {
+  "aliases": [
+   "lotus stem",
+   "renkon",
+   "sliced lotus root"
+  ],
+  "name": "lotus root"
+ },
+ "연어": {
+  "aliases": [
+   "salmon fillet",
+   "fresh salmon",
+   "smoked salmon",
+   "salmon steak"
+  ],
+  "name": "salmon"
+ },
+ "열무": {
+  "aliases": [
+   "yeolmu",
+   "young radish greens",
+   "radish leaves",
+   "young summer radish"
+  ],
+  "name": "young summer radish greens"
+ },
+ "오리고기": {
+  "aliases": [
+   "duck meat",
+   "fresh duck",
+   "duck breast",
+   "duck slices"
+  ],
+  "name": "duck"
+ },
+ "오이": {
+  "aliases": [
+   "cucumbers",
+   "korean cucumber",
+   "persian cucumber",
+   "kirby cucumber"
+  ],
+  "name": "cucumber"
+ },
+ "오이피클": {
+  "aliases": [
+   "cucumber pickle",
+   "pickles",
+   "pickle",
+   "dill pickle"
+  ],
+  "name": "pickled cucumber"
+ },
+ "오징어": {
+  "aliases": [
+   "calamari",
+   "cuttlefish",
+   "squid rings",
+   "fresh squid"
+  ],
+  "name": "squid"
+ },
+ "오트밀": {
+  "aliases": [
+   "rolled oats",
+   "oats",
+   "porridge oats",
+   "steel-cut oats"
+  ],
+  "name": "oatmeal"
+ },
+ "옥돔": {
+  "aliases": [
+   "tilefish",
+   "okdom",
+   "horsehead tilefish"
+  ],
+  "name": "red tilefish"
+ },
+ "옥수수": {
+  "aliases": [
+   "sweet corn",
+   "canned corn",
+   "corn kernels",
+   "corn on the cob"
+  ],
+  "name": "corn"
+ },
+ "올갱이": {
+  "aliases": [
+   "freshwater snail",
+   "river snail",
+   "daseulgi",
+   "semisulcospira snail"
+  ],
+  "name": "marsh snail"
+ },
+ "올리고당": {
+  "aliases": [
+   "oligo syrup",
+   "oligosaccharide",
+   "corn syrup",
+   "rice syrup"
+  ],
+  "name": "oligosaccharide syrup"
+ },
+ "올리브유": {
+  "aliases": [
+   "extra virgin olive oil",
+   "evoo",
+   "olive oils"
+  ],
+  "name": "olive oil"
+ },
+ "와사비": {
+  "aliases": [
+   "wasabi paste",
+   "japanese horseradish",
+   "green mustard",
+   "prepared wasabi"
+  ],
+  "name": "wasabi"
+ },
+ "요거트": {
+  "aliases": [
+   "plain yogurt",
+   "greek yogurt",
+   "yoghurt",
+   "dahi"
+  ],
+  "name": "yogurt"
+ },
+ "우동면": {
+  "aliases": [
+   "udon",
+   "udon noodles",
+   "frozen udon",
+   "fresh udon"
+  ],
+  "name": "udon noodle"
+ },
+ "우엉": {
+  "aliases": [
+   "burdock",
+   "gobo",
+   "gobo root"
+  ],
+  "name": "burdock root"
+ },
+ "우유": {
+  "aliases": [
+   "whole milk",
+   "low-fat milk",
+   "cow milk",
+   "dairy milk"
+  ],
+  "name": "milk"
+ },
+ "유부": {
+  "aliases": [
+   "fried bean curd",
+   "seasoned bean curd pouch",
+   "inari",
+   "yubu"
+  ],
+  "name": "fried tofu pouch"
+ },
+ "전복": {
+  "aliases": [
+   "abalones",
+   "ear shell",
+   "sea ear"
+  ],
+  "name": "abalone"
+ },
+ "전분": {
+  "aliases": [
+   "cornstarch",
+   "potato starch",
+   "starch powder"
+  ],
+  "name": "starch"
+ },
+ "조기": {
+  "aliases": [
+   "croaker",
+   "corvina",
+   "gulbi",
+   "small yellow croaker"
+  ],
+  "name": "yellow croaker"
+ },
+ "짜장가루": {
+  "aliases": [
+   "black bean sauce powder",
+   "jjajang powder",
+   "chunjang powder",
+   "black bean powder"
+  ],
+  "name": "jajang powder"
+ },
+ "쪽파": {
+  "aliases": [
+   "chive onion",
+   "jjokpa",
+   "thin scallion",
+   "thin scallions",
+   "korean thin green onion"
+  ],
+  "name": "thin green onion"
+ },
+ "쫄면": {
+  "aliases": [
+   "chewy noodles",
+   "spicy cold noodles",
+   "chewy wheat noodles",
+   "jjolmyeon"
+  ],
+  "name": "jjolmyeon noodles"
+ },
+ "쯔유": {
+  "aliases": [
+   "mentsuyu",
+   "japanese soup base",
+   "soba sauce",
+   "tsuyu sauce",
+   "noodle soup base"
+  ],
+  "name": "tsuyu"
+ },
+ "참기름": {
+  "aliases": [
+   "toasted sesame oil",
+   "roasted sesame oil",
+   "asian sesame oil"
+  ],
+  "name": "sesame oil"
+ },
+ "참치캔": {
+  "aliases": [
+   "tuna",
+   "canned tuna fish",
+   "tinned tuna",
+   "tuna can"
+  ],
+  "name": "canned tuna"
+ },
+ "찹쌀": {
+  "aliases": [
+   "sweet rice",
+   "sticky rice",
+   "chapssal",
+   "mochi rice"
+  ],
+  "name": "glutinous rice"
+ },
+ "청경채": {
+  "aliases": [
+   "pak choi",
+   "baby bok choy",
+   "chinese cabbage",
+   "bok choi"
+  ],
+  "name": "bok choy"
+ },
+ "청국장": {
+  "aliases": [
+   "fermented soybean paste",
+   "rich soybean paste",
+   "extra-fermented soybean paste"
+  ],
+  "name": "cheonggukjang"
+ },
+ "청양고추": {
+  "aliases": [
+   "cheongyang pepper",
+   "korean chili pepper",
+   "hot chili pepper",
+   "green chili pepper",
+   "hot pepper"
+  ],
+  "name": "Cheongyang chili"
+ },
+ "취나물": {
+  "aliases": [
+   "wild aster greens",
+   "aster greens",
+   "chwi greens",
+   "aster scaber"
+  ],
+  "name": "chwinamul"
+ },
+ "치즈": {
+  "aliases": [
+   "cheddar cheese",
+   "mozzarella cheese",
+   "sliced cheese",
+   "shredded cheese",
+   "pizza cheese"
+  ],
+  "name": "cheese"
+ },
+ "카레가루": {
+  "aliases": [
+   "korean curry powder",
+   "instant curry powder",
+   "curry mix",
+   "curry roux"
+  ],
+  "name": "curry powder"
+ },
+ "칼국수": {
+  "aliases": [
+   "kalguksu noodles",
+   "fresh wheat noodles",
+   "knife-cut noodles",
+   "fresh flat noodles"
+  ],
+  "name": "knife-cut wheat noodles"
+ },
+ "케일": {
+  "aliases": [
+   "kale leaves",
+   "curly kale",
+   "tuscan kale",
+   "fresh kale"
+  ],
+  "name": "kale"
+ },
+ "케첩": {
+  "aliases": [
+   "tomato ketchup",
+   "catsup"
+  ],
+  "name": "ketchup"
+ },
+ "콜리플라워": {
+  "aliases": [
+   "cauliflower florets",
+   "cauliflower head",
+   "fresh cauliflower"
+  ],
+  "name": "cauliflower"
+ },
+ "콩나물": {
+  "aliases": [
+   "soybean sprouts",
+   "bean sprouts",
+   "kongnamul",
+   "soy sprouts"
+  ],
+  "name": "soybean sprout"
+ },
+ "크림치즈": {
+  "aliases": [
+   "creamcheese",
+   "spreadable cheese",
+   "cream cheese spread"
+  ],
+  "name": "cream cheese"
+ },
+ "키위": {
+  "aliases": [
+   "kiwifruit",
+   "chinese gooseberry",
+   "kiwis"
+  ],
+  "name": "kiwi"
+ },
+ "토란": {
+  "aliases": [
+   "taro root",
+   "eddo",
+   "dasheen"
+  ],
+  "name": "taro"
+ },
+ "토마토": {
+  "aliases": [
+   "tomatoes",
+   "cherry tomato",
+   "cherry tomatoes",
+   "roma tomato"
+  ],
+  "name": "tomato"
+ },
+ "통깨": {
+  "aliases": [
+   "toasted sesame seeds",
+   "white sesame seeds",
+   "roasted sesame seeds",
+   "whole sesame seeds",
+   "sesame"
+  ],
+  "name": "sesame seeds"
+ },
+ "파래": {
+  "aliases": [
+   "parae",
+   "green seaweed",
+   "aonori"
+  ],
+  "name": "green laver"
+ },
+ "파스타소스": {
+  "aliases": [
+   "spaghetti sauce",
+   "tomato sauce",
+   "marinara",
+   "marinara sauce"
+  ],
+  "name": "pasta sauce"
+ },
+ "파프리카": {
+  "aliases": [
+   "bell peppers",
+   "sweet pepper",
+   "paprika pepper",
+   "red bell pepper"
+  ],
+  "name": "bell pepper"
+ },
+ "팥": {
+  "aliases": [
+   "adzuki bean",
+   "azuki bean",
+   "red beans",
+   "adzuki beans"
+  ],
+  "name": "red bean"
+ },
+ "햄": {
+  "aliases": [
+   "canned ham",
+   "sliced ham",
+   "luncheon meat"
+  ],
+  "name": "ham"
+ },
+ "현미밥": {
+  "aliases": [
+   "brown rice",
+   "steamed brown rice",
+   "mixed grain rice"
+  ],
+  "name": "cooked brown rice"
+ },
+ "호박잎": {
+  "aliases": [
+   "pumpkin leaves",
+   "squash leaf",
+   "squash leaves"
+  ],
+  "name": "pumpkin leaf"
+ },
+ "홍어": {
+  "aliases": [
+   "skate fish",
+   "ray",
+   "fermented skate",
+   "hongeo"
+  ],
+  "name": "skate"
+ },
+ "홍합": {
+  "aliases": [
+   "mussels",
+   "blue mussel",
+   "fresh mussels"
+  ],
+  "name": "mussel"
+ },
+ "후추": {
+  "aliases": [
+   "pepper",
+   "ground black pepper",
+   "black peppercorn",
+   "peppercorns"
+  ],
+  "name": "black pepper"
+ },
+ "훈제오리": {
+  "aliases": [
+   "smoked duck breast",
+   "sliced smoked duck",
+   "smoked duck meat"
+  ],
+  "name": "smoked duck"
+ }
+}

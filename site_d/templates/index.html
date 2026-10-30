@@ -1,13 +1,13 @@
 <!doctype html>
-<html lang="ko">
+<html lang="{{LANG}}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{{SITE_NAME}} - 냉장고 재료로 만들 수 있는 요리 찾기</title>
-<meta name="description" content="냉장고에 있는 재료를 고르면 지금 만들 수 있는 요리와 재료 1~2개만 더 있으면 되는 요리를 알려드려요. 칼로리 표가 있는 자취 집밥 레시피 {{COUNT}}개.">
-<link rel="canonical" href="{{BASE}}/">
+<title>{{SITE_NAME}} - {%t 냉장고 재료로 만들 수 있는 요리 찾기%}</title>
+<meta name="description" content="{%t 냉장고에 있는 재료를 고르면 지금 만들 수 있는 요리와 재료 1~2개만 더 있으면 되는 요리를 알려드려요. 칼로리 표가 있는 자취 집밥 레시피 {{COUNT}}개.%}">
+<link rel="canonical" href="{{BASE}}/{{PFX}}">{{ALT}}{{ROBOTS}}
 <meta property="og:title" content="{{SITE_NAME}}">
-<meta property="og:description" content="냉장고 속 재료를 고르면 만들 수 있는 요리를 바로 찾아드려요.">
+<meta property="og:description" content="{%t 냉장고 속 재료를 고르면 만들 수 있는 요리를 바로 찾아드려요.%}">
 <meta property="og:type" content="website">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/mascot/favicon-32.png">
 <link rel="apple-touch-icon" href="assets/mascot/favicon-180.png">
@@ -23,21 +23,21 @@
 </header>
 <main>
 <section class="hero">
-<h1>오늘 냉장고에 뭐가 있어?</h1>
-<p>눌러서 담으면 바로 만들 수 있는 요리가 나와요.</p>
+<h1>{%t 오늘 냉장고에 뭐가 있어?%}</h1>
+<p>{%t 눌러서 담으면 바로 만들 수 있는 요리가 나와요.%}</p>
 <div class="search">
-<input id="q" type="text" inputmode="text" autocomplete="off" placeholder="재료나 요리 이름 (예: 계란, 닭갈비)" aria-label="재료 입력">
-<button id="add" class="btn" type="button">추가</button>
-<button id="clear2" class="btn ghost clearbtn" type="button" aria-label="고른 재료 모두 지우기">모두 지우기</button>
+<input id="q" type="text" inputmode="text" autocomplete="off" placeholder="{%t 재료나 요리 이름 (예: 계란, 닭갈비)%}" aria-label="{%t 재료 입력%}">
+<button id="add" class="btn" type="button">{%t 추가%}</button>
+<button id="clear2" class="btn ghost clearbtn" type="button" aria-label="{%t 고른 재료 모두 지우기%}">{%t 모두 지우기%}</button>
 </div>
 <div id="sug" class="suggest" aria-live="polite"></div>
 </section>
 <div id="quick"></div>
 <div id="cats"></div>
-<section class="panel" aria-label="고른 재료">
+<section class="panel" aria-label="{%t 고른 재료%}">
 <div class="row">
-<strong>내가 고른 재료</strong>
-<button id="clear" class="btn ghost small" type="button">모두 지우기</button>
+<strong>{%t 내가 고른 재료%}</strong>
+<button id="clear" class="btn ghost small" type="button">{%t 모두 지우기%}</button>
 </div>
 <div id="selected" class="chips" style="margin-top:10px"></div>
 </section>
@@ -46,10 +46,10 @@
 </main>
 <footer>
 {{DISCLOSURE}}
-<p>레시피는 일반적인 조리법이며, 재료 상태와 불 세기에 따라 시간과 맛이 달라질 수 있어요. 영양성분은 식품성분표 평균값으로 계산한 추정치예요. 레시피 사진은 위키미디어 커먼즈의 CC 라이선스 사진(출처는 각 레시피 페이지에 표기)이거나 AI로 만든 참고 이미지이며, 실제 완성 모습과 다를 수 있어요. 알레르기가 있다면 재료를 꼭 확인하세요.</p>
+{%t <p>레시피는 일반적인 조리법이며, 재료 상태와 불 세기에 따라 시간과 맛이 달라질 수 있어요. 영양성분은 식품성분표 평균값으로 계산한 추정치예요. 레시피 사진은 위키미디어 커먼즈의 CC 라이선스 사진(출처는 각 레시피 페이지에 표기)이거나 AI로 만든 참고 이미지이며, 실제 완성 모습과 다를 수 있어요. 알레르기가 있다면 재료를 꼭 확인하세요.</p>%}
 </footer>
 </div>
-<div id="bar" class="bar" hidden><span id="barText"></span><button id="barGo" class="btn" type="button">결과 보기 ↓</button></div>
+<div id="bar" class="bar" hidden><span id="barText"></span><button id="barGo" class="btn" type="button">{%t 결과 보기 ↓%}</button></div>
 <script>window.FRIDGE={{DATA}};</script>
 <script src="assets/app.js"></script>
 </body>
