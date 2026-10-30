@@ -209,12 +209,19 @@ def load_affiliate() -> dict:
     return load_affiliate_all()[0]
 
 
+GENERIC_TOOLS = {"프라이팬", "냄비", "칼·도마", "믹싱볼", "계량스푼", "뒤집개", "주걱", "조리도구 세트 1", "조리도구 세트 2"}
+
+
 def tools_for(recipe: dict, tools: dict) -> list:
     """이 레시피의 조리 순서에 쓰이는 도구 중 링크가 있는 것."""
     import re as _re
 
     text = recipe["name"] + " " + " ".join(recipe["steps"]) + " " + " ".join(i["q"] for i in recipe["ingredients"])
-    return [(k, t) for k, t in tools.items() if t.get("match") and _re.search(t["match"], text)][:5]  # 한 레시피에 도구 버튼은 최대 5개
+    hit = [(k, t) for k, t in tools.items() if t.get("match") and _re.search(t["match"], text)]
+    # 이 요리에만 필요한 구체적인 도구(얼음 틀·튀김 냄비·에어프라이어 등)를 먼저, 어디나 쓰는 흔한 도구(팬·도마·계량스푼 등)는 남는 자리에만 보여 준다
+    specific = [x for x in hit if x[0] not in GENERIC_TOOLS]
+    generic = [x for x in hit if x[0] in GENERIC_TOOLS]
+    return (specific + generic)[:5]  # 한 레시피에 도구 버튼은 최대 5개
 
 
 def validate() -> None:
