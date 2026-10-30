@@ -331,3 +331,67 @@ def outro(W, H, line1="냉장고에 있는 재료로", line2="오늘 뭐 해 먹
     d.text((W // 2, y + 150), "재료만 누르면 만들 수 있는 요리가 나와요", font=font(34, 500), fill=MUT, anchor="ma")
     d.text((W // 2, H - 110), "프로필 링크에서 바로 써 보세요", font=font(34, 700), fill=ACC, anchor="ma")
     return img
+
+
+# ----------------------------------------------------------------- 실제 화면(폰 목업) 장면
+SCREENS = HERE / "promo" / "out" / "screens"
+
+
+def phone_mock(img: Image.Image, shot: Image.Image, cx: int, top: int, pw: int, ph: int, y0: float = 0.0) -> None:
+    """폰 화면 캡처를 베젤 있는 폰 모양으로 붙인다. y0 는 캡처의 어느 높이(0~1)부터 보여 줄지."""
+    from PIL import ImageFilter
+
+    src_h = int(shot.width * ph / pw)
+    t = max(0, min(int(shot.height * y0), shot.height - src_h))
+    crop = shot.crop((0, t, shot.width, t + src_h)).resize((pw, ph), Image.LANCZOS)
+    bez = 14
+    ow, oh = pw + bez * 2, ph + bez * 2
+    shadow = Image.new("RGBA", (ow + 160, oh + 160), (0, 0, 0, 0))
+    ImageDraw.Draw(shadow).rounded_rectangle((80, 100, 80 + ow, 100 + oh), 66, fill=(31, 27, 24, 90))
+    shadow = shadow.filter(ImageFilter.GaussianBlur(28))
+    x = cx - ow // 2
+    img.paste(shadow, (x - 80, top - 80), shadow)
+    d = ImageDraw.Draw(img)
+    d.rounded_rectangle((x, top, x + ow, top + oh), 62, fill=(31, 27, 24))
+    pic = rounded(crop, 50)
+    img.paste(pic, (x + bez, top + bez), pic)
+
+
+def screen_slide(W, H, step, title, sub, shot_name, y0=0.0, page=None):
+    """실제 사이트 화면 + 단계 번호 + 한 줄 설명."""
+    img, d = base(W, H, page)
+    top = 170 if H < 1500 else 230
+    if step:
+        d.ellipse((M, top, M + 84, top + 84), fill=ACC)
+        d.text((M + 42, top + 42), str(step), font=font(52, 800), fill=WHITE, anchor="mm")
+        tx = M + 112
+    else:
+        tx = M
+    y = text_block(d, (tx, top - 4), title, font(70 if H < 1500 else 78, 800), INK, W - tx - M, 1.2)
+    if sub:
+        text_block(d, (tx, y + 6), sub, font(36, 500), MUT, W - tx - M, 1.4)
+    ptop = top + (190 if H < 1500 else 250)
+    ph = H - ptop - (96 if H < 1500 else 150)
+    pw = int(ph * 390 / 844 * 0.97)
+    shot = Image.open(SCREENS / shot_name).convert("RGB")
+    phone_mock(img, shot, W // 2, ptop, pw, ph, y0)
+    footer(d, W, H)
+    return img
+
+
+def hook_slide(W, H, line1, line2, sub, page=None):
+    """첫 장: 눈길을 끄는 문장 + 캐릭터."""
+    img, d = base(W, H, page)
+    mh = int(H * 0.30)
+    m = Image.open(MASCOT / "open.png").convert("RGBA")
+    m = m.resize((int(m.width * mh / m.height), mh), Image.LANCZOS)
+    top = 190 if H < 1500 else 260
+    img.paste(m, ((W - m.width) // 2, top), m)
+    y = top + mh + 60
+    for t, f, c in ((line1, font(76, 800), INK), (line2, font(76, 800), ACC)):
+        d.text((W // 2, y), t, font=f, fill=c, anchor="ma")
+        y += f.size + 22
+    y += 24
+    text_block(d, (M + 40, y), sub, font(44, 500), MUT, W - 2 * (M + 40), 1.45)
+    d.text((W // 2, H - 118), "넘겨서 보기  →", font=font(36, 700), fill=ACC, anchor="ma")
+    return img

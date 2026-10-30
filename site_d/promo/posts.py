@@ -160,3 +160,32 @@ def make_video(scenes: List[Image.Image], durations: List[float], out: Path, fad
     for f in tmp.glob("*.png"):
         f.unlink()
     tmp.rmdir()
+
+
+# ----------------------------------------------------------------- 사이트 사용법(실제 화면) 데모
+def scenes_demo(size, paged: bool) -> List[Image.Image]:
+    """실제 사이트 화면(screens.py 로 찍은 캡처)으로 '이렇게 쓰면 돼'를 보여 주는 장면들."""
+    W, H = size
+    steps = [
+        (1, "재료를 눌러서 담아", "냉장고에 있는 거 아무거나 눌러봐", "shot2_pick.png", 0.0),
+        (2, "이름을 쳐도 돼", "재료든 요리 이름이든 치면 바로 찾아줘", "shot1_search.png", 0.0),
+        (3, "지금 되는 요리가 바로 나와", "재료 다 있는 요리부터 보여줘", "shot3_result.png", 0.0),
+        (4, "순서까지 다 정리돼 있어", "분량 그대로 따라 하면 끝", "shot5_steps.png", 0.0),
+    ]
+    total = len(steps) + 2 if paged else None
+    out = [R.hook_slide(W, H, "냉장고 열었는데", "곧 버릴 재료만 잔뜩?", "재료 몇 개만 누르면 할 수 있는 요리가 바로 나와. 이렇게 써봐!", (1, total) if paged else None)]
+    for k, (n, t, sub, shot, y0) in enumerate(steps, 2):
+        out.append(R.screen_slide(W, H, n, t, sub, shot, y0, (k, total) if paged else None))
+    out.append(R.outro(W, H, "남은 재료 빨리 처분하고 싶으면", "여기 한번 들어가봐", (total, total) if paged else None))
+    return out
+
+
+def captions_demo() -> Dict[str, str]:
+    tags = " ".join(HASH_BASE + ["#냉털", "#냉장고정리", "#자취생요리"])
+    return {
+        "threads": f"냉장고 열어보니 곧 버릴 재료만 잔뜩이야… 😇\n재료 몇 개만 눌러봐, 할 수 있는 요리가 바로 나와!\n남은 재료 빨리 처분하고 싶으면 여기 한번 들어가봐 👉 {link('', 'threads', 'demo')}",
+        "instagram": f"냉장고 열어보니 곧 버릴 재료만 잔뜩? 😇\n재료 몇 개만 누르면 할 수 있는 요리가 바로 나와요!\n1) 재료 누르기 2) 이름으로 찾기 3) 바로 되는 요리 확인 4) 분량·순서까지\n\n사이트는 프로필 링크에서 → {SITE_URL}\n※ 요리 사진은 AI로 만든 참고 이미지예요.\n\n{tags}",
+        "youtube_title": "냉장고 남은 재료로 뭐 해 먹지? 재료만 누르면 끝 #shorts",
+        "youtube_desc": f"재료 몇 개만 누르면 할 수 있는 요리가 바로 나와요.\n{link('', 'youtube', 'demo')}\n※ 요리 사진은 AI로 만든 참고 이미지예요.\n{tags}",
+        "tiktok": f"냉장고 털기 🧊 재료만 누르면 되는 요리가 바로!\n프로필 링크에서 써 봐\n{tags}",
+    }
