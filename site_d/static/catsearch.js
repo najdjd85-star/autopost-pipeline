@@ -40,7 +40,16 @@
     arr.forEach(function (a) { $list.appendChild(a); });
   }
 
-  $q.addEventListener("input", apply);
+  // 폰에서는 키보드가 목록을 가리므로, 글자를 치면 필터 버튼을 접고 검색창을 맨 위로 올려 결과가 바로 보이게 한다
+  function focusResults() {
+    var typing = $q.value.trim().length > 0;
+    document.body.classList.toggle("csearching", typing && !curType && !curIng);
+    if (typing && window.matchMedia("(max-width: 760px)").matches) {
+      var box = $q.parentNode, top = box.getBoundingClientRect().top;
+      if (top > 90 || top < 40) { box.scrollIntoView({ behavior: "smooth", block: "start" }); }
+    }
+  }
+  $q.addEventListener("input", function () { apply(); focusResults(); });
   $sort.addEventListener("change", sortCards);
   $types.addEventListener("click", function (e) {
     var b = e.target.closest ? e.target.closest("button") : null;

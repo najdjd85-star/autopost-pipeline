@@ -362,3 +362,6 @@ html{scroll-padding-top:74px}
 
 .flab{align-self:center;font-size:12px;font-weight:700;color:var(--mut);margin-right:2px}
 #ctypes,#cings{margin:6px 0}
+
+.rsearch{scroll-margin-top:62px}
+.csearching #ctypes,.csearching #cings{display:none}
