@@ -364,12 +364,14 @@ def make_thumbs(photos: dict) -> bool:
     return True
 
 
-def recipe_card_html(r: dict, photos: dict, prefix: str = "../") -> str:
+def recipe_card_html(r: dict, photos: dict, prefix: str = "../", attrs: bool = False) -> str:
     p = photos.get(r["slug"])
+    extra = (f' data-n="{esc(r["name"])}" data-c="{esc(initials_of(r["name"]))}" data-k="{esc(ingredient_keys(r))}"') if attrs else ""
+    sodium = (" · 나트륨 " + format(compute(r["slug"])["per"]["sodium"], ",") + "mg") if "lowsalt" in r["cats"] and not is_special(r) else ""
     thumb = f'<img src="{prefix}{thumb_rel(p)}" alt="{esc(r["name"])}" loading="lazy" decoding="async" width="96" height="72">' if p else f'<span>{r["icon"]}</span>'
     return (
-        f'<a class="rcard" href="{prefix}recipes/{r["slug"]}.html"><div class="rthumb">{thumb}</div>'
-        f'<div class="rbody"><b>{esc(r["name"])}</b><small>{r["minutes"]}분 · {r["level"]} · {("1회분 약 " + format(cost_per_serving(r), ",") + "원") if is_special(r) else ("1인분 " + str(compute(r["slug"])["per"]["kcal"]) + "kcal · 약 " + format(cost_per_serving(r), ",") + "원")}</small>'
+        f'<a class="rcard"{extra} href="{prefix}recipes/{r["slug"]}.html"><div class="rthumb">{thumb}</div>'
+        f'<div class="rbody"><b>{esc(r["name"])}</b><small>{r["minutes"]}분 · {r["level"]} · {("1회분 약 " + format(cost_per_serving(r), ",") + "원") if is_special(r) else ("1인분 " + str(compute(r["slug"])["per"]["kcal"]) + "kcal · 약 " + format(cost_per_serving(r), ",") + "원" + sodium)}</small>'
         f'<p>{esc(r["desc"])}</p></div></a>'
     )
 
@@ -402,7 +404,12 @@ def category_page(tpl: str, cat: tuple, photos: dict) -> str:
     slug, name, emoji, desc = cat
     items = sorted([r for r in RECIPES if slug in r["cats"]], key=lambda r: (r["minutes"], r["name"]))
     avg = round(sum(r["minutes"] for r in items) / len(items))
-    cards = "".join(recipe_card_html(r, photos) for r in items)
+    cards = "".join(recipe_card_html(r, photos, attrs=True) for r in items)
+    if len(items) >= 8:
+        cards = (
+            '<div class="rsearch"><input id="cq" type="search" placeholder="이 카테고리에서 검색 (요리 이름·재료·초성)" aria-label="카테고리 안에서 검색" autocomplete="off"></div>'
+            '<p id="ccount" class="mut" style="margin:6px 2px"></p><p id="cnone" class="empty" hidden>일치하는 요리가 없어요.</p>' + cards + '<script src="../assets/catsearch.js"></script>'
+        )
     others = "".join(f'<a class="chip" href="{c[0]}.html" style="text-decoration:none">{c[2]} {esc(c[1])}</a>' for c in RECIPE_CATS if c[0] != slug)
     intro = f"{esc(desc)} 이 카테고리에는 레시피 {len(items)}개가 있고, 평균 조리 시간은 약 {avg}분이에요. 시간이 짧은 순서로 정렬했고, 각 레시피에는 정확한 분량(ml·g), 단계별 조리 순서, " + ("급여할 때 주의사항이 있어요." if slug == "pet" else ("월령별 주의사항이 있어요." if slug == "baby" else "칼로리와 영양성분표가 있어요."))
     out = tpl
@@ -439,15 +446,28 @@ def related(recipe: dict, limit: int = 4) -> list:
     return [o for s, _m, o in scored[:limit] if s > 0]
 
 
+def _tag_low_sodium() -> None:
+    """1인분 나트륨 500mg 이하인 사람용 요리는 '저염식 요리' 카테고리에도 자동으로 넣는다(손으로 적은 저염 레시피와 합쳐진다)."""
+    for r in RECIPES:
+        if "lowsalt" in r["cats"] or any(c in r["cats"] for c in ("pet", "baby")) or r["cats"] == ["kidsnack"]:
+            continue
+        per = compute(r["slug"])["per"]
+        if per["sodium"] <= 500 and per["kcal"] >= 80:
+            r["cats"].append("lowsalt")
+
+
+_tag_low_sodium()
+
+
 SW_REGISTER = "<script>if(\"serviceWorker\" in navigator){addEventListener(\"load\",function(){navigator.serviceWorker.register(\"/sw.js\").catch(function(){});});}</script>"
 
 
 CAT_GROUPS = [
-    ("🍽️ 메뉴로 찾기", ["rice", "soup", "side", "noodle", "jeon", "anju", "dinner", "duck"]),
+    ("🍽️ 메뉴로 찾기", ["rice", "soup", "side", "noodle", "jeon", "anju", "dinner"]),
     ("⏱️ 상황으로 찾기", ["quick5", "onepan", "brunch", "lunchbox"]),
     ("🌏 나라별 요리", ["western", "japan", "china"]),
     ("🇰🇷 지역별 한식", ["gyeongsang", "jeolla", "chungcheong", "gangwon", "jeju", "seoulgyeonggi", "north"]),
-    ("💪 건강·다이어트", ["diet", "protein", "light"]),
+    ("💪 건강·다이어트", ["lowsalt", "diet", "protein", "light"]),
     ("👨‍👩‍👧 가족·반려동물", ["baby", "kidsnack", "pet"]),
 ]
 
@@ -686,6 +706,7 @@ def main() -> None:
         atpl = atpl.replace("{{" + k + "}}", v)
     (DIST / "all.html").write_text(atpl, encoding="utf-8")
     shutil.copy(HERE / "static" / "list.js", DIST / "assets" / "list.js")
+    shutil.copy(HERE / "static" / "catsearch.js", DIST / "assets" / "catsearch.js")
     urls = [f"{BASE}/", f"{BASE}/all.html"] + [f"{BASE}/category/{c[0]}.html" for c in RECIPE_CATS if any(c[0] in r["cats"] for r in RECIPES)] + [f"{BASE}/recipes/{r['slug']}.html" for r in RECIPES]
     sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "\n".join(f"<url><loc>{u}</loc></url>" for u in urls) + "\n</urlset>\n"
     (DIST / "sitemap.xml").write_text(sitemap, encoding="utf-8")
@@ -739,10 +760,22 @@ def main() -> None:
     # 브라우저·서버 캐시가 옛 css/js 를 계속 쓰지 않도록 파일 주소에 내용 해시를 붙인다
     import hashlib
 
-    ver = hashlib.md5((HERE / "static" / "app.js").read_bytes() + (HERE / "static" / "style.css").read_bytes() + (HERE / "static" / "list.js").read_bytes()).hexdigest()[:8]
+    ver = hashlib.md5((HERE / "static" / "app.js").read_bytes() + (HERE / "static" / "style.css").read_bytes() + (HERE / "static" / "list.js").read_bytes() + (HERE / "static" / "catsearch.js").read_bytes()).hexdigest()[:8]
+    import re as _re2
+
+    img_re = _re2.compile(r"assets/img/(?:t/)?[A-Za-z0-9_.\-]+\.jpg")
+    img_cache: dict = {}
+
+    def img_ver(m):
+        path = m.group(0)
+        if path not in img_cache:
+            f = DIST / path
+            img_cache[path] = (path + "?v=" + hashlib.md5(f.read_bytes()).hexdigest()[:8]) if f.exists() else path
+        return img_cache[path]
+
     for page in DIST.rglob("*.html"):
-        t = page.read_text(encoding="utf-8")
-        t2 = t.replace('assets/style.css"', f'assets/style.css?v={ver}"').replace('assets/app.js"', f'assets/app.js?v={ver}"').replace('assets/list.js"', f'assets/list.js?v={ver}"')
+        t = img_re.sub(img_ver, page.read_text(encoding="utf-8"))
+        t2 = t.replace('assets/style.css"', f'assets/style.css?v={ver}"').replace('assets/app.js"', f'assets/app.js?v={ver}"').replace('assets/list.js"', f'assets/list.js?v={ver}"').replace('assets/catsearch.js"', f'assets/catsearch.js?v={ver}"')
         t2 = t2.replace("</body>", SW_REGISTER + "</body>", 1) if "serviceWorker" not in t2 else t2
         if t2 != t:
             page.write_text(t2, encoding="utf-8")

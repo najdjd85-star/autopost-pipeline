@@ -134,6 +134,9 @@ SCENE.update(_SCENES3)
 from dish_scenes_batch4 import SCENES as _SCENES4  # noqa: E402
 
 SCENE.update(_SCENES4)
+from dish_scenes_batch5 import SCENES as _SCENES5  # noqa: E402
+
+SCENE.update(_SCENES5)
 SCENE.update(SCENE_OVERRIDE)
 from dish_scenes_fix import FIX as _FIX  # noqa: E402
 

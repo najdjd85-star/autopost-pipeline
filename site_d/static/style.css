@@ -342,3 +342,9 @@ html{scroll-padding-top:74px}
 .ac a b{color:var(--accent);font-weight:800}
 .ac a small{font-size:12px;font-weight:600;color:var(--mut);white-space:nowrap}
 .ac li.on,.ac li:hover{background:var(--accent-soft)}
+/* 최근에 고른 재료: 모두 비우기 / 하나씩 지우기 */
+.linkbtn.linkbtn2{margin-left:10px;color:var(--mut)}
+.rtile{position:relative;min-width:0}
+.rtile .tile{width:100%}
+.rtile .rx{position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--mut);font-size:11px;line-height:1;cursor:pointer;padding:0;box-shadow:var(--shadow)}
+.rtile .rx:hover{color:var(--ink);border-color:var(--ink)}

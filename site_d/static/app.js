@@ -146,9 +146,23 @@
       all.type = "button";
       all.addEventListener("click", function () { redo.forEach(function (n) { have[n] = true; }); focus = ""; persist(); render(); });
       rh.appendChild(all);
+      var wipe = el("button", "linkbtn linkbtn2", "모두 비우기");
+      wipe.type = "button";
+      wipe.setAttribute("aria-label", "최근에 고른 재료 기록 모두 지우기");
+      wipe.addEventListener("click", function () { recent = []; persist(); buildCats(); });
+      rh.appendChild(wipe);
       rr.appendChild(rh);
       var rbox = el("div", "tiles");
-      redo.forEach(function (n) { rbox.appendChild(tile(n)); });
+      redo.forEach(function (n) {
+        var cell = el("div", "rtile");   // 타일 하나마다 ✕ 를 달아 기록에서 하나씩 지운다
+        cell.appendChild(tile(n));
+        var x = el("button", "rx", "✕");
+        x.type = "button";
+        x.setAttribute("aria-label", n + " 기록에서 지우기");
+        x.addEventListener("click", function (e) { e.stopPropagation(); recent = recent.filter(function (m) { return m !== n; }); persist(); buildCats(); });
+        cell.appendChild(x);
+        rbox.appendChild(cell);
+      });
       rr.appendChild(rbox);
       $cats.appendChild(rr);
     }
