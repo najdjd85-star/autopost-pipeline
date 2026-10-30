@@ -22,10 +22,17 @@ cp -rf site_d/dist/. "$TARGET"/   # -a 는 폴더 시간 복사 권한 오류로
 if [ -f "$TARGET/index.php" ]; then
   mv -f "$TARGET/index.php" "$TARGET/index.php.bak" 2>/dev/null || rm -f "$TARGET/index.php" 2>/dev/null     || echo "경고: index.php 를 치우지 못했습니다(권한). Cloudways 기본 화면이 계속 보일 수 있습니다."
 fi
-[ -f "$TARGET/.htaccess" ] || printf 'DirectoryIndex index.html index.php
-' > "$TARGET/.htaccess"
-# 앞단 캐시(Varnish)가 옛 화면을 내주지 않도록 주요 주소를 비운다(실패해도 무시)
-for u in / /index.html /robots.txt /sitemap.xml /trending.json; do
-  curl -s -m 10 -o /dev/null -X PURGE "http://cook.dailyfixpoint.com$u" || true
+# 쪽마다 따로 새로고침하지 않아도 항상 최신 화면이 보이도록: 화면(html)·데이터 파일은 열 때마다 서버에 "바뀌었나?"만 확인한다(안 바뀌었으면 가볍게 304).
+cat > "$TARGET/.htaccess" <<'HTACCESS'
+DirectoryIndex index.html index.php
+<IfModule mod_headers.c>
+<FilesMatch "\.(html|json|xml|txt)$">
+Header set Cache-Control "no-cache, must-revalidate"
+</FilesMatch>
+</IfModule>
+HTACCESS
+# 앞단 캐시(Varnish)에 남은 옛 화면을 모든 쪽에서 비운다(실패해도 무시)
+( cd site_d/dist && { echo /; find . -name '*.html' -o -name '*.json' -o -name '*.xml' -o -name '*.txt' | sed 's#^\./#/#'; } ) | while read -r u; do
+  curl -s -m 5 -o /dev/null -X PURGE "http://cook.dailyfixpoint.com$u" || true
 done
 echo "반영 완료: $TARGET ($(ls "$TARGET"/recipes | wc -l)개 레시피 페이지)"
