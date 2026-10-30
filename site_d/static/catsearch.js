@@ -12,14 +12,18 @@
   var total = cards.length, curType = "", curIng = "";
   var norm = function (t) { return t.replace(/\s/g, "").toLowerCase(); };
   var onlyCons = function (t) { return /^[ㄱ-ㅎ]+$/.test(t); };
+  // 한글을 쓰는 도중(예: '두부조리')에도 '두부조림'이 나오도록 자음·모음으로 풀어서 비교한다
+  var jn = function (t) { return t.replace(/\s/g, "").toLowerCase().normalize("NFKD"); };
+  cards.forEach(function (a) { a._n = jn(a.getAttribute("data-n") || ""); a._k = jn(a.getAttribute("data-k") || ""); });
   var baseCons = function (t) { return t.replace(/ㄲ/g, "ㄱ").replace(/ㄸ/g, "ㄷ").replace(/ㅃ/g, "ㅂ").replace(/ㅆ/g, "ㅅ").replace(/ㅉ/g, "ㅈ"); };
 
   function apply() {
     var q = norm($q.value), shown = 0;
     var cons = onlyCons(q);
     if (cons) { q = baseCons(q); }
+    var jq = jn(q);
     cards.forEach(function (a) {
-      var okQ = !q || (cons ? (a.getAttribute("data-c") || "").indexOf(q) > -1 : (norm(a.getAttribute("data-n") || "").indexOf(q) > -1 || (a.getAttribute("data-k") || "").indexOf(q) > -1));
+      var okQ = !q || (cons ? (a.getAttribute("data-c") || "").indexOf(q) > -1 : (a._n.indexOf(jq) > -1 || a._k.indexOf(jq) > -1));
       var okT = !curType || a.getAttribute("data-t") === curType;
       var okI = !curIng || (a.getAttribute("data-i") || "").indexOf("|" + curIng + "|") > -1;
       a.hidden = !(okQ && okT && okI);

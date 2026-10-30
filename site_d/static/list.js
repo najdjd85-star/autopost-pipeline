@@ -15,17 +15,19 @@
   var orig = items.map(function (li) { li.setAttribute("data-gi", li.parentNode.parentNode.getAttribute("data-i") || ""); return { li: li, ul: li.parentNode }; });
   var $flat = null;
   var onlyCons = function (t) { return /^[ㄱ-ㅎ]+$/.test(t); };
+  // 한글을 쓰는 도중(예: '두부조리')에도 '두부조림'이 나오도록 자음·모음으로 풀어서 비교한다
+  var jn = function (t) { return t.replace(/\s/g, "").toLowerCase().normalize("NFKD"); };
+  items.forEach(function (li) { li._n = jn(li.getAttribute("data-n") || ""); li._k = jn(li.getAttribute("data-k") || ""); });
   var baseCons = function (t) { return t.replace(/ㄲ/g, "ㄱ").replace(/ㄸ/g, "ㄷ").replace(/ㅃ/g, "ㅂ").replace(/ㅆ/g, "ㅅ").replace(/ㅉ/g, "ㅈ"); };
 
   function filterList() {
     var q = $rq.value.replace(/\s/g, "").toLowerCase();
     var cons = onlyCons(q);
     if (cons) { q = baseCons(q); }
+    var jq = jn(q);
     var shown = 0;
     items.forEach(function (li) {
-      var n = (li.getAttribute("data-n") || "").replace(/\s/g, "").toLowerCase();
-      var k = li.getAttribute("data-k") || "";
-      var okQ = !q || (cons ? (li.getAttribute("data-c") || "").indexOf(q) > -1 : (n.indexOf(q) > -1 || k.indexOf(q) > -1));
+      var okQ = !q || (cons ? (li.getAttribute("data-c") || "").indexOf(q) > -1 : (li._n.indexOf(jq) > -1 || li._k.indexOf(jq) > -1));
       var okI = !curI || li.getAttribute("data-gi") === curI;
       var okT = !curT || li.getAttribute("data-t") === curT;
       var okG = !curG || (li.getAttribute("data-g") || "").indexOf("|" + curG + "|") > -1;

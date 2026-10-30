@@ -349,12 +349,19 @@
     group("재료 2가지가 더 필요해요", "one", two);
   }
 
+  // 한글을 쓰는 도중(예: '두부조리'까지만 친 상태)에도 '두부조림'을 찾도록, 글자를 자음·모음으로 풀어서 비교한다
+  var jcache = {};
+  function jn(t) {
+    var v = jcache[t];
+    if (v === undefined) { v = t.replace(/\s/g, "").toLowerCase().normalize("NFKD"); jcache[t] = v; }
+    return v;
+  }
   function suggestFor(text) {
-    var k = text.replace(/\s/g, "").toLowerCase();
+    var k = jn(text);
     var out = [];
     if (!k) { return out; }
     Object.keys(D.aliases).concat(PANTRY).forEach(function (c) {
-      var hit = c.indexOf(k) > -1 || (D.aliases[c] || []).some(function (a) { return a.replace(/\s/g, "").toLowerCase().indexOf(k) > -1; });
+      var hit = jn(c).indexOf(k) > -1 || (D.aliases[c] || []).some(function (a) { return jn(a).indexOf(k) > -1; });
       if (hit && out.indexOf(c) < 0 && !have[c]) { out.push(c); }
     });
     return out.slice(0, 6);
@@ -366,10 +373,11 @@
     if (!k) { return []; }
     var cons = /^[ㄱ-ㅎ]+$/.test(k);
     if (cons) { k = k.replace(/ㄲ/g, "ㄱ").replace(/ㄸ/g, "ㄷ").replace(/ㅃ/g, "ㅂ").replace(/ㅆ/g, "ㅅ").replace(/ㅉ/g, "ㅈ"); }
-    var hits = D.recipes.filter(function (r) { return cons ? (r.ini || "").indexOf(k) > -1 : r.name.replace(/\s/g, "").toLowerCase().indexOf(k) > -1; });
+    var jk = jn(text);
+    var hits = D.recipes.filter(function (r) { return cons ? (r.ini || "").indexOf(k) > -1 : jn(r.name).indexOf(jk) > -1; });
     hits.sort(function (a, b) {
       var ea = a.name === text ? 0 : 1, eb = b.name === text ? 0 : 1;
-      var sa = a.name.indexOf(text) === 0 ? 0 : 1, sb = b.name.indexOf(text) === 0 ? 0 : 1;
+      var sa = jn(a.name).indexOf(jk) === 0 ? 0 : 1, sb = jn(b.name).indexOf(jk) === 0 ? 0 : 1;
       return (ea - eb) || (sa - sb) || (a.name.length - b.name.length);
     });
     return hits.slice(0, limit || 5);
