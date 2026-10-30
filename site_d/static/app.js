@@ -123,6 +123,21 @@
 
   function buildCats() {
     $cats.textContent = "";
+    // 맨 위 한 줄 안내: 양념은 대부분 집에 있으니 요약만 보여 주고, 누르면 양념통이 열린다
+    var mine = PANTRY.filter(function (n) { return have[n]; });
+    var det = el("details", "pantry-line");
+    det.open = pantryOpen;
+    det.addEventListener("toggle", function () { pantryOpen = det.open; });
+    var sm = el("summary", "pl-sum");
+    sm.appendChild(el("span", "pl-em", "🧂"));
+    sm.appendChild(el("span", "pl-txt", mine.length ? "기본 양념 " + mine.length + "개 있음 (" + mine.slice(0, 3).join("·") + (mine.length > 3 ? " 외" : "") + ")" : "집에 있는 양념을 알려 주세요"));
+    sm.appendChild(el("span", "pl-btn", "바꾸기"));
+    det.appendChild(sm);
+    det.appendChild(el("p", "shelf-note", "집에 있는 양념을 눌러 주세요. 없는 양념이 필요한 요리는 '양념만 더 필요해요'로 따로 보여 드려요."));
+    var pbox = el("div", "tiles");
+    PANTRY.forEach(function (n) { pbox.appendChild(tile(n, " staple")); });
+    det.appendChild(pbox);
+    $cats.appendChild(det);
     var redo = recent.filter(function (n) { return !have[n]; }).slice(0, 8);
     if (redo.length) {   // 자주 쓰는 재료는 맨 위에서 한 번에 다시 담는다
       var rr = el("section", "aisle recent");
@@ -161,19 +176,6 @@
       }
       $cats.appendChild(sec);
     });
-    var det = el("details", "aisle pantry");
-    det.open = pantryOpen;
-    det.addEventListener("toggle", function () { pantryOpen = det.open; });
-    var sm = el("summary", "aisle-h");
-    sm.appendChild(el("span", "no", String(shelves().length + 1)));
-    sm.appendChild(document.createTextNode("양념통"));
-    sm.appendChild(el("small", "cnt", PANTRY.filter(function (n) { return have[n]; }).length + "개 있음 · 집에 있는 양념을 눌러 고르세요"));
-    det.appendChild(sm);
-    det.appendChild(el("p", "shelf-note", "집에 있는 양념을 눌러 주세요. 없는 양념이 필요한 요리는 '양념만 더 필요해요'로 따로 보여 드려요."));
-    var pbox = el("div", "tiles");
-    PANTRY.forEach(function (n) { pbox.appendChild(tile(n, " staple")); });
-    det.appendChild(pbox);
-    $cats.appendChild(det);
   }
 
   function buildSelected() {

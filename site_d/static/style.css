@@ -324,3 +324,13 @@ html.menu-open body::after{content:"";position:fixed;left:0;right:0;top:58px;bot
 /* 위에 고정된 막대에 가려지지 않게: 결과 보기·바로가기로 이동할 때 막대 높이만큼 비워 둔다 */
 html{scroll-padding-top:74px}
 #results{scroll-margin-top:74px}
+/* 맨 위 양념 한 줄 안내 */
+.pantry-line{margin:14px 0 0;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:0 14px;box-shadow:var(--shadow)}
+.pantry-line summary{display:flex;align-items:center;gap:8px;cursor:pointer;list-style:none;padding:11px 0;font-size:14px;font-weight:700;letter-spacing:-.02em}
+.pantry-line summary::-webkit-details-marker{display:none}
+.pantry-line .pl-txt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pantry-line .pl-btn{flex:0 0 auto;font-size:12px;font-weight:700;color:var(--accent);padding:3px 9px;border:1px solid var(--line);border-radius:999px}
+.pantry-line[open] .pl-btn::after{content:" ▴"}.pantry-line:not([open]) .pl-btn::after{content:" ▾"}
+.pantry-line .shelf-note{margin:0 0 8px}
+.pantry-line .tiles{padding-bottom:12px}
+.pantry-line .tile{box-shadow:none}
