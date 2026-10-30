@@ -1,6 +1,9 @@
-"""화면 녹화(live.webm)를 폰 틀에 넣고 단계별 설명 글자를 입혀 세로 영상(1080x1920)으로 만든다(무료, 내 PC).
+"""화면 녹화(live.webm)를 폰 틀에 넣고 단계별 설명 글자·오프닝 실사 클립·음성을 입혀 세로 영상(1080x1920)으로 만든다(무료, 내 PC).
 
-먼저 record_demo.py 로 녹화해 둔다. 결과: site_d/promo/out/demo/short_live.mp4
+순서: 오프닝(냉장고 앞 실사 클립 + 후킹 글자) → 사이트 사용 화면(폰 틀, 결과 구간 확대) → 끝 장면(행동 유도).
+먼저 narrate.py(음성), record_demo.py(녹화)를 실행해 둔다. 결과: site_d/promo/out/demo/short_live.mp4(소리 없음), short_live_voice.mp4(소리 있음)
+
+오프닝 클립은 Pexels 무료 영상(상업적 이용 가능, 출처 표기 의무 없음)이다: site_d/promo/out/screens/stock/*.mp4
 
 사용: venv/Scripts/python.exe -X utf8 site_d/promo/make_live.py
 """
@@ -20,7 +23,9 @@ import render as R  # noqa: E402
 HERE = Path(__file__).resolve().parent
 SCR = HERE / "out" / "screens"
 OUT = HERE / "out" / "demo"
+STOCK = SCR / "stock"
 W, H = 1080, 1920
+VW, VH = 412, 892   # 녹화 해상도
 
 
 def layout():
@@ -44,12 +49,10 @@ def make_bg_and_bezel():
     R.footer(d, W, H)
     img.save(OUT / "_bg.png")
     frame = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    fd = ImageDraw.Draw(frame)
-    fd.rounded_rectangle((x, ptop, x + ow, ptop + oh), 62, fill=(31, 27, 24, 255))
+    ImageDraw.Draw(frame).rounded_rectangle((x, ptop, x + ow, ptop + oh), 62, fill=(31, 27, 24, 255))
     hole = Image.new("L", (W, H), 0)
     ImageDraw.Draw(hole).rounded_rectangle((x + bez, ptop + bez, x + bez + pw - 1, ptop + bez + ph - 1), 50, fill=255)
-    alpha = frame.getchannel("A")
-    alpha = Image.composite(Image.new("L", (W, H), 0), alpha, hole)   # 화면 자리는 비워 둔다(영상이 비쳐 보임)
+    alpha = Image.composite(Image.new("L", (W, H), 0), frame.getchannel("A"), hole)   # 화면 자리는 비워 둔다(영상이 비쳐 보임)
     frame.putalpha(alpha)
     frame.save(OUT / "_bezel.png")
     return x + bez, ptop + bez, pw, ph
@@ -59,8 +62,7 @@ def caption(name: str, step, title: str, sub: str) -> Path:
     top = layout()[0]
     img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
-    # 글자 바탕(배경색)으로 덮어서 이전 글이 겹쳐 보이지 않게 한다
-    d.rectangle((0, top - 30, W, top + 220), fill=R.BG + (255,))
+    d.rectangle((0, top - 30, W, top + 220), fill=R.BG + (255,))   # 이전 글이 겹쳐 보이지 않게 배경색으로 덮는다
     tx = R.M
     if step:
         d.ellipse((R.M, top, R.M + 84, top + 84), fill=R.ACC)
@@ -74,59 +76,108 @@ def caption(name: str, step, title: str, sub: str) -> Path:
     return p
 
 
+def hook_text() -> Path:
+    """오프닝 위에 올리는 후킹 글자(아래쪽 어둡게 + 흰 글자)."""
+    img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    grad = Image.new("L", (1, H), 0)
+    for y in range(H):
+        grad.putpixel((0, y), int(max(0, (y - H * 0.50) / (H * 0.50)) * 190))
+    shade = Image.new("RGBA", (W, H), (0, 0, 0, 255))
+    shade.putalpha(grad.resize((W, H)))
+    img.alpha_composite(shade)
+    d = ImageDraw.Draw(img)
+    y = int(H * 0.70)
+    for t, c in (("냉장고 열었는데", R.WHITE), ("곧 버릴 재료만 잔뜩?", (255, 196, 80))):
+        d.text((W // 2, y), t, font=R.font(112, 800), fill=c, anchor="ma", stroke_width=7, stroke_fill=(0, 0, 0))
+        y += 150
+    p = OUT / "_hooktext.png"
+    img.save(p)
+    return p
+
+
+def run(cmd: list) -> None:
+    r = subprocess.run(cmd, capture_output=True, text=True)
+    if r.returncode != 0:
+        raise SystemExit("ffmpeg 실패:\n" + r.stderr[-1500:])
+
+
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     marks = json.loads((SCR / "live_marks.json").read_text(encoding="utf-8"))
+    nar = json.loads((SCR / "narr.json").read_text(encoding="utf-8")) if (SCR / "narr.json").exists() else {}
     vx, vy, pw, ph = make_bg_and_bezel()
-    end = marks["end"]
-    segs = [
-        ("0", 0.0, marks["type"], None, "냉장고 열었는데 곧 버릴 재료만?", "이렇게 쓰면 바로 해결돼"),
-        ("1", marks["type"], marks["pick"], 1, "이름을 쳐도 돼", "재료든 요리 이름이든 치면 바로 찾아줘"),
-        ("2", marks["pick"], marks["result"], 2, "재료를 눌러서 담아", "냉장고에 있는 거 아무거나 눌러봐"),
-        ("3", marks["result"], marks["recipe"], 3, "지금 되는 요리가 바로 나와", "재료 다 있는 요리부터 보여줘"),
-        ("4", marks["recipe"], end, 4, "순서까지 다 정리돼 있어", "분량 그대로 따라 하면 끝"),
-    ]
-    caps = [(caption(n, st, t, s), a, b) for n, a, b, st, t, s in segs]
-    outro = R.outro(W, H, "남은 재료 빨리 처분하고 싶으면", "여기 한번 들어가봐")
-    outro.save(OUT / "_outro.png")
+    have_stock = (STOCK / "9032882.mp4").exists() and (STOCK / "9323255.mp4").exists()
+    for f in ("_open.mp4", "_main.mp4", "_outro.mp4"):
+        (OUT / f).unlink(missing_ok=True)
 
-    dur = end + 0.3
+    # 1) 오프닝: 냉장고 앞 실사 클립 → 쓰레기통 클립 + 후킹 글자
+    d0 = max(2.4, nar.get("hook", 2.4) + 0.35) if have_stock else 0.0
+    if have_stock:
+        l1, l2 = d0 * 0.55, d0 * 0.45
+        fc = ("[0:v]scale=1080:1920,setsar=1,fps=30[a];[1:v]scale=1080:1920,setsar=1,fps=30[b];"
+              "[a][b]concat=n=2:v=1:a=0,eq=brightness=-0.06:saturation=1.05[c];[c][2:v]overlay=0:0[o]")
+        run(["ffmpeg", "-y", "-ss", "1.0", "-t", f"{l1:.2f}", "-i", str(STOCK / "9032882.mp4"), "-ss", "2.2", "-t", f"{l2:.2f}", "-i", str(STOCK / "9323255.mp4"),
+             "-loop", "1", "-i", str(hook_text()), "-filter_complex", fc, "-map", "[o]", "-t", f"{d0:.2f}", "-r", "30", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20",
+             str(OUT / "_open.mp4")])
+
+    # 2) 사용 화면: 입력을 시작하기 조금 전부터. 결과 구간은 '재료 다 있어요 / 없는 재료 사러가기' 쪽으로 확대
+    ts = max(0.0, marks["type"] - 0.4)
+    end = marks["end"]
+    main_len = end - ts + 0.3
+    rel = {k: marks[k] - ts for k in ("type", "pick", "result", "recipe")}
+    segs = [("1", 0.0, rel["pick"], 1, "이름을 쳐도 돼", "재료든 요리 이름이든 치면 바로 찾아줘"),
+            ("2", rel["pick"], rel["result"], 2, "재료를 톡톡 눌러서 담아", "냉장고에 있는 거 아무거나 눌러봐"),
+            ("3", rel["result"], rel["recipe"], 3, "지금 되는 요리가 바로 나와", "재료 다 있는 요리부터 보여줘"),
+            ("4", rel["recipe"], main_len, 4, "순서까지 다 정리돼 있어", "분량 그대로 따라 하면 끝")]
+    caps = [(caption(n, st, t, s), a, b) for n, a, b, st, t, s in segs]
+    za, zb = marks.get("zoom_a", 0) - ts, marks.get("zoom_b", 0) - ts
+    cx, cy = marks.get("zoom_cx", VW / 2), marks.get("zoom_cy", VH / 2)
+    if zb > za:
+        zexp = f"(1+0.5*between(t,{za:.2f},{zb:.2f})*min(1,(t-{za:.2f})/0.5)*min(1,({zb:.2f}-t)/0.5))"
+        zoom = (f"scale=w='trunc({VW}*{zexp}/2)*2':h='trunc({VH}*{zexp}/2)*2':eval=frame,"
+                f"crop={VW}:{VH}:x='min(max({cx:.1f}*iw/{VW}-{VW / 2},0),iw-{VW})':y='min(max({cy:.1f}*ih/{VH}-{VH / 2},0),ih-{VH})',")
+    else:
+        zoom = ""
     inputs = ["-loop", "1", "-i", str(OUT / "_bg.png"), "-i", str(SCR / "live.webm"), "-loop", "1", "-i", str(OUT / "_bezel.png")]
     for p, _a, _b in caps:
         inputs += ["-loop", "1", "-i", str(p)]
-    fc = [f"[1:v]scale={pw}:{ph}:flags=lanczos,unsharp=5:5:0.8,setpts=PTS-STARTPTS[v]", f"[0:v][v]overlay={vx}:{vy}[a]", "[a][2:v]overlay=0:0[b]"]
+    fc = [f"[1:v]trim=start={ts:.2f},setpts=PTS-STARTPTS,{zoom}scale={pw}:{ph}:flags=lanczos,unsharp=5:5:0.8[v]",
+          f"[0:v][v]overlay={vx}:{vy}[a]", "[a][2:v]overlay=0:0[b]"]
     last = "b"
     for i, (_p, a, b) in enumerate(caps):
-        nxt = f"c{i}"
-        fc.append(f"[{last}][{3 + i}:v]overlay=0:0:enable='between(t,{a},{b + (0.3 if i == len(caps) - 1 else 0)})'[{nxt}]")
-        last = nxt
-    main_mp4 = OUT / "_main.mp4"
-    cmd = ["ffmpeg", "-y", *inputs, "-filter_complex", ";".join(fc), "-map", f"[{last}]", "-t", f"{dur:.2f}", "-r", "30",
-           "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20", str(main_mp4)]
-    subprocess.run(cmd, check=True, capture_output=True)
-    outro_mp4 = OUT / "_outro.mp4"
-    nar = json.loads((SCR / "narr.json").read_text(encoding="utf-8")) if (SCR / "narr.json").exists() else {}
-    outro_len = max(3.0, nar.get("outro", 0) + 0.9)
-    subprocess.run(["ffmpeg", "-y", "-loop", "1", "-i", str(OUT / "_outro.png"), "-t", f"{outro_len:.2f}", "-r", "30", "-c:v", "libx264", "-pix_fmt", "yuv420p", str(outro_mp4)],
-                   check=True, capture_output=True)
-    lst = OUT / "_list.txt"
-    lst.write_text(f"file '{main_mp4.name}'\nfile '{outro_mp4.name}'\n", encoding="utf-8")
+        fc.append(f"[{last}][{3 + i}:v]overlay=0:0:enable='between(t,{a:.2f},{b:.2f})'[c{i}]")
+        last = f"c{i}"
+    run(["ffmpeg", "-y", *inputs, "-filter_complex", ";".join(fc), "-map", f"[{last}]", "-t", f"{main_len:.2f}", "-r", "30",
+         "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20", str(OUT / "_main.mp4")])
+
+    # 3) 끝 장면: 행동 유도 + 살짝 커지는 효과
+    outro = R.outro(W, H, "오늘 저녁 뭐 먹지 고민 말고", "프로필 링크 클릭!")
+    outro.save(OUT / "_outro.png")
+    outro_len = max(3.2, nar.get("outro", 0) + 0.9)
+    frames = int(outro_len * 30)
+    run(["ffmpeg", "-y", "-loop", "1", "-i", str(OUT / "_outro.png"), "-vf", f"zoompan=z='min(1.0+0.0009*on,1.07)':d={frames}:s=1080x1920:fps=30",
+         "-t", f"{outro_len:.2f}", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20", str(OUT / "_outro.mp4")])
+
+    parts = [f for f in ("_open.mp4", "_main.mp4", "_outro.mp4") if (OUT / f).exists()]
+    (OUT / "_list.txt").write_text("".join(f"file '{f}'\n" for f in parts), encoding="utf-8")
     final = OUT / "short_live.mp4"
-    subprocess.run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", str(lst), "-c", "copy", str(final)], check=True, capture_output=True)
-    voice_lines = [(k, SCR / f"narr_{k}.mp3") for k in ("hook", "type", "pick", "result", "recipe", "outro") if (SCR / f"narr_{k}.mp3").exists()]
-    if voice_lines:
-        starts = {"hook": 0.2, "type": marks["type"] + 0.1, "pick": marks["pick"] + 0.1, "result": marks["result"] + 0.1,
-                  "recipe": marks["recipe"] + 0.3, "outro": dur + 0.2}
+    run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", str(OUT / "_list.txt"), "-c", "copy", str(final)])
+    total = d0 + main_len + outro_len
+
+    # 4) 음성
+    lines = [(k, SCR / f"narr_{k}.mp3") for k in ("hook", "type", "pick", "result", "recipe", "outro") if (SCR / f"narr_{k}.mp3").exists()]
+    if lines:
+        starts = {"hook": 0.15, "type": d0 + rel["type"] + 0.15, "pick": d0 + rel["pick"] + 0.1, "result": d0 + rel["result"] + 0.35,
+                  "recipe": d0 + rel["recipe"] + 0.3, "outro": d0 + main_len + 0.15}
         cmd = ["ffmpeg", "-y", "-i", str(final)]
-        for _k, f in voice_lines:
+        for _k, f in lines:
             cmd += ["-i", str(f)]
-        parts = [f"[{i + 1}:a]adelay={int(starts[k] * 1000)}|{int(starts[k] * 1000)},volume=1.0[a{i}]" for i, (k, _f) in enumerate(voice_lines)]
-        mix = "".join(f"[a{i}]" for i in range(len(voice_lines))) + f"amix=inputs={len(voice_lines)}:normalize=0:duration=longest[aout]"
+        pf = [f"[{i + 1}:a]adelay={int(starts[k] * 1000)}|{int(starts[k] * 1000)}[a{i}]" for i, (k, _f) in enumerate(lines)]
+        mix = "".join(f"[a{i}]" for i in range(len(lines))) + f"amix=inputs={len(lines)}:normalize=0:duration=longest,volume=1.4[aout]"
         voiced = OUT / "short_live_voice.mp4"
-        cmd += ["-filter_complex", ";".join(parts + [mix]), "-map", "0:v", "-map", "[aout]", "-c:v", "copy", "-c:a", "aac", "-b:a", "160k", "-shortest", str(voiced)]
-        subprocess.run(cmd, check=True, capture_output=True)
+        run(cmd + ["-filter_complex", ";".join(pf + [mix]), "-map", "0:v", "-map", "[aout]", "-c:v", "copy", "-c:a", "aac", "-b:a", "160k", "-t", f"{total:.2f}", str(voiced)])
         print("음성 영상:", voiced)
-    print("완성:", final, f"{dur + outro_len:.1f}초")
+    print("완성:", final, f"{total:.1f}초")
 
 
 if __name__ == "__main__":

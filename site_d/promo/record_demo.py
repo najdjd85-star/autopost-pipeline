@@ -20,7 +20,7 @@ VIEW = {"width": 412, "height": 892}
 
 TAP_JS = """
 (() => {
-  const css = '.tapdot{position:fixed;width:54px;height:54px;margin:-27px 0 0 -27px;border-radius:50%;background:rgba(224,84,10,.30);border:3px solid rgba(224,84,10,.85);pointer-events:none;z-index:2147483647;animation:tapd .6s ease-out forwards}@keyframes tapd{from{transform:scale(.35);opacity:1}to{transform:scale(1.6);opacity:0}}';
+  const css = '.tapdot{position:fixed;width:76px;height:76px;margin:-38px 0 0 -38px;border-radius:50%;background:rgba(224,84,10,.38);border:5px solid rgba(224,84,10,.95);pointer-events:none;z-index:2147483647;animation:tapd .6s ease-out forwards}@keyframes tapd{from{transform:scale(.35);opacity:1}to{transform:scale(1.7);opacity:0}}';
   const add = () => { const s = document.createElement('style'); s.textContent = css; document.head.appendChild(s); };
   if (document.head) add(); else addEventListener('DOMContentLoaded', add);
   addEventListener('click', (e) => {
@@ -63,7 +63,7 @@ def run(base: str) -> None:
             page.evaluate("([s,o])=>{const e=document.querySelector(s); window.scrollTo({top:e.getBoundingClientRect().top+scrollY-o,behavior:'smooth'})}", [sel, off])
 
         page.goto(base + "/", wait_until="networkidle")
-        page.wait_for_timeout(max(1200, int(nar.get("hook", 0) * 1000) + 300))
+        page.wait_for_timeout(900)
         mark("type")
         page.locator("#q").click()
         page.wait_for_timeout(500)
@@ -77,14 +77,25 @@ def run(base: str) -> None:
         for n in ("대파", "양파", "계란", "김치", "두부"):
             loc = page.locator("#cats .tile", has_text=n).first
             loc.scroll_into_view_if_needed()
-            page.wait_for_timeout(450)
+            page.wait_for_timeout(220)
             loc.click()
-            page.wait_for_timeout(900)
+            page.wait_for_timeout(520)
         until("pick", nar.get("pick", 0) + 0.4)
         mark("result")
         page.locator("#bar button, #bar a").first.click()
         page.wait_for_timeout(1900)
+        try:
+            b1 = page.get_by_text("재료 다 있어요").first.bounding_box()
+            b2 = page.get_by_text("없는 재료 사러가기").first.bounding_box()
+            if b1 and b2:
+                marks["zoom_cx"] = round(((b1["x"] + b1["width"] / 2) + (b2["x"] + b2["width"] / 2)) / 2, 1)
+                marks["zoom_cy"] = round(((b1["y"] + b1["height"] / 2) + (b2["y"] + b2["height"] / 2)) / 2, 1)
+                mark("zoom_a")
+        except Exception:  # noqa: BLE001
+            pass
         until("result", nar.get("result", 0) + 0.6)
+        if "zoom_a" in marks:
+            mark("zoom_b")
         mark("recipe")
         page.locator("#results a[href*='recipes/']").first.click()
         page.wait_for_load_state("load")
