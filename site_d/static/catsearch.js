@@ -1,84 +1,62 @@
 (function () {
-  // 카테고리 페이지: 이 카테고리 안에서 이름·재료·초성으로 찾고, 입력하면 자동완성 후보를 보여 준다
+  // 카테고리 페이지: 이름·재료·초성 검색 + 요리 종류 칩 + 정렬(가나다순 기본). 입력하면 목록이 바로 걸러진다
   var $q = document.getElementById("cq");
   if (!$q) { return; }
-  var cards = [].slice.call(document.querySelectorAll(".rlistc .rcard"));
+  var $list = document.getElementById("clist");
+  var cards = [].slice.call($list.querySelectorAll(".rcard"));
   var $none = document.getElementById("cnone");
   var $cnt = document.getElementById("ccount");
-  var total = cards.length;
+  var $sort = document.getElementById("csort");
+  var $types = document.getElementById("ctypes");
+  var $ings = document.getElementById("cings");
+  var total = cards.length, curType = "", curIng = "";
   var norm = function (t) { return t.replace(/\s/g, "").toLowerCase(); };
   var onlyCons = function (t) { return /^[ㄱ-ㅎ]+$/.test(t); };
   var baseCons = function (t) { return t.replace(/ㄲ/g, "ㄱ").replace(/ㄸ/g, "ㄷ").replace(/ㅃ/g, "ㅂ").replace(/ㅆ/g, "ㅅ").replace(/ㅉ/g, "ㅈ"); };
 
-  function filterCards() {
+  function apply() {
     var q = norm($q.value), shown = 0;
     var cons = onlyCons(q);
     if (cons) { q = baseCons(q); }
     cards.forEach(function (a) {
-      var ok = !q || (cons ? (a.getAttribute("data-c") || "").indexOf(q) > -1 : (norm(a.getAttribute("data-n") || "").indexOf(q) > -1 || (a.getAttribute("data-k") || "").indexOf(q) > -1));
-      a.hidden = !ok;
-      if (ok) { shown++; }
+      var okQ = !q || (cons ? (a.getAttribute("data-c") || "").indexOf(q) > -1 : (norm(a.getAttribute("data-n") || "").indexOf(q) > -1 || (a.getAttribute("data-k") || "").indexOf(q) > -1));
+      var okT = !curType || a.getAttribute("data-t") === curType;
+      var okI = !curIng || (a.getAttribute("data-i") || "").indexOf("|" + curIng + "|") > -1;
+      a.hidden = !(okQ && okT && okI);
+      if (!a.hidden) { shown++; }
     });
     if ($none) { $none.hidden = shown > 0; }
-    if ($cnt) { $cnt.textContent = q ? "검색 결과 " + shown + "개 (전체 " + total + "개)" : ""; }
+    if ($cnt) { $cnt.textContent = (q || curType || curIng) ? shown + "개 보이는 중 (전체 " + total + "개)" : "전체 " + total + "개"; }
   }
 
-  // ---- 자동완성 ----
-  var $box = document.createElement("ul");
-  $box.className = "ac"; $box.hidden = true; $box.setAttribute("role", "listbox");
-  $q.parentNode.style.position = "relative";
-  $q.parentNode.appendChild($box);
-  var cur = -1;
-  var closeBox = function () { $box.hidden = true; $box.textContent = ""; cur = -1; };
-  function suggest() {
-    var q = norm($q.value);
-    if (!q) { closeBox(); return; }
-    var cons = onlyCons(q);
-    if (cons) { q = baseCons(q); }
-    var byName = [], byIng = [];
-    cards.forEach(function (a) {
-      var n = a.getAttribute("data-n") || "", nn = norm(n);
-      var hit = cons ? (a.getAttribute("data-c") || "").indexOf(q) > -1 : nn.indexOf(q) > -1;
-      if (hit) { byName.push({ a: a, n: n, pre: nn.indexOf(q) === 0 || (cons && (a.getAttribute("data-c") || "").indexOf(q) === 0) }); }
-      else if (!cons && (a.getAttribute("data-k") || "").indexOf(q) > -1) { byIng.push({ a: a, n: n }); }
+  function sortCards() {
+    var key = $sort.value;
+    var arr = cards.slice();
+    arr.sort(function (a, b) {
+      if (key === "n") { return (a.getAttribute("data-n") || "").localeCompare(b.getAttribute("data-n") || "", "ko"); }
+      var d = (parseFloat(a.getAttribute("data-" + key)) || 0) - (parseFloat(b.getAttribute("data-" + key)) || 0);
+      return d || (a.getAttribute("data-n") || "").localeCompare(b.getAttribute("data-n") || "", "ko");
     });
-    byName.sort(function (x, y) { return (x.pre ? 0 : 1) - (y.pre ? 0 : 1) || x.n.length - y.n.length; });
-    var rows = byName.slice(0, 7).map(function (x) { return { x: x, tag: false }; });
-    byIng.slice(0, Math.max(0, 8 - rows.length)).forEach(function (x) { rows.push({ x: x, tag: true }); });
-    $box.textContent = ""; cur = -1;
-    if (!rows.length) { $box.hidden = true; return; }
-    rows.forEach(function (r) {
-      var li = document.createElement("li");
-      li.setAttribute("role", "option");
-      var a = document.createElement("a");
-      a.href = r.x.a.getAttribute("href");
-      var nm = document.createElement("span");
-      var i = r.x.n.toLowerCase().indexOf(q);
-      if (i > -1 && !cons) {
-        nm.appendChild(document.createTextNode(r.x.n.slice(0, i)));
-        var b = document.createElement("b"); b.textContent = r.x.n.slice(i, i + q.length); nm.appendChild(b);
-        nm.appendChild(document.createTextNode(r.x.n.slice(i + q.length)));
-      } else { nm.textContent = r.x.n; }
-      a.appendChild(nm);
-      if (r.tag) { var t = document.createElement("small"); t.textContent = q + " 포함"; a.appendChild(t); }
-      li.appendChild(a); $box.appendChild(li);
-    });
-    $box.hidden = false;
+    arr.forEach(function (a) { $list.appendChild(a); });
   }
-  var setCur = function (i) {
-    var rows = [].slice.call($box.children);
-    if (!rows.length) { return; }
-    cur = (i + rows.length) % rows.length;
-    rows.forEach(function (r, k) { r.classList.toggle("on", k === cur); });
-  };
-  $q.addEventListener("input", function () { filterCards(); suggest(); });
-  $q.addEventListener("keydown", function (e) {
-    if ($box.hidden) { return; }
-    if (e.key === "ArrowDown") { e.preventDefault(); setCur(cur + 1); }
-    else if (e.key === "ArrowUp") { e.preventDefault(); setCur(cur - 1); }
-    else if (e.key === "Enter" && cur > -1) { e.preventDefault(); location.href = $box.children[cur].querySelector("a").href; }
-    else if (e.key === "Escape") { closeBox(); }
+
+  $q.addEventListener("input", apply);
+  $sort.addEventListener("change", sortCards);
+  $types.addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest("button") : null;
+    if (!b) { return; }
+    curType = b.getAttribute("data-t") || "";
+    [].forEach.call($types.querySelectorAll(".chip"), function (c) { c.classList.toggle("on", c === b); });
+    apply();
   });
-  $q.addEventListener("focus", function () { if ($q.value) { suggest(); } });
-  document.addEventListener("click", function (e) { if (!$q.parentNode.contains(e.target)) { closeBox(); } });
+  if ($ings) {
+    $ings.addEventListener("click", function (e) {
+      var b = e.target.closest ? e.target.closest("button") : null;
+      if (!b) { return; }
+      curIng = b.getAttribute("data-i") || "";
+      [].forEach.call($ings.querySelectorAll(".chip"), function (c) { c.classList.toggle("on", c === b); });
+      apply();
+    });
+  }
+  apply();
 })();

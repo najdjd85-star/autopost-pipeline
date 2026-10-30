@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import html
 import json
+import re
 import os
 import shutil
 import sys
@@ -364,9 +365,71 @@ def make_thumbs(photos: dict) -> bool:
     return True
 
 
+_TYPE_RULES = [
+    ("덮밥", ("덮밥", "규동", "가츠동", "오야코동", "타마고동"), ()),
+    ("볶음밥", ("볶음밥",), ()),
+    ("비빔밥", ("비빔밥", "헛제삿밥"), ()),
+    ("김밥·주먹밥·초밥", ("김밥", "주먹밥", "오니기리", "초밥"), ()),
+    ("죽", ("범벅",), ("죽",)),
+    ("국밥", ("국밥", "온반"), ()),
+    ("밥", ("리조또", "카레라이스", "오므라이스", "오차즈케"), ("밥",)),
+    ("면·국수", ("냉면", "국수", "수제비", "라면", "우동", "파스타", "스파게티", "짜장면", "짬뽕", "소바", "당면", "쫄면", "야키", "소면"), ()),
+    ("전·부침", ("부침", "지짐", "빈대떡", "전병", "총떡"), ("전",)),
+    ("찌개·전골", ("찌개", "전골", "짜글이"), ()),
+    ("탕", ("곰탕", "갈비탕", "백숙", "매운탕"), ("탕",)),
+    ("국·수프", ("수프", "스프", "시루", "육수"), ("국",)),
+    ("분식", ("떡볶이", "라볶이", "순대", "어묵", "만두", "핫도그", "꼬치"), ()),
+    ("구이·튀김", ("구이", "튀김", "강정", "가스", "너겟", "크로켓", "치킨", "가라아게", "데리야키", "스테이크", "불고기", "갈비", "통닭", "떡갈비", "로스"), ()),
+    ("볶음", ("볶음", "두루치기", "잡채", "칠리", "깐풍기", "탕수육"), ()),
+    ("조림·찜", ("조림", "찜", "수육", "보쌈", "감바스"), ()),
+    ("무침·샐러드·반찬", ("무침", "나물", "샐러드", "냉채", "겉절이", "김치", "깍두기", "소박이", "생채", "피클", "쌈", "겨자채", "장아찌", "양념", "마리네이드", "절임", "초고추장"), ()),
+    ("샌드위치·빵", ("샌드위치", "토스트", "피자", "버거", "마늘빵", "퀘사디아", "크로크", "팬케이크", "머핀"), ()),
+    ("간식·디저트", ("쿠키", "푸딩", "아이스", "스무디", "에이드", "라떼", "요거트", "떡", "케이크", "팝", "약과", "약식", "호두과자", "맛탕", "오트밀", "차", "볼", "계란빵"), ()),
+    ("계란·두부", ("계란", "달걀", "두부", "스크램블", "오믈렛"), ()),
+]
+
+
+def dish_type(name: str) -> str:
+    """이름에서 요리 종류를 짐작한다(카테고리 안에서 밥·덮밥·국·찌개처럼 나눠 보여 주려는 용도)."""
+    n = re.sub(r"\(.*?\)", "", name).replace(" ", "")
+    for label, has, ends in _TYPE_RULES:
+        if any(k in n for k in has) or any(n.endswith(k) for k in ends):
+            return label
+    return "기타"
+
+
+ING_GROUPS = {
+    "김치": ("김치",),
+    "계란": ("계란", "메추리알"),
+    "두부": ("두부", "순두부"),
+    "스팸·햄·소시지": ("스팸", "햄", "소시지", "베이컨"),
+    "소고기": ("소고기",),
+    "돼지고기": ("돼지고기",),
+    "닭고기": ("닭", "닭가슴살"),
+    "오리": ("오리고기", "훈제오리"),
+    "생선": ("고등어", "삼치", "연어", "갈치", "동태", "꽁치캔", "가자미", "조기", "옥돔", "북어", "명란", "참치캔", "과메기", "홍어", "아귀"),
+    "해물": ("새우", "오징어", "낙지", "문어", "꼬막", "바지락", "홍합", "굴", "전복", "꽃게", "게맛살", "올갱이", "건새우"),
+    "어묵": ("어묵",),
+    "버섯": ("버섯",),
+    "감자·고구마": ("감자", "고구마", "단호박"),
+    "면·떡": ("라면", "소면", "냉면", "메밀국수", "당면", "스파게티면", "우동면", "칼국수", "쌀국수", "쫄면", "떡", "떡국떡"),
+}
+
+
+def main_groups(r: dict) -> list:
+    """레시피의 주재료 묶음(김치·계란·생선 …). 40g 이상 쓰는 재료만 주재료로 본다."""
+    names = {i["n"] for i in r["ingredients"] if not i["opt"] and i["g"] >= 40}
+    return [g for g, members in ING_GROUPS.items() if names & set(members)]
+
+
 def recipe_card_html(r: dict, photos: dict, prefix: str = "../", attrs: bool = False) -> str:
     p = photos.get(r["slug"])
-    extra = (f' data-n="{esc(r["name"])}" data-c="{esc(initials_of(r["name"]))}" data-k="{esc(ingredient_keys(r))}"') if attrs else ""
+    if attrs:
+        _per = compute(r["slug"])["per"]
+        extra = (f' data-n="{esc(r["name"])}" data-c="{esc(initials_of(r["name"]))}" data-k="{esc(ingredient_keys(r))}" data-t="{esc(dish_type(r["name"]))}" data-i="|{"|".join(main_groups(r))}|"'
+                 f' data-m="{r["minutes"]}" data-kc="{_per["kcal"]}" data-cost="{cost_per_serving(r)}" data-na="{_per["sodium"]}"')
+    else:
+        extra = ""
     sodium = (" · 나트륨 " + format(compute(r["slug"])["per"]["sodium"], ",") + "mg") if "lowsalt" in r["cats"] and not is_special(r) else ""
     thumb = f'<img src="{prefix}{thumb_rel(p)}" alt="{esc(r["name"])}" loading="lazy" decoding="async" width="96" height="72">' if p else f'<span>{r["icon"]}</span>'
     return (
@@ -402,16 +465,38 @@ def categories_section() -> str:
 
 def category_page(tpl: str, cat: tuple, photos: dict) -> str:
     slug, name, emoji, desc = cat
-    items = sorted([r for r in RECIPES if slug in r["cats"]], key=lambda r: (r["minutes"], r["name"]))
+    items = sorted([r for r in RECIPES if slug in r["cats"]], key=lambda r: r["name"])
     avg = round(sum(r["minutes"] for r in items) / len(items))
     cards = "".join(recipe_card_html(r, photos, attrs=True) for r in items)
-    if True:   # 레시피가 몇 개든 모든 카테고리에 검색창을 둔다(나중에 레시피가 늘어도 따로 만들 필요 없다)
-        cards = (
-            '<div class="rsearch"><input id="cq" type="search" placeholder="이 카테고리에서 검색 (요리 이름·재료·초성)" aria-label="카테고리 안에서 검색" autocomplete="off"></div>'
-            '<p id="ccount" class="mut" style="margin:6px 2px"></p><p id="cnone" class="empty" hidden>일치하는 요리가 없어요.</p>' + cards + '<script src="../assets/catsearch.js"></script>'
-        )
+    # 모든 카테고리에 검색창·종류 칩·정렬을 둔다(레시피가 몇 개든, 나중에 늘어도 그대로 동작한다)
+    type_count: dict = {}
+    for r in items:
+        t = dish_type(r["name"])
+        type_count[t] = type_count.get(t, 0) + 1
+    order = sorted(type_count, key=lambda t: (t == "기타", -type_count[t], t))
+    chips = '<button type="button" class="chip on" data-t="">전체<small>' + str(len(items)) + "</small></button>" + "".join(
+        f'<button type="button" class="chip" data-t="{esc(t)}">{esc(t)}<small>{type_count[t]}</small></button>' for t in order
+    )
+    ing_count: dict = {}
+    for r in items:
+        for g in main_groups(r):
+            ing_count[g] = ing_count.get(g, 0) + 1
+    ing_order = sorted(ing_count, key=lambda g: (-ing_count[g], g))
+    ichips = '<button type="button" class="chip on" data-i="">전체</button>' + "".join(
+        f'<button type="button" class="chip" data-i="{esc(g)}">{esc(g)}<small>{ing_count[g]}</small></button>' for g in ing_order
+    )
+    cards = (
+        '<div class="rsearch"><input id="cq" type="search" placeholder="이 카테고리에서 검색 (요리 이름·재료·초성)" aria-label="카테고리 안에서 검색" autocomplete="off"></div>'
+        f'<div id="ctypes" class="initials" role="group" aria-label="요리 종류"><span class="flab">종류</span>{chips}</div>'
+        + (f'<div id="cings" class="initials" role="group" aria-label="주재료"><span class="flab">재료</span>{ichips}</div>' if ing_order else "")
+        + '<div class="ctools"><span id="ccount" class="ccnt"></span>'
+        '<select id="csort" aria-label="정렬"><option value="n">가나다순</option><option value="m">조리 시간 짧은 순</option><option value="kc">칼로리 낮은 순</option>'
+        '<option value="cost">재료비 낮은 순</option><option value="na">나트륨 낮은 순</option></select></div>'
+        '<p id="cnone" class="empty" hidden>일치하는 요리가 없어요.</p><div id="clist">' + cards + "</div>"
+        '<script src="../assets/catsearch.js"></script>'
+    )
     others = "".join(f'<a class="chip" href="{c[0]}.html" style="text-decoration:none">{c[2]} {esc(c[1])}</a>' for c in RECIPE_CATS if c[0] != slug)
-    intro = f"{esc(desc)} 이 카테고리에는 레시피 {len(items)}개가 있고, 평균 조리 시간은 약 {avg}분이에요. 시간이 짧은 순서로 정렬했고, 각 레시피에는 정확한 분량(ml·g), 단계별 조리 순서, " + ("급여할 때 주의사항이 있어요." if slug == "pet" else ("월령별 주의사항이 있어요." if slug == "baby" else "칼로리와 영양성분표가 있어요."))
+    intro = f"{esc(desc)} 이 카테고리에는 레시피 {len(items)}개가 있고, 평균 조리 시간은 약 {avg}분이에요. 가나다순으로 정렬했고(위의 종류 버튼과 정렬 선택으로 바꿔 볼 수 있어요), 각 레시피에는 정확한 분량(ml·g), 단계별 조리 순서, " + ("급여할 때 주의사항이 있어요." if slug == "pet" else ("월령별 주의사항이 있어요." if slug == "baby" else "칼로리와 영양성분표가 있어요."))
     out = tpl
     for k, v in {
         "SITE_NAME": SITE_NAME, "BASE": BASE, "NAME": esc(name), "SLUG": slug, "EMOJI": emoji, "INTRO": intro,
@@ -463,11 +548,11 @@ SW_REGISTER = "<script>if(\"serviceWorker\" in navigator){addEventListener(\"loa
 
 
 CAT_GROUPS = [
+    ("💪 건강·다이어트", ["lowsalt", "diet", "protein", "light"]),
     ("🍽️ 메뉴로 찾기", ["rice", "soup", "side", "noodle", "jeon", "anju", "dinner"]),
     ("⏱️ 상황으로 찾기", ["quick5", "onepan", "brunch", "lunchbox"]),
     ("🌏 나라별 요리", ["western", "japan", "china"]),
     ("🇰🇷 지역별 한식", ["gyeongsang", "jeolla", "chungcheong", "gangwon", "jeju", "seoulgyeonggi", "north"]),
-    ("💪 건강·다이어트", ["lowsalt", "diet", "protein", "light"]),
     ("👨‍👩‍👧 가족·반려동물", ["baby", "kidsnack", "pet"]),
 ]
 

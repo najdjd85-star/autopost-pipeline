@@ -134,6 +134,15 @@
     sm.appendChild(el("span", "pl-btn", "바꾸기"));
     det.appendChild(sm);
     det.appendChild(el("p", "shelf-note", "집에 있는 양념을 눌러 주세요. 없는 양념이 필요한 요리는 '양념만 더 필요해요'로 따로 보여 드려요."));
+    var acts = el("div", "pl-acts");   // 양념을 한 번에 비우거나 처음 상태로 되돌린다
+    var wipeS = el("button", "linkbtn", "모두 비우기");
+    wipeS.type = "button";
+    wipeS.addEventListener("click", function () { PANTRY.forEach(function (n) { delete have[n]; }); focus = ""; pantryOpen = true; persist(); render(); });
+    var baseS = el("button", "linkbtn", "기본 양념으로");
+    baseS.type = "button";
+    baseS.addEventListener("click", function () { PANTRY.forEach(function (n) { delete have[n]; }); (D.stapleDefaults || []).forEach(function (n) { have[n] = true; }); focus = ""; pantryOpen = true; persist(); render(); });
+    acts.appendChild(wipeS); acts.appendChild(baseS);
+    det.appendChild(acts);
     var pbox = el("div", "tiles");
     PANTRY.forEach(function (n) { pbox.appendChild(tile(n, " staple")); });
     det.appendChild(pbox);

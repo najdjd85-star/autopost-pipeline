@@ -350,3 +350,15 @@ html{scroll-padding-top:74px}
 .rtile .rx:hover{color:var(--ink);border-color:var(--ink)}
 
 .hero .search{scroll-margin-top:62px}
+/* 기본 양념: 모두 비우기 / 기본으로 */
+.pantry-line .pl-acts{display:flex;gap:14px;margin:0 0 8px}
+.pantry-line .pl-acts .linkbtn{margin-left:0}
+/* 카테고리 안: 종류 칩 + 정렬 */
+.ctools{display:flex;gap:8px;align-items:center;margin:8px 0 4px}
+.ctools select{font-family:inherit;font-size:14px;padding:7px 10px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink)}
+.ctools .ccnt{flex:1;color:var(--mut);font-size:13px}
+#ctypes{margin:8px 0 2px}
+.rlistc .rcard[hidden]{display:none}
+
+.flab{align-self:center;font-size:12px;font-weight:700;color:var(--mut);margin-right:2px}
+#ctypes,#cings{margin:6px 0}
