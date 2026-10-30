@@ -385,3 +385,16 @@ header.top{position:relative}
 .langpanel a:hover{background:var(--chip)}
 .langpanel a.on{background:var(--ink);color:var(--bg)}
 @media (max-width:480px){.catbar .cb-link,.catbar summary{letter-spacing:-.02em}}
+
+/* 언어 선택을 한눈에 알아보도록: 강조 버튼 + 처음 방문 말풍선 + 다른 언어 브라우저용 안내 배너 */
+.langmenu summary{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);font-size:14px;padding:8px 14px}
+.langmenu summary::after{content:"▾";font-size:11px;margin-left:2px}
+.langmenu[open] summary{background:var(--accent);color:#fff}
+.langhint{position:absolute;right:0;top:calc(100% + 10px);z-index:31;white-space:nowrap;background:var(--ink);color:var(--bg);font-size:12.5px;font-weight:700;padding:8px 12px;border-radius:10px;box-shadow:0 8px 20px -8px rgba(31,27,24,.5);animation:langhint 1.6s ease-in-out infinite alternate}
+.langhint::before{content:"";position:absolute;right:22px;top:-6px;border:6px solid transparent;border-top:0;border-bottom-color:var(--ink)}
+.langhint[hidden],.langbar[hidden]{display:none}
+@keyframes langhint{from{transform:translateY(0)}to{transform:translateY(3px)}}
+.langbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:8px 0 4px;padding:10px 12px;border-radius:12px;background:var(--accent-soft);border:1px solid var(--line);font-size:14px;font-weight:600}
+.langbar a{text-decoration:none;font-weight:800;color:#fff;background:var(--accent);padding:6px 12px;border-radius:999px;white-space:nowrap}
+.langbar button{margin-left:auto;border:0;background:none;color:var(--mut);font-size:16px;cursor:pointer;padding:2px 6px}
+@media (max-width:480px){.langhint{white-space:normal;width:210px;text-align:left}}

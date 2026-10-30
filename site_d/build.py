@@ -957,15 +957,23 @@ def page_vars(rel: str) -> dict:
     return {"LANG": HREFLANG[code], "PFX": LANG_PFX[code], "ALT": alt, "ROBOTS": robots}
 
 
-LANG_SCRIPT = (
-    "<script>(function(){var l=document.documentElement.lang;document.addEventListener(\"click\",function(e){var a=e.target.closest&&e.target.closest(\"a[data-lang]\");"
-    "if(a){try{localStorage.setItem(\"fridge_lang\",a.getAttribute(\"data-lang\"));}catch(x){}}});"
-    "try{var p=localStorage.getItem(\"fridge_lang\");if(p&&p!==l){var a=document.querySelector('a[data-lang=\"'+p+'\"]');if(a){location.replace(a.href+location.search+location.hash);}}}catch(x){}})();</script>"
-)
+LANG_SCRIPT = r"""<script>(function(){
+var l=document.documentElement.lang,ls=function(k,v){try{if(v===undefined){return localStorage.getItem(k);}localStorage.setItem(k,v);}catch(x){}return null;};
+document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[data-lang]");if(a){ls("fridge_lang",a.getAttribute("data-lang"));}});
+var p=ls("fridge_lang");
+if(p&&p!==l){var t=document.querySelector('.langpanel a[data-lang="'+p+'"]');if(t){location.replace(t.href+location.search+location.hash);return;}}
+var hint=document.querySelector(".langhint"),bar=document.querySelector(".langbar");
+if(!p&&hint&&!ls("fridge_lang_hint")){hint.hidden=false;ls("fridge_lang_hint","1");var hide=function(){hint.hidden=true;};setTimeout(hide,9000);document.addEventListener("pointerdown",hide,{once:true});}
+if(!p&&bar&&!ls("fridge_lang_bar")&&(navigator.language||"").toLowerCase().indexOf(l)!==0){bar.hidden=false;var x=bar.querySelector("button");if(x){x.addEventListener("click",function(){bar.hidden=true;ls("fridge_lang_bar","1");});}}
+})();</script>"""
+
+# 기본(한국어) 화면에서 다른 언어를 권하는 안내 배너 문구: 그 언어 사람이 읽도록 그 언어로 쓴다
+LANG_BANNER = {"en": ("🌐 This site is available in English", "View in English")}
 
 
 def lang_menu(rel: str) -> str:
-    """머리말 오른쪽 위의 언어 선택(같은 쪽의 다른 언어로 가고, 고른 언어는 기억해 다음에도 그 언어로 연다)."""
+    """머리말 오른쪽 위의 언어 선택(같은 쪽의 다른 언어로 가고, 고른 언어는 기억해 다음에도 그 언어로 연다).
+    눈에 잘 띄도록 버튼을 강조하고, 처음 온 사람에게는 말풍선으로 알리며, 한국어가 아닌 브라우저로 온 사람에게는 영어 안내 배너를 보여 준다."""
     if len(ACTIVE) < 2:
         return ""
     cur = i18n.code()
@@ -973,7 +981,16 @@ def lang_menu(rel: str) -> str:
     for c in ACTIVE:
         href = lang_path(c, rel if lang_has_page(c, rel) else "index.html")
         items += f'<a href="{href}" hreflang="{HREFLANG[c]}" lang="{HREFLANG[c]}" data-lang="{c}"' + (' class="on"' if c == cur else "") + f">{LANG_NAME[c]}</a>"
-    return f'<div class="langsw"><details class="langmenu"><summary aria-label="Language">🌐 {LANG_NAME[cur]}</summary><div class="langpanel">{items}</div></details></div>' + LANG_SCRIPT
+    names = " · ".join(LANG_NAME[c] for c in ACTIVE if c != cur)
+    hint = f'<div class="langhint" hidden>Language · 언어 : {names}</div>' if cur == "ko" else ""
+    html_ = f'<div class="langsw"><details class="langmenu"><summary aria-label="Language">🌐 {LANG_NAME[cur]}</summary><div class="langpanel">{items}</div></details>{hint}</div>'
+    bar = ""
+    other = next((c for c in ACTIVE if c != cur and c in LANG_BANNER), "")
+    if cur == "ko" and other:
+        href = lang_path(other, rel if lang_has_page(other, rel) else "index.html")
+        txt, btn = LANG_BANNER[other]
+        bar = f'<div class="langbar" hidden lang="{HREFLANG[other]}"><span>{txt}</span><a href="{href}" data-lang="{other}">{btn}</a><button type="button" aria-label="Close">✕</button></div>'
+    return html_ + bar + LANG_SCRIPT
 
 
 def active_langs() -> list:
