@@ -439,6 +439,9 @@ def related(recipe: dict, limit: int = 4) -> list:
     return [o for s, _m, o in scored[:limit] if s > 0]
 
 
+SW_REGISTER = "<script>if(\"serviceWorker\" in navigator){addEventListener(\"load\",function(){navigator.serviceWorker.register(\"/sw.js\").catch(function(){});});}</script>"
+
+
 CAT_GROUPS = [
     ("🍽️ 메뉴로 찾기", ["rice", "soup", "side", "noodle", "jeon", "anju", "dinner", "duck"]),
     ("⏱️ 상황으로 찾기", ["quick5", "onepan", "brunch", "lunchbox"]),
@@ -740,8 +743,11 @@ def main() -> None:
     for page in DIST.rglob("*.html"):
         t = page.read_text(encoding="utf-8")
         t2 = t.replace('assets/style.css"', f'assets/style.css?v={ver}"').replace('assets/app.js"', f'assets/app.js?v={ver}"').replace('assets/list.js"', f'assets/list.js?v={ver}"')
+        t2 = t2.replace("</body>", SW_REGISTER + "</body>", 1) if "serviceWorker" not in t2 else t2
         if t2 != t:
             page.write_text(t2, encoding="utf-8")
+    # 쪽마다 새로고침하지 않아도 최신 화면이 보이게 하는 서비스 워커(루트에 둬야 사이트 전체에 적용된다)
+    (DIST / "sw.js").write_text("// build " + ver + chr(10) + (HERE / "static" / "sw.js").read_text(encoding="utf-8"), encoding="utf-8")
     print(f"빌드 완료: 레시피 {len(RECIPES)}개, 제휴 링크: 재료 {len(aff)}개, 도구 {len(tools)}개 -> {DIST}")
 
 
