@@ -369,3 +369,8 @@ html{scroll-padding-top:74px}
 .csearching #ri,.csearching #rtypes,.csearching #rings{display:none}
 #rtypes,#rings,#ri{margin:6px 0}
 #rl.flat .rgroup{display:none}
+
+/* 화면을 옮길 때 하얗게 깜빡이지 않고 부드럽게 바뀐다(지원하는 브라우저만) */
+@view-transition{navigation:auto}
+.catbar{view-transition-name:catbar}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.14s}

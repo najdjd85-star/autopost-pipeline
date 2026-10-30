@@ -571,7 +571,7 @@ def _tag_low_sodium() -> None:
 _tag_low_sodium()
 
 
-SW_REGISTER = "<script>if(\"serviceWorker\" in navigator){addEventListener(\"load\",function(){navigator.serviceWorker.register(\"/sw.js\").catch(function(){});});}</script>"
+SW_REGISTER = ("<script>(function(){if(\"serviceWorker\" in navigator){addEventListener(\"load\",function(){navigator.serviceWorker.register(\"/sw.js\").catch(function(){});});}var seen={};function pf(a){if(!a||seen[a.href]||(navigator.connection&&navigator.connection.saveData)){return;}seen[a.href]=1;fetch(a.href,{credentials:\"same-origin\"}).catch(function(){});}document.addEventListener(\"pointerdown\",function(e){pf(e.target.closest&&e.target.closest('a[href*=\"recipes/\"]'));},{passive:true});var r=document.getElementById(\"results\");if(r&&window.MutationObserver){var t;new MutationObserver(function(){clearTimeout(t);t=setTimeout(function(){[].slice.call(r.querySelectorAll('a[href*=\"recipes/\"]')).slice(0,3).forEach(pf);},900);}).observe(r,{childList:true,subtree:true});}})();</script>")
 
 
 CAT_GROUPS = [
@@ -892,6 +892,18 @@ def main() -> None:
         if t2 != t:
             page.write_text(t2, encoding="utf-8")
     # 쪽마다 새로고침하지 않아도 최신 화면이 보이게 하는 서비스 워커(루트에 둬야 사이트 전체에 적용된다)
+    import time as _time
+
+    (DIST / "version.json").write_text(json.dumps({"v": _time.strftime("%Y%m%d%H%M%S")}), encoding="utf-8")
+    try:   # 첫 화면의 큰 캐릭터 그림은 화면에 보이는 크기(132x147)의 2배로 줄여 용량을 아낀다
+        from PIL import Image as _Im
+
+        _op = DIST / "assets" / "mascot" / "open.png"
+        _im = _Im.open(_op).convert("RGBA")
+        _im = _im.resize((264, int(264 * _im.height / _im.width)), _Im.LANCZOS)
+        _im.quantize(128, method=_Im.FASTOCTREE).save(_op, optimize=True)
+    except Exception:  # noqa: BLE001
+        pass
     (DIST / "sw.js").write_text("// build " + ver + chr(10) + (HERE / "static" / "sw.js").read_text(encoding="utf-8"), encoding="utf-8")
     print(f"빌드 완료: 레시피 {len(RECIPES)}개, 제휴 링크: 재료 {len(aff)}개, 도구 {len(tools)}개 -> {DIST}")
 
