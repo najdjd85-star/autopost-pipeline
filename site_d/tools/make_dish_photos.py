@@ -135,6 +135,9 @@ from dish_scenes_batch4 import SCENES as _SCENES4  # noqa: E402
 
 SCENE.update(_SCENES4)
 SCENE.update(SCENE_OVERRIDE)
+from dish_scenes_fix import FIX as _FIX  # noqa: E402
+
+SCENE.update(_FIX)
 
 STYLE = ("appetizing food photograph, overhead 45-degree angle, Korean home cooking, served on a ceramic dish on a light wooden table, "
          "soft natural window light, shallow depth of field, realistic, high detail, no text, no watermark, no people")

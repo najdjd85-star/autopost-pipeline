@@ -1,0 +1,26 @@
+"""사진 점검에서 요리와 다르게 나온 것들의 장면 설명을 더 구체적으로 다시 적은 것(영어). make_dish_photos.py 가 맨 마지막에 읽어 덮어쓴다."""
+
+FIX = {
+    "jinju-naengmyeon": "a deep black ceramic bowl of Jinju naengmyeon: dark brown clear beef soy broth, thin buckwheat noodles underneath, topped with several crossed strips of yellow egg-battered fried beef yukjeon, thin white radish slices, pear slices and half a boiled egg on top sprinkled with sesame seeds, close view",
+    "baechu-geotjeori": "a white bowl full of Korean napa cabbage kimchi salad geotjeori, torn pieces of napa cabbage leaves completely covered in thick bright red gochugaru chili paste seasoning, deep red color, sesame seeds",
+    "galchi-jorim": "braised hairtail galchi jorim: several thick cut sections about 6cm long of flat silver-skinned hairtail beltfish, no heads and no whole fish, white flesh visible at the cut ends, lying over thick white radish slices in spicy red-brown sauce with green chilies and scallions in a wide shallow pot",
+    "galchi-gui": "grilled cutlassfish galchi gui: several thick segments of long flat silver-skinned cutlassfish, pan-grilled golden with crispy silver skin, on a plate with a lemon wedge, flat ribbon-shaped fish sections, not a round fish",
+    "jeju-galchi-guk": "a bowl of clear light golden Jeju hairtail beltfish soup with thick sections of silver ribbon-like belt-shaped hairtail, napa cabbage, zucchini and a slice of green chili",
+    "yubu-chobap": "Japanese inari sushi: several golden-brown fried tofu pouches opened at the top and filled with sushi rice dotted with sesame seeds and tiny diced carrot, arranged on a plate",
+    "chungmu-gimbap": "Chungmu gimbap: thin finger-sized rolls of plain white rice wrapped in dark seaweed, sliced into small rounds, served beside red spicy seasoned squid pieces and red cubed radish kimchi on a plate",
+    "masan-agujjim": "spicy red Korean braised monkfish agujjim: a big mound of bean sprouts and water dropwort covered in thick bright red chili sauce with big white chunks of monkfish, on a wide round platter",
+    "hongeo-samhap": "Hongeo samhap on a plate: slices of pale pinkish-white fermented skate, slices of boiled pork belly and aged red kimchi stacked together in a row, with a small dish of sesame oil and salt dip",
+    "olgaengi-guk": "a bowl of Korean olgaengi guk: clear green-brown soybean paste soup with many tiny dark brown conical river snail shells about 2cm long and bright green chive pieces, small river snails not large seashells",
+    "olgaengi-muchim": "spicy red seasoned river snail meat salad: small dark green-brown snail meat pieces mixed with sliced cucumber, onion and water dropwort in red gochujang sauce, no shells, on a plate",
+    "olgaengi-sujebi": "a bowl of sujebi soup with hand-torn flat dough pieces, small dark river snail meat, potato slices and green chives in soybean paste broth",
+    "ojingeo-sundae": "sliced steamed squid sundae: eight round slices of a stuffed whole squid body, each showing a dark purple-pink squid skin ring around a filling of glass noodles, tofu, carrot and chives, laid in a row on a plate",
+    "deodeok-gui": "grilled bellflower root deodeok-gui: several thin flattened long strips of pale brown roots with red gochujang glaze and char marks and sesame seeds, on a plate",
+    "jeju-gosari-yukgaejang": "a deep dark brown thick Jeju bracken and pork stew gosari yukgaejang: lots of dark brown bracken stems and shredded pork in thick brown soup with scallions in a black bowl with a bowl of rice beside it",
+    "hamheung-hoe-naengmyeon": "Hamhung hoe naengmyeon: a bowl of thin chewy noodles mixed in bright red spicy gochujang sauce topped with pink raw-looking fish slices, cucumber, pear slices and half a boiled egg, dry mixed noodles with no broth",
+    "gyeongsang-beef-mu-guk": "a black bowl of bright red-orange Gyeongsang style spicy beef and radish soup with bean sprouts, large radish chunks and shredded beef in vivid red broth with scallions",
+    "dasima-myeolchi-yuksu": "a clear glass pot of pale golden clear dashi stock with a piece of dried kelp and a few dried anchovies beside it, clear broth only",
+    "bugeo-guk": "a bowl of milky white dried pollack soup bugeoguk with shredded dried pollack, egg ribbons, sliced radish and green onion",
+    "gul-gukbap": "a bowl of rice in clear soup with plump fresh gray oysters, a cracked egg and green onion",
+    "kids-mild-tteokbokki": "glossy brown soy sauce braised rice cakes in a pan with very little sauce, cylinder rice cakes shiny with sesame seeds and sliced onion, no red sauce",
+    "dog-apple-yogurt-pop": "small white frozen yogurt pops with tiny apple pieces in a silicone tray, simple, no ribbons, pet treats",
+}
