@@ -162,9 +162,25 @@ def load_popular() -> list:
     return [s for s, v in sorted(vols.items(), key=lambda t: -t[1]) if s in known and v][:8]
 
 
+def affiliate_data() -> dict:
+    """affiliate.json 을 읽되, 링크 점검(tools/check_links.py)에서 만료로 나온 주소는 빈 값으로 바꿔 사이트에서 숨긴다."""
+    data = json.loads((HERE / "affiliate.json").read_text(encoding="utf-8"))
+    try:
+        broken = {b["url"] for b in json.loads((HERE / "links_broken.json").read_text(encoding="utf-8")).get("broken", [])}
+    except (OSError, ValueError, KeyError):
+        broken = set()
+    if not broken:
+        return data
+    data["ingredients"] = {k: ("" if v in broken else v) for k, v in (data.get("ingredients") or {}).items()}
+    data["tools"] = {k: ({**t, "url": ""} if t.get("url") in broken else t) for k, t in (data.get("tools") or {}).items()}
+    for key in ("extras", "variants", "category_products"):
+        data[key] = {k: [x for x in xs if x.get("url") not in broken] for k, xs in (data.get(key) or {}).items()}
+    return data
+
+
 def load_affiliate_all() -> tuple:
     """affiliate.json -> (재료 링크 {이름: url}, 도구 {이름: {label, url, match}}). 링크가 빈 항목은 뺀다. 예전의 평평한 형식도 읽는다."""
-    data = json.loads((HERE / "affiliate.json").read_text(encoding="utf-8"))
+    data = affiliate_data()
     if "ingredients" in data or "tools" in data:
         ing = {k: v for k, v in (data.get("ingredients") or {}).items() if v}
         tools = {k: t for k, t in (data.get("tools") or {}).items() if t.get("url")}
@@ -176,13 +192,13 @@ def load_affiliate_all() -> tuple:
 
 def load_extras() -> tuple:
     """affiliate.json -> (버튼에 쓸 재료 표시 이름 {재료: 이름}, 같은 재료의 다른 상품 {재료: [{label, url}]})."""
-    data = json.loads((HERE / "affiliate.json").read_text(encoding="utf-8"))
+    data = affiliate_data()
     return data.get("ingredient_labels") or {}, data.get("extras") or {}
 
 
 def category_products(slug: str) -> str:
     """affiliate.json 의 category_products: 카테고리 페이지·그 카테고리 레시피 페이지에 따로 보여 줄 용품 버튼."""
-    data = json.loads((HERE / "affiliate.json").read_text(encoding="utf-8"))
+    data = affiliate_data()
     items = (data.get("category_products") or {}).get(slug) or []
     if not items:
         return ""
@@ -192,7 +208,7 @@ def category_products(slug: str) -> str:
 
 def load_variants() -> dict:
     """affiliate.json 의 variants: {재료: [{when(정규식), label, url}]} - 요리 이름에 따라 다른 상품 버튼을 쓴다."""
-    data = json.loads((HERE / "affiliate.json").read_text(encoding="utf-8"))
+    data = affiliate_data()
     return data.get("variants") or {}
 
 

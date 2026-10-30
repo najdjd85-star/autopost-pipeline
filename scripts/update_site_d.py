@@ -50,7 +50,7 @@ def deploy() -> str:
     def git(*args: str) -> subprocess.CompletedProcess:
         return subprocess.run(["git", *args], cwd=str(ROOT), capture_output=True, text=True, encoding="utf-8")
 
-    changed = [p for p in ("site_d/trending.json", "site_d/prices_live.json") if (ROOT / p).exists() and git("status", "--porcelain", "--", p).stdout.strip()]
+    changed = [p for p in ("site_d/trending.json", "site_d/prices_live.json", "site_d/links_broken.json") if (ROOT / p).exists() and git("status", "--porcelain", "--", p).stdout.strip()]
     if not changed:
         return "서버 반영: 어제와 같아 올릴 것 없음"
     git("add", *changed)
@@ -82,6 +82,28 @@ def update_prices() -> str:
         return "가격 갱신 실패(예전 가격 유지)"
 
 
+def check_links_weekly() -> str:
+    """쿠팡 링크가 만료되지 않았는지 7일에 한 번 점검한다(만료된 링크는 사이트에서 자동으로 숨김). 실패해도 나머지 갱신은 계속된다."""
+    import datetime as dt
+    import json
+
+    state = ROOT / "data" / "output" / "link_check_state.json"
+    try:
+        last = dt.date.fromisoformat(json.loads(state.read_text(encoding="utf-8"))["last_check"])
+        if (dt.date.today() - last).days < 7:
+            return "링크 점검: 최근에 했음(7일에 한 번)"
+    except (OSError, ValueError, KeyError):
+        pass
+    try:
+        import check_links
+
+        check_links.main()
+        return "링크 점검 완료"
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("링크 점검 실패(무시): %s", exc)
+        return "링크 점검 실패(무시)"
+
+
 def main() -> int:
     import fetch_trending
 
@@ -89,6 +111,7 @@ def main() -> int:
         logger.warning("인터넷 연결이 없어 인기 요리 갱신을 건너뜁니다.")
         return 1
     logger.info(update_prices())
+    logger.info(check_links_weekly())
     try:
         data = fetch_trending.build()
     except fetch_trending.NotConfigured as exc:
