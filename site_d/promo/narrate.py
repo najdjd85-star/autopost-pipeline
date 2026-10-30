@@ -46,6 +46,11 @@ def key() -> str:
 
 # 키에 '목소리 목록 보기' 권한이 없어도 쓸 수 있는 기본 제공 목소리(다국어 모델이라 한국어도 읽는다)
 DEFAULT_VOICES = {
+    # 한국어 원어민 목소리(ElevenLabs 보이스 라이브러리, 무료 플랜에서도 쓸 수 있는 것)
+    "jisun": "7Tms2JpTU4QYeCNp0Gtn",     # 따뜻하고 친근한 여성, 광고에 어울림
+    "henry": "0emXFRrt8HxjqJpgeQtr",     # 밝고 친근한 남성(서울), 소셜 영상에 어울림
+    "klamon": "dnZGOA54w68T7vLLPFTp",    # 밝고 또렷한 남성
+    "kyung": "JQaWvPoEUkcuOTfxFYpJ",     # 따뜻하고 차분한 여성(서울)
     "jessica": "cgSgspJ2msm6clMCkdW9",   # 밝고 발랄한 여성
     "sarah": "EXAVITQu4vr4xnSDxMaL",     # 차분한 여성
     "adam": "pNInz6obpgDQGcFmaJgB",      # 낮고 또렷한 남성
@@ -66,7 +71,7 @@ def pick_voice(k: str) -> str:
         return env["ELEVENLABS_VOICE_ID"].strip()
     vs = list_voices(k)
     if not vs:
-        return DEFAULT_VOICES["jessica"]
+        return DEFAULT_VOICES["jisun"]
     for v in vs:   # 한국어 라벨이 붙은 목소리를 먼저
         lab = " ".join(str(x) for x in (v.get("labels") or {}).values()).lower() + " " + (v.get("name") or "").lower()
         if "korean" in lab or "ko" in lab.split():
@@ -76,11 +81,18 @@ def pick_voice(k: str) -> str:
     return vs[0]["voice_id"]
 
 
-def tts(k: str, voice: str, text: str) -> bytes:
+MODEL = "eleven_v3"   # 한국어를 더 자연스럽게 읽는 최신 모델(옛 모델은 --model eleven_multilingual_v2)
+
+
+def tts(k: str, voice: str, text: str, model: str = "") -> bytes:
+    model = model or MODEL
+    body = {"text": text, "model_id": model}
+    if model != "eleven_v3":
+        body["voice_settings"] = {"stability": 0.45, "similarity_boost": 0.8, "style": 0.35, "use_speaker_boost": True}
     r = requests.post(
         f"{API}/text-to-speech/{voice}?output_format=mp3_44100_128",
         headers={"xi-api-key": k, "Content-Type": "application/json"},
-        json={"text": text, "model_id": "eleven_multilingual_v2", "voice_settings": {"stability": 0.45, "similarity_boost": 0.8, "style": 0.35, "use_speaker_boost": True}},
+        json=body,
         timeout=90,
     )
     if r.status_code != 200:
@@ -96,7 +108,8 @@ def duration(path: Path) -> float:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--list", action="store_true")
-    ap.add_argument("--voice", default="", help="목소리 아이디 또는 jessica/sarah/adam/charlie")
+    ap.add_argument("--voice", default="", help="목소리 아이디 또는 jisun/henry/klamon/kyung/jessica/sarah/adam/charlie")
+    ap.add_argument("--model", default="", help="eleven_v3(기본) 또는 eleven_multilingual_v2")
     ap.add_argument("--sample", action="store_true", help="첫 문장만 4가지 목소리로 만들어 들어 보기(크레딧 아주 조금)")
     a = ap.parse_args()
     k = key()
@@ -110,7 +123,7 @@ def main() -> None:
     if a.sample:
         OUT.mkdir(parents=True, exist_ok=True)
         for nm, vid in DEFAULT_VOICES.items():
-            audio = tts(k, vid, LINES["hook"] + " " + LINES["outro"])
+            audio = tts(k, vid, LINES["hook"] + " " + LINES["outro"], a.model)
             (OUT / f"sample_{nm}.mp3").write_bytes(audio)
             print("샘플:", OUT / f"sample_{nm}.mp3")
         return
@@ -118,7 +131,7 @@ def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     durs = {}
     for name, text in LINES.items():
-        audio = tts(k, voice, text)
+        audio = tts(k, voice, text, a.model)
         f = OUT / f"narr_{name}.mp3"
         f.write_bytes(audio)
         durs[name] = duration(f)

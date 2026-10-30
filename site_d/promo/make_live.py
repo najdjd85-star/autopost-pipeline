@@ -1,9 +1,9 @@
 """화면 녹화(live.webm)를 폰 틀에 넣고 단계별 설명 글자·오프닝 실사 클립·음성을 입혀 세로 영상(1080x1920)으로 만든다(무료, 내 PC).
 
-순서: 오프닝(냉장고 앞 실사 클립 + 후킹 글자) → 사이트 사용 화면(폰 틀, 결과 구간 확대) → 끝 장면(행동 유도).
+순서: 오프닝(재료 버리는 AI 이미지 + 후킹 글자) → 사이트 사용 화면(폰 틀, 결과 구간 확대) → 끝 장면(행동 유도).
 먼저 narrate.py(음성), record_demo.py(녹화)를 실행해 둔다. 결과: site_d/promo/out/demo/short_live.mp4(소리 없음), short_live_voice.mp4(소리 있음)
 
-오프닝 클립은 Pexels 무료 영상(상업적 이용 가능, 출처 표기 의무 없음)이다: site_d/promo/out/screens/stock/*.mp4
+오프닝은 AI 이미지(make_open_image.py 로 만들어 open_ai.png 로 둔다)이다.
 
 사용: venv/Scripts/python.exe -X utf8 site_d/promo/make_live.py
 """
@@ -106,19 +106,18 @@ def main() -> None:
     marks = json.loads((SCR / "live_marks.json").read_text(encoding="utf-8"))
     nar = json.loads((SCR / "narr.json").read_text(encoding="utf-8")) if (SCR / "narr.json").exists() else {}
     vx, vy, pw, ph = make_bg_and_bezel()
-    have_stock = (STOCK / "9032882.mp4").exists() and (STOCK / "9323255.mp4").exists()
     for f in ("_open.mp4", "_main.mp4", "_outro.mp4"):
         (OUT / f).unlink(missing_ok=True)
 
-    # 1) 오프닝: 냉장고 앞 실사 클립 → 쓰레기통 클립 + 후킹 글자
-    d0 = max(2.4, nar.get("hook", 2.4) + 0.35) if have_stock else 0.0
-    if have_stock:
-        l1, l2 = d0 * 0.55, d0 * 0.45
-        fc = ("[0:v]scale=1080:1920,setsar=1,fps=30[a];[1:v]scale=1080:1920,setsar=1,fps=30[b];"
-              "[a][b]concat=n=2:v=1:a=0,eq=brightness=-0.06:saturation=1.05[c];[c][2:v]overlay=0:0[o]")
-        run(["ffmpeg", "-y", "-ss", "1.0", "-t", f"{l1:.2f}", "-i", str(STOCK / "9032882.mp4"), "-ss", "2.2", "-t", f"{l2:.2f}", "-i", str(STOCK / "9323255.mp4"),
-             "-loop", "1", "-i", str(hook_text()), "-filter_complex", fc, "-map", "[o]", "-t", f"{d0:.2f}", "-r", "30", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20",
-             str(OUT / "_open.mp4")])
+    # 1) 오프닝: 곧 버릴 재료를 쓰레기통에 넣는 AI 이미지(천천히 다가가는 움직임) + 후킹 글자
+    have_open = (SCR / "open_ai.png").exists()
+    d0 = max(2.4, nar.get("hook", 2.4) + 0.35) if have_open else 0.0
+    if have_open:
+        frames = int(d0 * 30)
+        fc = (f"[0:v]scale=1620:2880:flags=lanczos,zoompan=z='1.0+0.16*on/{frames}':x='iw/2-(iw/zoom/2)+4*sin(on/5)':y='ih/2-(ih/zoom/2)+4*cos(on/6)':d={frames}:s=1080x1920:fps=30,"
+              "eq=brightness=-0.07:saturation=1.05[c];[c][1:v]overlay=0:0[o]")
+        run(["ffmpeg", "-y", "-loop", "1", "-i", str(SCR / "open_ai.png"), "-loop", "1", "-i", str(hook_text()), "-filter_complex", fc, "-map", "[o]",
+             "-t", f"{d0:.2f}", "-r", "30", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20", str(OUT / "_open.mp4")])
 
     # 2) 사용 화면: 입력을 시작하기 조금 전부터. 결과 구간은 '재료 다 있어요 / 없는 재료 사러가기' 쪽으로 확대
     ts = max(0.0, marks["type"] - 0.4)
