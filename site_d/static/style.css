@@ -348,3 +348,5 @@ html{scroll-padding-top:74px}
 .rtile .tile{width:100%}
 .rtile .rx{position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--mut);font-size:11px;line-height:1;cursor:pointer;padding:0;box-shadow:var(--shadow)}
 .rtile .rx:hover{color:var(--ink);border-color:var(--ink)}
+
+.hero .search{scroll-margin-top:62px}

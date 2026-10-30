@@ -74,20 +74,23 @@ def keys() -> Tuple[str, str]:
 
 
 def call(cat: str, key: str, uid: str, day: str = "") -> List[dict]:
-    params = {
-        "action": "dailyPriceByCategoryList", "p_cert_key": key, "p_cert_id": uid, "p_returntype": "json",
-        "p_product_cls_code": "01", "p_item_category_code": cat, "p_convert_kg_yn": "Y",
-    }
-    if day:
-        params["p_regday"] = day
-    r = requests.get(URL, params=params, timeout=30)
-    r.raise_for_status()
-    data = r.json()
-    body = data.get("data") if isinstance(data, dict) else None
-    if isinstance(body, dict):
-        if str(body.get("error_code", "000")) not in ("000",):
-            return []
-        return body.get("item") or []
+    """한 분류의 소매가격. KAMIS 는 조회일자(p_regday)와 지역(p_country_code)이 꼭 있어야 응답한다. 휴일이라 비면 하루씩 앞으로 4일까지 다시 본다."""
+    import datetime as dt
+
+    start = dt.date.fromisoformat(day) if day else dt.date.today()
+    for back in range(5):
+        params = {
+            "action": "dailyPriceByCategoryList", "p_cert_key": key, "p_cert_id": uid, "p_returntype": "json",
+            "p_product_cls_code": "01", "p_item_category_code": cat, "p_country_code": "1101",
+            "p_regday": (start - dt.timedelta(days=back)).isoformat(), "p_convert_kg_yn": "Y",
+        }
+        r = requests.get(URL, params=params, timeout=30)
+        r.raise_for_status()
+        data = r.json()
+        body = data.get("data") if isinstance(data, dict) else None
+        if isinstance(body, dict) and str(body.get("error_code", "000")) == "000" and body.get("item"):
+            return body["item"]
+        time.sleep(0.2)
     return []
 
 

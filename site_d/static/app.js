@@ -395,6 +395,14 @@
       b.addEventListener("click", function () { pickRecipe(r); });
       $sug.appendChild(b);
     });
+    revealSuggest();
+  }
+  // 폰에서 키보드가 올라오면 아래쪽 추천이 가려지므로, 입력창을 화면 맨 위(고정 바 아래)로 올려 추천이 키보드 위에 보이게 한다
+  function revealSuggest() {
+    if (!$sug.children.length || document.activeElement !== $q || !window.matchMedia("(max-width: 760px)").matches) { return; }
+    var box = $q.parentNode;
+    var top = box.getBoundingClientRect().top;
+    if (top > 90 || top < 50) { box.scrollIntoView({ behavior: "smooth", block: "start" }); }
   }
   function addFromText() {
     var raw = $q.value.split(/[,\s]+/).filter(Boolean);
@@ -423,6 +431,8 @@
   document.getElementById("add").addEventListener("click", addFromText);
   $q.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); addFromText(); } });
   $q.addEventListener("input", showSuggest);
+  $q.addEventListener("focus", function () { setTimeout(revealSuggest, 300); });
+  if (window.visualViewport) { window.visualViewport.addEventListener("resize", function () { setTimeout(revealSuggest, 100); }); }
   // 모두 지우기: 재료만 지우고, 고른 양념은 그대로 둔다
   function clearFoods() {
     Object.keys(have).forEach(function (n) { if (!STAPLES[n]) { delete have[n]; } });
