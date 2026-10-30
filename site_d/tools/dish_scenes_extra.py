@@ -273,3 +273,5 @@ SCENE_EXTRA.update({
     "cat-chicken-cube": "an ice cube tray with frozen chicken puree cubes, pet treats",
     "dog-apple-yogurt-pop": "small frozen apple yogurt pops in a silicone mold, pet treats",
 })
+
+SCENE_OVERRIDE["beef-radish-soup"] = "a white ceramic bowl of clear pale beef and Korean radish soup sogogi muguk, transparent light broth with thick chunky white radish slices, thin slices of beef and a few thin scallion slivers on top, clear soup with no red color, close overhead view"

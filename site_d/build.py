@@ -443,6 +443,7 @@ CAT_GROUPS = [
     ("🍽️ 메뉴로 찾기", ["rice", "soup", "side", "noodle", "jeon", "anju", "dinner", "duck"]),
     ("⏱️ 상황으로 찾기", ["quick5", "onepan", "brunch", "lunchbox"]),
     ("🌏 나라별 요리", ["western", "japan", "china"]),
+    ("🇰🇷 지역별 한식", ["gyeongsang", "jeolla", "chungcheong", "gangwon", "jeju", "seoulgyeonggi", "north"]),
     ("💪 건강·다이어트", ["diet", "protein", "light"]),
     ("👨‍👩‍👧 가족·반려동물", ["baby", "kidsnack", "pet"]),
 ]
