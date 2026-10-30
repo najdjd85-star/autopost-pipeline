@@ -439,7 +439,7 @@
  "baby-tofu-egg-steam": {
   "desc": "A soft protein side dish steamed without salt.",
   "h": "d73fa2c39a",
-  "name": "Tofu and Egg Steam (12 months and up)",
+  "name": "Steamed Tofu and Egg (12 months and up)",
   "steps": [
    "Mash the tofu finely with a spoon and mince the carrot very finely.",
    "Beat 1 egg, mix with 50 ml of water, the mashed tofu, and the carrot, then strain once through a sieve.",
@@ -4018,7 +4018,7 @@
  "gyeongsang-beef-mu-guk": {
   "desc": "Daegu and Gyeongbuk-style spicy beef soup boiled with Korean red pepper flakes and soybean sprouts.",
   "h": "9e05588013",
-  "name": "Gyeongsang-style Beef and Radish Soup (Gyeongsang-sik Sogi-gi Mu-guk)",
+  "name": "Gyeongsang-style Beef and Radish Soup (Gyeongsang-sik Sogogi Mu-guk)",
   "steps": [
    "Soak beef in cold water for 15 minutes to remove blood, cut Korean radish into flat bite-sized pieces, and cut largely green onion.",
    "Heat sesame oil 1 tbsp in a pot, stir-fry beef over medium heat for 3 minutes, add Korean red pepper flakes 3 tbsp, and stir-fry over low heat for 1 minute.",
@@ -4339,7 +4339,7 @@
  "hongap-tang": {
   "desc": "Clear and refreshing mussel broth, also great as a drinking snack.",
   "h": "565193d651",
-  "name": "Mussel Soup (Hongap-tang)",
+  "name": "Mussel Soup (Honghap-tang)",
   "steps": [
    "Remove the beards from the mussel and scrub the shells with a brush. Slice the green onion diagonally and slice thinly the Cheongyang chili.",
    "Put 500 ml of water, 1 tbsp of mirin, and minced garlic in a pot and boil.",
@@ -9386,7 +9386,7 @@
  "tofu-egg-steam": {
   "desc": "An egg steamed dish made smoother and lower in calories by adding soft tofu.",
   "h": "2a2f9c3084",
-  "name": "Soft Tofu Egg Steamed (Sundubu Gyeran-jjim)",
+  "name": "Steamed Egg with Soft Tofu (Sundubu Gyeran-jjim)",
   "steps": [
    "Place soft tofu 175g in a bowl and mash finely with a spoon. Slice thinly green onion.",
    "Add egg 2, salt 1/3 tsp, and water 100ml, mix well, and strain once through a sieve.",
