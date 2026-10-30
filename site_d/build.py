@@ -209,7 +209,7 @@ def load_affiliate() -> dict:
     return load_affiliate_all()[0]
 
 
-GENERIC_TOOLS = {"프라이팬", "냄비", "칼·도마", "믹싱볼", "계량스푼", "뒤집개", "주걱", "조리도구 세트 1", "조리도구 세트 2"}
+GENERIC_TOOLS = {"프라이팬", "냄비", "칼·도마", "믹싱볼", "계량스푼", "뒤집개", "주걱", "조리도구 세트 1", "조리도구 세트 2", "냄비 뚜껑", "숟가락·젓가락 세트"}
 
 
 def tools_for(recipe: dict, tools: dict) -> list:

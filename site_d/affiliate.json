@@ -133,6 +133,36 @@
     "오리고기": "https://link.coupang.com/a/ifa1P8FRM4"
   },
   "tools": {
+    "오븐": {
+      "label": "오븐 보러가기",
+      "url": "https://link.coupang.com/a/if4VpX6rRY",
+      "match": "오븐"
+    },
+    "찜기": {
+      "label": "찜기 보러가기",
+      "url": "https://link.coupang.com/a/if455xpGwu",
+      "match": "찜기"
+    },
+    "핸드 블렌더": {
+      "label": "핸드 블렌더 보러가기",
+      "url": "https://link.coupang.com/a/if47wbm2ZE",
+      "match": "핸드 블렌더"
+    },
+    "거품기": {
+      "label": "거품기 보러가기",
+      "url": "https://link.coupang.com/a/if42HnZe3g",
+      "match": "거품기"
+    },
+    "국자": {
+      "label": "국자 보러가기",
+      "url": "https://link.coupang.com/a/if4ZNhmYIm",
+      "match": "국자"
+    },
+    "이쑤시개": {
+      "label": "이쑤시개 보러가기",
+      "url": "https://link.coupang.com/a/if4WzMcwE0",
+      "match": "이쑤시개"
+    },
     "깊은 팬 28cm": {
       "label": "깊은 팬(28cm·뚜껑) 보러가기",
       "url": "https://link.coupang.com/a/if21pQF8TI",
@@ -181,7 +211,7 @@
     "믹서": {
       "label": "믹서 보러가기",
       "url": "https://link.coupang.com/a/ifa7C2B1bM",
-      "match": "믹서|블렌더|곱게 갈"
+      "match": "믹서|(?<!핸드 )블렌더|곱게 갈"
     },
     "내열 유리 용기": {
       "label": "내열 유리 용기 보러가기",
@@ -272,6 +302,16 @@
       "label": "키친타월 보러가기",
       "url": "https://link.coupang.com/a/ieM0BGJzHw",
       "match": "키친타월"
+    },
+    "냄비 뚜껑": {
+      "label": "냄비 뚜껑 보러가기",
+      "url": "https://link.coupang.com/a/if4OZxOBhs",
+      "match": "뚜껑"
+    },
+    "숟가락·젓가락 세트": {
+      "label": "숟가락·젓가락 세트 보러가기",
+      "url": "https://link.coupang.com/a/if4RK3qP6G",
+      "match": "숟가락|젓가락"
     }
   },
   "ingredient_labels": {
