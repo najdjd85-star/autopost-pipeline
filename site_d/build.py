@@ -819,6 +819,8 @@ def main() -> None:
     (DIST / "all.html").write_text(atpl, encoding="utf-8")
     shutil.copy(HERE / "static" / "list.js", DIST / "assets" / "list.js")
     shutil.copy(HERE / "static" / "catsearch.js", DIST / "assets" / "catsearch.js")
+    if (HERE / "promo_media").exists():   # 홍보 영상 등(인스타·스레드가 공개 주소로 가져간다): https://…/promo/<파일>
+        shutil.copytree(HERE / "promo_media", DIST / "promo")
     urls = [f"{BASE}/", f"{BASE}/all.html"] + [f"{BASE}/category/{c[0]}.html" for c in RECIPE_CATS if any(c[0] in r["cats"] for r in RECIPES)] + [f"{BASE}/recipes/{r['slug']}.html" for r in RECIPES]
     sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "\n".join(f"<url><loc>{u}</loc></url>" for u in urls) + "\n</urlset>\n"
     (DIST / "sitemap.xml").write_text(sitemap, encoding="utf-8")
