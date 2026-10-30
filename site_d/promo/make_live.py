@@ -32,7 +32,7 @@ SPEED = 1.25        # 사용 화면 재생 속도(record_demo.py 의 SPEED 와 �
 def layout():
     top = 230
     ptop = top + 250
-    ph = H - ptop - 150
+    ph = H - ptop - 280   # 아래쪽은 틱톡·릴스의 버튼·설명 글자가 덮는 자리라 비워 둔다
     pw = int(ph * 390 / 844)
     return top, ptop, pw, ph
 
@@ -115,7 +115,8 @@ def run(cmd: list) -> None:
         raise SystemExit("ffmpeg 실패:\n" + r.stderr[-1500:])
 
 
-def main() -> None:
+def main(cta: str = "profile") -> None:
+    """cta: profile = '프로필 링크 클릭!'(인스타·틱톡·유튜브), link = '아래 링크 눌러봐!'(스레드)"""
     OUT.mkdir(parents=True, exist_ok=True)
     marks = json.loads((SCR / "live_marks.json").read_text(encoding="utf-8"))
     nar = json.loads((SCR / "narr.json").read_text(encoding="utf-8")) if (SCR / "narr.json").exists() else {}
@@ -173,34 +174,34 @@ def main() -> None:
          "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20", str(OUT / "_main.mp4")])
 
     # 3) 끝 장면: 행동 유도 + 살짝 커지는 효과
-    outro = R.outro(W, H, "오늘 저녁 뭐 먹지 고민 말고", "프로필 링크 클릭!")
+    outro = R.outro(W, H, "오늘 저녁 뭐 먹지 고민 말고", "프로필 링크 클릭!" if cta == "profile" else "아래 링크 눌러봐!", bottom="프로필 링크에서 바로 써 보세요" if cta == "profile" else "글 아래 링크로 바로 써 보세요")
     outro.save(OUT / "_outro.png")
-    outro_len = max(2.6, nar.get("outro", 0) + 0.7)
+    outro_len = max(2.6, nar.get(f"outro_{cta}", 0) + 0.7)
     frames = int(outro_len * 30)
     run(["ffmpeg", "-y", "-loop", "1", "-i", str(OUT / "_outro.png"), "-vf", f"zoompan=z='min(1.0+0.0009*on,1.07)':d={frames}:s=1080x1920:fps=30",
          "-t", f"{outro_len:.2f}", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20", str(OUT / "_outro.mp4")])
 
     parts = [f for f in ("_open.mp4", "_main.mp4", "_outro.mp4") if (OUT / f).exists()]
     (OUT / "_list.txt").write_text("".join(f"file '{f}'\n" for f in parts), encoding="utf-8")
-    final = OUT / "short_live.mp4"
+    final = OUT / f"short_live_{cta}.mp4"
     run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", str(OUT / "_list.txt"), "-c", "copy", str(final)])
     total = d0 + main_len + outro_len
 
     # 4) 음성
-    lines = [(k, SCR / f"narr_{k}.mp3") for k in ("hook", "type", "pick", "result", "recipe", "outro") if (SCR / f"narr_{k}.mp3").exists()]
+    lines = [(k, SCR / f"narr_{k}.mp3") for k in ("hook", "type", "pick", "result", "recipe", f"outro_{cta}") if (SCR / f"narr_{k}.mp3").exists()]
     if lines:
         starts = {"hook": 0.15, "type": d0 + rel["type"] + 0.15, "pick": d0 + rel["pick"] + 0.1, "result": d0 + rel["result"] + 0.35,
-                  "recipe": d0 + rel["recipe"] + 0.3, "outro": d0 + main_len + 0.15}
+                  "recipe": d0 + rel["recipe"] + 0.3, f"outro_{cta}": d0 + main_len + 0.15}
         cmd = ["ffmpeg", "-y", "-i", str(final)]
         for _k, f in lines:
             cmd += ["-i", str(f)]
         pf = [f"[{i + 1}:a]adelay={int(starts[k] * 1000)}|{int(starts[k] * 1000)}[a{i}]" for i, (k, _f) in enumerate(lines)]
         mix = "".join(f"[a{i}]" for i in range(len(lines))) + f"amix=inputs={len(lines)}:normalize=0:duration=longest,volume=1.4[aout]"
-        voiced = OUT / "short_live_voice.mp4"
+        voiced = OUT / f"short_live_voice_{cta}.mp4"
         run(cmd + ["-filter_complex", ";".join(pf + [mix]), "-map", "0:v", "-map", "[aout]", "-c:v", "copy", "-c:a", "aac", "-b:a", "160k", "-t", f"{total:.2f}", str(voiced)])
         print("음성 영상:", voiced)
     print("완성:", final, f"{total:.1f}초")
 
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[sys.argv.index("--cta") + 1] if "--cta" in sys.argv else "profile")

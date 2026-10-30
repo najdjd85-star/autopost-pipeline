@@ -1,6 +1,6 @@
 """[홍보 3단계] 사용법 영상(세로 20초)을 유튜브 쇼츠·인스타 릴스·스레드에 올린다. 틱톡은 앱이 막혀 있어 직접 올려야 한다.
 
-- 영상 원본: site_d/promo_media/fridge-demo.mp4 (사이트 빌드가 https://cook.dailyfixpoint.com/promo/fridge-demo.mp4 로 공개한다 → 인스타·스레드는 이 주소가 열려 있어야 올릴 수 있다).
+- 영상 원본: site_d/promo_media/fridge-demo.mp4(끝 멘트 '프로필 링크 클릭!': 인스타·틱톡·유튜브)와 fridge-demo-link.mp4('아래 링크 눌러봐!': 스레드)(사이트 빌드가 https://cook.dailyfixpoint.com/promo/fridge-demo.mp4 로 공개한다 → 인스타·스레드는 이 주소가 열려 있어야 올릴 수 있다).
 - 기본은 '미리보기'(아무것도 올리지 않음). --send 와 플랫폼(--youtube --instagram --threads, 또는 --all)을 줘야 올린다.
 - 이미 올린 플랫폼은 data/output/promo_posted.json 에 기록해서 다시 올리지 않는다(--force 로 무시).
 - AI 표기: 그림·음성이 AI로 만들어졌다는 문구를 설명에 넣고, 유튜브는 '합성 콘텐츠' 표시를 켠다. 쿠팡 링크는 넣지 않는다.
@@ -28,7 +28,8 @@ sys.path.insert(0, str(SITE_D))
 sys.path.insert(0, str(ROOT))
 
 MEDIA = SITE_D / "promo_media" / "fridge-demo.mp4"
-URL = "https://cook.dailyfixpoint.com/promo/fridge-demo.mp4"
+URL = "https://cook.dailyfixpoint.com/promo/fridge-demo.mp4"                  # 프로필 링크 버전(인스타·틱톡·유튜브)
+URL_LINK = "https://cook.dailyfixpoint.com/promo/fridge-demo-link.mp4"         # 아래 링크 버전(스레드)
 LOG = ROOT / "data" / "output" / "promo_posted.json"
 SITE = "https://cook.dailyfixpoint.com/"
 AI_NOTE = "※ 그림과 목소리는 AI로 만들었고, 요리 사진은 AI로 만든 참고 이미지예요."
@@ -79,10 +80,10 @@ def post_youtube() -> dict:
     return {"status": "ok", "id": res.get("id"), "url": f"https://youtube.com/shorts/{res.get('id')}"}
 
 
-def check_public_url() -> None:
-    r = requests.head(URL, timeout=20, allow_redirects=True)
+def check_public_url(url: str = URL) -> None:
+    r = requests.head(url, timeout=20, allow_redirects=True)
     if r.status_code != 200 or "video" not in r.headers.get("content-type", ""):
-        raise SystemExit(f"영상 공개 주소가 아직 열려 있지 않아요({r.status_code}). 서버에서 git pull 후 publish_site_d.sh 를 먼저 실행해 주세요: {URL}")
+        raise SystemExit(f"영상 공개 주소가 아직 열려 있지 않아요({r.status_code}). 서버에서 git pull 후 publish_site_d.sh 를 먼저 실행해 주세요: {url}")
 
 
 def post_instagram() -> dict:
@@ -97,11 +98,11 @@ def post_threads() -> dict:
     from social_distributor import THREADS_API_BASE, _wait_for_threads_container_ready, plain_threads_text
     from utils.http import safe_post
 
-    check_public_url()
+    check_public_url(URL_LINK)
     if not settings.threads_access_token:
         return {"status": "skipped", "reason": "not_configured"}
     tok = settings.threads_access_token
-    c = safe_post(f"{THREADS_API_BASE}/me/threads", data={"media_type": "VIDEO", "video_url": URL, "text": plain_threads_text(threads_text()), "access_token": tok}, timeout=60)
+    c = safe_post(f"{THREADS_API_BASE}/me/threads", data={"media_type": "VIDEO", "video_url": URL_LINK, "text": plain_threads_text(threads_text()), "access_token": tok}, timeout=60)
     if c is None or c.status_code != 200:
         return {"status": "error", "reason": "create_failed", "body": getattr(c, "text", "")[:300]}
     cid = c.json().get("id")

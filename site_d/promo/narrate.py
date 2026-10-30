@@ -29,7 +29,8 @@ LINES = {
     "pick": "있는 재료, 톡톡 눌러서 담기만 해!",
     "result": "바로 되는 요리가 떠. 모자란 재료는 사러 가기까지!",
     "recipe": "분량이랑 순서까지 다 있어. 따라 하면 끝!",
-    "outro": "저녁 뭐 먹지 고민 말고, 프로필 링크 클릭!",
+    "outro_profile": "저녁 뭐 먹지 고민 말고, 프로필 링크 클릭!",   # 인스타·틱톡·유튜브(링크가 프로필에 있다)
+    "outro_link": "저녁 뭐 먹지 고민 말고, 아래 링크 눌러봐!",       # 스레드(글 안의 링크)
 }
 TEMPO = 1.2   # 말 속도(높이 + 피치는 그대로 유지)
 
@@ -110,6 +111,7 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--list", action="store_true")
     ap.add_argument("--voice", default="", help="목소리 아이디 또는 jisun/henry/klamon/kyung/jessica/sarah/adam/charlie")
+    ap.add_argument("--only", default="", help="쉼표로 고른 문장만 다시 만든다(크레딧 절약). 예: outro_profile,outro_link")
     ap.add_argument("--tempo", type=float, default=TEMPO, help="말 속도 배율(기본 1.2)")
     ap.add_argument("--model", default="", help="eleven_v3(기본) 또는 eleven_multilingual_v2")
     ap.add_argument("--sample", action="store_true", help="첫 문장만 4가지 목소리로 만들어 들어 보기(크레딧 아주 조금)")
@@ -132,7 +134,12 @@ def main() -> None:
     voice = DEFAULT_VOICES.get(a.voice.lower(), a.voice) if a.voice else pick_voice(k)
     OUT.mkdir(parents=True, exist_ok=True)
     durs = {}
+    old = OUT / "narr.json"
+    if a.only and old.exists():
+        durs = json.loads(old.read_text(encoding="utf-8"))
     for name, text in LINES.items():
+        if a.only and name not in a.only.split(","):
+            continue
         audio = tts(k, voice, text, a.model)
         f = OUT / f"narr_{name}.mp3"
         f.write_bytes(audio)

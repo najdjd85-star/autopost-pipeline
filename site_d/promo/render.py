@@ -311,7 +311,7 @@ def info_slide(W, H, slug, page=None):
     return img
 
 
-def outro(W, H, line1="냉장고에 있는 재료로", line2="오늘 뭐 해 먹지?", page=None):
+def outro(W, H, line1="냉장고에 있는 재료로", line2="오늘 뭐 해 먹지?", page=None, bottom="프로필 링크에서 바로 써 보세요"):
     img, d = base(W, H, page)
     mh = int(H * 0.34)
     m = Image.open(MASCOT / "open.png").convert("RGBA")
@@ -329,7 +329,7 @@ def outro(W, H, line1="냉장고에 있는 재료로", line2="오늘 뭐 해 먹
     d.rounded_rectangle(((W - w) // 2, y, (W + w) // 2, y + 110), 55, fill=INK)
     d.text((W // 2, y + 55), t, font=f, fill=WHITE, anchor="mm")
     d.text((W // 2, y + 150), "재료만 누르면 만들 수 있는 요리가 나와요", font=font(34, 500), fill=MUT, anchor="ma")
-    d.text((W // 2, H - 110), "프로필 링크에서 바로 써 보세요", font=font(34, 700), fill=ACC, anchor="ma")
+    d.text((W // 2, H - (110 if H < 1500 else 330)), bottom, font=font(34, 700), fill=ACC, anchor="ma")   # 세로 영상은 앱 버튼에 가리지 않도록 더 위에
     return img
 
 
