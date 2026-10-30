@@ -128,6 +128,7 @@ h2 small.mut{font-size:13px;font-weight:400}
 .rgroup h3 small{color:var(--mut);font-weight:400;font-size:12px}
 .rlist{list-style:none;margin:0;padding:0;background:var(--card);border:1px solid var(--line);border-radius:12px}
 .rlist li{display:flex;justify-content:space-between;gap:10px;padding:9px 12px;border-bottom:1px solid var(--line)}
+.rlist li[hidden],.rgroup[hidden]{display:none}
 .rlist li:last-child{border-bottom:0}
 .rlist a{color:var(--ink);text-decoration:none;font-weight:600}
 .rlist span{color:var(--mut);font-size:12px;white-space:nowrap;align-self:center}
