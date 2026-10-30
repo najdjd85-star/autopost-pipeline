@@ -334,3 +334,11 @@ html{scroll-padding-top:74px}
 .pantry-line .shelf-note{margin:0 0 8px}
 .pantry-line .tiles{padding-bottom:12px}
 .pantry-line .tile{box-shadow:none}
+/* 모든 레시피 검색 자동완성 */
+.ac{position:absolute;left:0;right:0;top:100%;margin:4px 0 0;padding:4px;list-style:none;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:30;max-height:340px;overflow:auto}
+.ac[hidden]{display:none}
+.ac li{margin:0;border-radius:8px}
+.ac a{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:10px 12px;color:var(--ink);text-decoration:none;font-size:15px;font-weight:600}
+.ac a b{color:var(--accent);font-weight:800}
+.ac a small{font-size:12px;font-weight:600;color:var(--mut);white-space:nowrap}
+.ac li.on,.ac li:hover{background:var(--accent-soft)}
