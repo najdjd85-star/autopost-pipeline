@@ -207,3 +207,11 @@ def compute(slug: str) -> dict:
             "chol": int(round(per["chol"] / 5.0) * 5), "sodium": int(round(per["sodium"] / 10.0) * 10),
         },
     }
+
+
+# 새로 등록한 재료(ingredients_more.py)의 영양값을 합친다
+from ingredients_more import MORE as _MORE  # noqa: E402
+
+for _n, _cat, _em, _al, _nu, _ex, _pr in _MORE:
+    NUTRI[_n] = _nu
+    EXTRA[_n] = _ex

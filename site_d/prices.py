@@ -39,6 +39,13 @@ PRICE_BASE_100G: Dict[str, int] = {
 }
 
 
+# 새로 등록한 재료(ingredients_more.py)의 평균가
+from ingredients_more import MORE as _MORE  # noqa: E402
+
+for _row in _MORE:
+    PRICE_BASE_100G[_row[0]] = _row[6]
+
+
 # 실시간 가격(tools/fetch_prices.py 가 매일 prices_live.json 에 저장)이 있으면 신선식품 가격을 덮어쓴다.
 PRICE_100G: Dict[str, int] = dict(PRICE_BASE_100G)
 LIVE_DATE = ""         # 아무 실시간 값이나 있으면 그 기준일(둘 중 최신)

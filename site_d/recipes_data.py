@@ -148,6 +148,17 @@ EMOJI: Dict[str, str] = {
     "통깨": "⚪", "식초": "🧴", "굴소스": "🦪", "맛술": "🍶", "올리고당": "🍯", "케첩": "🥫",
 }
 
+# 새로 등록한 재료(ingredients_more.py)를 위 표들에 합친다
+from ingredients_more import MORE as _MORE  # noqa: E402
+
+for _n, _cat, _em, _al, _nu, _ex, _pr in _MORE:
+    EMOJI[_n] = _em
+    if _cat is None:   # 양념통 재료는 별칭 표가 아니라 STAPLES 에만 둔다(다른 별칭은 app.js 의 SYN 에서 처리)
+        STAPLES.insert(STAPLES.index("물"), _n)
+    else:
+        ALIASES[_n] = _al
+        CATEGORIES[_cat].append(_n)
+
 # 양념통: 처음 열면 거의 모든 집에 있는 것만 미리 켜 두고, 나머지는 사용자가 고른다
 STAPLE_DEFAULTS = ["소금", "설탕", "간장", "식용유", "후추"]
 

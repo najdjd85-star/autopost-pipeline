@@ -5,7 +5,7 @@ import importlib
 from typing import Dict, List
 
 RECIPES: List[dict] = []
-for _n in range(1, 22):
+for _n in range(1, 24):
     try:
         RECIPES += importlib.import_module(f"recipes_part{_n}").ITEMS
     except ModuleNotFoundError:

@@ -128,6 +128,9 @@ SCENE.update(SCENE_EXTRA)
 from dish_scenes_batch2 import SCENES as _SCENES2  # noqa: E402
 
 SCENE.update(_SCENES2)
+from dish_scenes_batch3 import SCENES as _SCENES3  # noqa: E402
+
+SCENE.update(_SCENES3)
 SCENE.update(SCENE_OVERRIDE)
 
 STYLE = ("appetizing food photograph, overhead 45-degree angle, Korean home cooking, served on a ceramic dish on a light wooden table, "
