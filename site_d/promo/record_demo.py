@@ -31,6 +31,9 @@ TAP_JS = """
 """
 
 
+SPEED = 1.25   # make_live.py 가 사용 화면을 이만큼 빠르게 재생한다(음성 길이 x SPEED 만큼은 녹화해 둬야 한다)
+
+
 def narration() -> dict:
     """narrate.py 가 만든 음성 길이(초). 없으면 빈 값 — 그때는 기본 간격으로 녹화한다."""
     f = OUT / "narr.json"
@@ -68,8 +71,8 @@ def run(base: str) -> None:
         page.locator("#q").click()
         page.wait_for_timeout(500)
         page.keyboard.type("계란", delay=260)
-        page.wait_for_timeout(1500)
-        until("type", nar.get("type", 0) + 0.5)
+        page.wait_for_timeout(1000)
+        until("type", nar.get("type", 0) * SPEED + 0.3)
         page.locator("#q").fill("")
         page.evaluate("document.activeElement && document.activeElement.blur(); window.scrollTo(0,0)")
         page.wait_for_timeout(700)
@@ -80,10 +83,10 @@ def run(base: str) -> None:
             page.wait_for_timeout(220)
             loc.click()
             page.wait_for_timeout(520)
-        until("pick", nar.get("pick", 0) + 0.4)
+        until("pick", nar.get("pick", 0) * SPEED + 0.3)
         mark("result")
         page.locator("#bar button, #bar a").first.click()
-        page.wait_for_timeout(1900)
+        page.wait_for_timeout(1500)
         try:
             b1 = page.get_by_text("재료 다 있어요").first.bounding_box()
             b2 = page.get_by_text("없는 재료 사러가기").first.bounding_box()
@@ -93,7 +96,7 @@ def run(base: str) -> None:
                 mark("zoom_a")
         except Exception:  # noqa: BLE001
             pass
-        until("result", nar.get("result", 0) + 0.6)
+        until("result", nar.get("result", 0) * SPEED + 0.4)
         if "zoom_a" in marks:
             mark("zoom_b")
         mark("recipe")
@@ -102,12 +105,12 @@ def run(base: str) -> None:
         page.wait_for_timeout(800)
         mark("steps")
         smooth("ul.ing", 110)       # 재료 → 순서 → 팁 순서로 부드럽게 내려간다
-        page.wait_for_timeout(1700)
+        page.wait_for_timeout(1100)
         smooth("ol.steps", 90)
-        page.wait_for_timeout(1900)
+        page.wait_for_timeout(1300)
         page.evaluate("window.scrollBy({top: 520, behavior: 'smooth'})")
-        page.wait_for_timeout(1700)
-        until("recipe", nar.get("recipe", 0) + 0.6)
+        page.wait_for_timeout(1100)
+        until("recipe", nar.get("recipe", 0) * SPEED + 0.4)
         mark("end")
         ctx.close()
         browser.close()

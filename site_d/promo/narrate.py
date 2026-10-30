@@ -25,12 +25,13 @@ API = "https://api.elevenlabs.io/v1"
 
 LINES = {
     "hook": "냉장고 열었는데, 곧 버릴 재료만 잔뜩이야?",
-    "type": "재료 이름만 쳐도 바로 찾아줘.",
-    "pick": "있는 재료를 톡톡 눌러서 담기만 해.",
-    "result": "있는 재료로 바로 되는 요리가 떠. 모자란 재료는 바로 사러 갈 수도 있어.",
-    "recipe": "분량이랑 순서까지 다 정리돼 있어서, 그대로 따라 하면 끝.",
-    "outro": "오늘 저녁 뭐 먹지 고민 말고, 프로필 링크 클릭!",
+    "type": "이름만 쳐도 바로 찾아줘.",
+    "pick": "있는 재료, 톡톡 눌러서 담기만 해!",
+    "result": "바로 되는 요리가 떠. 모자란 재료는 사러 가기까지!",
+    "recipe": "분량이랑 순서까지 다 있어. 따라 하면 끝!",
+    "outro": "저녁 뭐 먹지 고민 말고, 프로필 링크 클릭!",
 }
+TEMPO = 1.2   # 말 속도(높이 + 피치는 그대로 유지)
 
 
 def key() -> str:
@@ -109,6 +110,7 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--list", action="store_true")
     ap.add_argument("--voice", default="", help="목소리 아이디 또는 jisun/henry/klamon/kyung/jessica/sarah/adam/charlie")
+    ap.add_argument("--tempo", type=float, default=TEMPO, help="말 속도 배율(기본 1.2)")
     ap.add_argument("--model", default="", help="eleven_v3(기본) 또는 eleven_multilingual_v2")
     ap.add_argument("--sample", action="store_true", help="첫 문장만 4가지 목소리로 만들어 들어 보기(크레딧 아주 조금)")
     a = ap.parse_args()
@@ -134,6 +136,9 @@ def main() -> None:
         audio = tts(k, voice, text, a.model)
         f = OUT / f"narr_{name}.mp3"
         f.write_bytes(audio)
+        fast = f.with_name(f.stem + "_fast.mp3")
+        subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(f), "-filter:a", f"atempo={a.tempo}", str(fast)], check=True)
+        fast.replace(f)
         durs[name] = duration(f)
         print(name, durs[name], "초", "|", text)
     (OUT / "narr.json").write_text(json.dumps(durs, ensure_ascii=False), encoding="utf-8")

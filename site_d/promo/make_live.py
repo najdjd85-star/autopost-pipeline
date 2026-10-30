@@ -26,6 +26,7 @@ OUT = HERE / "out" / "demo"
 STOCK = SCR / "stock"
 W, H = 1080, 1920
 VW, VH = 412, 892   # 녹화 해상도
+SPEED = 1.25        # 사용 화면 재생 속도(record_demo.py 의 SPEED 와 같아야 한다)
 
 
 def layout():
@@ -76,19 +77,32 @@ def caption(name: str, step, title: str, sub: str) -> Path:
     return p
 
 
+def prep_open(src: Path, name: str) -> Path:
+    """애니풍 그림을 아래쪽에 두고 위쪽을 비워서(후킹 글자 자리) 1080x1920 판으로 만든다. 가장자리는 배경색과 부드럽게 이어 붙인다."""
+    im = Image.open(src).convert("RGB")
+    bg = im.getpixel((6, 6))
+    canvas = Image.new("RGB", (W, H), bg)
+    h = 1500
+    w = int(im.width * h / im.height)
+    im = im.resize((w, h), Image.LANCZOS)
+    mask = Image.new("L", (w, h), 255)
+    md = ImageDraw.Draw(mask)
+    for i in range(60):   # 가장자리 60px 를 서서히 투명하게
+        a = int(255 * i / 60)
+        md.rectangle((i, i, w - 1 - i, h - 1 - i), outline=a)
+    canvas.paste(im, ((W - w) // 2, H - h), mask)
+    out = OUT / f"_prep_{name}.png"
+    canvas.save(out)
+    return out
+
+
 def hook_text() -> Path:
-    """오프닝 위에 올리는 후킹 글자(아래쪽 어둡게 + 흰 글자)."""
+    """오프닝 위에 올리는 후킹 글자(밝은 애니풍 그림 위: 위쪽, 진한 글자 + 흰 테두리)."""
     img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    grad = Image.new("L", (1, H), 0)
-    for y in range(H):
-        grad.putpixel((0, y), int(max(0, (y - H * 0.50) / (H * 0.50)) * 190))
-    shade = Image.new("RGBA", (W, H), (0, 0, 0, 255))
-    shade.putalpha(grad.resize((W, H)))
-    img.alpha_composite(shade)
     d = ImageDraw.Draw(img)
-    y = int(H * 0.70)
-    for t, c in (("냉장고 열었는데", R.WHITE), ("곧 버릴 재료만 잔뜩?", (255, 196, 80))):
-        d.text((W // 2, y), t, font=R.font(112, 800), fill=c, anchor="ma", stroke_width=7, stroke_fill=(0, 0, 0))
+    y = 150
+    for t, c in (("냉장고 열었는데", R.INK), ("곧 버릴 재료만 잔뜩?", R.ACC)):
+        d.text((W // 2, y), t, font=R.font(112, 800), fill=c, anchor="ma", stroke_width=12, stroke_fill=(255, 255, 255))
         y += 150
     p = OUT / "_hooktext.png"
     img.save(p)
@@ -109,27 +123,36 @@ def main() -> None:
     for f in ("_open.mp4", "_main.mp4", "_outro.mp4"):
         (OUT / f).unlink(missing_ok=True)
 
-    # 1) 오프닝: 곧 버릴 재료를 쓰레기통에 넣는 AI 이미지(천천히 다가가는 움직임) + 후킹 글자
-    have_open = (SCR / "open_ai.png").exists()
-    d0 = max(2.4, nar.get("hook", 2.4) + 0.35) if have_open else 0.0
+    # 1) 오프닝: 애니풍 그림 2장(재료를 던져 버리는 캐릭터 → 절망하는 캐릭터) + 후킹 글자
+    imgs = [SCR / "anime_throw_1.png", SCR / "anime_despair_1.png"]
+    have_open = all(i.exists() for i in imgs)
+    d0 = max(2.2, nar.get("hook", 2.2) + 0.3) if have_open else 0.0
     if have_open:
-        frames = int(d0 * 30)
-        fc = (f"[0:v]scale=1620:2880:flags=lanczos,zoompan=z='1.0+0.16*on/{frames}':x='iw/2-(iw/zoom/2)+4*sin(on/5)':y='ih/2-(ih/zoom/2)+4*cos(on/6)':d={frames}:s=1080x1920:fps=30,"
-              "eq=brightness=-0.07:saturation=1.05[c];[c][1:v]overlay=0:0[o]")
-        run(["ffmpeg", "-y", "-loop", "1", "-i", str(SCR / "open_ai.png"), "-loop", "1", "-i", str(hook_text()), "-filter_complex", fc, "-map", "[o]",
-             "-t", f"{d0:.2f}", "-r", "30", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20", str(OUT / "_open.mp4")])
+        l1 = round(d0 * 0.5, 2)
+        l2 = round(d0 - l1, 2)
+        parts_v = []
+        for i, (img_p, ln) in enumerate(zip(imgs, (l1, l2))):
+            fr = int(ln * 30)
+            out_p = OUT / f"_open{i}.mp4"
+            zin = "1.0+0.12*on/%d" % fr if i == 0 else "1.14-0.12*on/%d" % fr   # 첫 장은 다가가고, 둘째 장은 살짝 멀어진다
+            run(["ffmpeg", "-y", "-loop", "1", "-i", str(prep_open(img_p, f"o{i}")), "-vf",
+                 f"scale=1620:2880:force_original_aspect_ratio=increase,crop=1620:2880,zoompan=z='{zin}':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d={fr}:s=1080x1920:fps=30",
+                 "-t", f"{ln:.2f}", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "18", str(out_p)])
+            parts_v.append(out_p)
+        run(["ffmpeg", "-y", "-i", str(parts_v[0]), "-i", str(parts_v[1]), "-loop", "1", "-i", str(hook_text()), "-filter_complex",
+             "[0:v][1:v]concat=n=2:v=1:a=0[c];[c][2:v]overlay=0:0[o]", "-map", "[o]", "-t", f"{d0:.2f}", "-r", "30", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20", str(OUT / "_open.mp4")])
 
     # 2) 사용 화면: 입력을 시작하기 조금 전부터. 결과 구간은 '재료 다 있어요 / 없는 재료 사러가기' 쪽으로 확대
     ts = max(0.0, marks["type"] - 0.4)
     end = marks["end"]
-    main_len = end - ts + 0.3
-    rel = {k: marks[k] - ts for k in ("type", "pick", "result", "recipe")}
+    main_len = (end - ts + 0.3) / SPEED
+    rel = {k: (marks[k] - ts) / SPEED for k in ("type", "pick", "result", "recipe")}
     segs = [("1", 0.0, rel["pick"], 1, "이름을 쳐도 돼", "재료든 요리 이름이든 치면 바로 찾아줘"),
             ("2", rel["pick"], rel["result"], 2, "재료를 톡톡 눌러서 담아", "냉장고에 있는 거 아무거나 눌러봐"),
             ("3", rel["result"], rel["recipe"], 3, "지금 되는 요리가 바로 나와", "재료 다 있는 요리부터 보여줘"),
             ("4", rel["recipe"], main_len, 4, "순서까지 다 정리돼 있어", "분량 그대로 따라 하면 끝")]
     caps = [(caption(n, st, t, s), a, b) for n, a, b, st, t, s in segs]
-    za, zb = marks.get("zoom_a", 0) - ts, marks.get("zoom_b", 0) - ts
+    za, zb = (marks.get("zoom_a", 0) - ts) / SPEED, (marks.get("zoom_b", 0) - ts) / SPEED
     cx, cy = marks.get("zoom_cx", VW / 2), marks.get("zoom_cy", VH / 2)
     if zb > za:
         zexp = f"(1+0.5*between(t,{za:.2f},{zb:.2f})*min(1,(t-{za:.2f})/0.5)*min(1,({zb:.2f}-t)/0.5))"
@@ -140,7 +163,7 @@ def main() -> None:
     inputs = ["-loop", "1", "-i", str(OUT / "_bg.png"), "-i", str(SCR / "live.webm"), "-loop", "1", "-i", str(OUT / "_bezel.png")]
     for p, _a, _b in caps:
         inputs += ["-loop", "1", "-i", str(p)]
-    fc = [f"[1:v]trim=start={ts:.2f},setpts=PTS-STARTPTS,{zoom}scale={pw}:{ph}:flags=lanczos,unsharp=5:5:0.8[v]",
+    fc = [f"[1:v]trim=start={ts:.2f},setpts=(PTS-STARTPTS)/{SPEED},{zoom}scale={pw}:{ph}:flags=lanczos,unsharp=5:5:0.8[v]",
           f"[0:v][v]overlay={vx}:{vy}[a]", "[a][2:v]overlay=0:0[b]"]
     last = "b"
     for i, (_p, a, b) in enumerate(caps):
@@ -152,7 +175,7 @@ def main() -> None:
     # 3) 끝 장면: 행동 유도 + 살짝 커지는 효과
     outro = R.outro(W, H, "오늘 저녁 뭐 먹지 고민 말고", "프로필 링크 클릭!")
     outro.save(OUT / "_outro.png")
-    outro_len = max(3.2, nar.get("outro", 0) + 0.9)
+    outro_len = max(2.6, nar.get("outro", 0) + 0.7)
     frames = int(outro_len * 30)
     run(["ffmpeg", "-y", "-loop", "1", "-i", str(OUT / "_outro.png"), "-vf", f"zoompan=z='min(1.0+0.0009*on,1.07)':d={frames}:s=1080x1920:fps=30",
          "-t", f"{outro_len:.2f}", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20", str(OUT / "_outro.mp4")])
