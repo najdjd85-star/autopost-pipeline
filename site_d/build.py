@@ -180,6 +180,16 @@ def load_extras() -> tuple:
     return data.get("ingredient_labels") or {}, data.get("extras") or {}
 
 
+def category_products(slug: str) -> str:
+    """affiliate.json 의 category_products: 카테고리 페이지·그 카테고리 레시피 페이지에 따로 보여 줄 용품 버튼."""
+    data = json.loads((HERE / "affiliate.json").read_text(encoding="utf-8"))
+    items = (data.get("category_products") or {}).get(slug) or []
+    if not items:
+        return ""
+    links = "".join(f'<a class="buy" href="{esc(x["url"])}" target="_blank" rel="{REL}">{esc(x["label"])} 보러가기</a> ' for x in items if x.get("url"))
+    return f'<div class="panel"><strong>이 카테고리 용품</strong><div class="chips" style="margin-top:8px">{links}</div></div>' if links else ""
+
+
 def load_variants() -> dict:
     """affiliate.json 의 variants: {재료: [{when(정규식), label, url}]} - 요리 이름에 따라 다른 상품 버튼을 쓴다."""
     data = json.loads((HERE / "affiliate.json").read_text(encoding="utf-8"))
@@ -203,7 +213,7 @@ def tools_for(recipe: dict, tools: dict) -> list:
     """이 레시피의 조리 순서에 쓰이는 도구 중 링크가 있는 것."""
     import re as _re
 
-    text = " ".join(recipe["steps"]) + " " + " ".join(i["q"] for i in recipe["ingredients"])
+    text = recipe["name"] + " " + " ".join(recipe["steps"]) + " " + " ".join(i["q"] for i in recipe["ingredients"])
     return [(k, t) for k, t in tools.items() if t.get("match") and _re.search(t["match"], text)][:5]  # 한 레시피에 도구 버튼은 최대 5개
 
 
@@ -375,7 +385,7 @@ def category_page(tpl: str, cat: tuple, photos: dict) -> str:
     out = tpl
     for k, v in {
         "SITE_NAME": SITE_NAME, "BASE": BASE, "NAME": esc(name), "SLUG": slug, "EMOJI": emoji, "INTRO": intro,
-        "COUNT": str(len(items)), "CARDS": cards, "OTHERS": others,
+        "COUNT": str(len(items)), "CARDS": cards + category_products(slug), "OTHERS": others,
     }.items():
         out = out.replace("{{" + k + "}}", v)
     return out
@@ -492,6 +502,8 @@ def recipe_page(tpl: str, r: dict, aff: dict, photos: dict, tools: dict) -> str:
     if tool_items:
         links = "".join(f'<a class="buy" href="{esc(t["url"])}" target="_blank" rel="{REL}">{esc(t["label"])}</a> ' for _k, t in tool_items)
         buy += f'<div class="panel"><strong>이 요리에 쓰는 요리도구</strong><div class="chips" style="margin-top:8px">{links}</div></div>'
+    for cslug in r["cats"]:
+        buy += category_products(cslug)
     step_imgs = HERE / "stepimgs"
     li = []
     for n, s_html in enumerate(annotated_steps(r), 1):

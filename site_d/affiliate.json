@@ -1,5 +1,5 @@
 {
-  "_설명": "쿠팡 파트너스 링크. ingredients: 재료 이름 -> 링크(없는 재료 사러가기에 쓰임). tools: 요리도구 -> label(버튼 글자), url(링크), match(이 도구가 쓰이는 조리 순서의 단어). 링크(url)가 비어 있는 항목은 화면에 나오지 않습니다. 한 레시피에는 도구 버튼이 최대 5개까지만 나옵니다. 채운 뒤 site_d/build.py 를 다시 실행하세요. ingredient_labels: 버튼에 재료 이름 대신 쓸 이름(예: 버섯 -> 새송이버섯). extras: 같은 재료의 다른 상품 버튼을 레시피 페이지에 더 보여 줍니다. variants: 요리 이름이 when(정규식)에 맞으면 그 재료 버튼을 label/url 로 바꿉니다(예: 김밥 레시피의 '김' -> 김밥용 김).",
+  "_설명": "쿠팡 파트너스 링크. ingredients: 재료 이름 -> 링크(없는 재료 사러가기에 쓰임). tools: 요리도구 -> label(버튼 글자), url(링크), match(이 도구가 쓰이는 조리 순서의 단어). 링크(url)가 비어 있는 항목은 화면에 나오지 않습니다. 한 레시피에는 도구 버튼이 최대 5개까지만 나옵니다. 채운 뒤 site_d/build.py 를 다시 실행하세요. ingredient_labels: 버튼에 재료 이름 대신 쓸 이름(예: 버섯 -> 새송이버섯). extras: 같은 재료의 다른 상품 버튼을 레시피 페이지에 더 보여 줍니다. variants: 요리 이름이 when(정규식)에 맞으면 그 재료 버튼을 label/url 로 바꿉니다(예: 김밥 레시피의 '김' -> 김밥용 김). category_products: 카테고리 페이지와 그 카테고리 레시피 페이지에 '이 카테고리 용품'으로 따로 보여 주는 상품.",
   "ingredients": {
     "계란": "https://link.coupang.com/a/iets8XvF4m",
     "김치": "https://link.coupang.com/a/ieLJrC3DVc",
@@ -133,6 +133,46 @@
     "오리고기": "https://link.coupang.com/a/ifa1P8FRM4"
   },
   "tools": {
+    "깊은 팬 28cm": {
+      "label": "깊은 팬(28cm·뚜껑) 보러가기",
+      "url": "https://link.coupang.com/a/if21pQF8TI",
+      "match": "원팬|깊은 팬|28cm"
+    },
+    "튀김 냄비": {
+      "label": "튀김 냄비 보러가기",
+      "url": "https://link.coupang.com/a/if26T5tVoi",
+      "match": "튀깁니다|튀겨|기름에 튀|튀김용"
+    },
+    "머핀틀": {
+      "label": "머핀틀·머핀컵 보러가기",
+      "url": "https://link.coupang.com/a/if3lFwyQY8",
+      "match": "머핀"
+    },
+    "꼬치": {
+      "label": "꼬치 보러가기",
+      "url": "https://link.coupang.com/a/if3hqdbFPU",
+      "match": "꼬치"
+    },
+    "밀대": {
+      "label": "밀대 보러가기",
+      "url": "https://link.coupang.com/a/if3bBe6cnc",
+      "match": "밀대"
+    },
+    "실리콘 얼음 틀": {
+      "label": "실리콘 얼음 틀 보러가기",
+      "url": "https://link.coupang.com/a/if3PnTSxmS",
+      "match": "얼음 틀|실리콘 틀"
+    },
+    "랩": {
+      "label": "식품용 랩 보러가기",
+      "url": "https://link.coupang.com/a/if3REHlTLE",
+      "match": "랩을|랩으로|랩에"
+    },
+    "요리용 가위": {
+      "label": "요리용 가위 보러가기",
+      "url": "https://link.coupang.com/a/if2UWBn1si",
+      "match": "가위"
+    },
     "에어프라이어": {
       "label": "에어프라이어 보러가기",
       "url": "https://link.coupang.com/a/ifa4wG6Brg",
@@ -280,6 +320,20 @@
         "when": "알리오올리오",
         "label": "알리오올리오소스",
         "url": "https://link.coupang.com/a/ie4rljfxIG"
+      }
+    ]
+  },
+  "category_products": {
+    "baby": [
+      {
+        "label": "이유식 소분·보관 용기",
+        "url": "https://link.coupang.com/a/if3PnTSxmS"
+      }
+    ],
+    "pet": [
+      {
+        "label": "강아지 간식 틀·반려동물 식기",
+        "url": "https://link.coupang.com/a/if3697hDFY"
       }
     ]
   }
