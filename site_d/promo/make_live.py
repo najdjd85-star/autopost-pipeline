@@ -105,13 +105,28 @@ def main() -> None:
            "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20", str(main_mp4)]
     subprocess.run(cmd, check=True, capture_output=True)
     outro_mp4 = OUT / "_outro.mp4"
-    subprocess.run(["ffmpeg", "-y", "-loop", "1", "-i", str(OUT / "_outro.png"), "-t", "3", "-r", "30", "-c:v", "libx264", "-pix_fmt", "yuv420p", str(outro_mp4)],
+    nar = json.loads((SCR / "narr.json").read_text(encoding="utf-8")) if (SCR / "narr.json").exists() else {}
+    outro_len = max(3.0, nar.get("outro", 0) + 0.9)
+    subprocess.run(["ffmpeg", "-y", "-loop", "1", "-i", str(OUT / "_outro.png"), "-t", f"{outro_len:.2f}", "-r", "30", "-c:v", "libx264", "-pix_fmt", "yuv420p", str(outro_mp4)],
                    check=True, capture_output=True)
     lst = OUT / "_list.txt"
     lst.write_text(f"file '{main_mp4.name}'\nfile '{outro_mp4.name}'\n", encoding="utf-8")
     final = OUT / "short_live.mp4"
     subprocess.run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", str(lst), "-c", "copy", str(final)], check=True, capture_output=True)
-    print("완성:", final, f"{dur + 3:.1f}초")
+    voice_lines = [(k, SCR / f"narr_{k}.mp3") for k in ("hook", "type", "pick", "result", "recipe", "outro") if (SCR / f"narr_{k}.mp3").exists()]
+    if voice_lines:
+        starts = {"hook": 0.2, "type": marks["type"] + 0.1, "pick": marks["pick"] + 0.1, "result": marks["result"] + 0.1,
+                  "recipe": marks["recipe"] + 0.3, "outro": dur + 0.2}
+        cmd = ["ffmpeg", "-y", "-i", str(final)]
+        for _k, f in voice_lines:
+            cmd += ["-i", str(f)]
+        parts = [f"[{i + 1}:a]adelay={int(starts[k] * 1000)}|{int(starts[k] * 1000)},volume=1.0[a{i}]" for i, (k, _f) in enumerate(voice_lines)]
+        mix = "".join(f"[a{i}]" for i in range(len(voice_lines))) + f"amix=inputs={len(voice_lines)}:normalize=0:duration=longest[aout]"
+        voiced = OUT / "short_live_voice.mp4"
+        cmd += ["-filter_complex", ";".join(parts + [mix]), "-map", "0:v", "-map", "[aout]", "-c:v", "copy", "-c:a", "aac", "-b:a", "160k", "-shortest", str(voiced)]
+        subprocess.run(cmd, check=True, capture_output=True)
+        print("음성 영상:", voiced)
+    print("완성:", final, f"{dur + outro_len:.1f}초")
 
 
 if __name__ == "__main__":

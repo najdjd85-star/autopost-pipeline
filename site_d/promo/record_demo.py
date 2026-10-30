@@ -31,11 +31,18 @@ TAP_JS = """
 """
 
 
+def narration() -> dict:
+    """narrate.py 가 만든 음성 길이(초). 없으면 빈 값 — 그때는 기본 간격으로 녹화한다."""
+    f = OUT / "narr.json"
+    return json.loads(f.read_text(encoding="utf-8")) if f.exists() else {}
+
+
 def run(base: str) -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     tmp = OUT / "_rec"
     shutil.rmtree(tmp, ignore_errors=True)
     marks = {}
+    nar = narration()
     with sync_playwright() as p:
         browser = p.chromium.launch(channel="chrome", headless=True)
         ctx = browser.new_context(viewport=VIEW, device_scale_factor=1, is_mobile=True, has_touch=True, locale="ko-KR",
@@ -43,14 +50,26 @@ def run(base: str) -> None:
         ctx.add_init_script(TAP_JS)
         page = ctx.new_page()
         t0 = time.time()
-        mark = lambda k: marks.__setitem__(k, round(time.time() - t0, 2))  # noqa: E731
+        now = lambda: time.time() - t0  # noqa: E731
+        mark = lambda k: marks.__setitem__(k, round(now(), 2))  # noqa: E731
+
+        def until(key: str, seconds: float) -> None:
+            """장면 시작(mark key)부터 seconds 초가 될 때까지 기다린다(음성이 끝나기 전에 장면이 넘어가지 않게)."""
+            left = marks[key] + seconds - now()
+            if left > 0:
+                page.wait_for_timeout(int(left * 1000))
+
+        def smooth(sel: str, off: int = 100) -> None:   # 자연스럽게 부드러운 스크롤
+            page.evaluate("([s,o])=>{const e=document.querySelector(s); window.scrollTo({top:e.getBoundingClientRect().top+scrollY-o,behavior:'smooth'})}", [sel, off])
+
         page.goto(base + "/", wait_until="networkidle")
-        page.wait_for_timeout(1200)
+        page.wait_for_timeout(max(1200, int(nar.get("hook", 0) * 1000) + 300))
         mark("type")
         page.locator("#q").click()
         page.wait_for_timeout(500)
         page.keyboard.type("계란", delay=260)
         page.wait_for_timeout(1500)
+        until("type", nar.get("type", 0) + 0.5)
         page.locator("#q").fill("")
         page.evaluate("document.activeElement && document.activeElement.blur(); window.scrollTo(0,0)")
         page.wait_for_timeout(700)
@@ -61,18 +80,23 @@ def run(base: str) -> None:
             page.wait_for_timeout(450)
             loc.click()
             page.wait_for_timeout(900)
+        until("pick", nar.get("pick", 0) + 0.4)
         mark("result")
         page.locator("#bar button, #bar a").first.click()
         page.wait_for_timeout(1900)
+        until("result", nar.get("result", 0) + 0.6)
         mark("recipe")
         page.locator("#results a[href*='recipes/']").first.click()
         page.wait_for_load_state("load")
-        page.wait_for_timeout(500)
+        page.wait_for_timeout(800)
         mark("steps")
-        for _ in range(12):   # 잘게 나눠 굴려서 부드럽게 내려간다
-            page.mouse.wheel(0, 150)
-            page.wait_for_timeout(300)
-        page.wait_for_timeout(900)
+        smooth("ul.ing", 110)       # 재료 → 순서 → 팁 순서로 부드럽게 내려간다
+        page.wait_for_timeout(1700)
+        smooth("ol.steps", 90)
+        page.wait_for_timeout(1900)
+        page.evaluate("window.scrollBy({top: 520, behavior: 'smooth'})")
+        page.wait_for_timeout(1700)
+        until("recipe", nar.get("recipe", 0) + 0.6)
         mark("end")
         ctx.close()
         browser.close()
