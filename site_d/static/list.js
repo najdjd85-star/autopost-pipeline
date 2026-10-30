@@ -1,97 +1,85 @@
 (function () {
-  // 모든 레시피 페이지: 초성 필터 + 이름·재료 검색(초성만 입력해도 됨)
+  // 모든 레시피 페이지: 이름·재료·초성 검색 + 종류·재료·초성 칩 + 정렬(가나다순 기본). 입력하면 목록이 바로 걸러진다
   var $rq = document.getElementById("rq");
   if (!$rq) { return; }
-  var curI = "";
+  var $rl = document.getElementById("rl");
   var items = [].slice.call(document.querySelectorAll("#rl li"));
   var groups = [].slice.call(document.querySelectorAll("#rl .rgroup"));
   var $none = document.getElementById("rnone");
+  var $cnt = document.getElementById("rcount");
+  var $sort = document.getElementById("rsort");
+  var $ini = document.getElementById("ri");
+  var $types = document.getElementById("rtypes");
+  var $ings = document.getElementById("rings");
+  var curI = "", curT = "", curG = "", total = items.length;
+  var orig = items.map(function (li) { li.setAttribute("data-gi", li.parentNode.parentNode.getAttribute("data-i") || ""); return { li: li, ul: li.parentNode }; });
+  var $flat = null;
   var onlyCons = function (t) { return /^[ㄱ-ㅎ]+$/.test(t); };
-  var filterList = function () {
-    var q = $rq.value.replace(/\s/g, "");
+  var baseCons = function (t) { return t.replace(/ㄲ/g, "ㄱ").replace(/ㄸ/g, "ㄷ").replace(/ㅃ/g, "ㅂ").replace(/ㅆ/g, "ㅅ").replace(/ㅉ/g, "ㅈ"); };
+
+  function filterList() {
+    var q = $rq.value.replace(/\s/g, "").toLowerCase();
+    var cons = onlyCons(q);
+    if (cons) { q = baseCons(q); }
     var shown = 0;
     items.forEach(function (li) {
-      var n = li.getAttribute("data-n");
+      var n = (li.getAttribute("data-n") || "").replace(/\s/g, "").toLowerCase();
       var k = li.getAttribute("data-k") || "";
-      var okQ = !q || (onlyCons(q) ? li.getAttribute("data-c").indexOf(q) > -1 : (n.indexOf(q) > -1 || k.indexOf(q) > -1));
-      var okI = !curI || li.parentNode.parentNode.getAttribute("data-i") === curI;
-      li.hidden = !(okQ && okI);
+      var okQ = !q || (cons ? (li.getAttribute("data-c") || "").indexOf(q) > -1 : (n.indexOf(q) > -1 || k.indexOf(q) > -1));
+      var okI = !curI || li.getAttribute("data-gi") === curI;
+      var okT = !curT || li.getAttribute("data-t") === curT;
+      var okG = !curG || (li.getAttribute("data-g") || "").indexOf("|" + curG + "|") > -1;
+      li.hidden = !(okQ && okI && okT && okG);
       if (!li.hidden) { shown++; }
     });
     groups.forEach(function (g) { g.hidden = !g.querySelector("li:not([hidden])"); });
-    $none.hidden = shown > 0;
-  };
-  $rq.addEventListener("input", function () { filterList(); suggest(); });
-
-  // ---- 자동완성: 입력하면 요리 이름 후보를 아래에 보여 준다(초성·재료로도 찾는다). 방향키·Enter·Esc 지원 ----
-  var $box = document.createElement("ul");
-  $box.className = "ac"; $box.hidden = true; $box.setAttribute("role", "listbox");
-  $rq.parentNode.style.position = "relative";
-  $rq.parentNode.appendChild($box);
-  var cur = -1;
-  var norm = function (t) { return t.replace(/\s/g, "").toLowerCase(); };
-  var baseCons = function (t) { return t.replace(/ㄲ/g, "ㄱ").replace(/ㄸ/g, "ㄷ").replace(/ㅃ/g, "ㅂ").replace(/ㅆ/g, "ㅅ").replace(/ㅉ/g, "ㅈ"); };
-  var closeBox = function () { $box.hidden = true; $box.textContent = ""; cur = -1; };
-  var mark = function (name, q) {
-    var i = name.replace(/\s/g, "").toLowerCase().indexOf(q);
-    if (i < 0) { return document.createTextNode(name); }
-    if (name.indexOf(" ") > -1) { i = name.toLowerCase().indexOf(q); if (i < 0) { return document.createTextNode(name); } }
-    var f = document.createDocumentFragment();
-    f.appendChild(document.createTextNode(name.slice(0, i)));
-    var b = document.createElement("b"); b.textContent = name.slice(i, i + q.length); f.appendChild(b);
-    f.appendChild(document.createTextNode(name.slice(i + q.length)));
-    return f;
-  };
-  function suggest() {
-    var q = norm($rq.value);
-    if (!q) { closeBox(); return; }
-    var cons = onlyCons(q);
-    if (cons) { q = baseCons(q); }
-    var byName = [], byIng = [];
-    items.forEach(function (li) {
-      var n = li.getAttribute("data-n");
-      var nn = norm(n);
-      var hit = cons ? (li.getAttribute("data-c") || "").indexOf(q) > -1 : nn.indexOf(q) > -1;
-      if (hit) { byName.push({ li: li, pre: cons ? (li.getAttribute("data-c") || "").indexOf(q) === 0 : nn.indexOf(q) === 0, n: n }); }
-      else if (!cons && (li.getAttribute("data-k") || "").indexOf(q) > -1) { byIng.push({ li: li, n: n }); }
-    });
-    byName.sort(function (a, b) { return (a.pre ? 0 : 1) - (b.pre ? 0 : 1) || a.n.length - b.n.length; });
-    var rows = byName.slice(0, 7).map(function (x) { return { x: x, tag: "" }; });
-    byIng.slice(0, Math.max(0, 8 - rows.length)).forEach(function (x) { rows.push({ x: x, tag: "재료" }); });
-    $box.textContent = ""; cur = -1;
-    if (!rows.length) { $box.hidden = true; return; }
-    rows.forEach(function (r) {
-      var li = document.createElement("li");
-      li.setAttribute("role", "option");
-      var a = document.createElement("a");
-      a.href = r.x.li.querySelector("a").getAttribute("href");
-      var nm = document.createElement("span"); nm.appendChild(mark(r.x.n, q)); a.appendChild(nm);
-      if (r.tag) { var t = document.createElement("small"); t.textContent = q + " 포함"; a.appendChild(t); }
-      li.appendChild(a);
-      $box.appendChild(li);
-    });
-    $box.hidden = false;
+    if ($none) { $none.hidden = shown > 0; }
+    if ($cnt) { $cnt.textContent = (q || curI || curT || curG) ? shown + "개 보이는 중 (전체 " + total + "개)" : "전체 " + total + "개"; }
   }
-  var setCur = function (i) {
-    var rows = [].slice.call($box.children);
-    if (!rows.length) { return; }
-    cur = (i + rows.length) % rows.length;
-    rows.forEach(function (r, k) { r.classList.toggle("on", k === cur); });
-  };
-  $rq.addEventListener("keydown", function (e) {
-    if ($box.hidden) { return; }
-    if (e.key === "ArrowDown") { e.preventDefault(); setCur(cur + 1); }
-    else if (e.key === "ArrowUp") { e.preventDefault(); setCur(cur - 1); }
-    else if (e.key === "Enter" && cur > -1) { e.preventDefault(); location.href = $box.children[cur].querySelector("a").href; }
-    else if (e.key === "Escape") { closeBox(); }
-  });
-  $rq.addEventListener("focus", function () { if ($rq.value) { suggest(); } });
-  document.addEventListener("click", function (e) { if (!$rq.parentNode.contains(e.target)) { closeBox(); } });
-  document.getElementById("ri").addEventListener("click", function (e) {
-    var b = e.target.closest ? e.target.closest("button") : null;
-    if (!b) { return; }
-    curI = b.getAttribute("data-i") || "";
-    [].forEach.call(document.querySelectorAll("#ri .chip"), function (c) { c.classList.toggle("on", c === b); });
+
+  // 가나다순이 아니면 초성 묶음을 풀어 한 줄로 늘어놓고 정렬한다. 가나다순으로 돌아오면 원래 묶음으로 되돌린다
+  function sortList() {
+    var key = $sort ? $sort.value : "n";
+    if (key === "n") {
+      if ($flat) { $flat.parentNode.removeChild($flat); $flat = null; }
+      $rl.classList.remove("flat");
+      orig.forEach(function (o) { o.ul.appendChild(o.li); });
+    } else {
+      if (!$flat) { $flat = document.createElement("ul"); $flat.className = "rlist"; $rl.appendChild($flat); }
+      $rl.classList.add("flat");
+      var arr = items.slice().sort(function (a, b) {
+        var d = (parseFloat(a.getAttribute("data-" + key)) || 0) - (parseFloat(b.getAttribute("data-" + key)) || 0);
+        return d || (a.getAttribute("data-n") || "").localeCompare(b.getAttribute("data-n") || "", "ko");
+      });
+      arr.forEach(function (li) { $flat.appendChild(li); });
+    }
     filterList();
-  });
+  }
+
+  // 폰에서는 키보드가 목록을 가리므로, 글자를 치면 필터 버튼을 접고 검색창을 맨 위로 올려 결과가 바로 보이게 한다
+  function focusResults() {
+    var typing = $rq.value.trim().length > 0;
+    document.body.classList.toggle("csearching", typing && !curI && !curT && !curG);
+    if (typing && window.matchMedia("(max-width: 760px)").matches) {
+      var box = $rq.parentNode, top = box.getBoundingClientRect().top;
+      if (top > 90 || top < 40) { box.scrollIntoView({ behavior: "smooth", block: "start" }); }
+    }
+  }
+
+  function wire($box, set, attr) {
+    if (!$box) { return; }
+    $box.addEventListener("click", function (e) {
+      var b = e.target.closest ? e.target.closest("button") : null;
+      if (!b) { return; }
+      set(b.getAttribute(attr) || "");
+      [].forEach.call($box.querySelectorAll(".chip"), function (c) { c.classList.toggle("on", c === b); });
+      filterList();
+    });
+  }
+  $rq.addEventListener("input", function () { filterList(); focusResults(); });
+  wire($ini, function (v) { curI = v; }, "data-i");
+  wire($types, function (v) { curT = v; }, "data-v");
+  wire($ings, function (v) { curG = v; }, "data-v");
+  if ($sort) { $sort.addEventListener("change", sortList); }
+  filterList();
 })();

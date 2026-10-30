@@ -317,6 +317,13 @@ def ingredient_keys(r: dict) -> str:
     return " ".join(dict.fromkeys(out)).replace(" ", "")
 
 
+def _extra_attrs(r: dict) -> str:
+    """모든 레시피 목록의 한 줄(li)에 붙이는 필터·정렬용 데이터(종류·주재료·시간·칼로리·재료비·나트륨)."""
+    per = compute(r["slug"])["per"]
+    return (f' data-t="{esc(dish_type(r["name"]))}" data-g="|{"|".join(main_groups(r))}|" data-m="{r["minutes"]}"'
+            f' data-kc="{per["kcal"]}" data-cost="{cost_per_serving(r)}" data-na="{per["sodium"]}"')
+
+
 def all_recipes_html(page: bool = False) -> str:
     """모든 레시피를 가나다순(초성별 묶음)으로 보여 주는 목록. 레시피가 많아져도 초성 필터·검색으로 좁힐 수 있다."""
     ordered = sorted(RECIPES, key=lambda r: r["name"])
@@ -328,15 +335,35 @@ def all_recipes_html(page: bool = False) -> str:
     body = ""
     for c in order:
         lis = "".join(
-            f'<li data-n="{esc(r["name"])}" data-c="{esc(initials_of(r["name"]))}"{(" data-k=" + chr(34) + esc(ingredient_keys(r)) + chr(34)) if page else ""}><a href="recipes/{r["slug"]}.html">{esc(r["name"])}</a>'
+            f'<li data-n="{esc(r["name"])}" data-c="{esc(initials_of(r["name"]))}"{(" data-k=" + chr(34) + esc(ingredient_keys(r)) + chr(34) + _extra_attrs(r)) if page else ""}><a href="recipes/{r["slug"]}.html">{esc(r["name"])}</a>'
             f'<span>{r["minutes"]}분 · {("반려동물" if is_pet(r) else "유아식") if is_special(r) else format(compute(r["slug"])["per"]["kcal"], "") + "kcal"} · 약 {cost_per_serving(r):,}원</span></li>'
             for r in groups[c]
         )
         body += f'<div class="rgroup" data-i="{c}"><h3>{c} <small>{len(groups[c])}</small></h3><ul class="rlist">{lis}</ul></div>'
     if page:
+        tcount: dict = {}
+        gcount: dict = {}
+        for r in RECIPES:
+            tcount[dish_type(r["name"])] = tcount.get(dish_type(r["name"]), 0) + 1
+            for g in main_groups(r):
+                gcount[g] = gcount.get(g, 0) + 1
+        tchips = '<button type="button" class="chip on" data-v="">전체</button>' + "".join(
+            f'<button type="button" class="chip" data-v="{esc(t)}">{esc(t)}<small>{tcount[t]}</small></button>'
+            for t in sorted(tcount, key=lambda t: (t == "기타", -tcount[t], t))
+        )
+        gchips = '<button type="button" class="chip on" data-v="">전체</button>' + "".join(
+            f'<button type="button" class="chip" data-v="{esc(g)}">{esc(g)}<small>{gcount[g]}</small></button>'
+            for g in sorted(gcount, key=lambda g: (-gcount[g], g))
+        )
         return (
             '<div class="rsearch"><input id="rq" type="search" placeholder="요리 이름·재료 검색 (초성도 돼요: ㄱㅊ)" aria-label="레시피 검색" autocomplete="off"></div>'
-            f'<div id="ri" class="initials">{chips}</div><div id="rl">{body}</div><p id="rnone" class="empty" hidden>일치하는 요리가 없어요.</p>'
+            f'<div id="rtypes" class="initials" role="group" aria-label="요리 종류"><span class="flab">종류</span>{tchips}</div>'
+            f'<div id="rings" class="initials" role="group" aria-label="주재료"><span class="flab">재료</span>{gchips}</div>'
+            f'<div id="ri" class="initials" role="group" aria-label="초성"><span class="flab">초성</span>{chips}</div>'
+            '<div class="ctools"><span id="rcount" class="ccnt"></span>'
+            '<select id="rsort" aria-label="정렬"><option value="n">가나다순</option><option value="m">조리 시간 짧은 순</option><option value="kc">칼로리 낮은 순</option>'
+            '<option value="cost">재료비 낮은 순</option><option value="na">나트륨 낮은 순</option></select></div>'
+            f'<div id="rl">{body}</div><p id="rnone" class="empty" hidden>일치하는 요리가 없어요.</p>'
         )
     return (
         f'<details class="allrecipes" id="allrecipes"><summary><h2>모든 레시피 <small class="mut">{len(RECIPES)}개 · 가나다순 · 눌러서 펼치기</small></h2></summary>'

@@ -365,3 +365,7 @@ html{scroll-padding-top:74px}
 
 .rsearch{scroll-margin-top:62px}
 .csearching #ctypes,.csearching #cings{display:none}
+
+.csearching #ri,.csearching #rtypes,.csearching #rings{display:none}
+#rtypes,#rings,#ri{margin:6px 0}
+#rl.flat .rgroup{display:none}
