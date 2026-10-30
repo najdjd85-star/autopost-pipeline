@@ -36,3 +36,7 @@ HTACCESS
   curl -s -m 5 -o /dev/null -X PURGE "http://cook.dailyfixpoint.com$u" || true
 done
 echo "반영 완료: $TARGET ($(ls "$TARGET"/recipes | wc -l)개 레시피 페이지)"
+# [홍보 2단계] 서버 .env 에 SITE_D_PROMO_THREADS=1 이 있을 때만, 오늘의 스레드 홍보 글 1편을 예약 큐에 넣는다(기본은 꺼짐, 실패해도 무시)
+if grep -q '^SITE_D_PROMO_THREADS=1' "$ROOT/.env" 2>/dev/null; then
+  "$ROOT/venv/bin/python" -X utf8 site_d/promo/threads_promo.py --send || echo "스레드 홍보 예약 실패(무시)"
+fi
