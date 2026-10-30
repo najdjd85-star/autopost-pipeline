@@ -405,7 +405,7 @@ def category_page(tpl: str, cat: tuple, photos: dict) -> str:
     items = sorted([r for r in RECIPES if slug in r["cats"]], key=lambda r: (r["minutes"], r["name"]))
     avg = round(sum(r["minutes"] for r in items) / len(items))
     cards = "".join(recipe_card_html(r, photos, attrs=True) for r in items)
-    if len(items) >= 8:
+    if True:   # 레시피가 몇 개든 모든 카테고리에 검색창을 둔다(나중에 레시피가 늘어도 따로 만들 필요 없다)
         cards = (
             '<div class="rsearch"><input id="cq" type="search" placeholder="이 카테고리에서 검색 (요리 이름·재료·초성)" aria-label="카테고리 안에서 검색" autocomplete="off"></div>'
             '<p id="ccount" class="mut" style="margin:6px 2px"></p><p id="cnone" class="empty" hidden>일치하는 요리가 없어요.</p>' + cards + '<script src="../assets/catsearch.js"></script>'
