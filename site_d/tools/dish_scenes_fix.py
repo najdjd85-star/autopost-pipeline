@@ -1,6 +1,7 @@
 """사진 점검에서 요리와 다르게 나온 것들의 장면 설명을 더 구체적으로 다시 적은 것(영어). make_dish_photos.py 가 맨 마지막에 읽어 덮어쓴다."""
 
 FIX = {
+    "myeolchi-bokkeum": "Korean myeolchi-bokkeum, a dense tangled heap of very small thin silvery-brown baby anchovies, each only 3 cm long and slim like slivers, glazed with sweet soy sauce and sprinkled with sesame seeds, served on a white plate with a gold rim, close view",
     "jinju-naengmyeon": "a deep black ceramic bowl of Jinju naengmyeon: dark brown clear beef soy broth, thin buckwheat noodles underneath, topped with several crossed strips of yellow egg-battered fried beef yukjeon, thin white radish slices, pear slices and half a boiled egg on top sprinkled with sesame seeds, close view",
     "baechu-geotjeori": "a white bowl full of Korean napa cabbage kimchi salad geotjeori, torn pieces of napa cabbage leaves completely covered in thick bright red gochugaru chili paste seasoning, deep red color, sesame seeds",
     "galchi-jorim": "braised hairtail galchi jorim: several thick cut sections about 6cm long of flat silver-skinned hairtail beltfish, no heads and no whole fish, white flesh visible at the cut ends, lying over thick white radish slices in spicy red-brown sauce with green chilies and scallions in a wide shallow pot",
@@ -23,4 +24,16 @@ FIX = {
     "gul-gukbap": "a bowl of rice in clear soup with plump fresh gray oysters, a cracked egg and green onion",
     "kids-mild-tteokbokki": "glossy brown soy sauce braised rice cakes in a pan with very little sauce, cylinder rice cakes shiny with sesame seeds and sliced onion, no red sauce",
     "dog-apple-yogurt-pop": "small white frozen yogurt pops with tiny apple pieces in a silicone tray, simple, no ribbons, pet treats",
+    "bossam": "Korean bossam: many thin slices of boiled pork belly with visible white fat layers and pink meat stripes, fanned out on a wooden board, with napa cabbage kimchi, lettuce leaves and a small dish of salted shrimp sauce",
+    "donggeurangttaeng": "Korean donggeurangttaeng: many small flat round thin discs about 4 cm wide of ground pork and tofu patties coated in egg batter, pan-fried golden, flat like tiny pancakes and not balls, on a plate with a soy dipping sauce",
+    "fish-cake-soup": "Korean fish cake soup eomuk-tang in a pot: clear broth with several wavy folded flat fish cake sheets threaded on bamboo skewers, white radish slices and scallions",
+    "gul-gukbap": "Korean oyster rice soup gul-gukbap: a bowl of clear broth with white rice and plump pale beige fresh oysters, chopped green scallion, nothing dark or round",
+    "lowsalt-kongnamul-muchim": "Korean seasoned soybean sprouts kongnamul muchim: a small bowl of blanched soybean sprouts with yellow heads and white thin stems, glossy with sesame oil, sesame seeds and chopped scallion, not noodles",
+    "makguksu": "Korean makguksu: greyish brown thin buckwheat noodles in a bowl mixed with spicy red gochujang sauce, topped with cucumber strips, a halved boiled egg and sesame seeds, no meat sauce",
+    "siraegi-guk": "Korean siraegi-guk: a bowl of brown doenjang broth with long soft dark brown strands of dried radish greens, tofu cubes and chopped scallions",
+    "wando-jeonbok-miyeok-guk": "Korean abalone seaweed soup: a bowl of clear soup with dark green wakame seaweed and several whole small abalone with dark frilled edges and pale beige flesh, scallions",
+    "damyang-tteokgalbi": "Korean tteokgalbi: three thick oval patties of ground marinated beef with glossy soy glaze, grilled brown, served on a plate with lettuce, patty shaped and not cubes",
+    "hongap-miyeok-guk": "Korean mussel seaweed soup: a bowl of clear broth with dark green wakame seaweed strands, several black mussel shells with orange mussel flesh, and chopped scallions",
+    "zucchini-egg-bokkeum": "Korean stir-fried zucchini with scrambled egg: yellow scrambled egg curds mixed with sliced green zucchini half moons in a white bowl with scallions",
+    "natto-egg-rice": "a bowl of warm white rice topped with natto: sticky fermented soybeans with stringy threads, a raw egg yolk and chopped scallions, a little shredded seaweed",
 }
