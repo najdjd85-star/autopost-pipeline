@@ -37,7 +37,7 @@ TAGS = "#냉장고파먹기 #냉털 #자취요리 #집밥 #레시피 #냉장고�
 
 YT_TITLE = "냉장고 열었는데 곧 버릴 재료만? 재료 누르면 요리가 바로 나와요 #shorts"
 YT_DESC = (f"냉장고에 있는 재료를 눌러 담기만 하면 지금 만들 수 있는 요리가 바로 나와요. 분량(ml·g)과 순서까지 정리돼 있어요.\n"
-           f"👉 {SITE}?utm_source=youtube&utm_medium=social&utm_campaign=demo\n{AI_NOTE}\n{TAGS} #shorts")
+           f"👉 {SITE}\n{AI_NOTE}\n{TAGS} #shorts")
 IG_CAPTION = (f"냉장고 열었는데 곧 버릴 재료만 잔뜩? 😇\n재료 몇 개만 누르면 할 수 있는 요리가 바로 나와요!\n"
               f"남은 재료 빨리 처분하고 싶으면 프로필 링크에서 {SITE.replace('https://', '').rstrip('/')}\n{AI_NOTE}\n\n{TAGS}")
 TIKTOK_CAPTION = f"냉장고 털기 🧊 재료만 누르면 되는 요리가 바로!\n프로필 링크에서 써 봐\n{AI_NOTE}\n{TAGS}"

@@ -83,8 +83,7 @@ def scenes_combo(foods: List[str], size, paged: bool) -> Tuple[List[Image.Image]
 
 # ----------------------------------------------------------------- 매체별 문구
 def link(slug: str, platform: str, campaign: str) -> str:
-    base = f"https://{SITE_URL}/" + (f"recipes/{slug}.html" if slug else "")
-    return f"{base}?utm_source={platform}&utm_medium=social&utm_campaign={campaign}"
+    return f"https://{SITE_URL}/"   # 글이 길어 보이지 않도록 주소는 사이트 첫 화면까지만(추적용 꼬리표·레시피 주소는 붙이지 않는다)
 
 
 def captions_recipe(slug: str) -> Dict[str, str]:
