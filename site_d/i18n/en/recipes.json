@@ -1591,6 +1591,21 @@
    "Feed within 2 days when refrigerated."
   ]
  },
+ "cat-chicken-bugeo-soup": {
+  "desc": "A hydrating soup made with desalted dried pollack and chicken breast.",
+  "h": "af7698527e",
+  "name": "Cat Chicken and Dried Pollack Soup",
+  "steps": [
+   "Soak dried pollack in 200 ml of water for 20 minutes, discard the water, and rinse twice to remove the salty taste, then remove bones and shred finely.",
+   "Put 300 ml of water, chicken breast, and dried pollack in a pot and simmer over medium heat for 12 minutes.",
+   "Take out the chicken breast and shred finely, and strain the broth through a sieve.",
+   "Mix the broth and meat, let cool completely, and divide into 4 portions."
+  ],
+  "tips": [
+   "Be sure to soak and rinse dried pollack to remove the salt.",
+   "Great for cats that do not drink enough water. Feed within 2 days when refrigerated."
+  ]
+ },
  "cat-chicken-cube": {
   "desc": "Snack cubes boiled without salt and frozen.",
   "h": "036d19760c",
@@ -1619,6 +1634,36 @@
   "tips": [
    "Nutritional balance is important for cats, so feed treats like this only occasionally.",
    "Never feed raw eggs."
+  ]
+ },
+ "cat-chicken-pumpkin-mousse": {
+  "desc": "A smooth blended cat treat served with a spoon.",
+  "h": "fd2381de62",
+  "name": "Cat Chicken and Kabocha Squash Mousse",
+  "steps": [
+   "Place chicken breast in 300 ml of boiling water and cook completely over medium heat for 12 minutes, leaving 50 ml of the broth.",
+   "Remove skin and seeds from kabocha squash and microwave for 3 minutes.",
+   "Put chicken breast, kabocha squash, and the reserved 50 ml of broth into a blender and blend smoothly.",
+   "Cool completely, divide into 6 portions, and store separately."
+  ],
+  "tips": [
+   "Cats need fewer carbohydrates, so only a small amount of kabocha squash was added.",
+   "Feed within 2 days if refrigerated, or 2 weeks if frozen."
+  ]
+ },
+ "cat-salmon-flake": {
+  "desc": "A crispy, dried topping treat made by cooking and crumbling salmon.",
+  "h": "e93b3b91d3",
+  "name": "Cat Salmon Flakes",
+  "steps": [
+   "Remove all skin and bones from salmon, and boil in 400 ml of boiling water for 8 minutes until cooked through.",
+   "Take it out, drain, and crumble very finely with a fork.",
+   "Spread on a pan lined with parchment paper and dry in a 100 degree C oven (or a pan over low heat) for 15 minutes while stirring to evaporate moisture.",
+   "Let cool, divide into 6 portions, and sprinkle over cat food."
+  ],
+  "tips": [
+   "Check by hand once more to ensure there are no bones.",
+   "Store in an airtight container in the refrigerator for 3 days."
   ]
  },
  "cat-salmon-treat": {
@@ -2802,19 +2847,64 @@
    "Don't add all the doenjang at once; add it gradually while tasting."
   ]
  },
- "dog-apple-yogurt-pop": {
-  "desc": "A refreshing snack made with cored apples and unsweetened yogurt.",
-  "h": "e7c5ce1b45",
-  "name": "Dog Apple Yogurt Pop (Gangaji Sagwa Yogeoteu Pop)",
+ "dog-apple-chips": {
+  "desc": "A crunchy fruit snack made by drying thin slices of apples with cores and seeds removed.",
+  "h": "c74b912b0a",
+  "name": "Dog Apple Chips",
   "steps": [
-   "Completely remove the seeds and core from the apple and mince it finely with the skin on.",
-   "Mix the yogurt and the minced apple.",
-   "Divide and pour into 6 compartments of a small silicone mold or ice cube tray.",
-   "Freeze in the freezer for 3 hours and give 1 compartment a day."
+   "Wash the apple thoroughly and core it to remove all seeds and the center. Seeds are harmful to dogs, so be sure to remove them.",
+   "Slice thinly to a thickness of 2 mm with the skin on.",
+   "Dry until crispy in a dehydrator at 60 degrees for 6 hours, or in an oven at 100 degrees for 2 hours, turning them over in the middle.",
+   "Cool completely, divide into 10 bags, and store airtight."
+  ],
+  "tips": [
+   "Because they contain natural sugar, do not exceed the daily amount listed on the chart.",
+   "They can become soggy if exposed to humidity, so store them with silica gel."
+  ]
+ },
+ "dog-apple-yogurt-pop": {
+  "desc": "A refreshing snack made with seedless apple and unsweetened yogurt.",
+  "h": "6f31fd254d",
+  "name": "Dog Apple Yogurt Pop",
+  "steps": [
+   "Completely remove the seeds and core of the apple, and mince finely with the skin on.",
+   "Mix the yogurt and minced apple.",
+   "Divide evenly into 6 small silicone molds or ice cube tray compartments.",
+   "Freeze in the freezer for 3 hours and serve according to the feeding chart above."
   ],
   "tips": [
    "Apple seeds are toxic, so be sure to remove them.",
-   "Give only a small amount to pets with lactose intolerance."
+   "Feed only a small amount if your dog has lactose intolerance."
+  ]
+ },
+ "dog-beef-jerky": {
+  "desc": "A salt-free homemade jerky made by drying thin strips of lean beef.",
+  "h": "b2bd88a46a",
+  "name": "Dog Beef Jerky",
+  "steps": [
+   "Trim the fat and tendons from the beef and slice it thinly across the grain to a thickness of 3 mm (it is easier to slice if slightly frozen).",
+   "Blanch in 600 ml of boiling water for 3 minutes to remove fat and blood, then wipe away the moisture with a paper towel.",
+   "Dry thoroughly in a dehydrator at 70 degrees for 6 hours, or in an oven at 100 degrees for 2 hours and 30 minutes, turning them over in the middle.",
+   "Cool completely, cut to finger length (about 5 cm), and divide into 12 pieces."
+  ],
+  "tips": [
+   "They spoil easily if not dried enough, so dry them until they snap cleanly when bent.",
+   "Store in an airtight container in the refrigerator for 1 week or the freezer for 1 month."
+  ]
+ },
+ "dog-beef-pumpkin-meal": {
+  "desc": "A salt-free cooked meal made with lean beef, kabocha squash, and cooked brown rice.",
+  "h": "25668021fb",
+  "name": "Dog Beef and Kabocha Squash Meal",
+  "steps": [
+   "Trim the fat from the beef and cut it into small 0.5 cm pieces. Peel the skin and remove the seeds from the kabocha squash, then mince it to 0.5 cm along with the carrot and broccoli.",
+   "Put 300 ml of water and the beef in a pot, skim off the foam when it comes to a boil, and simmer over medium heat for 8 minutes.",
+   "Add the kabocha squash, carrot, broccoli, and cooked brown rice, and simmer thoroughly over low heat for 12 minutes while stirring.",
+   "Cool to body temperature, divide into 4 portions, and pack them. Serve on top of regular food following the feeding chart below."
+  ],
+  "tips": [
+   "Never add soy sauce, salt, onion, or garlic.",
+   "You can store them in the freezer in small portions for up to 2 weeks. Thaw slowly in the refrigerator."
   ]
  },
  "dog-beef-veg-stew": {
@@ -2832,6 +2922,21 @@
    "It is also good to pour just the broth over rice."
   ]
  },
+ "dog-blueberry-yogurt-bark": {
+  "desc": "A refreshing frozen treat made with unsweetened yogurt and blueberries.",
+  "h": "0d9c0a6ef1",
+  "name": "Dog Blueberry Yogurt Bark",
+  "steps": [
+   "Mash banana finely with a fork and mix with yogurt.",
+   "Spread the mixture 1 cm thick on a tray lined with parchment paper.",
+   "Cut blueberry in half and scatter evenly over the top.",
+   "Freeze for 3 hours, cut into 8 pieces, and store in an airtight container."
+  ],
+  "tips": [
+   "If your pet has trouble digesting milk, start with a very small amount.",
+   "Never use yogurt containing xylitol."
+  ]
+ },
  "dog-bugeo-treat": {
   "desc": "A protein snack made by soaking unsalted dried pollack and baking it.",
   "h": "0baf2aba48",
@@ -2845,6 +2950,21 @@
   "tips": [
    "Dried pollack has sodium, so make sure to soak it at least twice.",
    "Remove all bones so they don't get stuck."
+  ]
+ },
+ "dog-carrot-egg-muffin": {
+  "desc": "Moist muffins baked with oatmeal and eggs, containing no flour or sugar.",
+  "h": "9061de2940",
+  "name": "Dog Carrot and Egg Muffin",
+  "steps": [
+   "Grate the carrot finely on a box grater.",
+   "Put the egg, yogurt, carrot, and oatmeal in a bowl, mix well, and let sit for 10 minutes.",
+   "Divide the batter into 8 cups of a mini muffin tin (or silicone cups).",
+   "Bake in an oven or air fryer preheated to 170 degrees for 18 minutes, and take them out when a toothpick inserted comes out clean. Serve after cooling completely."
+  ],
+  "tips": [
+   "Be sure to use plain, unsweetened yogurt.",
+   "You can store them in the refrigerator for 3 days or the freezer for 2 weeks."
   ]
  },
  "dog-chicken-cookie": {
@@ -2907,6 +3027,21 @@
    "It can be stored in the freezer for up to 2 weeks."
   ]
  },
+ "dog-duck-sweetpotato-ball": {
+  "desc": "Bite-sized baked treats made by mixing duck and sweet potato.",
+  "h": "09b9b94bdb",
+  "name": "Dog Duck and Sweet Potato Balls",
+  "steps": [
+   "Peel sweet potato, microwave for 5 minutes, and mash finely.",
+   "Trim the fat from duck, mince finely, blanch in boiling water for 3 minutes, and drain the fat.",
+   "Mix all ingredients together and shape into 12 balls, each 2.5 cm in diameter.",
+   "Bake in an oven or air fryer at 170 degrees C for 20 minutes until cooked through, let cool, and serve."
+  ],
+  "tips": [
+   "Duck is high in fat, so make sure to blanch it before using.",
+   "Store in the refrigerator for 3 days or in the freezer for 2 weeks."
+  ]
+ },
  "dog-egg-sweetpotato-steam": {
   "desc": "A simple and nutritious snack made in the microwave.",
   "h": "c16df6ca8a",
@@ -2923,33 +3058,48 @@
   ]
  },
  "dog-pumpkin-oat-cookie": {
-  "desc": "Homemade cookies baked without sugar or butter.",
-  "h": "8e133f7089",
-  "name": "Dog Kabocha Squash Oatmeal Cookie",
+  "desc": "Homemade cookies baked without sugar and butter.",
+  "h": "4e022c223d",
+  "name": "Homemade Dog Kabocha Squash Oatmeal Cookie",
   "steps": [
-   "Peel the kabocha squash, microwave it for 4 minutes to cook, and then mash it finely with a fork.",
+   "Peel the kabocha squash, microwave it for 4 minutes to cook, and mash it finely with a fork.",
    "In a bowl, mix the mashed kabocha squash, 50g of oatmeal, and 1 egg to make a dough.",
-   "Scoop the dough by 1 tsp each, flatten it into 3 cm diameter circles, and place on parchment paper.",
+   "Scoop the dough by 1 tsp each, shape into flat circles 3 cm in diameter, and place on parchment paper.",
    "Bake in an oven or air fryer preheated to 160 degrees for 18 minutes, let cool, and serve."
   ],
   "tips": [
-   "Sugar is not added because the sweetness of the kabocha squash is enough.",
-   "Feeding too much is high in calories, so give only 1-2 a day."
+   "No sugar is added since the sweetness of the kabocha squash is enough.",
+   "Check the feeding chart above for the daily serving size by size."
   ]
  },
  "dog-pumpkin-pudding": {
-  "desc": "Soft, unsweetened steamed kabocha squash pudding.",
-  "h": "b689a0a9ea",
+  "desc": "Unsweetened steamed kabocha squash pudding.",
+  "h": "a8c80a25de",
   "name": "Dog Kabocha Squash Pudding",
   "steps": [
-   "Remove skin and seeds from kabocha squash, steam for 12 minutes, and mash finely.",
-   "Mix egg 1 and soy milk 100ml, combine with mashed kabocha squash, and strain through a sieve.",
-   "Divide into 6 small containers and steam over low heat for 12 minutes.",
-   "Let it cool and give only 1 a day."
+   "Remove the skin and seeds of the kabocha squash, steam for 12 minutes, and mash finely.",
+   "Mix 1 egg and 100ml of soy milk, combine with the mashed kabocha squash, and strain through a sieve.",
+   "Divide evenly among 6 small containers and steam over low heat for 12 minutes.",
+   "Let cool and serve according to the feeding chart above."
   ],
   "tips": [
-   "Never add sugar or salt.",
-   "Substitute with water if soy milk doesn't agree with your pet."
+   "Never add sugar and salt.",
+   "Substitute with water for dogs that cannot tolerate soy milk."
+  ]
+ },
+ "dog-salmon-broccoli-meal": {
+  "desc": "A salt-free cooked meal made with omega-3 rich salmon, vegetables, and potatoes.",
+  "h": "ef7ce9c14d",
+  "name": "Dog Salmon and Broccoli Meal",
+  "steps": [
+   "Carefully remove the skin and bones from the salmon and cut it into 2 cm pieces. Peel the potato and dice it to 0.5 cm along with the vegetables.",
+   "Put 250 ml of water and the potato in a pot and boil over medium heat for 8 minutes.",
+   "Add the salmon, broccoli, and Korean zucchini, and boil for 7 more minutes until the inside of the salmon is completely cooked.",
+   "Mash the salmon finely with a fork, mix well, cool to body temperature, and divide into 4 portions."
+  ],
+  "tips": [
+   "Check once more with your hands to make sure no bones are left.",
+   "Since this is an oily fish, give only half the amount on the chart at first and watch their stool condition."
   ]
  },
  "dog-salmon-potato-bite": {
@@ -2968,17 +3118,17 @@
   ]
  },
  "dog-sweetpotato-chew": {
-  "desc": "A healthy chewy snack made by baking and drying.",
-  "h": "81c36114c6",
-  "name": "Dog Sweet Potato Chew (Kangaji Goguma Mallangi)",
+  "desc": "A healthy, chewy snack made by baking and drying.",
+  "h": "1289c6a00b",
+  "name": "Dog Sweet Potato Chew",
   "steps": [
-   "Wash the sweet potato clean with the skin on and cut it into 0.7cm thick slices.",
-   "Place them in the air fryer basket without overlapping.",
-   "Dry at 80°C for 60 minutes, flip them, and dry for another 40 minutes.",
-   "Press with your hand, and when chewy, take them out, cool, put in an airtight container, and give 1~2 pieces a day."
+   "Wash the sweet potato thoroughly with the skin on and cut it into 0.7 cm thickness.",
+   "Place them in an air fryer basket without overlapping.",
+   "Dehydrate at 80 degrees for 60 minutes, flip, and dehydrate for another 40 minutes.",
+   "When chewy to the touch, take them out, let cool, store in an airtight container, and serve according to the feeding chart above."
   ],
   "tips": [
-   "Do not give too much as it contains sugar.",
+   "Do not feed too much as it contains sugar.",
    "Cut into small pieces for small dogs."
   ]
  },
@@ -2998,18 +3148,18 @@
   ]
  },
  "dog-yogurt-banana-ice": {
-  "desc": "A refreshing frozen treat for hot days (use plain unsweetened yogurt only).",
-  "h": "994bc6835d",
+  "desc": "A refreshing frozen snack for hot days (use unsweetened plain only).",
+  "h": "36d0309603",
   "name": "Dog Yogurt Banana Ice",
   "steps": [
    "Mash the banana finely with a fork.",
-   "Mix 100 g of yogurt with the mashed banana.",
+   "Mix 100g of yogurt and the mashed banana.",
    "Divide evenly into 6 compartments of an ice cube tray.",
-   "Freeze in the freezer for 3 hours and feed 1 cube a day."
+   "Freeze in the freezer for 3 hours and serve according to the feeding chart above."
   ],
   "tips": [
-   "If your dog is lactose intolerant, feed only a small amount or avoid it.",
-   "Check store-bought yogurt carefully for sugar or xylitol."
+   "If your dog has lactose intolerance, feed only a small amount or avoid it.",
+   "Always check store-bought yogurt for sugar or xylitol."
   ]
  },
  "dongchimi": {

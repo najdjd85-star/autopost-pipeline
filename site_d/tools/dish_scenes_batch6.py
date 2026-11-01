@@ -50,3 +50,16 @@ SCENES = {
     "poo-pad-pong-curry": "poo pad pong curry, pieces of stir-fried blue crab in a creamy yellow curry sauce with egg ribbons, onion and green onion in a bowl",
     "hayashi-rice": "Japanese hayashi rice, a plate of white rice topped with rich dark brown beef and onion stew with mushrooms and carrots",
 }
+
+SCENES.update({
+    "dog-beef-pumpkin-meal": "homemade dog food in a pet bowl: small diced cooked beef, orange kabocha squash, brown rice, carrot and broccoli bits, plain without sauce",
+    "dog-salmon-broccoli-meal": "homemade dog food in a pet bowl: flaked cooked salmon with diced potato, broccoli and zucchini, plain and moist",
+    "dog-beef-jerky": "homemade dried beef jerky strips for dogs, dark brown thin dried strips on parchment paper on a plate, plain without seasoning",
+    "dog-apple-chips": "homemade dried apple chips for dogs, thin crisp round apple slices with red skin and no seeds on a plate",
+    "dog-carrot-egg-muffin": "eight small homemade dog muffins made with carrot, egg and oats, golden orange mini muffins on a plate",
+    "dog-blueberry-yogurt-bark": "frozen yogurt bark pieces for dogs, white yogurt slab broken into pieces topped with halved blueberries on parchment",
+    "dog-duck-sweetpotato-ball": "small round baked dog treat balls made of duck meat and orange sweet potato, golden brown on a plate",
+    "cat-chicken-pumpkin-mousse": "smooth pale yellow chicken and pumpkin mousse for cats in a small ceramic cat dish with a small spoon",
+    "cat-salmon-flake": "dried flaked salmon topping for cats, fine pink-orange flakes in a small dish",
+    "cat-chicken-bugeo-soup": "a small cat bowl of clear broth with shredded chicken breast and soft shredded dried pollack, plain",
+})

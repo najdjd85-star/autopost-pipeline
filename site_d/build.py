@@ -632,6 +632,9 @@ def category_page(tpl: str, cat: tuple, photos: dict, rel: str) -> str:
         f'<p id="cnone" class="empty" hidden>{esc(T("일치하는 요리가 없어요."))}</p><div id="clist">' + cards + "</div>"
         + list_ui_script() + '<script src="../assets/catsearch.js"></script>'
     )
+    cards = (
+        (pet_guide_html() if slug == "pet" else "") + cards
+    )
     others = "".join(
         f'<a class="chip" href="{c[0]}.html" style="text-decoration:none">{c[2]} {esc(T(c[1]))}</a>'
         for c in RECIPE_CATS if c[0] != slug and any(c[0] in r["cats"] for r in recs())
@@ -752,6 +755,57 @@ def note_for(r: dict) -> str:
     if "kidsnack" in r["cats"]:
         return _note("🧒 아이 간식 주의", KID_ITEMS)
     return ""
+
+
+def pet_feed_html(r: dict, nut: dict) -> str:
+    """반려동물 레시피의 체급별 하루 급여량 표(하루 열량의 10% 이내, 중성화 성견·성묘 기준)."""
+    import pet_feeding as pf
+
+    inf = pf.info(r, nut["total_kcal"])
+    cat = inf["species"] == "cat"
+    unit = T(inf["unit"]) if inf["unit"] else ""
+    head = T("🐱 고양이 크기별 하루 급여량") if cat else T("🐶 강아지 크기별 하루 급여량")
+    sub = T("이 레시피 전체 약 {k}kcal · 완성 약 {g}g", k=format(int(inf["total"]), ","), g=format(int(inf["finished"]), ","))
+    if inf["pieces"]:
+        sub += " · " + T("{n}{u}로 나누면 1{u}에 약 {k}kcal", n=inf["pieces"], u=unit, k=int(round(inf["total"] / inf["pieces"])))
+    body = ""
+    for name, ex, rng, kcal, g, cnt in pf.rows(inf):
+        cnt_txt = ""
+        if cnt is not None:
+            c_ = pf.count_text(cnt)
+            # 한국어는 '1.5개', 영어는 '1.5 pieces'(1개 이하는 'piece')
+            cnt_txt = " · " + (c_ + unit if i18n.is_ko() else c_ + " " + ("piece" if c_ in ("1", "1/4", "1/2", "3/4") else unit))
+        amt = T("약 {g}g", g=g) + cnt_txt
+        body += (f'<tr><td><b>{esc(T(name))}</b><small>{esc(T(ex))}</small></td><td>{esc(T(rng))}</td>'
+                 f'<td class="num"><b>{esc(amt)}</b><small>{kcal}kcal</small></td></tr>')
+    kind_note = (T("화식·토핑도 사료에 얹어 줄 때는 이 양까지만 주세요. 집밥만으로 주식을 바꾸려면 칼슘·필수 지방산 같은 영양 균형이 필요하니 수의사와 상담하세요.")
+                 if inf["kind"] == "meal" else T("간식이라 하루에 이 양을 넘기지 마세요. 여러 번에 나눠 줘도 돼요."))
+    notes = [
+        T("하루에 필요한 열량의 10%까지를 간식·토핑으로 주는 기준이에요(중성화한 성견·성묘). 준 만큼 사료를 줄여 주세요."),
+        kind_note,
+        T("활동량이 많으면 1.2배, 노령이거나 살이 쪘으면 0.8배로 조절하고, 처음 주는 재료는 표의 절반부터 시작하세요."),
+        T("새끼(생후 12개월 미만)·임신·질환이 있으면 필요한 양이 크게 달라지니 수의사와 먼저 상담하세요."),
+        T("완성 무게는 굽기·말리기 정도에 따라 달라지는 대략치예요. 저울이 없으면 개수나 kcal로 맞춰 주세요."),
+    ]
+    return (f'<div class="feed"><h2>{esc(head)}</h2><p class="note">{esc(sub)}</p>'
+            f'<table class="feedt"><thead><tr><th>{esc(T("크기"))}</th><th>{esc(T("체중"))}</th><th class="num">{esc(T("하루 최대"))}</th></tr></thead><tbody>{body}</tbody></table>'
+            '<ul class="feedn">' + "".join(f"<li>{esc(x)}</li>" for x in notes) + "</ul></div>")
+
+
+def pet_guide_html() -> str:
+    """반려동물 카테고리 첫머리: 크기별 하루 간식 열량 한눈에 보기."""
+    import pet_feeding as pf
+
+    def table(classes, species):
+        rows_ = "".join(
+            f'<tr><td><b>{esc(T(n))}</b><small>{esc(T(ex))}</small></td><td>{esc(T(rng))}</td><td class="num"><b>{int(round(pf.daily_kcal(kg, species) * pf.TREAT_SHARE))}kcal</b></td></tr>'
+            for n, ex, rng, kg in classes)
+        return f'<table class="feedt"><thead><tr><th>{esc(T("크기"))}</th><th>{esc(T("체중"))}</th><th class="num">{esc(T("하루 간식 최대"))}</th></tr></thead><tbody>{rows_}</tbody></table>'
+
+    return ('<div class="feed"><h2>' + esc(T("🐾 우리 아이는 하루에 얼마나 줘도 될까요?")) + "</h2>"
+            + '<p class="note">' + esc(T("간식·토핑은 하루 열량의 10%까지가 기준이에요. 각 레시피 페이지에 크기별로 몇 g·몇 개인지 계산해 두었어요.")) + "</p>"
+            + "<h3>" + esc(T("강아지")) + "</h3>" + table(pf.DOG_CLASSES, "dog")
+            + "<h3>" + esc(T("고양이")) + "</h3>" + table(pf.CAT_CLASSES, "cat") + "</div>")
 
 
 # ---------------------------------------------------------------- 오늘의 추천식단
@@ -1008,7 +1062,7 @@ def recipe_page(tpl: str, r: dict, aff: dict, photos: dict, tools: dict) -> str:
         "RELATED": rel, "DISCLOSURE": disclosure(bool(buy_items or tool_items)),
         "PHOTO": photo_html(r["slug"], name, photos), "ICON": RECIPE_ICON[r["slug"]],
         "SERVINGS": (T("여러 번 나눠 {n}회분", n=nut["servings"]) if is_special(r) else servings_txt), "NUTRITION": ("" if is_special(r) else nutrition),
-        "PETNOTE": note_for(r), "COSTLABEL": (T("1회분") if is_special(r) else T("1인분")),
+        "PETNOTE": note_for(r) + (pet_feed_html(r, nut) if is_pet(r) else ""), "COSTLABEL": (T("1회분") if is_special(r) else T("1인분")),
         "JSONLD": json.dumps(jsonld, ensure_ascii=False).replace("</", "<\\/"),
     }
     vars_.update(page_vars("recipes/" + r["slug"] + ".html"))
