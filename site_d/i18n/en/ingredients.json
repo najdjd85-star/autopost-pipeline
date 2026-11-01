@@ -1,4 +1,13 @@
 {
+ "LA갈비": {
+  "aliases": [
+   "la short ribs",
+   "flanken-style short ribs",
+   "la ribs",
+   "beef short ribs"
+  ],
+  "name": "LA galbi"
+ },
  "가자미": {
   "aliases": [
    "flatfish",
@@ -142,6 +151,24 @@
    "shirataki noodles"
   ],
   "name": "konjac"
+ },
+ "골뱅이": {
+  "aliases": [
+   "whelk",
+   "canned sea snail",
+   "golbaengi",
+   "canned whelk"
+  ],
+  "name": "sea snail"
+ },
+ "곱창": {
+  "aliases": [
+   "gopchang",
+   "beef intestines",
+   "beef tripe",
+   "small intestines"
+  ],
+  "name": "beef small intestine"
  },
  "과메기": {
   "aliases": [
@@ -364,6 +391,13 @@
   ],
   "name": "chicken breast"
  },
+ "닭발": {
+  "aliases": [
+   "chicken feet",
+   "dakbal"
+  ],
+  "name": "chicken foot"
+ },
  "당근": {
   "aliases": [
    "carrots",
@@ -381,6 +415,24 @@
    "vermicelli"
   ],
   "name": "glass noodles"
+ },
+ "대구": {
+  "aliases": [
+   "pacific cod",
+   "cod fish",
+   "fresh cod",
+   "cod fillet"
+  ],
+  "name": "cod"
+ },
+ "대추": {
+  "aliases": [
+   "dried jujube",
+   "red date",
+   "jujubes",
+   "korean date"
+  ],
+  "name": "jujube"
  },
  "대파": {
   "aliases": [
@@ -445,6 +497,15 @@
    "pork meat"
   ],
   "name": "pork"
+ },
+ "돼지등뼈": {
+  "aliases": [
+   "pork backbone",
+   "pork back bones",
+   "gamjatang bone",
+   "pork spine"
+  ],
+  "name": "pork back bone"
  },
  "된장": {
   "aliases": [
@@ -542,6 +603,15 @@
   ],
   "name": "rice paper"
  },
+ "라자냐면": {
+  "aliases": [
+   "lasagna sheet",
+   "lasagna pasta",
+   "lasagna noodles",
+   "lasagna sheets"
+  ],
+  "name": "lasagna noodle"
+ },
  "레몬": {
   "aliases": [
    "lemons",
@@ -550,6 +620,14 @@
    "whole lemon"
   ],
   "name": "lemon"
+ },
+ "마라소스": {
+  "aliases": [
+   "spicy hot pot sauce",
+   "mala paste",
+   "sichuan pepper sauce"
+  ],
+  "name": "mala sauce"
  },
  "마요네즈": {
   "aliases": [
@@ -789,6 +867,13 @@
   ],
   "name": "bacon"
  },
+ "베이킹파우더": {
+  "aliases": [
+   "baking powders",
+   "leavening agent"
+  ],
+  "name": "baking powder"
+ },
  "병아리콩": {
   "aliases": [
    "chickpeas",
@@ -797,6 +882,14 @@
    "gram"
   ],
   "name": "chickpea"
+ },
+ "봄동": {
+  "aliases": [
+   "bomdong",
+   "spring cabbage",
+   "flat cabbage"
+  ],
+  "name": "bomdong cabbage"
  },
  "부추": {
   "aliases": [
@@ -983,6 +1076,14 @@
    "frankfurter"
   ],
   "name": "sausage"
+ },
+ "수삼": {
+  "aliases": [
+   "susam",
+   "raw ginseng",
+   "ginseng root"
+  ],
+  "name": "fresh ginseng"
  },
  "숙주": {
   "aliases": [
@@ -1362,6 +1463,14 @@
   ],
   "name": "fried tofu pouch"
  },
+ "장어": {
+  "aliases": [
+   "freshwater eel",
+   "jangeo",
+   "grilled eel"
+  ],
+  "name": "eel"
+ },
  "전복": {
   "aliases": [
    "abalones",
@@ -1386,6 +1495,24 @@
    "small yellow croaker"
   ],
   "name": "yellow croaker"
+ },
+ "족발": {
+  "aliases": [
+   "jokbal",
+   "pig trotters",
+   "pigs feet",
+   "pig feet"
+  ],
+  "name": "pig trotter"
+ },
+ "진미채": {
+  "aliases": [
+   "dried squid strips",
+   "seasoned squid shreds",
+   "jinmichae",
+   "squidchae"
+  ],
+  "name": "dried squid strip"
  },
  "짜장가루": {
   "aliases": [
@@ -1414,6 +1541,15 @@
    "jjolmyeon"
   ],
   "name": "jjolmyeon noodles"
+ },
+ "쭈꾸미": {
+  "aliases": [
+   "jjogumi",
+   "baby octopus",
+   "jukkumi",
+   "octopus"
+  ],
+  "name": "webfoot octopus"
  },
  "쯔유": {
   "aliases": [
@@ -1633,6 +1769,14 @@
    "luncheon meat"
   ],
   "name": "ham"
+ },
+ "햄버거번": {
+  "aliases": [
+   "burger bun",
+   "hamburger buns",
+   "burger buns"
+  ],
+  "name": "hamburger bun"
  },
  "현미밥": {
   "aliases": [

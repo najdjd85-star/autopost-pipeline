@@ -36,4 +36,8 @@ FIX = {
     "hongap-miyeok-guk": "Korean mussel seaweed soup: a bowl of clear broth with dark green wakame seaweed strands, several black mussel shells with orange mussel flesh, and chopped scallions",
     "zucchini-egg-bokkeum": "Korean stir-fried zucchini with scrambled egg: yellow scrambled egg curds mixed with sliced green zucchini half moons in a white bowl with scallions",
     "natto-egg-rice": "a bowl of warm white rice topped with natto: sticky fermented soybeans with stringy threads, a raw egg yolk and chopped scallions, a little shredded seaweed",
+    "jokbal": "sliced Korean pork trotter jokbal on a wooden board: many thin slices of braised pork with glossy brown skin edges and white fat layers fanned out, lettuce leaves and a small dish of salted shrimp, only sliced pork and no chicken legs",
+    "kongnamul-haejangguk": "a bowl of Korean soybean sprout hangover soup kongnamul-haejangguk: a mountain of pale yellow soybean sprouts with yellow heads and thin white stems in a clear light red broth with chopped green onion and a cracked egg",
+    "chadol-sukju-bokkeum": "stir-fried thinly sliced marbled beef brisket with mung bean sprouts and chives, thin pink-brown beef slices mixed with glistening white mung bean sprouts and green chive pieces on a white plate",
+    "poo-pad-pong-curry": "poo pad pong curry: pieces of orange-red blue crab with shells in a creamy yellow curry sauce, ribbons of cooked egg, onion and green onion in a shallow bowl, crab claws visible",
 }
