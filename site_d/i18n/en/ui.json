@@ -51,7 +51,7 @@
  "{n} 빼기": "Remove {n}",
  "{n} 사러가기": "Buy {n}",
  "{n} 없음": "No {n}",
- "{n}{u}로 나누면 1{u}에 약 {k}kcal": "split into {n} {u}, about {k} kcal each",
+ "{n}{u}{ro} 나누면 1{u}에 약 {k}kcal": "split into {n} {u}, about {k} kcal each",
  "{n}개": "{n} recipes",
  "{n}개 · 가나다순 · 눌러서 펼치기": "{n} recipes · A–Z · tap to expand",
  "{n}개 선택": "{n} selected",

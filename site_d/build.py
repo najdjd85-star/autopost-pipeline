@@ -767,7 +767,8 @@ def pet_feed_html(r: dict, nut: dict) -> str:
     head = T("🐱 고양이 크기별 하루 급여량") if cat else T("🐶 강아지 크기별 하루 급여량")
     sub = T("이 레시피 전체 약 {k}kcal · 완성 약 {g}g", k=format(int(inf["total"]), ","), g=format(int(inf["finished"]), ","))
     if inf["pieces"]:
-        sub += " · " + T("{n}{u}로 나누면 1{u}에 약 {k}kcal", n=inf["pieces"], u=unit, k=int(round(inf["total"] / inf["pieces"])))
+        ro = "으로" if inf["unit"] and (ord(inf["unit"][-1]) - 0xAC00) % 28 else "로"   # 받침이 있으면 '으로'(조각으로), 없으면 '로'(개로)
+        sub += " · " + T("{n}{u}{ro} 나누면 1{u}에 약 {k}kcal", n=inf["pieces"], u=unit, ro=ro, k=int(round(inf["total"] / inf["pieces"])))
     body = ""
     for name, ex, rng, kcal, g, cnt in pf.rows(inf):
         cnt_txt = ""
