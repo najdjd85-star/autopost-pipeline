@@ -50,7 +50,7 @@ def deploy() -> str:
     def git(*args: str) -> subprocess.CompletedProcess:
         return subprocess.run(["git", *args], cwd=str(ROOT), capture_output=True, text=True, encoding="utf-8")
 
-    changed = [p for p in ("site_d/trending.json", "site_d/prices_live.json", "site_d/links_broken.json", "site_d/i18n/en/recipes.json", "site_d/i18n/en/ingredients.json", "site_d/i18n/en/quantities.json") if (ROOT / p).exists() and git("status", "--porcelain", "--", p).stdout.strip()]
+    changed = [p for p in ("site_d/trending.json", "site_d/weather.json", "site_d/prices_live.json", "site_d/links_broken.json", "site_d/i18n/en/recipes.json", "site_d/i18n/en/ingredients.json", "site_d/i18n/en/quantities.json") if (ROOT / p).exists() and git("status", "--porcelain", "--", p).stdout.strip()]
     if not changed:
         return "서버 반영: 어제와 같아 올릴 것 없음"
     git("add", *changed)
@@ -80,6 +80,17 @@ def update_prices() -> str:
     except Exception as exc:  # noqa: BLE001
         logger.warning("가격 갱신 실패(무시): %s", exc)
         return "가격 갱신 실패(예전 가격 유지)"
+
+
+def update_weather() -> str:
+    """기상청 단기예보로 주요 도시의 오늘~모레 날씨를 받아 weather.json 에 저장한다('오늘의 추천식단'이 읽는다). 실패하면 예전 파일 그대로."""
+    try:
+        import fetch_weather
+
+        return "날씨 갱신 완료" if fetch_weather.main() == 0 else "날씨 갱신 건너뜀(예전 파일 유지)"
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("날씨 갱신 실패(무시): %s", exc)
+        return "날씨 갱신 실패(예전 파일 유지)"
 
 
 def translate_new() -> str:
@@ -130,6 +141,7 @@ def main() -> int:
         logger.warning("인터넷 연결이 없어 인기 요리 갱신을 건너뜁니다.")
         return 1
     logger.info(update_prices())
+    logger.info(update_weather())
     logger.info(check_links_weekly())
     logger.info(translate_new())
     try:

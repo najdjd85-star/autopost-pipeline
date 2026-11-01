@@ -381,7 +381,7 @@
     var jk = jn(text);
     var hits = D.recipes.filter(function (r) { return cons ? (r.ini || "").indexOf(k) > -1 : (jn(r.name).indexOf(jk) > -1 || (r.ko && jn(r.ko).indexOf(jk) > -1)); });
     hits.sort(function (a, b) {
-      var ea = a.name === text ? 0 : 1, eb = b.name === text ? 0 : 1;
+      var ea = jn(a.name) === jk ? 0 : 1, eb = jn(b.name) === jk ? 0 : 1;   // 이름이 똑같은 것 → 이름으로 시작하는 것 → 이름이 들어간 것(경상도식 소고기무국 등) 순서
       var sa = jn(a.name).indexOf(jk) === 0 ? 0 : 1, sb = jn(b.name).indexOf(jk) === 0 ? 0 : 1;
       return (ea - eb) || (sa - sb) || (a.name.length - b.name.length);
     });
@@ -425,7 +425,12 @@
       });
       $sug.appendChild(b);
     });
-    findRecipes(last, 5).forEach(function (r) {
+    // 낱말을 띄어 쓴 입력("소고기 무국")은 전체를 한 이름처럼 먼저 찾고(같은 이름이 들어간 '경상도식 소고기무국' 같은 변형도 함께), 그다음 마지막 낱말로 찾은 것을 덧붙인다
+    var recs = [];
+    var whole = $q.value.trim();
+    if (!EN && /\s/.test(whole) && !/[,;]/.test(whole)) { recs = findRecipes(whole, 8); }
+    findRecipes(last, 8).forEach(function (r) { if (recs.indexOf(r) < 0) { recs.push(r); } });
+    recs.slice(0, 8).forEach(function (r) {
       var b = el("button", "sugchip rec", "🍳 " + r.name);
       b.type = "button";
       b.title = r.pet ? L("viewRecipe") : L("addIngs");
@@ -465,6 +470,11 @@
         }
       });
     } else {
+    var whole = $q.value.trim();
+    var wr = /\s/.test(whole) ? findRecipes(whole, 1) : [];
+    if (wr.length && jn(wr[0].name) === jn(whole)) {   // "소고기 무국"처럼 띄어 쓴 요리 이름 전체가 정확히 맞으면 재료로 쪼개지 않고 그 요리로 본다
+      picked = wr[0];
+    } else {
     $q.value.split(/[,\s]+/).filter(Boolean).forEach(function (t) {
       var c = resolve(t);
       if (c) { have[c] = true; markRecent(c); return; }
@@ -472,6 +482,7 @@
       if (rs.length) { picked = rs[0]; return; }
       unknown.push(t);
     });
+    }
     }
     $q.value = unknown.join(" ");
     $sug.textContent = "";

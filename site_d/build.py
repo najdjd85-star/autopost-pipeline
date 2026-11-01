@@ -754,6 +754,125 @@ def note_for(r: dict) -> str:
     return ""
 
 
+# ---------------------------------------------------------------- 오늘의 추천식단
+MEAL_CARB = {"밥", "현미밥", "라면", "소면", "냉면", "메밀국수", "당면", "스파게티면", "우동면", "칼국수", "쌀국수", "쫄면", "떡", "떡국떡", "만두", "식빵", "또띠아", "모닝빵", "바게트", "오트밀", "찹쌀", "쌀", "감자", "고구마", "단호박"}
+MEAL_UI = {
+    "title": "오늘의 추천식단", "people": "먹는 사람 수", "p1": "1인", "p2": "2인", "p3": "3인", "p4": "4인", "p5": "5인",
+    "modeNormal": "일반 식단", "modeDiet": "다이어트 식단", "other": "🔄 다른 식단 보기", "swap": "이 끼니만 바꾸기",
+    "mealB": "아침", "mealL": "점심", "mealD": "저녁", "side": "곁들임", "rice": "밥 {g}g 포함", "withRice": "밥 별도(1인 {g}g)",
+    "perPerson": "1인 하루 합계", "kcal": "열량", "carb": "탄수화물", "protein": "단백질", "fat": "지방", "sodium": "나트륨",
+    "sodiumPct": "하루 기준(2,000mg)의 {p}%", "costDay": "{n}인 하루 재료비", "costMeal": "{n}인 {won}", "perServ": "1인분 {k}kcal",
+    "min": "{m}분", "shop": "장보기 목록", "shopSub": "{n}인 기준 하루치 재료(g)", "staples": "집에 있는지 확인할 양념",
+    "buy": "사러가기", "todayDate": "오늘 {d}", "dietNote": "다이어트 식단은 하루 약 {k}kcal(밥은 평소의 2/3 양) 기준이에요.",
+    "normalNote": "일반 식단은 하루 약 {k}kcal 기준이에요.", "viewRecipe": "레시피 보기", "kcalUnit": "kcal", "won": "약 {c}원",
+    "empty": "조건에 맞는 식단을 만들지 못했어요. 다른 식단 보기를 눌러 보세요.", "ratio": "열량 비율", "target": "목표 {k}kcal",
+}
+MEAL_CITIES = [("seoul", "서울"), ("busan", "부산"), ("daegu", "대구"), ("incheon", "인천"), ("gwangju", "광주"), ("daejeon", "대전"),
+               ("ulsan", "울산"), ("sejong", "세종"), ("jeju", "제주"), ("gangneung", "강릉"), ("jeonju", "전주")]   # tools/fetch_weather.py 의 CITIES 와 같은 코드
+MEAL_UI.update({
+    "wTitle": "오늘 날씨", "wLine": "최고 {tmax}° / 최저 {tmin}° · 강수확률 {pop}%", "why": "오늘 이렇게 골랐어요", "city": "지역", "loading": "날씨 확인 중…",
+    "noWeather": "날씨 정보를 못 받아 계절과 요일로 골랐어요.", "noWeatherShort": "날씨 정보 없음 (계절·요일로 추천)", "wNow": "지금 먹을 끼니", "식단 종류": "식단 종류",
+    "rHot": "🥵 최고 {t}°로 더운 날이라 시원하고 가벼운 메뉴를 넣었어요", "rWarm": "☀️ 최고 {t}°로 따뜻한 날이라 가벼운 메뉴를 넣었어요",
+    "rCold": "🥶 최고 {t}°로 추운 날이라 따뜻한 국물 요리를 넣었어요", "rChilly": "🧥 최고 {t}°로 쌀쌀해서 뜨끈한 메뉴를 넣었어요",
+    "rRain": "☔ 비가 와서 전·부침이나 따뜻한 국물 면 요리를 넣었어요", "rSnow": "❄️ 눈이 와서 몸이 따뜻해지는 국물 요리를 넣었어요",
+    "rColdMorning": "🌡️ 아침 기온이 {t}°라 아침은 따뜻한 메뉴로 시작해요", "rBusy": "💼 평일이라 아침은 빨리 만들 수 있는 메뉴로 골랐어요",
+    "rMonday": "📅 월요일이라 부담 없이 가벼운 끼니를 넣었어요", "rFriday": "🎉 금요일 저녁이라 한 상 차려 먹기 좋은 메뉴를 넣었어요",
+    "rWeekend": "🛋️ 주말이라 조금 여유 있게 만드는 메뉴도 넣었어요", "rFamily": "👨‍👩‍👧 {n}인 가족이라 함께 나눠 먹기 좋은 메뉴를 우선했어요",
+    "rDiet": "🥗 다이어트 식단이라 열량은 낮추고 채소·단백질을 챙겼어요", "rYear": "🎍 새해라 떡국을 넣었어요", "rDongji": "🫘 동지라 팥죽을 넣었어요",
+    "rBok": "🍗 삼복더위엔 닭 요리로 기운을 챙겨요", "rSam": "🥓 3월 3일 삼겹살데이라 삼겹살을 넣었어요", "rGarae": "🍡 11월 11일 가래떡데이라 떡 요리를 넣었어요",
+})
+MEAL_TARGET = {"normal": {"b": 500, "l": 750, "d": 750}, "diet": {"b": 400, "l": 550, "d": 550}}
+MEAL_RICE_G = {"normal": 210, "diet": 140}
+
+
+def meal_rice() -> dict:
+    out = {}
+    for mode, g in MEAL_RICE_G.items():
+        k = g / 100
+        kcal, c, p, f = NUTRI["밥"]
+        out[mode] = {"g": g, "k": round(kcal * k), "c": round(c * k, 1), "p": round(p * k, 1), "f": round(f * k, 1), "na": round(EXTRA["밥"][4] * k), "w": round(PRICE_100G["밥"] * k)}
+    return out
+
+
+def meal_tags(name: str, t: str) -> str:
+    """식단 추천용 표시(한국어 이름·종류로 판단): c 시원한 요리, h 뜨끈한 국물, n 국물 면, j 전·튀김, g 나눠 먹기 좋은 요리, y 떡국, z 팥죽, b 복날 닭 요리, s 삼겹살, r 떡."""
+    tg = ""
+    cold = any(w in name for w in ("냉", "콩국수", "물회", "샐러드", "쫄면", "비빔국수", "에이드", "빙수", "화채"))
+    noodle_soup = any(w in name for w in ("칼국수", "수제비", "우동", "라면", "짬뽕", "국수")) and not cold and "비빔" not in name
+    if cold:
+        tg += "c"
+    if (t in ("국·수프", "찌개·전골", "탕", "국밥", "죽") or noodle_soup) and not cold:
+        tg += "h"
+    if noodle_soup:
+        tg += "n"
+    if t == "전·부침" or any(w in name for w in ("튀김", "가스", "치킨", "강정")):
+        tg += "j"
+    if t in ("찌개·전골", "탕", "구이·튀김", "조림·찜", "전·부침", "볶음", "국밥"):
+        tg += "g"
+    for flag, words in (("y", ("떡국",)), ("z", ("팥죽",)), ("b", ("삼계탕", "백숙", "닭곰탕", "닭개장")), ("s", ("삼겹살",)), ("r", ("가래떡", "떡볶이"))):
+        if any(w in name for w in words):
+            tg += flag
+    return tg
+
+
+def meal_items(rs: list, photos: dict) -> list:
+    """식단 짜기에 쓸 레시피 목록(반려동물·유아식·간식·안주 전용은 뺀다). 영양은 1인분 기준, 재료는 레시피 전체 무게(g)."""
+    out = []
+    for r in rs:
+        if is_special(r) or "kidsnack" in r["cats"] or set(r["cats"]) <= {"anju"}:
+            continue
+        t = dish_type(r["name"])
+        if t == "간식·디저트":
+            continue
+        per = compute(r["slug"])["per"]
+        k = per["kcal"]
+        sv = r["servings"]
+        carb = any(i["n"] in MEAL_CARB and i["g"] / sv >= (150 if i["n"] in ("감자", "고구마", "단호박") else 60) for i in r["ingredients"])
+        side = ("side" in r["cats"] or t in ("무침·샐러드·반찬", "국·수프")) and k <= 200
+        brk = "brunch" in r["cats"] or t in ("죽", "샌드위치·빵", "계란·두부")
+        main = (not side) and k >= 120
+        if not (side or brk or main):
+            continue
+        slots = ("b" if brk and k >= 120 else "") + ("l" if main else "") + ("d" if main and t != "샌드위치·빵" else "")
+        foods = [[i["n"], round(i["g"], 1)] for i in r["ingredients"] if i["n"] not in STAPLES and i["n"] != "물" and i["g"] and not i["opt"]]
+        staples = [i["n"] for i in r["ingredients"] if i["n"] in STAPLES and i["n"] != "물" and not i["opt"]]
+        p = photos.get(r["slug"])
+        out.append({
+            "s": r["slug"], "n": i18n.rtext(r)["name"], "m": r["minutes"], "k": k, "p": per["protein"], "c": per["carb"], "f": per["fat"], "na": per["sodium"],
+            "w": cost_per_serving(r), "sv": sv, "r": 0 if carb else 1, "i": (thumb_rel(p) if p else ""), "t": t, "g": main_groups(r),
+            "sl": slots, "sd": 1 if side else 0, "dt": 1 if {"diet", "light", "protein", "lowsalt"} & set(r["cats"]) else 0,
+            "ing": foods, "st": staples, "tg": meal_tags(r["name"], t),
+        })
+    return out
+
+
+def meal_page(tpl: str, rs: list, photos: dict, aff: dict) -> str:
+    items = meal_items(rs, photos)
+    names = {}
+    for it in items:
+        for n, _g in it["ing"]:
+            names[n] = i18n.ing_cap(n)
+        for n in it["st"]:
+            names[n] = i18n.ing_cap(n)
+    names["밥"] = i18n.ing_cap("밥")
+    data = {
+        "items": items, "rice": meal_rice(), "target": MEAL_TARGET, "names": names if not i18n.is_ko() else {},
+        "aff": {n: aff[n] for n in names if n in aff}, "loc": "ko-KR" if i18n.is_ko() else "en-US", "lang": i18n.code(),
+        "ui": {k: T(v) for k, v in MEAL_UI.items()},
+        "cities": [{"k": k, "n": T(n)} for k, n in MEAL_CITIES],
+        "asset": "" if i18n.is_ko() else "../",
+    }
+    out = tpl_t(tpl)
+    vars_ = {
+        "SITE_NAME": site_name(), "BASE": BASE, "DISCLOSURE": disclosure(bool(aff)), "MEALDATA": json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/"),
+        "LISTUI": "",
+    }
+    vars_.update(page_vars("meal.html"))
+    for k, v in vars_.items():
+        out = out.replace("{{" + k + "}}", v)
+    return out
+
+
 def price_note() -> str:
     base = T("예상 재료비는 선택 재료까지 포함해 사용한 양만 계산한 어림값이에요. 지역·브랜드에 따라 달라지고, 재료를 한 팩 단위로 사야 해서 실제 지출은 더 클 수 있어요.")
     if LIVE_DATE:
@@ -1063,6 +1182,8 @@ def build_lang(code: str, aff: dict, tools: dict, photos: dict) -> list:
         atpl = atpl.replace("{{" + k + "}}", v)
     emit("all.html", atpl)
 
+    emit("meal.html", meal_page((HERE / "templates" / "meal.html").read_text(encoding="utf-8"), rs, photos, aff))
+
     ctpl = (HERE / "templates" / "category.html").read_text(encoding="utf-8")
     for cat in RECIPE_CATS:
         if any(cat[0] in r["cats"] for r in rs):
@@ -1097,8 +1218,12 @@ def decorate(code: str, root: Path, written: list, rs: list) -> None:
         prefix = "" if len(rel) == 1 else "../"
         active = page.stem if rel[0] == "category" else ""
         on = ' class="on"'
+        def cbl(long_: str, short_: str) -> str:   # 넓은 화면은 긴 이름, 좁은 화면은 짧은 이름
+            return '<span class="lg">' + T(long_) + '</span><span class="sh">' + T(short_) + "</span>"
+
         home = '<a class="cb-link"' if rel != ("index.html",) else '<a class="cb-link on"'
-        home += ' href="' + (prefix or "./") + '">' + T("🧊 재료로 찾기") + "</a>"
+        home += ' href="' + (prefix or "./") + '">' + cbl("🧊 재료로 찾기", "🧊 재료") + "</a>"
+        mealink = '<a class="cb-link' + (" on" if rel == ("meal.html",) else "") + '" href="' + prefix + 'meal.html">' + cbl("🍱 오늘의 식단", "🍱 식단") + "</a>"
         panel = ""
         rail = ""
         for gname, xs in groups:
@@ -1111,11 +1236,11 @@ def decorate(code: str, root: Path, written: list, rs: list) -> None:
                 rail += link
             panel += "</div>"
             rail += "</details>"
-        allink = '<a class="cb-link' + (" on" if rel == ("all.html",) else "") + '" href="' + prefix + 'all.html">' + T("📖 모든 레시피") + "</a>"
+        allink = '<a class="cb-link' + (" on" if rel == ("all.html",) else "") + '" href="' + prefix + 'all.html">' + cbl("📖 모든 레시피", "📖 전체") + "</a>"
         cur = ('<span class="cb-cur">' + cat_of[active][2] + " " + esc(T(cat_of[active][1])) + "</span>") if active in cat_of else ""
         aria = esc(T("요리 카테고리"))
-        bar = '<nav class="catbar" aria-label="' + aria + '">' + home + '<details class="catmenu"><summary' + (' class="on"' if active in cat_of else "") + ">" + T("☰ 카테고리") + '</summary><div class="catpanel">' + panel + "</div></details>" + allink + cur + "</nav>"
-        railhtml = '<nav class="catrail" aria-label="' + aria + '"><b class="catnav-t">' + aria + "</b>" + home.replace("cb-link", "rail-home") + allink.replace("cb-link", "rail-home") + rail + "</nav>"
+        bar = '<nav class="catbar" aria-label="' + aria + '">' + home + mealink + '<details class="catmenu"><summary' + (' class="on"' if active in cat_of else "") + ">" + T("☰ 카테고리") + '</summary><div class="catpanel">' + panel + "</div></details>" + allink + cur + "</nav>"
+        railhtml = '<nav class="catrail" aria-label="' + aria + '"><b class="catnav-t">' + aria + "</b>" + home.replace("cb-link", "rail-home") + mealink.replace("cb-link", "rail-home") + allink.replace("cb-link", "rail-home") + rail + "</nav>"
         toprail = ""
         for i, r in enumerate(top, 1):
             toprail += '<a href="' + prefix + "recipes/" + r["slug"] + '.html"><b>' + str(i) + "</b>" + esc(i18n.rtext(r)["name"]) + "</a>"
@@ -1149,6 +1274,8 @@ def main() -> None:
         shutil.copytree(HERE / "static" / "mascot", DIST / "assets" / "mascot")
     if (HERE / "trending.json").exists():  # 페이지가 직접 읽는 파일(매일 이 파일만 바꿔도 화면이 갱신된다)
         shutil.copy(HERE / "trending.json", DIST / "trending.json")
+    if (HERE / "weather.json").exists():  # 오늘의 추천식단이 읽는 날씨 요약(매일 tools/fetch_weather.py 가 갱신)
+        shutil.copy(HERE / "weather.json", DIST / "weather.json")
     if STEP_IMAGES:
         (DIST / "assets" / "steps").mkdir()
         for f in (HERE / "stepimgs").glob("*.jpg"):
@@ -1161,6 +1288,7 @@ def main() -> None:
     pages = {code: build_lang(code, aff, tools, photos) for code in ACTIVE}
     shutil.copy(HERE / "static" / "list.js", DIST / "assets" / "list.js")
     shutil.copy(HERE / "static" / "catsearch.js", DIST / "assets" / "catsearch.js")
+    shutil.copy(HERE / "static" / "meal.js", DIST / "assets" / "meal.js")
     if (HERE / "promo_media").exists():   # 홍보 영상 등(인스타·스레드가 공개 주소로 가져간다): https://…/promo/<파일>
         shutil.copytree(HERE / "promo_media", DIST / "promo")
     multi = len([c for c in INDEXABLE if pages.get(c)]) > 1
@@ -1179,7 +1307,7 @@ def main() -> None:
     # 브라우저·서버 캐시가 옛 css/js 를 계속 쓰지 않도록 파일 주소에 내용 해시를 붙인다
     import hashlib
 
-    ver = hashlib.md5((HERE / "static" / "app.js").read_bytes() + (HERE / "static" / "style.css").read_bytes() + (HERE / "static" / "list.js").read_bytes() + (HERE / "static" / "catsearch.js").read_bytes()).hexdigest()[:8]
+    ver = hashlib.md5((HERE / "static" / "app.js").read_bytes() + (HERE / "static" / "style.css").read_bytes() + (HERE / "static" / "list.js").read_bytes() + (HERE / "static" / "catsearch.js").read_bytes() + (HERE / "static" / "meal.js").read_bytes()).hexdigest()[:8]
     import re as _re2
 
     img_re = _re2.compile(r"assets/img/(?:t/)?[A-Za-z0-9_.\-]+\.jpg")
@@ -1194,7 +1322,7 @@ def main() -> None:
 
     for page in DIST.rglob("*.html"):
         t = img_re.sub(img_ver, page.read_text(encoding="utf-8"))
-        t2 = t.replace('assets/style.css"', f'assets/style.css?v={ver}"').replace('assets/app.js"', f'assets/app.js?v={ver}"').replace('assets/list.js"', f'assets/list.js?v={ver}"').replace('assets/catsearch.js"', f'assets/catsearch.js?v={ver}"')
+        t2 = t.replace('assets/style.css"', f'assets/style.css?v={ver}"').replace('assets/app.js"', f'assets/app.js?v={ver}"').replace('assets/list.js"', f'assets/list.js?v={ver}"').replace('assets/catsearch.js"', f'assets/catsearch.js?v={ver}"').replace('assets/meal.js"', f'assets/meal.js?v={ver}"')
         t2 = t2.replace("</body>", SW_REGISTER + "</body>", 1) if "serviceWorker" not in t2 else t2
         if t2 != t:
             page.write_text(t2, encoding="utf-8")
