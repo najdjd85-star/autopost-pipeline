@@ -436,6 +436,30 @@
         "label": "평양냉면 사리",
         "url": "https://link.coupang.com/a/igfKQBKPsW"
       }
+    ],
+    "소고기": [
+      {
+        "when": "장조림|육포|강아지|고양이",
+        "q": "홍두깨|우둔",
+        "label": "홍두깨살",
+        "url": "https://link.coupang.com/a/ijVmEoMxYy"
+      }
+    ],
+    "치즈": [
+      {
+        "when": "피자|그라탕|라자냐|콘치즈|치즈볼|퀘사디아|핫도그",
+        "q": "모짜렐라|피자치즈",
+        "label": "모짜렐라치즈",
+        "url": "https://link.coupang.com/a/ieXD3LJGwu"
+      }
+    ],
+    "버섯": [
+      {
+        "when": "마라탕|팽이",
+        "q": "팽이",
+        "label": "팽이버섯",
+        "url": "https://link.coupang.com/a/ieXyr5SCPs"
+      }
     ]
   },
   "category_products": {
@@ -451,5 +475,6 @@
         "url": "https://link.coupang.com/a/if3697hDFY"
       }
     ]
-  }
+  },
+  "_설명_variants": "variants: 재료별 맞춤 상품. when=요리 이름에 맞는 정규식, q=그 재료의 분량 글(예: '홍두깨살 300g')에 맞는 정규식. 둘 중 하나가 맞으면 기본 링크 대신 이 상품으로 연결한다. url 이 비면 건너뛴다."
 }

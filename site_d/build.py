@@ -273,13 +273,26 @@ def load_variants() -> dict:
     return data.get("variants") or {}
 
 
-def pick_variant(ingredient: str, recipe_name: str, variants: dict):
+def pick_variant(ingredient: str, recipe_name: str, variants: dict, q: str = ""):
+    """요리 이름(when) 또는 그 재료의 분량 글(q, 예: '홍두깨살 300g')에 맞는 다른 상품. 링크가 빈 항목은 건너뛴다."""
     import re as _re
 
     for v in variants.get(ingredient, []):
-        if _re.search(v["when"], recipe_name):
+        if not v.get("url"):
+            continue
+        if (v.get("when") and _re.search(v["when"], recipe_name)) or (v.get("q") and q and _re.search(v["q"], q)):
             return v
     return None
+
+
+def recipe_variants(r: dict, variants: dict) -> dict:
+    """앱(app.js)에 넘길 이 레시피의 재료별 맞춤 상품 {재료: [버튼 이름, 링크]}(기본 링크와 다를 때만)."""
+    out = {}
+    for i in r["ingredients"]:
+        v = pick_variant(i["n"], r["name"], variants, i["q"])
+        if v:
+            out[i["n"]] = [i18n.label(v["label"]), v["url"]]
+    return out
 
 
 def load_affiliate() -> dict:
@@ -962,11 +975,14 @@ def recipe_page(tpl: str, r: dict, aff: dict, photos: dict, tools: dict) -> str:
         labels, extras = load_extras()
         variants = load_variants()
         pairs = []
+        qmap = {i["n"]: i["q"] for i in r["ingredients"]}
+        chosen = set()
         for n, u in buy_items:
-            v = pick_variant(n, r["name"], variants)
+            v = pick_variant(n, r["name"], variants, qmap.get(n, ""))
             pairs.append((i18n.label(v["label"]), v["url"]) if v else (buy_label(n, labels), u))
-        for i in r["ingredients"]:  # 같은 재료의 다른 상품(예: 새송이버섯 외에 팽이버섯)
-            pairs += [(i18n.label(x["label"]), x["url"]) for x in extras.get(i["n"], []) if x.get("url")]
+            chosen.add(v["url"] if v else u)
+        for i in r["ingredients"]:  # 같은 재료의 다른 상품(예: 새송이버섯 외에 팽이버섯). 위에서 이미 고른 상품은 다시 넣지 않는다
+            pairs += [(i18n.label(x["label"]), x["url"]) for x in extras.get(i["n"], []) if x.get("url") and x["url"] not in chosen]
         links = "".join(f'<a class="buy" href="{esc(u)}" target="_blank" rel="{REL}">{esc(T("{label} 사러가기", label=n))}</a> ' for n, u in pairs)
         buy += f'<div class="panel"><strong>{esc(T("재료 사러가기"))}</strong><div class="chips" style="margin-top:8px">{links}</div></div>'
     if tool_items:
@@ -1205,6 +1221,7 @@ def build_lang(code: str, aff: dict, tools: dict, photos: dict) -> list:
             {"slug": r["slug"], "name": i18n.rtext(r)["name"], "minutes": r["minutes"], "level": r["level"], "desc": i18n.rtext(r)["desc"],
              "icon": RECIPE_ICON[r["slug"]], "img": (thumb_rel(photos[r["slug"]]) if r["slug"] in photos else ""), "kcal": compute(r["slug"])["per"]["kcal"], "cost": cost_per_serving(r), "pet": is_special(r), "ini": initials_of(r["name"]),
              **({} if ko else {"ko": r["name"]}),
+             **({"av": recipe_variants(r, variants_ko)} if recipe_variants(r, variants_ko) else {}),
              "ingredients": [{"n": i["n"], "opt": i["opt"]} for i in r["ingredients"]]}
             for r in rs
         ],

@@ -266,8 +266,9 @@
       lack.forEach(function (m) {
         if (!D.affiliate[m.n]) { return; }
         var link = { n: (D.labels && D.labels[m.n]) || nm(m.n), url: D.affiliate[m.n] };
+        if (ev.r.av && ev.r.av[m.n]) { links.push({ n: ev.r.av[m.n][0], url: ev.r.av[m.n][1] }); return; }   // 이 요리에 맞춘 상품(예: 장조림·강아지 요리는 홍두깨살)
         ((D.variants && D.variants[m.n]) || []).some(function (v) {
-          if (new RegExp(v.when).test(ev.r.name)) { link = { n: v.label, url: v.url }; return true; }
+          if (v.when && v.url && new RegExp(v.when).test(ev.r.name)) { link = { n: v.label, url: v.url }; return true; }
           return false;
         });
         links.push(link);
