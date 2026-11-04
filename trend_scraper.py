@@ -13,7 +13,7 @@ from typing import Dict, List
 import feedparser
 
 from config import settings
-from constants import SITE_KEYS, SITE_LABELS
+from constants import FOOD_TOPICS, SITE_KEYS, SITE_LABELS
 from utils.http import safe_get
 from utils.logger import get_logger
 
@@ -88,6 +88,8 @@ EXPANDED_SEED_KEYWORDS = {
         "구독서비스 정리", "OTT 요금 절약", "배달비 줄이는 법", "장보기 절약 방법", "주유비 절약 카드",
         "중고거래 안전하게", "폐가전 무상수거", "가전 구독 vs 구매", "이사비용 절약", "자취 생활비 줄이기",
         "가계부 쓰는 법", "고정비 줄이기", "병원비 절약 방법", "해외직구 관세", "항공권 싸게 사는 법",
+        # --- 식비 ---
+        *FOOD_TOPICS,
     ],
     "C": [
         # --- 개인사업자·자영업·가맹점 ---

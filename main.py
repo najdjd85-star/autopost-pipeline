@@ -25,7 +25,7 @@ import sys
 import threading
 import time
 import webbrowser
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
 import schedule
@@ -42,6 +42,7 @@ from image_hybrid_engine import process_image_slots
 from newsletter_system import build_and_send_weekly_newsletter, run_flask_server
 from calculator_library import inject_calculator
 from smart_affiliate_matcher import inject_affiliate_slots
+from utils.http import safe_get
 from utils.logger import get_logger
 from utils.telegram_notify import send_message_sync
 from wp_client import WordPressClient
@@ -286,6 +287,15 @@ def _run_sites_parallel(sites: List[str]) -> None:
                 logger.exception("[Site %s] 병렬 생성 중 예기치 못한 오류: %s", site, exc)
 
 
+# B사이트 식비 글 5편을 아침·저녁 예약으로 내보내는 동안은 자동 글을 쉰다(하루 2편 유지). 이 날짜(한국시간)부터 다시 쓴다.
+AUTO_POST_RESUME = {"B": "2026-11-07"}
+
+
+def _daily_sites() -> List[str]:
+    today = (datetime.now(timezone.utc) + timedelta(hours=9)).date().isoformat()
+    return [site for site in SITE_KEYS if today >= AUTO_POST_RESUME.get(site, "")]
+
+
 def daily_pipeline_job() -> None:
     if _skip_flag_matches_today():
         logger.info("=== 오늘 날짜가 .skip_run_date와 같아 일일 포스팅을 건너뜁니다 ===")
@@ -293,10 +303,12 @@ def daily_pipeline_job() -> None:
     logger.info("=== 일일 포스팅 파이프라인 시작 (스케줄) ===")
     # 스케줄 실행은 급하지 않으니 배치(50% 할인)로 생성한다. 실패/시간초과 시 자동으로 일반 호출.
     # 배치는 건당 몇 분~수십 분 걸릴 수 있어서 3개 사이트를 동시에 제출해 대기 시간이 합이 아니라 최댓값이 되게 한다.
+    sites = _daily_sites()
     if settings.llm_use_batch:
-        _run_sites_parallel(list(SITE_KEYS))
+        _run_sites_parallel(sites)
     else:
-        cmd_run_now("all")
+        for site in sites:
+            _run_site_pipeline(site)
 
 
 def weekly_newsletter_job() -> None:
@@ -373,6 +385,13 @@ def hub_build_job() -> None:
         logger.warning("허브 생성 중 오류(무시): %s", exc)
 
 
+def wp_cron_ping_job() -> None:
+    """방문이 적으면 워드프레스 예약 글이 제시간에 안 나갈 수 있어서 예약 실행을 직접 깨운다."""
+    for site in SITE_KEYS:
+        if settings.sites[site].wp_url:
+            safe_get(settings.sites[site].wp_url.rstrip("/") + "/wp-cron.php", timeout=10)
+
+
 def _register_schedule_jobs() -> None:
     schedule.every().day.at(settings.schedule_time).do(daily_pipeline_job)
     schedule.every().day.at("13:30").do(hub_build_job)  # 서버 UTC 13:30 = 한국 22:30 (글 발행이 끝난 뒤)
@@ -380,6 +399,7 @@ def _register_schedule_jobs() -> None:
     schedule.every().day.at("00:40").do(standards_update_job)  # 서버 UTC 00:40 = 한국 09:40
     schedule.every().day.at("00:50").do(search_demand_job)  # 서버 UTC 00:50 = 한국 09:50
     schedule.every(30).minutes.do(auto_publish_check_job)
+    schedule.every(10).minutes.do(wp_cron_ping_job)
     schedule.every(5).minutes.do(threads_queue_job)
     schedule.every(3).hours.do(threads_casual_job)
 

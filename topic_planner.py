@@ -25,6 +25,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional, Tuple  # noqa: F401
 
 from config import OUTPUT_DIR
+from constants import FOOD_TOPICS
 from fact_sheets import get_fact_sheet
 from utils.logger import get_logger
 
@@ -131,6 +132,13 @@ CONTENT_TYPES: Dict[str, Dict[str, Any]] = {
         "title": "",  # 기존 시스템 프롬프트의 제목 규칙을 그대로 따른다.
         "intro": "",
         "layouts": ["qa", "case_story", "myth_fact", "step_guide"],
+    },
+    "food_guide": {  # 식비 글 전용(pick_content_type이 일반 선정에서는 뺀다)
+        "name": "장보기·집밥 실전 안내",
+        "angle": "집에서 바로 써먹을 메뉴와 방법을 결론부터 보여 준다. 재료비가 얼마인지, 어떻게 하면 덜 버리는지를 구체적인 순서와 수치로 설명한다.",
+        "title": "'1인분 얼마', '이렇게 하면 오래 간다' 같은 실용형 제목. 부정 어휘 금지.",
+        "intro": "도입부는 바로 답(메뉴·방법·금액)으로 시작.",
+        "layouts": ["step_guide", "qa", "compare_table"],
     },
     "news_hook": {
         "name": "이번 주 소식 풀이",
@@ -283,11 +291,12 @@ PRIORITY_TOPICS: Dict[str, List[str]] = {
         "공공분양 주택공급 신청", "행복주택 공급 신청", "장기전세 주택공급", "배우자 출산휴가 급여", "실업크레딧 지원",
         "실업급여", "아동수당", "의료급여", "교육급여", "임신·출산 진료비 바우처",
     ],
-    "B": ["전기요금 복지할인", "취약계층 통신요금 감면"],
+    "B": ["전기요금 복지할인", "취약계층 통신요금 감면", *FOOD_TOPICS],
     "C": ["자녀세액공제 금액 신청", "중소기업 취업청년 소득세 감면 신청", "자녀 세액공제", "중소기업 취업청년 소득세 감면"],
 }
 # 안내/설명형 글에 어울리는 유형만 쓴다(탈락 겁주기·뉴스 풀이 제외)
 _PRIORITY_TYPES = ["policy_update", "checklist", "glossary", "case_calc", "choose", "calendar"]
+_FOOD_TYPES = ["food_guide", "case_calc", "choose"]
 
 
 # 기준 자동 갱신(standards_updater)이 끝난 제도는 새 연도 수치로 글을 한 번 다시 쓴다(허브가 가장 최근 글로 연결하므로).
@@ -444,7 +453,7 @@ def pick_subtopic(
 def pick_content_type(site: str, news_available: bool, allowed: Optional[List[str]] = None) -> str:
     history = _load_history(site)
     recent = history["types"][-_AVOID_RECENT_TYPES:]
-    pool = [t for t in CONTENT_TYPES if (t != "news_hook" or news_available) and (not allowed or t in allowed)]
+    pool = [t for t in CONTENT_TYPES if (t != "news_hook" or news_available) and (t in allowed if allowed else t != "food_guide")]
     candidates = [t for t in pool if t not in recent]
     if news_available and "news_hook" in candidates:
         return "news_hook"  # 이번 주 소식은 시의성이 있어서 쓸 수 있을 때 우선
@@ -502,7 +511,8 @@ def plan_topic(
         if family_of(news["keyword"]) in families or _title_distance(news["keyword"], recent_titles[:_AVOID_RECENT_FAMILIES]) == 0:
             news = None
 
-    content_type = pick_content_type(site, news_available=news is not None, allowed=_PRIORITY_TYPES if priority else None)
+    food = (forced_keyword or priority) in FOOD_TOPICS
+    content_type = pick_content_type(site, news_available=news is not None, allowed=_FOOD_TYPES if food else _PRIORITY_TYPES if priority else None)
     if content_type != "news_hook":
         news = None
     subtopic = ""
@@ -572,6 +582,14 @@ def plan_topic(
 
     if unverified_seeds and keyword in unverified_seeds and not get_fact_sheet(keyword):
         block += _UNVERIFIED_CAUTION
+
+    if keyword in FOOD_TOPICS:
+        try:
+            from food_context import prompt_block as food_block
+
+            block += food_block(keyword)
+        except Exception as exc:  # noqa: BLE001 - 자료가 없어도 글은 쓴다(위 주의 문구가 수치를 막는다)
+            logger.warning("식비 자료 생략: %s", exc)
 
     try:  # 독자가 실제로 검색하는 말(자동완성·서치콘솔·검색량) - 데이터가 있을 때만
         from search_demand import prompt_block
