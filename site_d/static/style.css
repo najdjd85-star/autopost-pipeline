@@ -459,3 +459,9 @@ main.meal h1{margin-bottom:4px}
 .feedt td small{display:block;color:var(--mut);font-size:11.5px;font-weight:500;margin-top:2px}
 .feedt .num{text-align:right;white-space:nowrap}
 .feedn{margin:10px 0 0;padding-left:18px;font-size:13px;color:var(--mut);line-height:1.55}
+
+/* 안내 쪽·아래쪽 링크 */
+.flinks{display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;font-size:13px}
+.flinks a{color:var(--mut)}
+main.legal h2{margin-top:24px;font-size:18px}
+main.legal li{margin:6px 0}

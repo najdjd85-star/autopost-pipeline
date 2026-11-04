@@ -232,6 +232,7 @@ def intro_html(data: Dict[str, Any]) -> str:
 <div class="ixb"><b>정부지원금·주거</b><span>복지 급여, 청년·육아 지원, 청약·분양, 공공임대, 주거금융까지 자격 조건과 신청 절차를 정리합니다.</span></div>
 <div class="ixb"><b>생활비 절약</b><span>통신비와 교통비, 전기·가스 요금, 보험·금융 비용처럼 매달 나가는 고정비를 줄이는 방법을 다룹니다.</span></div>
 <div class="ixb"><b>세금·절세</b><span>연말정산과 종합소득세부터 개인사업자·가맹점·법인 절세, 부동산·금융 세금까지 정리합니다.</span></div>
+<div class="ixb"><b><a href="https://cook.dailyfixpoint.com/">냉장고 파먹기</a></b><span>집에 있는 재료를 고르면 만들 수 있는 요리를 찾아 주는 도구입니다. 영양성분·재료비가 있는 레시피와 1~5인 하루 식단을 제공합니다.</span></div>
 </div>
 <p>모든 글에는 참고한 공식 사이트와 정보 기준일을 적고, 제도와 수치는 바뀔 수 있으므로 신청 전에 해당 기관에서 최신 내용을 확인하도록 안내합니다. 작성에는 AI 도구를 활용하며, 오류를 발견하시면 <a href="/contact/">문의</a>로 알려 주세요. 확인 후 정정합니다. 자세한 운영 원칙은 <a href="/about/">소개</a>에서 볼 수 있습니다.</p></section>"""
 
@@ -260,7 +261,7 @@ _PAGE_SHELL = """<!DOCTYPE html>
 h1{{font-size:26px;margin:0 0 14px}}h2{{font-size:19px;margin:28px 0 8px}}p,li{{font-size:16px;color:#3b3a36}}a{{color:#185fa5}}footer{{margin-top:40px;padding-top:16px;border-top:1px solid #e4e3de;font-size:14px;color:#6b6a65}}
 footer a{{margin-right:14px}}@media (prefers-color-scheme:dark){{body{{background:#1b1b19;color:#f1efe8}}p,li{{color:#d3d1c7}}a,header a{{color:#85b7eb}}header,footer{{border-color:#383835}}}}</style></head>
 <body><div class="w"><header><a href="/">← 데일리픽스 포인트 홈</a></header><main><h1>{title}</h1>{body}</main>
-<footer><a href="/about/">소개</a><a href="/contact/">문의</a><a href="/privacy/">개인정보처리방침</a><div style="margin-top:8px">이 사이트의 일부 링크에는 제휴 수수료가 포함될 수 있습니다.</div></footer></div></body></html>"""
+<footer><a href="/about/">소개</a><a href="/contact/">문의</a><a href="/privacy/">개인정보처리방침</a><a href="https://cook.dailyfixpoint.com/">냉장고 파먹기</a><div style="margin-top:8px">이 사이트의 일부 링크에는 제휴 수수료가 포함될 수 있습니다.</div></footer></div></body></html>"""
 
 
 def _page(title: str, desc: str, path: str, body: str) -> str:
@@ -272,7 +273,7 @@ def about_body(data: Dict[str, Any]) -> str:
         f'<li><a href="{_esc(info["url"])}">{_esc(info["label"])} 안내소</a> - 글 {info["count"]}개</li>' for info in data["sites"].values()
     )
     return f"""<p>데일리픽스 포인트는 정부지원금·주거 지원, 생활비 절약, 세금·절세 정보를 공식 기관 자료를 기준으로 정리해 제공하는 정보 사이트입니다. 제도 이름은 알아도 내가 대상인지, 어떤 조건에서 탈락하는지, 언제까지 무엇을 해야 하는지 한눈에 보기 어렵다는 점에서 출발했습니다.</p>
-<h2>운영 안내소</h2><ul>{rows}</ul>
+<h2>운영 안내소</h2><ul>{rows}<li><a href="https://cook.dailyfixpoint.com/">냉장고 파먹기</a> - 재료로 요리를 찾는 도구, 레시피와 하루 식단 추천</li></ul>
 <h2>글을 쓰는 원칙</h2>
 <ul><li>제도의 자격 조건·금액·기한은 복지로, 정부24, 국세청 홈택스, 청약홈, LH 등 공식 기관 자료를 기준으로 하며, 글마다 참고한 출처와 정보 기준일을 적습니다.</li>
 <li>확인되지 않은 수치는 쓰지 않고, 제도가 바뀌어 달라진 내용이 확인되면 글을 고치거나 다시 작성합니다.</li>
