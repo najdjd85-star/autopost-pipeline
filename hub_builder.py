@@ -256,6 +256,8 @@ _PAGE_SHELL = """<!DOCTYPE html>
 <link rel="canonical" href="{url}">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5672149391967711"
      crossorigin="anonymous"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-76Q2YM2QTY"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){{dataLayer.push(arguments);}}gtag('js',new Date());gtag('config','G-76Q2YM2QTY');</script>
 <style>body{{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;background:#f6f6f4;color:#1d1d1b;line-height:1.8;word-break:keep-all}}
 .w{{max-width:760px;margin:0 auto;padding:0 18px 60px}}header{{padding:16px 0;border-bottom:1px solid #e4e3de;margin-bottom:24px}}header a{{font-weight:700;color:#185fa5;text-decoration:none}}
 h1{{font-size:26px;margin:0 0 14px}}h2{{font-size:19px;margin:28px 0 8px}}p,li{{font-size:16px;color:#3b3a36}}a{{color:#185fa5}}footer{{margin-top:40px;padding-top:16px;border-top:1px solid #e4e3de;font-size:14px;color:#6b6a65}}
@@ -299,6 +301,8 @@ def write_site(outdir: Path, data: Dict[str, Any], index_html: str) -> List[str]
     files["about/index.html"] = _page("소개", "데일리픽스 포인트의 운영 원칙과 글 작성 방식, 광고·제휴 고지", "/about/", about_body(data))
     files["contact/index.html"] = _page("문의", "오류 제보와 제휴·광고 문의 방법", "/contact/", contact_body())
     privacy = data.get("page_html", {}).get("개인정보처리방침") or "<p>개인정보처리방침을 불러오지 못했습니다.</p>"
+    privacy += ('<h2>방문 통계</h2><p>이 허브 사이트는 방문 수, 본 쪽, 유입 경로 같은 통계를 쿠키로 수집하는 Google 애널리틱스를 사용합니다. '
+                '<a href="https://tools.google.com/dlpage/gaoptout?hl=ko">차단 부가기능</a>으로 거부할 수 있습니다.</p>')
     files["privacy/index.html"] = _page("개인정보처리방침", "개인정보 처리와 광고·쿠키 사용 안내", "/privacy/", privacy)
     today = time.strftime("%Y-%m-%d")
     urls = "".join(f"<url><loc>{SITE_URL}{p}</loc><lastmod>{today}</lastmod></url>" for p in ("/", "/about/", "/contact/", "/privacy/"))

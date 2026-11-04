@@ -31,8 +31,13 @@ COUPANG_DISCLOSURE = "이 포스팅은 쿠팡 파트너스 활동의 일환으�
 FTC_DISCLOSURE = "이 사이트에는 제휴마케팅이 포함된 링크가 있으며 구매 시 커미션을 지급받을 수 있습니다."
 REL = "sponsored nofollow noopener noreferrer"
 ADSENSE_CLIENT = "ca-pub-5672149391967711"   # 허브·워드프레스와 같은 계정
+GA_ID = "G-76Q2YM2QTY"   # 구글 애널리틱스(cook·허브 공용)
 CONTACT_EMAIL = "najdjd85@gmail.com"          # 허브 문의 쪽과 같은 공개 주소
 ADSENSE_TAG = f'<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={ADSENSE_CLIENT}" crossorigin="anonymous"></script>'
+
+
+GA_TAG = (f'<script async src="https://www.googletagmanager.com/gtag/js?id={GA_ID}"></script>'
+          f"<script>window.dataLayer=window.dataLayer||[];function gtag(){{dataLayer.push(arguments);}}gtag('js',new Date());gtag('config','{GA_ID}');</script>")
 
 
 def esc(s: str) -> str:
@@ -1344,7 +1349,7 @@ def decorate(code: str, root: Path, written: list, rs: list) -> None:
         t = t.replace("</header>", lang_menu(rel_s) + "</header>" + chr(10) + bar + railhtml + side, 1).replace("</body>", close_js + "</body>", 1)
         flinks = ('<nav class="flinks" aria-label="' + esc(T("사이트 안내")) + '"><a href="' + prefix + 'about.html">' + esc(T("소개")) + '</a><a href="' + prefix + 'contact.html">' + esc(T("문의"))
                   + '</a><a href="' + prefix + 'privacy.html">' + esc(T("개인정보처리방침")) + "</a></nav>")
-        t = t.replace("</footer>", flinks + "</footer>", 1).replace("</head>", ADSENSE_TAG + chr(10) + "</head>", 1)
+        t = t.replace("</footer>", flinks + "</footer>", 1).replace("</head>", ADSENSE_TAG + chr(10) + GA_TAG + chr(10) + "</head>", 1)
         if code != "ko":   # 한 단계 안쪽 폴더(/en/)에 있는 쪽이라 공용 파일(assets/…) 주소를 한 단계 더 올려 준다
             t = re.sub(r"""(["'])((?:\.\./)*)assets/""", r"\1\2../assets/", t)
         page.write_text(t, encoding="utf-8")

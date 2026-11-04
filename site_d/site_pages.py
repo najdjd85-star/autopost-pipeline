@@ -102,6 +102,7 @@ PAGES = {
 </ul>
 <h2>4. 외부 서비스</h2>
 <ul>
+<li><b>Google 애널리틱스</b>: 방문 수, 본 쪽, 유입 경로, 기기 종류 같은 통계를 쿠키로 수집해 사이트 개선에 써요. 이름 같은 개인을 알아보는 정보는 수집하지 않아요. <a href="https://tools.google.com/dlpage/gaoptout?hl=ko" target="_blank" rel="noopener">차단 부가기능</a>으로 거부할 수 있어요.</li>
 <li><b>쿠팡 파트너스</b>: 구매 링크를 누르면 쿠팡으로 이동하며, 이후 정보 처리는 쿠팡의 방침을 따라요.</li>
 <li><b>글꼴 전송(jsDelivr)</b>: 글꼴 파일을 받을 때 이용자의 IP 주소가 해당 서비스에 전달될 수 있어요.</li>
 </ul>
@@ -130,6 +131,7 @@ PAGES = {
 </ul>
 <h2>4. External services</h2>
 <ul>
+<li><b>Google Analytics</b>: uses cookies to collect statistics such as visits, pages viewed, traffic sources and device type, which we use to improve the site. It does not collect your name or similar identifying details. You can opt out with the <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener">browser add-on</a>.</li>
 <li><b>Coupang Partners</b>: buy links take you to Coupang, whose own policy applies from then on.</li>
 <li><b>Font delivery (jsDelivr)</b>: your IP address may reach this service when font files load.</li>
 </ul>
