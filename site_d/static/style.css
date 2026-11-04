@@ -137,7 +137,18 @@ ol.steps li img.stepimg{display:block;width:100%;max-width:440px;height:auto;bor
 .note{font-size:12px;color:var(--mut);margin:4px 0 8px}
 
 .sact{display:inline-block;font-size:12px;font-weight:700;color:var(--accent);background:var(--accent-soft);border-radius:999px;padding:1px 9px;margin:0 0 6px;line-height:1.7}
-ol.steps li .sact{display:block;width:max-content}
+ol.steps li .sact{display:block;width:max-content;margin:0}
+ol.steps li{padding:12px 14px;font-size:16px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.shead{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:28px;padding-left:38px;margin-bottom:8px}
+.sl{display:block}
+.sl+.sl{margin-top:8px}
+.kh,.kt{font-weight:700;border-radius:6px;padding:1px 5px;white-space:nowrap}
+.kh{color:var(--warn);background:var(--accent-soft)}
+.kt{color:var(--ok);background:var(--ok-soft)}
+.scheck{flex:none;width:28px;height:28px;padding:0;border:2px solid var(--line);border-radius:50%;background:var(--card);color:transparent;font-size:15px;font-weight:800;line-height:1;cursor:pointer}
+ol.steps li.done{background:var(--chip);box-shadow:none}
+ol.steps li.done .sl,ol.steps li.done .sact,ol.steps li.done img{opacity:.55}
+ol.steps li.done .scheck{background:var(--ok);border-color:var(--ok);color:#fff}
 .shelf-note{font-size:12px;color:var(--mut);margin:0 0 8px}
 .tile.staple{min-height:50px}
 

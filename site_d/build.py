@@ -111,7 +111,7 @@ def annotate_step(text: str, recipe: dict, used: set) -> str:
 
 # 단계 글의 동사로 정하는 동작 배지(그림이 틀릴 일이 없는 안내용). 앞에서부터 처음 맞는 것을 쓴다.
 _STEP_ACTIONS = [
-    (r"데쳐|데칩니다|삶", "♨️", "데치기·삶기"),
+    (r"데쳐|데칩니다|데친|삶", "♨️", "데치기·삶기"),
     (r"불려|불린|담가", "💧", "불리기"),
     (r"썰|썹니다|다집니다|다져|송송|채 ", "🔪", "손질하기"),
     (r"섞|무치|무칩|버무|풀어|풉니다|재웁|비벼|비빕", "🥣", "섞기·무치기"),
@@ -175,6 +175,24 @@ def annotated_steps(recipe: dict) -> list:
     if i18n.is_ko():
         return [annotate_step(st, recipe, used) for st in recipe["steps"]]
     return [annotate_step_en(st, recipe, used) for st in i18n.rtext(recipe)["steps"]]
+
+
+# 순서 글에서 불 세기와 시간을 눈에 띄게 표시하고, 문장마다 줄을 나눈다(글 내용은 그대로라 다시 번역할 필요가 없다).
+_HEAT_KO = re.compile(r"아주 약한 불|약한 불|중약불|중강불|중불|약불|강불|센 불")
+_HEAT_EN = re.compile(r"\b(?:medium[- ]high|medium[- ]low|medium|high|low) heat\b", re.I)
+_TIME_KO = re.compile(r"(?<![\d.])\d+(?:\.\d+)?(?:\s?[~\-]\s?\d+)?\s?(?:시간(?:\s?\d+분)?|분(?:\s?\d+초)?|초)(?![의량쇄리장고])")
+_TIME_EN = re.compile(r"\b\d+(?:\.\d+)?(?:\s?(?:-|–|to)\s?\d+)?[ -]?(?:hours?|hrs?|minutes?|mins?|seconds?|secs?)\b(?:(?: and)? \d+ (?:minutes?|mins?|seconds?|secs?)\b)?", re.I)
+_SENT_KO = re.compile(r"(?<=[가-힣>)][.!?])\s+")
+_SENT_EN = re.compile(r"(?<=[a-z>)][.!?])\s+(?=[A-Z])")
+
+
+def step_lines(s_html: str) -> str:
+    ko = i18n.is_ko()
+    parts = re.split(r'(<b class="amt">.*?</b>)', s_html)   # 재료 분량 괄호 안은 건드리지 않는다
+    for n in range(0, len(parts), 2):
+        t = (_HEAT_KO if ko else _HEAT_EN).sub(lambda m: f'<b class="kh">{m.group()}</b>', parts[n])
+        parts[n] = (_TIME_KO if ko else _TIME_EN).sub(lambda m: f'<b class="kt">{m.group()}</b>', t)
+    return "".join(f'<span class="sl">{x}</span>' for x in (_SENT_KO if ko else _SENT_EN).split("".join(parts)))
 
 
 def photo_html(slug: str, name: str, photos: dict) -> str:
@@ -1006,8 +1024,9 @@ def recipe_page(tpl: str, r: dict, aff: dict, photos: dict, tools: dict) -> str:
         img = step_imgs / f'{r["slug"]}-{n}.jpg'
         alt = esc(T("{name} {n}단계 참고 이미지", name=name, n=n))
         pic = f'<img class="stepimg" src="../assets/steps/{r["slug"]}-{n}.jpg" alt="{alt}" width="640" height="427" loading="lazy">' if (STEP_IMAGES and img.exists()) else ""
-        li.append(f'<li>{step_action(r["steps"][n - 1])}{s_html}{pic}</li>')
+        li.append(f'<li><div class="shead">{step_action(r["steps"][n - 1])}</div>{step_lines(s_html)}{pic}</li>')
     steps = "".join(li)
+    steps_hint = esc(T("총 {n}단계예요. 끝낸 단계를 누르면 체크돼요.", n=len(li)))
     steps_note = (
         '<p class="note">' + T("※ 단계별 이미지는 AI로 만든 참고 이미지라 실제 모습과 다를 수 있어요.") + "</p>" if (STEP_IMAGES and any((step_imgs / f'{r["slug"]}-{n}.jpg').exists() for n in range(1, len(r["steps"]) + 1))) else ""
     )
@@ -1085,7 +1104,7 @@ def recipe_page(tpl: str, r: dict, aff: dict, photos: dict, tools: dict) -> str:
         "SITE_NAME": site_name(), "BASE": BASE, "NAME": esc(name), "SLUG": r["slug"], "MINUTES": str(r["minutes"]), "COST": f"{cost_per_serving(r):,}", "PRICE_NOTE": price_note(),
         "LEVEL": esc(T(r["level"])), "DESC": esc(tx["desc"]), "INGREDIENTS": ing_html, "BUY": (f'<div id="buy">{buy}</div>' if buy else ""),
         "BUY_HINT": ('<p class="note buyhint"><a href="#buy">' + T("없는 재료·요리도구는 맨 아래에서 바로 살 수 있어요 ↓") + "</a></p>" if buy else ""),
-        "STEPS": steps, "STEPS_NOTE": steps_note, "TIP": tip, "CATS": cats_html, "MEASURE": measure,
+        "STEPS": steps, "STEPS_HINT": steps_hint, "STEPS_NOTE": steps_note, "TIP": tip, "CATS": cats_html, "MEASURE": measure,
         "RELATED": rel, "DISCLOSURE": disclosure(bool(buy_items or tool_items)),
         "PHOTO": photo_html(r["slug"], name, photos), "ICON": RECIPE_ICON[r["slug"]],
         "SERVINGS": (T("여러 번 나눠 {n}회분", n=nut["servings"]) if is_special(r) else servings_txt), "NUTRITION": ("" if is_special(r) else nutrition),
@@ -1387,6 +1406,7 @@ def main() -> None:
     shutil.copy(HERE / "static" / "list.js", DIST / "assets" / "list.js")
     shutil.copy(HERE / "static" / "catsearch.js", DIST / "assets" / "catsearch.js")
     shutil.copy(HERE / "static" / "meal.js", DIST / "assets" / "meal.js")
+    shutil.copy(HERE / "static" / "steps.js", DIST / "assets" / "steps.js")
     if (HERE / "promo_media").exists():   # 홍보 영상 등(인스타·스레드가 공개 주소로 가져간다): https://…/promo/<파일>
         shutil.copytree(HERE / "promo_media", DIST / "promo")
     multi = len([c for c in INDEXABLE if pages.get(c)]) > 1
@@ -1406,7 +1426,7 @@ def main() -> None:
     # 브라우저·서버 캐시가 옛 css/js 를 계속 쓰지 않도록 파일 주소에 내용 해시를 붙인다
     import hashlib
 
-    ver = hashlib.md5((HERE / "static" / "app.js").read_bytes() + (HERE / "static" / "style.css").read_bytes() + (HERE / "static" / "list.js").read_bytes() + (HERE / "static" / "catsearch.js").read_bytes() + (HERE / "static" / "meal.js").read_bytes()).hexdigest()[:8]
+    ver = hashlib.md5((HERE / "static" / "app.js").read_bytes() + (HERE / "static" / "style.css").read_bytes() + (HERE / "static" / "list.js").read_bytes() + (HERE / "static" / "catsearch.js").read_bytes() + (HERE / "static" / "meal.js").read_bytes() + (HERE / "static" / "steps.js").read_bytes()).hexdigest()[:8]
     import re as _re2
 
     img_re = _re2.compile(r"assets/img/(?:t/)?[A-Za-z0-9_.\-]+\.jpg")
@@ -1421,7 +1441,7 @@ def main() -> None:
 
     for page in DIST.rglob("*.html"):
         t = img_re.sub(img_ver, page.read_text(encoding="utf-8"))
-        t2 = t.replace('assets/style.css"', f'assets/style.css?v={ver}"').replace('assets/app.js"', f'assets/app.js?v={ver}"').replace('assets/list.js"', f'assets/list.js?v={ver}"').replace('assets/catsearch.js"', f'assets/catsearch.js?v={ver}"').replace('assets/meal.js"', f'assets/meal.js?v={ver}"')
+        t2 = t.replace('assets/style.css"', f'assets/style.css?v={ver}"').replace('assets/app.js"', f'assets/app.js?v={ver}"').replace('assets/list.js"', f'assets/list.js?v={ver}"').replace('assets/catsearch.js"', f'assets/catsearch.js?v={ver}"').replace('assets/meal.js"', f'assets/meal.js?v={ver}"').replace('assets/steps.js"', f'assets/steps.js?v={ver}"')
         t2 = t2.replace("</body>", SW_REGISTER + "</body>", 1) if "serviceWorker" not in t2 else t2
         if t2 != t:
             page.write_text(t2, encoding="utf-8")
