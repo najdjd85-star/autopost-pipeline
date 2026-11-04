@@ -982,6 +982,8 @@ def recipe_page(tpl: str, r: dict, aff: dict, photos: dict, tools: dict) -> str:
             pairs.append((i18n.label(v["label"]), v["url"]) if v else (buy_label(n, labels), u))
             chosen.add(v["url"] if v else u)
         for i in r["ingredients"]:  # 같은 재료의 다른 상품(예: 새송이버섯 외에 팽이버섯). 위에서 이미 고른 상품은 다시 넣지 않는다
+            if pick_variant(i["n"], r["name"], variants, i["q"]):   # 이 요리에 맞춘 상품을 골랐으면 다른 종류는 권하지 않는다(양송이 수프에 팽이버섯 버튼 등)
+                continue
             pairs += [(i18n.label(x["label"]), x["url"]) for x in extras.get(i["n"], []) if x.get("url") and x["url"] not in chosen]
         links = "".join(f'<a class="buy" href="{esc(u)}" target="_blank" rel="{REL}">{esc(T("{label} 사러가기", label=n))}</a> ' for n, u in pairs)
         buy += f'<div class="panel"><strong>{esc(T("재료 사러가기"))}</strong><div class="chips" style="margin-top:8px">{links}</div></div>'

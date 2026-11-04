@@ -190,7 +190,23 @@
     "과메기": "https://link.coupang.com/a/ighRCZG1a8",
     "꽃게": "https://link.coupang.com/a/ighTlXC4cu",
     "토란": "https://link.coupang.com/a/ighU8mXWA8",
-    "쑥": "https://link.coupang.com/a/ighXYGHHXM"
+    "쑥": "https://link.coupang.com/a/ighXYGHHXM",
+    "돼지등뼈": "https://link.coupang.com/a/iotQ9ZHSlE",
+    "족발": "https://link.coupang.com/a/iotR1i2dwW",
+    "LA갈비": "https://link.coupang.com/a/iotTJobGrQ",
+    "곱창": "https://link.coupang.com/a/iotXB9g0Yu",
+    "쭈꾸미": "https://link.coupang.com/a/iotYu1pEDQ",
+    "진미채": "https://link.coupang.com/a/iotZ8AfXy0",
+    "골뱅이": "https://link.coupang.com/a/iot0XyZQey",
+    "장어": "https://link.coupang.com/a/iot2yTG2Y8",
+    "대구": "https://link.coupang.com/a/iot4d4jDa0",
+    "봄동": "https://link.coupang.com/a/iot4196220",
+    "대추": "https://link.coupang.com/a/iot7MM8Q7p",
+    "수삼": "https://link.coupang.com/a/iot8NrIWBw",
+    "햄버거번": "https://link.coupang.com/a/iot99TlHum",
+    "라자냐면": "https://link.coupang.com/a/ioubnV0rtY",
+    "마라소스": "https://link.coupang.com/a/ioudLcgGM9",
+    "베이킹파우더": "https://link.coupang.com/a/ioue3b4dRA"
   },
   "tools": {
     "오븐": {
@@ -379,7 +395,8 @@
     "치즈": "체다치즈",
     "파스타소스": "토마토파스타소스",
     "냉면": "칡냉면 사리",
-    "액젓": "멸치액젓"
+    "액젓": "멸치액젓",
+    "대추": "건대추"
   },
   "extras": {
     "버섯": [
@@ -408,7 +425,8 @@
     ]
   },
   "unused_links": {
-    "치킨스톡": "https://link.coupang.com/a/ie5kvWFqwe"
+    "치킨스톡": "https://link.coupang.com/a/ie5kvWFqwe",
+    "생대추": "https://link.coupang.com/a/iot6aR4ypo"
   },
   "variants": {
     "김": [
@@ -439,10 +457,49 @@
     ],
     "소고기": [
       {
-        "when": "장조림|육포|강아지|고양이",
+        "when": "장조림|육포|강아지|고양이|^육전$",
         "q": "홍두깨|우둔",
         "label": "홍두깨살",
         "url": "https://link.coupang.com/a/ijVmEoMxYy"
+      },
+      {
+        "q": "샤브",
+        "when": "소고기쌀국수|마라샹궈",
+        "label": "샤브샤브용 소고기",
+        "url": "https://link.coupang.com/a/iotxkIqlH2"
+      },
+      {
+        "q": "갈비",
+        "label": "찜용 소갈비",
+        "url": "https://link.coupang.com/a/ioty4KaTBc"
+      },
+      {
+        "q": "차돌",
+        "label": "차돌박이",
+        "url": "https://link.coupang.com/a/iotNag9aYS"
+      },
+      {
+        "q": "스테이크용",
+        "label": "스테이크용 등심",
+        "url": "https://link.coupang.com/a/iotPAqg9xQ"
+      },
+      {
+        "q": "다짐|다진",
+        "when": "소고기 주먹밥|소고기 볶음밥|소고기 두부조림|소고기 무국\\(12|소고기죽|개성 편수",
+        "label": "소고기 다짐육",
+        "url": "https://link.coupang.com/a/iotn0d1TwW"
+      },
+      {
+        "q": "불고기",
+        "when": "소고기야채볶음|소고기 가지볶음|궁중떡볶이|진주 비빔밥|전주비빔밥|소고기 버섯전골|평안도식 두부 전골",
+        "label": "불고기용 소고기",
+        "url": "https://link.coupang.com/a/iotsNHu8wS"
+      },
+      {
+        "q": "국거리|양지",
+        "when": "소고기미역국|소고기 육개장|소고기 된장찌개|원팬 소고기 카레|진주냉면|대구 따로국밥|경상도 탕국|안성 장터국밥|서울식 우거지 해장국|평양냉면|함경도 농마국수|평안도식 만둣국",
+        "label": "소고기 국거리(양지)",
+        "url": "https://link.coupang.com/a/iotrRuRAMC"
       }
     ],
     "치즈": [
@@ -459,6 +516,98 @@
         "q": "팽이",
         "label": "팽이버섯",
         "url": "https://link.coupang.com/a/ieXyr5SCPs"
+      },
+      {
+        "q": "느타리",
+        "when": "버섯두부탕|들깨칼국수|들기름볶음",
+        "label": "느타리버섯",
+        "url": "https://link.coupang.com/a/iotKdoPb2W"
+      },
+      {
+        "q": "양송이",
+        "when": "양송이|크림|스크램블|오믈렛|하이라이스",
+        "label": "양송이버섯",
+        "url": "https://link.coupang.com/a/iotJjsEEnt"
+      },
+      {
+        "q": "표고",
+        "when": "잡채|샤브샤브|전골|솥밥|어복쟁반|스키야키|궁중떡볶이|팔보채|소고기야채볶음|버섯전|마라샹궈",
+        "label": "표고버섯",
+        "url": "https://link.coupang.com/a/iotIrN31Fs"
+      }
+    ],
+    "돼지고기": [
+      {
+        "q": "수육|덩어리",
+        "when": "순대국|제주 고사리 육개장",
+        "label": "수육용 돼지고기",
+        "url": "https://link.coupang.com/a/iotvgm8I4i"
+      },
+      {
+        "q": "^갈비",
+        "label": "돼지갈비",
+        "url": "https://link.coupang.com/a/iotE97lzqe"
+      },
+      {
+        "q": "등심|안심",
+        "when": "잡채",
+        "label": "돼지 등심",
+        "url": "https://link.coupang.com/a/iotz2izsTA"
+      },
+      {
+        "q": "다짐",
+        "when": "메밀전병|광장시장 녹두빈대떡|평안도 김치만두|녹두지짐",
+        "label": "돼지고기 다짐육",
+        "url": "https://link.coupang.com/a/iotm3z3i7E"
+      },
+      {
+        "q": "삼겹|오겹",
+        "label": "돼지고기 삼겹살",
+        "url": "https://link.coupang.com/a/iotudBT9FI"
+      },
+      {
+        "q": "목살",
+        "label": "돼지고기 목살",
+        "url": "https://link.coupang.com/a/iotGq9MuZ2"
+      }
+    ],
+    "닭": [
+      {
+        "q": "영계",
+        "label": "삼계탕용 영계",
+        "url": "https://link.coupang.com/a/iotHy5URZA"
+      },
+      {
+        "q": "^닭가슴살",
+        "label": "닭가슴살",
+        "url": "https://link.coupang.com/a/ie2yEr4kEe"
+      },
+      {
+        "q": "다리살",
+        "label": "닭다리살",
+        "url": "https://link.coupang.com/a/iotqZv7rP2"
+      },
+      {
+        "q": "볶음탕",
+        "when": "닭볶음탕|양념치킨|찜닭|수원식 통닭",
+        "label": "볶음탕용 닭",
+        "url": "https://link.coupang.com/a/iotp0y41Se"
+      }
+    ],
+    "햄": [
+      {
+        "q": "^슬라이스",
+        "when": "크로크무슈|바게트 피자",
+        "label": "슬라이스 햄",
+        "url": "https://link.coupang.com/a/iotoZQwyzc"
+      }
+    ],
+    "새우": [
+      {
+        "q": "대하",
+        "when": "대하",
+        "label": "대하",
+        "url": "https://link.coupang.com/a/iotLIQ6YdU"
       }
     ]
   },
