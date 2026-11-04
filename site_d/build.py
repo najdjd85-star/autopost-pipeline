@@ -31,6 +31,7 @@ COUPANG_DISCLOSURE = "이 포스팅은 쿠팡 파트너스 활동의 일환으�
 FTC_DISCLOSURE = "이 사이트에는 제휴마케팅이 포함된 링크가 있으며 구매 시 커미션을 지급받을 수 있습니다."
 REL = "sponsored nofollow noopener noreferrer"
 ADSENSE_CLIENT = "ca-pub-5672149391967711"   # 허브·워드프레스와 같은 계정
+FOOD_API = "https://life.dailyfixpoint.com/wp-json/wp/v2/"   # B사이트 식비 글을 가져오는 주소
 GA_ID = "G-76Q2YM2QTY"   # 구글 애널리틱스(cook·허브 공용)
 CONTACT_EMAIL = "najdjd85@gmail.com"          # 허브 문의 쪽과 같은 공개 주소
 ADSENSE_TAG = f'<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={ADSENSE_CLIENT}" crossorigin="anonymous"></script>'
@@ -851,6 +852,10 @@ def pet_guide_html() -> str:
 # ---------------------------------------------------------------- 오늘의 추천식단
 MEAL_CARB = {"밥", "현미밥", "라면", "소면", "냉면", "메밀국수", "당면", "스파게티면", "우동면", "칼국수", "쌀국수", "쫄면", "떡", "떡국떡", "만두", "식빵", "또띠아", "모닝빵", "바게트", "오트밀", "찹쌀", "쌀", "감자", "고구마", "단호박"}
 MEAL_UI = {
+    "weekTitle": "일주일 식단", "spanDay": "하루", "spanWeek": "일주일", "mealsAll": "세 끼 모두", "mealsDinner": "저녁만", "otherWeek": "🔄 새 일주일 식단 짜기", "swapDay": "이 날만 바꾸기",
+    "wToday": "오늘", "weekDate": "{d}부터 7일", "costWeek": "{n}인 일주일 재료비", "weekFoods": "장볼 재료 {c}가지", "weekAvgDay": "1인 하루 평균 {k}kcal",
+    "weekAvgDinner": "저녁 1인 평균 {k}kcal", "shopSubWeek": "{n}인 기준 일주일치 재료(g)",
+    "weekNote": "짠 식단은 이 기기에 7일 동안 저장돼요. 이미 산 재료를 쓰는 요리를 우선 골랐어요. 재료비는 쓴 양만 계산한 어림값이라, 팩 단위로 사면 실제 지출은 더 클 수 있어요.",
     "title": "오늘의 추천식단", "people": "먹는 사람 수", "p1": "1인", "p2": "2인", "p3": "3인", "p4": "4인", "p5": "5인",
     "modeNormal": "일반 식단", "modeDiet": "다이어트 식단", "other": "🔄 다른 식단 보기", "swap": "이 끼니만 바꾸기",
     "mealB": "아침", "mealL": "점심", "mealD": "저녁", "side": "곁들임", "rice": "밥 {g}g 포함", "withRice": "밥 별도(1인 {g}g)",
@@ -962,6 +967,69 @@ def meal_page(tpl: str, rs: list, photos: dict, aff: dict) -> str:
         "LISTUI": "",
     }
     vars_.update(page_vars("meal.html"))
+    for k, v in vars_.items():
+        out = out.replace("{{" + k + "}}", v)
+    return out
+
+
+def food_articles(limit: int = 6) -> list:
+    """B사이트 '식비 절약' 카테고리에 공개된 글. 서버 빌드가 매일 돌아서 새 글이 저절로 붙는다. 못 받으면 칸을 비운다."""
+    import urllib.parse
+    import urllib.request
+
+    def get(path: str) -> list:
+        req = urllib.request.Request(FOOD_API + path, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+
+    try:
+        cats = get("categories?search=" + urllib.parse.quote("식비 절약"))
+        if not cats:
+            return []
+        posts = get(f'posts?categories={cats[0]["id"]}&per_page={limit}&_fields=title,link')
+        return [(html.unescape(p["title"]["rendered"]), p["link"]) for p in posts]
+    except (OSError, ValueError, KeyError) as exc:
+        print("식비 글 목록 생략:", exc)
+        return []
+
+
+def save_row(r: dict, photos: dict) -> str:
+    p = photos.get(r["slug"])
+    img = f'<img src="{thumb_rel(p)}" alt="" width="56" height="56" loading="lazy">' if p else '<span class="snoimg"></span>'
+    meta = T("1인분 약 {won}원 · {m}분", won=format(cost_per_serving(r), ","), m=r["minutes"])
+    return f'<li><a href="recipes/{r["slug"]}.html">{img}<span><b>{esc(i18n.rtext(r)["name"])}</b><em>{esc(meta)}</em></span></a></li>'
+
+
+def save_page(tpl: str, rs: list, photos: dict) -> str:
+    people = [r for r in rs if not is_special(r) and "kidsnack" not in r["cats"] and not set(r["cats"]) <= {"anju"} and dish_type(r["name"]) != "간식·디저트"]
+    by_cost = sorted(people, key=cost_per_serving)
+    live = json.loads((HERE / "prices_live.json").read_text(encoding="utf-8"))["per100g"]
+    foods = set(CATEGORIES["채소"] + CATEGORIES["고기·해산물"] + CATEGORIES["계란·두부·유제품"]) - set(STAPLES)
+    cheap = []
+    for name, won in sorted(live.items(), key=lambda kv: kv[1]):
+        best = next((r for r in by_cost if any(i["n"] == name and not i["opt"] and i["g"] / r["servings"] >= 40 for i in r["ingredients"])), None)
+        if name in foods and best:
+            cheap.append(
+                f'<li><b>{esc(i18n.ing_cap(name))}</b><span>{esc(T("100g 약 {won}원", won=format(won, ",")))}</span>'
+                f'<a href="recipes/{best["slug"]}.html">{esc(i18n.rtext(best)["name"])}</a></li>'
+            )
+    groups = (
+        ("한 그릇으로 끝나는 끼니", "반찬 없이 이것만으로 한 끼가 돼요.", lambda r: {"rice", "noodle", "onepan"} & set(r["cats"]) and compute(r["slug"])["per"]["kcal"] >= 300 and "만두" not in r["name"]),
+        ("국·찌개", "밥값은 빠진 재료비예요.", lambda r: dish_type(r["name"]) in ("찌개·전골", "국·수프", "탕") and "육수" not in r["name"]),
+        ("반찬", "밥값은 빠진 재료비예요.", lambda r: "side" in r["cats"]),
+    )
+    group_html = ""
+    for title, note, match in groups:
+        rows = "".join(save_row(r, photos) for r in [x for x in by_cost if match(x)][:6])
+        group_html += f'<h2>{esc(T(title))}</h2><p class="note">{esc(T(note))}</p><ul class="slist">{rows}</ul>'
+    articles = ""
+    if i18n.is_ko():
+        links = "".join(f'<li><a href="{esc(u)}">{esc(t)}</a></li>' for t, u in food_articles())
+        if links:
+            articles = f'<h2>식비 절약 글</h2><ul class="sposts">{links}</ul>'
+    out = tpl_t(tpl)
+    vars_ = {"SITE_NAME": site_name(), "BASE": BASE, "CHEAP": "".join(cheap[:8]), "GROUPS": group_html, "ARTICLES": articles, "PRICE_NOTE": esc(price_note())}
+    vars_.update(page_vars("save.html"))
     for k, v in vars_.items():
         out = out.replace("{{" + k + "}}", v)
     return out
@@ -1284,6 +1352,7 @@ def build_lang(code: str, aff: dict, tools: dict, photos: dict) -> list:
     emit("all.html", atpl)
 
     emit("meal.html", meal_page((HERE / "templates" / "meal.html").read_text(encoding="utf-8"), rs, photos, aff))
+    emit("save.html", save_page((HERE / "templates" / "save.html").read_text(encoding="utf-8"), rs, photos))
 
     from site_pages import PAGES, UPDATED
 
@@ -1338,6 +1407,7 @@ def decorate(code: str, root: Path, written: list, rs: list) -> None:
         home = '<a class="cb-link"' if rel != ("index.html",) else '<a class="cb-link on"'
         home += ' href="' + (prefix or "./") + '">' + cbl("🧊 재료로 찾기", "🧊 재료") + "</a>"
         mealink = '<a class="cb-link' + (" on" if rel == ("meal.html",) else "") + '" href="' + prefix + 'meal.html">' + cbl("🍱 오늘의 식단", "🍱 식단") + "</a>"
+        savelink = '<a class="cb-link' + (" on" if rel == ("save.html",) else "") + '" href="' + prefix + 'save.html">' + cbl("💰 식비 절약", "💰 식비") + "</a>"
         panel = ""
         rail = ""
         for gname, xs in groups:
@@ -1353,8 +1423,8 @@ def decorate(code: str, root: Path, written: list, rs: list) -> None:
         allink = '<a class="cb-link' + (" on" if rel == ("all.html",) else "") + '" href="' + prefix + 'all.html">' + cbl("📖 모든 레시피", "📖 전체") + "</a>"
         cur = ('<span class="cb-cur">' + cat_of[active][2] + " " + esc(T(cat_of[active][1])) + "</span>") if active in cat_of else ""
         aria = esc(T("요리 카테고리"))
-        bar = '<nav class="catbar" aria-label="' + aria + '">' + home + mealink + '<details class="catmenu"><summary' + (' class="on"' if active in cat_of else "") + ">" + T("☰ 카테고리") + '</summary><div class="catpanel">' + panel + "</div></details>" + allink + cur + "</nav>"
-        railhtml = '<nav class="catrail" aria-label="' + aria + '"><b class="catnav-t">' + aria + "</b>" + home.replace("cb-link", "rail-home") + mealink.replace("cb-link", "rail-home") + allink.replace("cb-link", "rail-home") + rail + "</nav>"
+        bar = '<nav class="catbar" aria-label="' + aria + '">' + home + mealink + savelink + '<details class="catmenu"><summary' + (' class="on"' if active in cat_of else "") + ">" + cbl("☰ 카테고리", "☰ 카테고리" if code == "ko" else "☰ 분류") + '</summary><div class="catpanel">' + panel + "</div></details>" + allink + cur + "</nav>"
+        railhtml = '<nav class="catrail" aria-label="' + aria + '"><b class="catnav-t">' + aria + "</b>" + home.replace("cb-link", "rail-home") + mealink.replace("cb-link", "rail-home") + savelink.replace("cb-link", "rail-home") + allink.replace("cb-link", "rail-home") + rail + "</nav>"
         toprail = ""
         for i, r in enumerate(top, 1):
             toprail += '<a href="' + prefix + "recipes/" + r["slug"] + '.html"><b>' + str(i) + "</b>" + esc(i18n.rtext(r)["name"]) + "</a>"

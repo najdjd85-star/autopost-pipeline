@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{%t 오늘의 추천식단 - 1~5인 가족 하루 식단·다이어트 식단%} - {{SITE_NAME}}</title>
-<meta name="description" content="{%t 아침·점심·저녁 하루 식단을 매일 새로 추천해요. 1인부터 5인 가족까지 재료 양과 장보기 목록을 맞춰 주고, 하루 1,500kcal 다이어트 식단도 있어요.%}">
+<title>{%t 오늘의 추천식단 - 1~5인 가족 하루·일주일 식단, 다이어트 식단%} - {{SITE_NAME}}</title>
+<meta name="description" content="{%t 하루 식단을 매일 새로 추천하고, 재료가 겹치게 일주일 식단도 짜 드려요. 1인부터 5인 가족까지 재료 양과 장보기 목록을 맞춰 주고, 하루 1,500kcal 다이어트 식단도 있어요.%}">
 <link rel="canonical" href="{{BASE}}/{{PFX}}meal.html">{{ALT}}{{ROBOTS}}
 <meta property="og:title" content="{%t 오늘의 추천식단%}">
 <meta property="og:description" content="{%t 1~5인 가족 맞춤 하루 식단과 장보기 목록, 다이어트 식단까지.%}">
@@ -19,11 +19,13 @@
 <div class="wrap">
 <header class="top"><a class="brand" href="./"><img class="brand-face" src="assets/mascot/face.png" width="30" height="30" alt="">{{SITE_NAME}}</a><p><a href="./">{%t ← 내 냉장고 재료로 찾기%}</a></p></header>
 <main class="meal">
-<h1>🍱 {%t 오늘의 추천식단%}</h1>
+<h1 id="mtitle">🍱 {%t 오늘의 추천식단%}</h1>
 <p id="mdate" class="mdate"></p>
 <div class="mctl">
+<div id="mspan" class="seg seg2" role="group" aria-label="{%t 식단 기간%}"></div>
 <div class="mrow"><span class="flab">{%t 먹는 사람 수%}</span><div id="mpeople" class="seg" role="group" aria-label="{%t 먹는 사람 수%}"></div></div>
 <div id="mmode" class="seg seg2" role="group" aria-label="{%t 식단 종류%}"></div>
+<div id="mmeals" class="seg seg2" role="group" aria-label="{%t 식단에 넣을 끼니%}" hidden></div>
 </div>
 <div id="mwx"></div>
 <div id="msummary"></div>

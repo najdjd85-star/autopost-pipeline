@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="{{LANG}}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{%t 식비 절약 - 지금 싼 재료와 재료비 낮은 집밥%} - {{SITE_NAME}}</title>
+<meta name="description" content="{%t 최근 소매가격으로 지금 싼 재료를 고르고, 1인분 재료비가 낮은 끼니·국·반찬을 모았어요. 장 볼 때 바로 쓰는 식비 절약 안내예요.%}">
+<link rel="canonical" href="{{BASE}}/{{PFX}}save.html">{{ALT}}{{ROBOTS}}
+<meta property="og:title" content="{%t 식비 절약%}">
+<meta property="og:description" content="{%t 지금 싼 재료와 1인분 재료비가 낮은 집밥을 한눈에 보세요.%}">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/mascot/favicon-32.png">
+<link rel="apple-touch-icon" href="assets/mascot/favicon-180.png">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"></noscript>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="wrap">
+<header class="top"><a class="brand" href="./"><img class="brand-face" src="assets/mascot/face.png" width="30" height="30" alt="">{{SITE_NAME}}</a><p><a href="./">{%t ← 내 냉장고 재료로 찾기%}</a></p></header>
+<main class="save">
+<h1>💰 {%t 식비 절약%}</h1>
+<p class="mdate">{%t 지금 싼 재료를 고르고, 재료비가 낮은 메뉴부터 만들어 보세요.%}</p>
+<div class="stools">
+<a href="./"><b>🧊 {%t 있는 재료부터 쓰기%}</b><span>{%t 냉장고 재료로 만들 요리 찾기%}</span></a>
+<a href="meal.html#week"><b>📅 {%t 일주일 식단 짜기%}</b><span>{%t 1~5인 식단과 장보기 목록%}</span></a>
+</div>
+<h2>{%t 지금 싼 재료%}</h2>
+<p class="note">{%t 100g당 소매가격이 낮은 순이에요. 오른쪽은 그 재료로 만드는 가장 저렴한 요리예요.%}</p>
+<ul class="scheap">{{CHEAP}}</ul>
+{{GROUPS}}
+{{ARTICLES}}
+<p class="note">{{PRICE_NOTE}}</p>
+<p style="margin-top:22px"><a class="btn" href="all.html" style="text-decoration:none;display:inline-block">{%t 모든 레시피 보기%}</a></p>
+</main>
+<footer>
+{%t <p>레시피는 일반적인 조리법이며 재료 상태와 불 세기에 따라 달라질 수 있어요. 알레르기가 있다면 재료를 꼭 확인하세요.</p>%}
+</footer>
+</div>
+</body>
+</html>

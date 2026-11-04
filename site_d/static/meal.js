@@ -16,13 +16,16 @@
   function has(it, x) { return (it.tg || "").indexOf(x) > -1; }
 
   // ---- 저장된 선택 ----
-  var state = { people: 2, mode: "normal", city: 0 };
+  var state = { people: 2, mode: "normal", city: 0, span: "day", meals: "all" };
   try {
     var sv = JSON.parse(localStorage.getItem("fridge_meal") || "null");
     if (sv && sv.people >= 1 && sv.people <= 5) { state.people = sv.people; }
     if (sv && (sv.mode === "normal" || sv.mode === "diet")) { state.mode = sv.mode; }
     if (sv && sv.city >= 0 && sv.city < M.cities.length) { state.city = sv.city; }
+    if (sv && sv.span === "week") { state.span = "week"; }
+    if (sv && sv.meals === "d") { state.meals = "d"; }
   } catch (e) {}
+  if (location.hash === "#week") { state.span = "week"; }
   function save() { try { localStorage.setItem("fridge_meal", JSON.stringify(state)); } catch (e) {} }
 
   // ---- 날짜로 정하는 무작위 ----
@@ -59,24 +62,24 @@
   }
   // 기상청 예보 요약(weather.json, 매일 갱신)에서 지역·오늘 날짜의 날씨를 읽는다. 파일이 없거나 오늘 날짜가 없으면 null(계절·요일로 추천)
   var wxFile = null;
-  function fetchWeather(city, cb) {
-    function pickDay(j) {
-      var key = now.getFullYear() + ("0" + (now.getMonth() + 1)).slice(-2) + ("0" + now.getDate()).slice(-2);
-      var c = j && j.cities && j.cities[city.k];
-      var w = c && c[key];
-      if (!w) { return null; }
-      return { tmax: w.tmax, tmin: w.tmin, fmax: w.tmax, pop: w.pop, rain: w.rain, snow: w.snow, code: w.code };
-    }
-    if (wxFile) { cb(pickDay(wxFile)); return; }
+  function wxFor(date) {
+    var key = date.getFullYear() + ("0" + (date.getMonth() + 1)).slice(-2) + ("0" + date.getDate()).slice(-2);
+    var c = wxFile && wxFile.cities && wxFile.cities[M.cities[state.city].k];
+    var w = c && c[key];
+    if (!w) { return null; }
+    return { tmax: w.tmax, tmin: w.tmin, fmax: w.tmax, pop: w.pop, rain: w.rain, snow: w.snow, code: w.code };
+  }
+  function fetchWeather(cb) {
+    if (wxFile) { cb(wxFor(now)); return; }
     var done = false;
-    function fin(j) { if (done) { return; } done = true; wxFile = j || {}; cb(pickDay(wxFile)); }
+    function fin(j) { if (done) { return; } done = true; wxFile = j || {}; cb(wxFor(now)); }
     setTimeout(function () { fin(null); }, 4000);
     try {
       fetch((M.asset || "") + "weather.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(fin).catch(function () { fin(null); });
     } catch (e) { fin(null); }
   }
-  function buildCtx(w) {
-    var m = now.getMonth() + 1, d = now.getDate(), dow = now.getDay();
+  function buildCtx(w, date) {
+    var day = date || now, m = day.getMonth() + 1, d = day.getDate(), dow = day.getDay();
     var c = {
       m: m, d: d, dow: dow, w: w, workday: dow >= 1 && dow <= 5, monday: dow === 1, friday: dow === 5, weekend: dow === 0 || dow === 6,
       summer: m >= 6 && m <= 8, winter: m === 12 || m <= 2,
@@ -125,6 +128,10 @@
   }
 
   // ---- 식단 고르기 ----
+  // 일주일 식단의 점심·저녁 주메뉴는 끼니가 되는 종류로만 고른다(와플·전·무침이 저녁이 되지 않게). 영어판은 요리 이름이 달라 종류(t)로 먼저 거른다.
+  var WEEK_MAIN = /^(면·국수|구이·튀김|볶음|조림·찜|밥|탕|찌개·전골|덮밥|볶음밥|국밥|비빔밥|김밥·주먹밥·초밥|국·수프)$/;
+  var WEEK_MAIN_NAME = /카레|curry|육개장|닭개장|샤브샤브/i;
+  var weekBuilding = false;
   function poolFor(slot) {
     var t = targets()[slot];
     var lo = 0.55, hi = 1.35;
@@ -133,6 +140,7 @@
       out = items.filter(function (it) { var k = kcOf(it); return it.sl.indexOf(slot) > -1 && k >= t * lo && k <= t * hi; });
       lo = 0.3; hi = 2;
     }
+    if (weekBuilding && slot !== "b") { out = out.filter(function (it) { return WEEK_MAIN.test(it.t) || WEEK_MAIN_NAME.test(it.n); }); }
     return out;
   }
   function pick(rand, arr) { return arr[Math.floor(rand() * arr.length)]; }
@@ -169,13 +177,15 @@
   }
   function dayKcal(plan) { return totalsOf(plan).k; }
   function makePlan() {
-    var rand = rng(seedOf(dateKey + "|" + state.mode + "|" + state.city + "|" + offset));
+    return searchPlan(rng(seedOf(dateKey + "|" + state.mode + "|" + state.city + "|" + offset)), 600, [], null);
+  }
+  function searchPlan(rand, tries_, taken, extra) {
     var pools = {};
     SLOTS.forEach(function (s) { pools[s] = poolFor(s); });
     if (!pools.b.length || !pools.l.length || !pools.d.length) { return null; }
     var best = null, bestScore = 1e9, anyBest = null, anyScore = 1e9;
-    for (var n = 0; n < 600; n++) {
-      var used = [], plan = {};
+    for (var n = 0; n < tries_; n++) {
+      var used = taken.slice(), plan = {};
       var ok = true;
       for (var i = 0; i < SLOTS.length; i++) {
         var sl = SLOTS[i], main = null;
@@ -186,7 +196,7 @@
         if (plan[sl].side) { used.push(plan[sl].side.s); }
       }
       if (!ok) { continue; }
-      var sc = score(plan);
+      var sc = score(plan) + (extra ? extra(plan) : 0);
       var inRange = Math.abs(dayKcal(plan) - dayTarget()) / dayTarget() <= 0.12;
       if (inRange && sc < bestScore) { bestScore = sc; best = plan; }
       if (sc < anyScore) { anyScore = sc; anyBest = plan; }
@@ -214,11 +224,104 @@
     if (best) { plan[slot] = best; }
   }
 
+  // ---- 일주일 식단 ----
+  // 한 번 짠 식단은 7일 동안 폰에 저장해 둔다(매일 바뀌면 장 본 재료와 어긋난다). 이미 산 재료를 쓰는 요리를 골라 장보기 가짓수를 줄인다.
+  var week = null;
+  var bySlug = {};
+  items.forEach(function (it) { bySlug[it.s] = it; });
+  function dayDate(i) { return new Date(week.start[0], week.start[1], week.start[2] + i); }
+  function dishesOf(day) {
+    var out = [];
+    SLOTS.forEach(function (s) { if (day[s]) { out.push(day[s].main); if (day[s].side) { out.push(day[s].side); } } });
+    return out;
+  }
+  function weekUsed(skip) {
+    var used = [], have = {}, types = {};
+    week.days.forEach(function (day, i) {
+      if (i === skip || !day) { return; }
+      dishesOf(day).forEach(function (it) { used.push(it.s); it.ing.forEach(function (x) { have[x[0]] = 1; }); });
+      SLOTS.forEach(function (s) { if (day[s]) { types[day[s].main.t] = (types[day[s].main.t] || 0) + 1; } });
+    });
+    return { used: used, have: have, types: types };
+  }
+  function weekPenalty(day, u, prev) {
+    var p = 0;
+    dishesOf(day).forEach(function (it) { p += it.w / 100; it.ing.forEach(function (x) { p += u.have[x[0]] ? -3 : 6; }); });
+    // 일주일 안에서 같은 종류의 주메뉴가 쌓일수록 피한다
+    SLOTS.forEach(function (s) { if (day[s]) { p += (u.types[day[s].main.t] || 0) * 12; } });
+    if (prev) {
+      SLOTS.forEach(function (s) {
+        if (!day[s] || !prev[s]) { return; }
+        var a = day[s].main, b = prev[s].main;
+        if (a.t === b.t) { p += 6; }
+        if (a.g.some(function (g) { return b.g.indexOf(g) > -1; })) { p += 4; }
+      });
+    }
+    return p;
+  }
+  function bestDinner(rand, u, prev) {
+    var used = u.used, pool = poolFor("d").filter(function (it) { return used.indexOf(it.s) < 0; });
+    var best = null, bestScore = 1e9, t = targets().d;
+    for (var n = 0; n < 300 && pool.length; n++) {
+      var main = pick(rand, pool), day = { d: mealOf(main, "d", rand, used) };
+      var sc = Math.abs(mealKcal(day.d) - t) / t * 60 - fit(main, "d") + weekPenalty(day, u, prev);
+      if (sc < bestScore) { bestScore = sc; best = day; }
+    }
+    return best;
+  }
+  function makeDay(i, salt) {
+    var u = weekUsed(i), prev = week.days[i - 1], date = dayDate(i), keep = CTX;
+    if (week.days[i]) { dishesOf(week.days[i]).forEach(function (it) { u.used.push(it.s); }); }
+    CTX = buildCtx(wxFor(date), date);
+    weekBuilding = true;
+    var rand = rng(seedOf(dateKey + "|week|" + state.mode + "|" + state.meals + "|" + state.city + "|" + offset + "|" + i + "|" + salt));
+    var day = state.meals === "d" ? bestDinner(rand, u, prev) : searchPlan(rand, 400, u.used, function (p) { return weekPenalty(p, u, prev); });
+    CTX = keep;
+    weekBuilding = false;
+    return day;
+  }
+  function saveWeek() {
+    var days = week.days.map(function (day) {
+      var o = {};
+      SLOTS.forEach(function (s) { if (day[s]) { o[s] = [day[s].main.s, day[s].side ? day[s].side.s : ""]; } });
+      return o;
+    });
+    try { localStorage.setItem("fridge_week", JSON.stringify({ start: week.start, mode: state.mode, meals: state.meals, days: days })); } catch (e) {}
+  }
+  function readWeek() {
+    try {
+      var w = JSON.parse(localStorage.getItem("fridge_week") || "null");
+      if (!w || w.mode !== state.mode || w.meals !== state.meals) { return null; }
+      var age = Math.round((new Date(now.getFullYear(), now.getMonth(), now.getDate()) - new Date(w.start[0], w.start[1], w.start[2])) / 864e5);
+      if (age < 0 || age > 6) { return null; }
+      var ok = true;
+      var days = w.days.map(function (d) {
+        var o = {};
+        SLOTS.forEach(function (s) { if (d[s]) { if (!bySlug[d[s][0]]) { ok = false; } o[s] = { main: bySlug[d[s][0]], side: bySlug[d[s][1]] || null }; } });
+        return o;
+      });
+      return ok ? { start: w.start, days: days } : null;
+    } catch (e) { return null; }
+  }
+  function makeWeek() {
+    week = { start: [now.getFullYear(), now.getMonth(), now.getDate()], days: [] };
+    for (var i = 0; i < 7; i++) {
+      week.days[i] = makeDay(i, 0);
+      if (!week.days[i]) { week = null; return; }
+    }
+    saveWeek();
+  }
+  function refresh() {
+    if (state.span === "week") { week = readWeek(); if (!week) { makeWeek(); } } else { plan = makePlan(); }
+    draw();
+  }
+
   // ---- 계산 ----
   function riceAdd(it, key) { return it.r ? riceOf()[key] : 0; }
   function totalsOf(pl) {
     var t = { k: 0, c: 0, p: 0, f: 0, na: 0, w: 0 };
     SLOTS.forEach(function (s) {
+      if (!pl[s]) { return; }
       [pl[s].main, pl[s].side].forEach(function (it) {
         if (!it) { return; }
         t.k += it.k + riceAdd(it, "k"); t.c += it.c + riceAdd(it, "c"); t.p += it.p + riceAdd(it, "p"); t.f += it.f + riceAdd(it, "f");
@@ -258,6 +361,8 @@
   }
 
   // ---- 그리기 ----
+  var $span = document.getElementById("mspan");
+  var $meals = document.getElementById("mmeals");
   var $people = document.getElementById("mpeople");
   var $mode = document.getElementById("mmode");
   var $wx = document.getElementById("mwx");
@@ -266,8 +371,6 @@
   var $shop = document.getElementById("mshop");
   var $note = document.getElementById("mnote");
   var $other = document.getElementById("mother");
-  $other.textContent = L("other");
-  document.getElementById("mdate").textContent = L("todayDate", { d: now.toLocaleDateString(M.loc, { month: "long", day: "numeric", weekday: "long" }) });
 
   function seg($box, defs, current, onPick) {
     $box.textContent = "";
@@ -280,8 +383,11 @@
     });
   }
   function controls() {
-    seg($people, [1, 2, 3, 4, 5].map(function (n) { return { v: n, t: L("p" + n) }; }), state.people, function (v) { state.people = v; save(); plan = makePlan(); draw(); });
-    seg($mode, [{ v: "normal", t: L("modeNormal") }, { v: "diet", t: "🥗 " + L("modeDiet") }], state.mode, function (v) { state.mode = v; offset = 0; swaps = 0; save(); plan = makePlan(); draw(); });
+    seg($span, [{ v: "day", t: L("spanDay") }, { v: "week", t: "📅 " + L("spanWeek") }], state.span, function (v) { state.span = v; save(); refresh(); });
+    seg($people, [1, 2, 3, 4, 5].map(function (n) { return { v: n, t: L("p" + n) }; }), state.people, function (v) { state.people = v; save(); if (state.span === "day") { plan = makePlan(); } draw(); });
+    seg($mode, [{ v: "normal", t: L("modeNormal") }, { v: "diet", t: "🥗 " + L("modeDiet") }], state.mode, function (v) { state.mode = v; offset = 0; swaps = 0; save(); refresh(); });
+    $meals.hidden = state.span !== "week";
+    seg($meals, [{ v: "all", t: L("mealsAll") }, { v: "d", t: L("mealsDinner") }], state.meals, function (v) { state.meals = v; offset = 0; swaps = 0; save(); refresh(); });
   }
 
   function dishLine(it, rice) {
@@ -316,7 +422,7 @@
     }
     top.appendChild(sel);
     box.appendChild(top);
-    if (!loading && plan) {
+    if (!loading && plan && state.span === "day") {
       var rs = reasons();
       if (rs.length) {
         box.appendChild(el("p", "mwhy", L("why")));
@@ -383,11 +489,66 @@
     box.appendChild(el("p", "mcostday", L("costDay", { n: state.people }) + ": " + L("won", { c: fmt(Math.round(t.w * state.people / 100) * 100) })));
     $sum.appendChild(box);
   }
+  function drawWeekSummary() {
+    var n = state.people, t = { k: 0, na: 0, w: 0 }, foods = {};
+    week.days.forEach(function (day) {
+      var x = totalsOf(day);
+      t.k += x.k; t.na += x.na; t.w += x.w;
+      dishesOf(day).forEach(function (it) { it.ing.forEach(function (i) { foods[i[0]] = 1; }); });
+    });
+    $sum.textContent = "";
+    var box = el("div", "msum");
+    var top = el("div", "mtop");
+    top.appendChild(el("span", "mlabel", L("costWeek", { n: n })));
+    var big = el("div", "mbig");
+    big.appendChild(el("strong", null, L("won", { c: fmt(Math.round(t.w * n / 100) * 100) })));
+    top.appendChild(big);
+    box.appendChild(top);
+    box.appendChild(el("p", "mna", L("weekFoods", { c: Object.keys(foods).length })));
+    box.appendChild(el("p", "mna", L(state.meals === "d" ? "weekAvgDinner" : "weekAvgDay", { k: fmt(Math.round(t.k / 7 / 5) * 5) }) + " · " + L("sodium") + " " + fmt(Math.round(t.na / 7 / 10) * 10) + "mg"));
+    $sum.appendChild(box);
+  }
+  function weekDish(it) {
+    var a = el("a", null, it.n);
+    a.href = "recipes/" + it.s + ".html";
+    return a;
+  }
+  function drawWeekPlan() {
+    var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    $plan.textContent = "";
+    week.days.forEach(function (day, i) {
+      var date = dayDate(i), isToday = date.getTime() === today.getTime();
+      var card = el("article", "mcard wday" + (isToday ? " now" : (date < today ? " past" : "")));
+      var head = el("div", "mhead");
+      head.appendChild(el("b", null, date.toLocaleDateString(M.loc, { month: "numeric", day: "numeric", weekday: "short" })));
+      if (isToday) { head.appendChild(el("span", "mnow", L("wToday"))); }
+      head.appendChild(el("span", "mk", L("won", { c: fmt(Math.round(totalsOf(day).w * state.people / 100) * 100) })));
+      var sw = el("button", "linkbtn", "🔁 " + L("swapDay"));
+      sw.type = "button";
+      sw.addEventListener("click", function () {
+        swaps++;
+        var d = makeDay(i, swaps);
+        if (d) { week.days[i] = d; saveWeek(); draw(); }
+      });
+      head.appendChild(sw);
+      card.appendChild(head);
+      SLOTS.forEach(function (s) {
+        if (!day[s]) { return; }
+        var row = el("div", "wrow");
+        row.appendChild(el("span", "wslot", SLOT_ICON[s] + " " + L(SLOT_KEY[s])));
+        var box = el("div", "wdish");
+        box.appendChild(weekDish(day[s].main));
+        if (day[s].side) { box.appendChild(document.createTextNode(" + ")); box.appendChild(weekDish(day[s].side)); }
+        row.appendChild(box);
+        card.appendChild(row);
+      });
+      $plan.appendChild(card);
+    });
+  }
   function drawShop() {
     var n = state.people, agg = {}, staples = {};
-    SLOTS.forEach(function (s) {
-      [plan[s].main, plan[s].side].forEach(function (it) {
-        if (!it) { return; }
+    (state.span === "week" ? week.days : [plan]).forEach(function (pl) {
+      dishesOf(pl).forEach(function (it) {
         var f = n / it.sv;
         it.ing.forEach(function (x) { agg[x[0]] = (agg[x[0]] || 0) + x[1] * f; });
         it.st.forEach(function (x) { staples[x] = true; });
@@ -397,7 +558,7 @@
     var names = Object.keys(agg).sort(function (a, b) { return agg[b] - agg[a]; });
     $shop.textContent = "";
     $shop.appendChild(el("h2", null, L("shop")));
-    $shop.appendChild(el("p", "mut", L("shopSub", { n: n })));
+    $shop.appendChild(el("p", "mut", L(state.span === "week" ? "shopSubWeek" : "shopSub", { n: n })));
     var ul = el("ul", "mlist");
     names.forEach(function (k) {
       var li = el("li");
@@ -421,18 +582,30 @@
     }
   }
   function draw() {
+    var isWeek = state.span === "week";
     controls();
     drawWeather(false);
-    if (!plan) { $plan.textContent = ""; $sum.textContent = ""; $shop.textContent = ""; $plan.appendChild(el("p", "empty", L("empty"))); return; }
-    drawSummary(); drawPlan(); drawShop();
-    $note.textContent = state.mode === "diet" ? L("dietNote", { k: fmt(dayTarget()) }) : L("normalNote", { k: fmt(dayTarget()) });
+    $other.textContent = L(isWeek ? "otherWeek" : "other");
+    document.getElementById("mtitle").textContent = (isWeek ? "📅 " : "🍱 ") + L(isWeek ? "weekTitle" : "title");
+    document.getElementById("mdate").textContent = isWeek && week
+      ? L("weekDate", { d: dayDate(0).toLocaleDateString(M.loc, { month: "long", day: "numeric" }) })
+      : L("todayDate", { d: now.toLocaleDateString(M.loc, { month: "long", day: "numeric", weekday: "long" }) });
+    if (!(isWeek ? week : plan)) { $plan.textContent = ""; $sum.textContent = ""; $shop.textContent = ""; $plan.appendChild(el("p", "empty", L("empty"))); return; }
+    if (isWeek) { drawWeekSummary(); drawWeekPlan(); } else { drawSummary(); drawPlan(); }
+    drawShop();
+    $note.textContent = (state.mode === "diet" ? L("dietNote", { k: fmt(dayTarget()) }) : L("normalNote", { k: fmt(dayTarget()) })) + (isWeek ? " " + L("weekNote") : "");
   }
   // 지역의 오늘 날씨를 받아 그 날씨로 식단을 짠다(못 받아도 계절·요일로 짠다)
   function load() {
     drawWeather(true);
-    fetchWeather(M.cities[state.city], function (w) { CTX = buildCtx(w); plan = makePlan(); draw(); });
+    fetchWeather(function (w) { CTX = buildCtx(w); refresh(); });
   }
-  $other.addEventListener("click", function () { offset++; swaps = 0; plan = makePlan(); draw(); window.scrollTo({ top: 0, behavior: "smooth" }); });
+  $other.addEventListener("click", function () {
+    offset++; swaps = 0;
+    if (state.span === "week") { makeWeek(); } else { plan = makePlan(); }
+    draw();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
   controls();
   CTX = buildCtx(null);
   load();

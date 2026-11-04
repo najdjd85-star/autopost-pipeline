@@ -319,7 +319,23 @@ body{padding-top:58px}
 #buy{scroll-margin-top:72px}
 
 /* 모든 레시피 탭이 늘어나도 좁은 화면 한 줄에 들어가게 */
-@media (max-width:480px){.catbar{gap:6px;padding-left:12px;padding-right:12px}.catbar .cb-link,.catbar summary{font-size:13px;padding:7px 11px}.catbar .cb-cur{display:none}}
+@media (max-width:480px){.catbar{gap:4px;padding-left:8px;padding-right:8px}.catbar .cb-link,.catbar summary{gap:3px;font-size:12.5px;padding:7px 8px}.catbar .cb-cur{display:none}}
+.save h2{margin:26px 0 4px;font-size:18px}
+.stools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0 4px}
+.stools a{display:block;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);text-decoration:none}
+.stools b{display:block;font-size:14px}.stools span{display:block;margin-top:2px;font-size:12px;line-height:1.45;color:var(--mut)}
+.scheap,.slist,.sposts{list-style:none;margin:8px 0 0;padding:0;border:1px solid var(--line);border-radius:14px;background:var(--card)}
+.scheap li{display:grid;grid-template-columns:minmax(0,.8fr) auto minmax(0,1.3fr);align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line);font-size:14px}
+.scheap span{color:var(--accent);font-size:13px;font-weight:700;white-space:nowrap}
+.scheap a{color:var(--ink);font-size:13px;text-align:right}
+html[lang=en] .scheap li{grid-template-columns:minmax(0,1fr) auto;gap:2px 10px}
+html[lang=en] .scheap a{grid-column:1/-1;text-align:left}
+.slist li,.sposts li{border-bottom:1px solid var(--line)}
+.scheap li:last-child,.slist li:last-child,.sposts li:last-child{border-bottom:0}
+.slist a{display:flex;align-items:center;gap:12px;padding:9px 12px;color:var(--ink);text-decoration:none}
+.slist img,.snoimg{flex:none;width:56px;height:56px;border-radius:10px;object-fit:cover;background:var(--chip)}
+.slist b{display:block;font-size:15px;line-height:1.35}.slist em{display:block;margin-top:2px;font-size:13px;font-style:normal;color:var(--mut)}
+.sposts a{display:block;padding:11px 12px;color:var(--ink);font-size:14px;font-weight:600;text-decoration:none}
 .catrail>a.on,.catrail>a.rail-home.on{background:var(--ink);color:var(--bg)}
 .initials{position:sticky;top:58px;z-index:20;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);padding:8px 0;margin-top:6px}
 
@@ -411,8 +427,8 @@ header.top{position:relative}
 @media (max-width:480px){.langhint{white-space:normal;width:210px;text-align:left}}
 
 /* 위 막대: 좁은 화면에서는 짧은 이름 */
-.cb-link .sh{display:none}
-@media (max-width:480px){.catbar .cb-link .lg{display:none}.catbar .cb-link .sh{display:inline}}
+.cb-link .sh,.catbar summary .sh{display:none}
+@media (max-width:480px){.catbar .cb-link .lg,.catbar summary .lg{display:none}.catbar .cb-link .sh,.catbar summary .sh{display:inline}}
 .catrail .rail-home .sh{display:none}
 
 /* 오늘의 추천식단 */
@@ -426,6 +442,7 @@ main.meal h1{margin-bottom:4px}
 .segb{border:0;background:none;color:var(--ink);font:inherit;font-size:14px;font-weight:700;padding:8px 14px;border-radius:999px;cursor:pointer}
 .segb.on{background:var(--ink);color:var(--bg)}
 .seg2{align-self:flex-start}
+.seg[hidden]{display:none}
 .mwbox{padding:12px 14px;margin:0 0 12px;border-radius:16px;background:var(--card);border:1px solid var(--line)}
 .mwtop{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .mwic{font-size:26px}.mwtxt{font-weight:700;font-size:15px;flex:1;min-width:150px}
@@ -443,6 +460,11 @@ main.meal h1{margin-bottom:4px}
 .mna,.mcostday{margin:8px 0 0;font-size:14px}.mcostday{font-weight:800}
 .mcard{padding:12px 14px;margin:0 0 12px;border-radius:16px;background:var(--card);border:1px solid var(--line)}
 .mcard.now{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+.wday.past{opacity:.6}
+.wrow{display:flex;gap:10px;padding:6px 0;border-top:1px solid var(--line);font-size:14px;line-height:1.45}
+.wslot{flex:none;width:58px;font-size:12px;font-weight:700;color:var(--mut)}
+.wdish a{color:var(--ink);font-weight:600;text-decoration:none}
+html[lang=en] .wslot{width:82px}
 .mhead{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
 .mhead b{font-size:16px}.mk{color:var(--mut);font-size:13px;font-weight:700}
 .mhead .linkbtn{margin-left:auto}
