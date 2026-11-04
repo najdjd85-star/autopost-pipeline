@@ -26,25 +26,20 @@ const QS = [
 ];
 let step = 0, ans = {flags: []};
 function showHome() { setView('home'); }
-function showCheck() { setView('check'); step = 0; ans = {flags: []}; renderStep(); pushView('check'); }
+function showCheck() { setView('check'); step = 0; ans = {flags: []}; renderStep(); pushView('check', {step}); }
 $('#open-check').addEventListener('click', showCheck);
-$('#logo').addEventListener('click', (e) => { e.preventDefault(); showHome(); });
+$('#logo').addEventListener('click', (e) => { e.preventDefault(); closeMenu(); homeView(); window.scrollTo(0, 0); });
 /* 실업급여만 바로 확인하는 짧은 흐름(홈의 전용 버튼): 퇴사 질문 3개만 묻는다 */
-function showUnemp() { setView('check'); step = 0; ans = {flags: ['left'], mini: true, size: 1, inc: 0, asset: 0}; renderStep(); pushView('check'); }
+function showUnemp() { setView('check'); step = 0; ans = {flags: ['left'], mini: true, size: 1, inc: 0, asset: 0}; renderStep(); pushView('check', {step}); }
 $('#open-unemp').addEventListener('click', showUnemp);
 function skipped(i) {
   if (!QS[i]) return false;
   if (ans.mini) return !QS[i].extra;
   return !!(QS[i].skip && QS[i].skip(ans));
 }
-$('#back').addEventListener('click', () => {
-  if (step > 0 && step <= QS.length) {
-    let prev = step - 1;
-    while (prev >= 0 && skipped(prev)) prev--;
-    if (prev < 0) { showHome(); return; }
-    step = prev; renderStep();
-  } else showHome();
-});
+/* 질문마다 방문 기록을 남겨서, 화면의 '이전'과 폰의 뒤로가기가 똑같이 한 단계씩 돌아간다 */
+$('#back').addEventListener('click', () => { if (history.state && history.state.v === 'check') history.back(); else homeView(); });
+function nextStep() { step++; renderStep(); window.scrollTo(0, 0); pushView('check', {step}); }
 
 function renderStep() {
   const w = $('#wiz');
@@ -65,9 +60,9 @@ function renderStep() {
   w.querySelectorAll('.opt').forEach((b) => b.addEventListener('click', () => {
     const raw = b.dataset.v, v = isNaN(raw) ? raw : Number(raw);
     if (q.multi) { const i = ans.flags.indexOf(v); i >= 0 ? ans.flags.splice(i, 1) : ans.flags.push(v); renderStep(); }
-    else { ans[q.k] = v; if (q.k === 'hh' && v === 'single') ans.size = 1; step++; renderStep(); window.scrollTo(0, 0); }
+    else { ans[q.k] = v; if (q.k === 'hh' && v === 'single') ans.size = 1; nextStep(); }
   }));
-  if (q.multi) $('#go').addEventListener('click', () => { step++; renderStep(); window.scrollTo(0, 0); });
+  if (q.multi) $('#go').addEventListener('click', nextStep);
 }
 
 /* ---------- 판정 규칙 (2026년 기준, 예시 로직) ---------- */
