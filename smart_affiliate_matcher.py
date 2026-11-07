@@ -249,6 +249,8 @@ def _get_coupang_card_data(keyword: str, site: str) -> Optional[Dict[str, str]]:
 
     COUPANG_API_ENABLED=1이면 API → 링크 은행 순서로 먼저 시도하고, 실패하면 고정 링크로 대체한다.
     """
+    if site not in ("B", "site_b"):
+        return None  # 정부지원금·세금 글에는 주제와 맞는 상품이 거의 없어 상품 카드를 넣지 않는다(애드센스 심사·신뢰도)
     if COUPANG_API_ENABLED:
         topic_queries = queries_for(keyword)
         coupang = None

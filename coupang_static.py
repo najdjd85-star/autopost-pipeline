@@ -166,11 +166,10 @@ PRODUCTS = [
     },
 ]
 
-_FALLBACK_KEYS = ("budget_book", "book")
 
 
 def pick_static_product(text: str) -> Optional[Dict[str, str]]:
-    """글 제목·키워드(text)와 가장 잘 맞는 상품을 돌려준다. 없으면 가계부·책 중 하나."""
+    """글 제목·키워드(text)와 가장 잘 맞는 상품을 돌려준다. 맞는 상품이 없으면 None(상관없는 상품 카드는 넣지 않는다)."""
     low = (text or "").lower()
     best, best_score, tied = None, 0, []
     for p in PRODUCTS:
@@ -182,6 +181,5 @@ def pick_static_product(text: str) -> Optional[Dict[str, str]]:
     if len(tied) > 1:  # 점수가 같으면 글마다 다른 상품이 나오도록 글자 합으로 고른다(같은 글은 늘 같은 상품)
         best = tied[sum(ord(c) for c in low) % len(tied)]
     if best is None:
-        key = _FALLBACK_KEYS[sum(ord(c) for c in low) % len(_FALLBACK_KEYS)]
-        best = next(p for p in PRODUCTS if p["key"] == key)
+        return None
     return {"name": best["name"], "desc": best["desc"], "url": best["url"], "image": "", "price": "", "static": "1"}

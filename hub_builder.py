@@ -16,6 +16,7 @@ import re
 import shutil
 import sys
 import time
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -211,6 +212,81 @@ def _esc(text: str) -> str:
     return html.escape(text or "", quote=True)
 
 
+# 이달에 챙길 것: 해마다 같은 시기에 돌아오는 일정. 날짜가 법으로 정해진 것만 날짜를 적고, 해마다 바뀌는 것은 "보통"과 공식 사이트로 안내한다.
+# (제목, 설명, 관련 글을 찾을 낱말, 공식 사이트 이름, 공식 사이트 주소)
+SEASONAL: Dict[int, List[tuple]] = {
+    11: [
+        ("연말정산 미리보기", "홈택스에서 올해 카드 사용액으로 예상 세액을 미리 볼 수 있습니다. 남은 두 달 지출 계획을 세울 때 씁니다.", ("연말정산",), "홈택스", "https://www.hometax.go.kr"),
+        ("연금저축·IRP 연내 납입", "올해 세액공제를 받으려면 12월 31일까지 넣어야 합니다. 연금저축과 IRP를 합쳐 연 900만 원까지 공제 대상입니다.", ("연금저축", "IRP"), "국세청", "https://www.nts.go.kr"),
+        ("종합부동산세 납부", "고지서는 보통 11월 말에 나오고, 납부 기간은 12월 1일부터 15일까지입니다.", ("종합부동산세", "종부세"), "홈택스", "https://www.hometax.go.kr"),
+        ("김장 장보기", "배추와 무 값이 가장 낮은 때입니다. 재료별 가격과 남는 배추·무를 쓰는 요리를 정리했습니다.", ("11월 제철", "김장", "절임배추"), "냉장고 파먹기", "https://cook.dailyfixpoint.com/save.html"),
+        ("에너지바우처로 난방비", "대상 가구는 겨울 난방비로 쓸 수 있습니다. 신청과 사용 기간은 에너지바우처 누리집에서 확인하세요.", ("에너지바우처",), "에너지바우처", "https://www.energyv.or.kr"),
+        ("국가장학금 1차 신청", "다음 학기 1차 신청은 보통 11~12월에 열립니다. 신청 기간은 한국장학재단 공지를 확인하세요.", ("국가장학금",), "한국장학재단", "https://www.kosaf.go.kr"),
+    ],
+    12: [
+        ("연금저축·IRP 마감", "12월 31일까지 넣은 금액만 올해 세액공제를 받습니다. 연금저축과 IRP 합산 연 900만 원까지입니다.", ("연금저축", "IRP"), "국세청", "https://www.nts.go.kr"),
+        ("종합부동산세 납부", "납부 기간은 12월 1일부터 15일까지입니다.", ("종합부동산세", "종부세"), "홈택스", "https://www.hometax.go.kr"),
+        ("해외주식 손익 정리", "해외주식 양도차익은 한 해 손익을 합쳐 250만 원까지 기본공제됩니다. 결제일이 해를 넘기면 다음 해 손익이 되니 결제일을 확인하세요.", ("해외주식",), "국세청", "https://www.nts.go.kr"),
+        ("고향사랑기부", "연말까지 기부하면 올해 세액공제를 받습니다. 10만 원까지는 전액 세액공제입니다.", ("고향사랑",), "고향사랑e음", "https://ilovegohyang.go.kr"),
+        ("연말정산 서류 미리 챙기기", "부양가족, 월세, 의료비처럼 간소화 자료에 안 잡힐 수 있는 증빙을 미리 모아 두면 1월이 편합니다.", ("연말정산", "월세 세액공제"), "홈택스", "https://www.hometax.go.kr"),
+        ("노인일자리 모집", "다음 해 노인일자리 참여자 모집이 보통 12월 전후로 시작됩니다. 지역 시니어클럽과 복지관 공지를 확인하세요.", ("노인일자리",), "복지로", "https://www.bokjiro.go.kr"),
+    ],
+    1: [
+        ("연말정산 간소화 자료", "홈택스 간소화 자료는 매년 1월 15일 무렵 열립니다. 빠진 공제가 없는지 확인하세요.", ("연말정산",), "홈택스", "https://www.hometax.go.kr"),
+        ("부가세 확정신고", "개인 일반과세자의 2기 확정신고와 간이과세자 신고는 1월 25일까지입니다.", ("부가세",), "홈택스", "https://www.hometax.go.kr"),
+        ("자동차세 연납", "1월에 1년 치를 미리 내면 할인됩니다. 할인율과 신청은 위택스에서 확인하세요.", ("자동차세",), "위택스", "https://www.wetax.go.kr"),
+        ("새해 달라지는 제도", "새해부터 바뀌는 지원금·세금 제도는 정부 발표로 확인할 수 있습니다.", ("달라지는",), "대한민국 정책브리핑", "https://www.korea.kr"),
+    ],
+}
+
+TOPIC_CARDS = (
+    ("gov", "정부지원금·주거", "복지 급여, 청년·육아 지원, 실업급여, 청약과 주거 대출까지 자격 조건과 신청 방법"),
+    ("life", "생활비 절약", "통신비, 교통비, 공과금, 보험·금융, 구독료, 식비까지 매달 나가는 돈을 줄이는 방법"),
+    ("tax", "세금·절세", "연말정산, 절세 계좌, 퇴직금·4대보험, 부동산·투자 세금, 사업자 신고"),
+)
+
+
+def _match_post(posts: List[Dict[str, Any]], words: tuple) -> Optional[Dict[str, Any]]:
+    return next((p for p in posts if any(w in p["title"] for w in words)), None)
+
+
+def season_html(data: Dict[str, Any], month: Optional[int] = None) -> str:
+    """'이달에 챙길 것': 관련 글이 있으면 글로, 없으면 공식 사이트로 잇는다."""
+    month = month or datetime.now(timezone(timedelta(hours=9))).month
+    items = SEASONAL.get(month)
+    if not items:
+        return ""
+    cards = []
+    for title, desc, words, oname, ourl in items:
+        post = _match_post(data["posts"], words)
+        link = (f'<a href="{_esc(post["link"])}">관련 글 보기</a> · ' if post else "") + f'<a href="{_esc(ourl)}" target="_blank" rel="noopener">{_esc(oname)}</a>'
+        cards.append(f'<div class="sea-i"><b>{_esc(title)}</b><p>{_esc(desc)}</p><span>{link}</span></div>')
+    return f'<section id="season"><p class="h2">{month}월에 챙길 것</p><div class="sea">{"".join(cards)}</div></section>'
+
+
+def topics_html(data: Dict[str, Any]) -> str:
+    """주제별로 찾기: 안내소마다 최근 글과 도구를 묶는다. 식비 도구(냉장고 파먹기)는 생활비 절약 안에 둔다."""
+    out = ['<section id="topics"><p class="h2">주제별로 찾기</p><div class="tg">']
+    for key, label, desc in TOPIC_CARDS:
+        site = data["sites"].get(key, {})
+        mine = [p for p in data["posts"] if p["site"] == key][:3]
+        lis = "".join(f'<li><a href="{_esc(p["link"])}">{_esc(p["title"])}</a></li>' for p in mine)
+        tools = []
+        if key == "gov":
+            tools.append('<button type="button" class="tl" data-open="check">내 지원금 1분 확인</button>')
+        if data["calc"].get(key):
+            tools.append(f'<a class="tl" href="{_esc(data["calc"][key])}">계산기</a>')
+        if key == "life":
+            tools.append('<a class="tl" href="https://cook.dailyfixpoint.com/">식비: 냉장고 재료로 메뉴 찾기</a>')
+            tools.append('<a class="tl" href="https://cook.dailyfixpoint.com/meal.html#week">일주일 식단·장보기</a>')
+        out.append(
+            f'<div class="tc"><h3><a href="{_esc(site.get("url", "#"))}">{_esc(label)}</a> <small>{site.get("count", len(mine))}개</small></h3>'
+            f'<p>{_esc(desc)}</p><ul>{lis}</ul><div class="tt">{"".join(tools)}</div></div>'
+        )
+    out.append("</div></section>")
+    return "".join(out)
+
+
 def static_today(posts: List[Dict[str, Any]]) -> str:
     """JS 없이도 읽히는 '오늘의 새 글'(JS가 켜지면 같은 자리를 다시 그린다)."""
     return "".join(
@@ -230,9 +306,8 @@ def intro_html(data: Dict[str, Any]) -> str:
 <p>제도 이름은 알아도 내가 대상인지, 어떤 조건에서 탈락하는지, 언제까지 무엇을 해야 하는지는 한눈에 보기 어렵습니다. 데일리픽스 포인트는 정부지원금·주거 지원, 생활비 절약, 세금·절세 정보를 공식 기관 자료를 기준으로 정리하고, 직접 넣어 보는 모의 계산기와 1분 지원금 확인으로 내 상황에 맞게 판단할 수 있게 돕습니다. 현재 세 개 안내소에 글 {n}개가 있습니다.</p>
 <div class="ixg">
 <div class="ixb"><b>정부지원금·주거</b><span>복지 급여, 청년·육아 지원, 청약·분양, 공공임대, 주거금융까지 자격 조건과 신청 절차를 정리합니다.</span></div>
-<div class="ixb"><b>생활비 절약</b><span>통신비와 교통비, 전기·가스 요금, 보험·금융 비용처럼 매달 나가는 고정비를 줄이는 방법을 다룹니다.</span></div>
+<div class="ixb"><b>생활비 절약</b><span>통신비와 교통비, 전기·가스 요금, 보험·금융 비용, 구독료와 식비까지 매달 나가는 돈을 줄이는 방법을 다룹니다. 식비는 냉장고에 있는 재료로 메뉴와 일주일 식단을 짜 주는 <a href="https://cook.dailyfixpoint.com/">냉장고 파먹기</a>와 이어집니다.</span></div>
 <div class="ixb"><b>세금·절세</b><span>연말정산과 종합소득세부터 개인사업자·가맹점·법인 절세, 부동산·금융 세금까지 정리합니다.</span></div>
-<div class="ixb"><b><a href="https://cook.dailyfixpoint.com/">냉장고 파먹기</a></b><span>집에 있는 재료를 고르면 만들 수 있는 요리를 찾아 주는 도구입니다. 영양성분·재료비가 있는 레시피와 1~5인 하루 식단을 제공합니다.</span></div>
 </div>
 <p>모든 글에는 참고한 공식 사이트와 정보 기준일을 적고, 제도와 수치는 바뀔 수 있으므로 신청 전에 해당 기관에서 최신 내용을 확인하도록 안내합니다. 작성에는 AI 도구를 활용하며, 오류를 발견하시면 <a href="/contact/">문의</a>로 알려 주세요. 확인 후 정정합니다. 자세한 운영 원칙은 <a href="/about/">소개</a>에서 볼 수 있습니다.</p></section>"""
 
@@ -308,6 +383,7 @@ def write_site(outdir: Path, data: Dict[str, Any], index_html: str) -> List[str]
     urls = "".join(f"<url><loc>{SITE_URL}{p}</loc><lastmod>{today}</lastmod></url>" for p in ("/", "/about/", "/contact/", "/privacy/"))
     files["sitemap-hub.xml"] = f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{urls}</urlset>\n'
     subs = "".join(f"<sitemap><loc>{info['url']}/wp-sitemap.xml</loc></sitemap>" for info in data["sites"].values())
+    subs += "<sitemap><loc>https://cook.dailyfixpoint.com/sitemap.xml</loc></sitemap>"  # 냉장고 파먹기도 같은 도메인 묶음으로 알린다
     files["sitemap.xml"] = (
         '<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
         f"<sitemap><loc>{SITE_URL}/sitemap-hub.xml</loc></sitemap>{subs}</sitemapindex>\n"
@@ -330,6 +406,8 @@ def build(out: Optional[Path] = None) -> Dict[str, Any]:
         .replace("__STATIC_TODAY__", static_today(data["posts"]))
         .replace("__STATIC_LIST__", static_list(data["posts"]))
         .replace("__INTRO__", intro_html(data))
+        .replace("__SEASON__", season_html(data))
+        .replace("__TOPICS__", topics_html(data))
         .replace("__SITEMAP__", sitemap_html(data))
     )
     target = Path(out) if out else DEFAULT_OUT

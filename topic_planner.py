@@ -291,7 +291,7 @@ PRIORITY_TOPICS: Dict[str, List[str]] = {
         "공공분양 주택공급 신청", "행복주택 공급 신청", "장기전세 주택공급", "배우자 출산휴가 급여", "실업크레딧 지원",
         "실업급여", "아동수당", "의료급여", "교육급여", "임신·출산 진료비 바우처",
     ],
-    "B": ["전기요금 복지할인", "취약계층 통신요금 감면", *FOOD_TOPICS],
+    "B": ["전기요금 복지할인", "취약계층 통신요금 감면"],
     "C": ["자녀세액공제 금액 신청", "중소기업 취업청년 소득세 감면 신청", "자녀 세액공제", "중소기업 취업청년 소득세 감면"],
 }
 # 안내/설명형 글에 어울리는 유형만 쓴다(탈락 겁주기·뉴스 풀이 제외)
@@ -397,12 +397,60 @@ def queue_refresh_for_changes(names: List[str], limit: int = 3, dry: bool = Fals
 
 
 def pick_priority(site: str, history: Dict[str, List[str]], recent_titles: List[str]) -> str:
+    if history["keywords"] and history["keywords"][-1] in PRIORITY_TOPICS.get(site, []):
+        return ""  # 우선 주제만 이어 쓰면 한 분야로 쏠리니 하루씩 번갈아 주제 은행에서 고른다
     for kw in PRIORITY_TOPICS.get(site, []):
         # 우선 주제는 한 번만 쓴다: 기록이 있으면(기간 무관) 다 쓴 것으로 본다(히스토리는 30건만 남아 예전 글을 잊기 때문)
         if in_cooldown(site, kw, history["keywords"], recent_titles, days=3650):
             continue
         return kw
     return ""
+
+
+def _bank_used(site: str, keyword: str, titles: List[str], days: int = 150) -> bool:
+    """주제 은행 키워드를 이미 썼나: 선정 기록에 있거나, 최근 제목이 키워드의 낱말을 모두 담고 있으면 쓴 것으로 본다.
+
+    _title_distance는 두 낱말 키워드를 한 낱말만 맞아도 같은 주제로 봐서('실업급여 조건'이 '실업급여 신청 방법' 글 때문에 막힘)
+    주제 은행에는 더 엄격한 기준을 쓴다."""
+    cutoff = (datetime.now(_KST).date() - timedelta(days=days)).isoformat()
+    if any(e.get("keyword") == keyword and e.get("date", "") >= cutoff for e in _load_log(site)):
+        return True
+    words = [w for w in keyword.replace("-", " ").split() if len(w) >= 2] or [keyword]
+    return any(all(w in t.replace(" ", "") or w in t for w in words) for t in titles)
+
+
+def pick_from_bank(site: str, titles: List[str]) -> Optional[Dict[str, Any]]:
+    """주제 은행에서 오늘 주제를 고른다. 철이 된 주제 > 가장 오래 안 쓴 분야의 검색량 큰 주제 순서."""
+    from topic_bank import groups
+
+    bank = groups(site)
+    if not bank:
+        return None
+    month = datetime.now(_KST).month
+    picked = [e.get("keyword", "") for e in _load_log(site)][::-1]
+
+    def last_use(group: str) -> int:
+        names = {kw for kw, _v, _m in bank[group]["items"]}  # type: ignore[union-attr]
+        return next((i for i, kw in enumerate(picked) if kw in names), 999)
+
+    avail = []
+    for group, g in bank.items():
+        for kw, vol, months in g["items"]:  # type: ignore[union-attr]
+            if months and month not in months:
+                continue
+            if _bank_used(site, kw, titles):
+                continue
+            avail.append({"keyword": kw, "group": group, "wp": g["wp"], "volume": vol, "seasonal": bool(months)})
+    if not avail:
+        return None
+    seasonal = [a for a in avail if a["seasonal"] and last_use(a["group"]) >= 2]
+    if seasonal:
+        return max(seasonal, key=lambda a: a["volume"])
+    oldest = max(last_use(a["group"]) for a in avail)
+    pool = sorted((a for a in avail if last_use(a["group"]) == oldest), key=lambda a: -a["volume"])
+    group = random.choice(sorted({a["group"] for a in pool}))  # 한 번도 안 쓴 분야가 여럿이면 그중 하나
+    top = [a for a in pool if a["group"] == group][:3]
+    return random.choices(top, weights=[max(a["volume"], 3000) for a in top], k=1)[0]
 
 
 # 이미 개요를 쓴 제도의 "세부 질문" 글에 어울리는 유형(개요·개편 해설·뉴스 풀이는 제외)
@@ -505,19 +553,28 @@ def plan_topic(
     priority_pick = "" if forced_keyword else pick_priority(site, history, titles90)
     refresh_pick = "" if (forced_keyword or priority_pick) else pick_refresh(site)  # 정책 기준이 바뀐 제도: 쿨다운 무시하고 다시 쓴다
     priority = priority_pick or refresh_pick
-    news = None if (forced_keyword or priority) else find_news_for_site(seeds, briefings)
+    bank_pick = None if (forced_keyword or priority) else pick_from_bank(site, titles90)
+    if bank_pick:
+        logger.info("[Site %s] 주제 은행에서 선정: %s (%s, 월 검색 %s)", site, bank_pick["keyword"], bank_pick["group"], bank_pick["volume"])
+    news = None if (forced_keyword or priority or bank_pick) else find_news_for_site(seeds, briefings)
     if news:
         families = {family_of(k) for k in history["keywords"][-_AVOID_RECENT_FAMILIES:]}
         if family_of(news["keyword"]) in families or _title_distance(news["keyword"], recent_titles[:_AVOID_RECENT_FAMILIES]) == 0:
             news = None
 
-    food = (forced_keyword or priority) in FOOD_TOPICS
-    content_type = pick_content_type(site, news_available=news is not None, allowed=_FOOD_TYPES if food else _PRIORITY_TYPES if priority else None)
+    chosen = forced_keyword or priority or (bank_pick["keyword"] if bank_pick else "")
+    if chosen in FOOD_TOPICS:
+        allowed = _FOOD_TYPES
+    elif "계산" in chosen or "실수령액" in chosen:
+        allowed = ["case_calc", "choose", "checklist"]
+    else:
+        allowed = _PRIORITY_TYPES if (priority or bank_pick) else None
+    content_type = pick_content_type(site, news_available=news is not None, allowed=allowed)
     if content_type != "news_hook":
         news = None
     subtopic = ""
-    if forced_keyword or priority or news:
-        keyword = forced_keyword or priority or news["keyword"]  # type: ignore[index]
+    if forced_keyword or priority or bank_pick or news:
+        keyword = forced_keyword or priority or (bank_pick["keyword"] if bank_pick else "") or news["keyword"]  # type: ignore[index]
     else:
         fresh = [s for s in seeds if not in_cooldown(site, s, history["keywords"], titles90)]
         if fresh:
@@ -547,8 +604,7 @@ def plan_topic(
             block += f"- 도입: {spec['intro']}\n"
         block += (
             "(유형 지시는 '무엇을 어떤 각도로 다룰지', 구조 지시는 '컴포넌트를 어떤 순서로 배치할지'입니다. 둘이 충돌하면 "
-            "구조 지시의 컴포넌트 규칙을 따르되 각도와 제목 톤은 유형 지시를 따르세요. 시스템 프롬프트의 FOMO·탈락 겁주기 "
-            "도입 규칙은 이번 글에서는 적용하지 않습니다.)\n\n"
+            "구조 지시의 컴포넌트 규칙을 따르되 각도와 제목 톤은 유형 지시를 따르세요.)\n\n"
         )
     elif negative_title_count(recent_titles) >= _NEGATIVE_LIMIT:
         block += (
@@ -580,7 +636,7 @@ def plan_topic(
             "- 금액·기한 같은 수치는 검증된 사실 메모와 공식 자료 안에서만 쓰세요.\n\n"
         )
 
-    if unverified_seeds and keyword in unverified_seeds and not get_fact_sheet(keyword):
+    if ((unverified_seeds and keyword in unverified_seeds) or bank_pick) and not get_fact_sheet(keyword):
         block += _UNVERIFIED_CAUTION
 
     if keyword in FOOD_TOPICS:
@@ -604,4 +660,5 @@ def plan_topic(
         "content_type": content_type,
         "block": block,
         "layouts": spec["layouts"],
+        "wp_category": (bank_pick or {}).get("wp") or "",
     }

@@ -133,6 +133,15 @@ button.lb{font-family:inherit}
 .aintro{margin:28px 0 8px}.aintro h2{font-size:18px;margin:0 0 8px}.aintro p{margin:0 0 10px;color:var(--sub);font-size:15px;line-height:1.75}
 .aintro .ixg{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:12px 0}.aintro .ixb{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
 .aintro .ixb b{display:block;font-size:15px;margin-bottom:3px}.aintro .ixb span{font-size:13px;color:var(--sub);line-height:1.6}
+.sea{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.sea-i{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.sea-i b{display:block;font-size:15px}.sea-i p{margin:4px 0 8px;font-size:13px;color:var(--sub);line-height:1.6}.sea-i span{font-size:13px}.sea-i a{color:var(--acc)}
+@media (max-width:640px){.sea{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -16px;padding:2px 16px 10px;scrollbar-width:none}.sea-i{flex:0 0 78%;scroll-snap-align:start}}
+.tg{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.tc{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px}
+.tc h3{margin:0;font-size:17px}.tc h3 small{font-size:12px;font-weight:500;color:var(--mute)}.tc>p{margin:4px 0 8px;font-size:13px;color:var(--sub);line-height:1.6}
+.tc ul{margin:0 0 10px;padding-left:18px;font-size:14px;line-height:1.75}.tc li a{color:var(--text)}
+.tt{display:flex;flex-wrap:wrap;gap:6px}.tl{display:inline-flex;align-items:center;min-height:36px;padding:0 12px;border:1px solid var(--line2);border-radius:999px;background:var(--card);font-size:13px;font-weight:600;color:var(--text)}
 details.smap{margin:18px 0 8px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px}details.smap summary{cursor:pointer;font-weight:600}
 details.smap h3{font-size:14px;margin:14px 0 4px}details.smap ul{margin:0;padding-left:18px;font-size:14px;line-height:1.9;color:var(--sub)}details.smap a{color:var(--acc)}
 .sx{margin:0 0 10px;padding:0;list-style:none}.sx li{padding:8px 0;border-bottom:1px solid var(--line)}.sx a{font-weight:600}.sx small{display:block;color:var(--mute);font-size:13px;line-height:1.5}
@@ -216,9 +225,11 @@ details.smap summary{min-height:44px;display:flex;align-items:center}
   <button class="cta2" id="open-unemp" type="button"><span class="ct3"><b>실업급여, 받을 수 있을까요?</b><em>고용 형태·나이·가입기간·퇴사 사유 등 6개 질문으로 확인</em></span><i aria-hidden="true">›</i></button></div>
  </div></section>
 
- <a class="cookfeat" href="https://cook.dailyfixpoint.com/"><span aria-hidden="true">🧊</span><span><b>냉장고 파먹기</b><em>있는 재료를 고르면 만들 수 있는 요리와 1~5인 하루 식단을 찾아 줘요</em></span><i aria-hidden="true">›</i></a>
+ __SEASON__
 
  <section id="today-sec"><p class="h2">오늘의 새 글</p><div class="today" id="today">__STATIC_TODAY__</div></section>
+
+ __TOPICS__
 
  <div class="two"><section><p class="h2" id="list-h">글 모아보기</p>
   <div class="chips" id="chips"><button class="chip on" data-f="all">전체</button><button class="chip" data-f="gov">정부지원금</button><button class="chip" data-f="life">생활비 절약</button><button class="chip" data-f="tax">세금·절세</button></div>
@@ -374,6 +385,7 @@ function closeMenu() { $('#mm').classList.remove('open'); $('#mmask').classList.
 $('#burger').addEventListener('click', () => { const open = $('#mm').classList.toggle('open'); $('#mmask').classList.toggle('open', open); $('#burger').setAttribute('aria-expanded', String(open)); });
 $('#mmask').addEventListener('click', closeMenu);
 $('#mm-check').addEventListener('click', (e) => { e.preventDefault(); closeMenu(); showCheck(); });
+document.querySelectorAll('[data-open="check"]').forEach((b) => b.addEventListener('click', () => showCheck()));
 ['about','contact','about2','contact2','about3'].forEach((id) => {
   const el = document.getElementById('pg-' + id); if (!el) return;
   const t = id.startsWith('about') ? '소개' : '문의하기';

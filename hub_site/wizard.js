@@ -219,8 +219,7 @@ function resCard(x) {
   const post = postLink(x.k);
   const main = post ? `<a class="lb pri" href="${post}">자세한 글 보기 ›</a>` : '';
   const off = x.off ? `<a class="lb ${post ? 'sec' : ''}" href="${x.off[0]}" target="_blank" rel="noopener">${x.off[1]}</a>` : '';
-  const note = post || x.s === 'n' ? '' : '<p class="mt" style="margin:0 0 8px">이 제도의 자세한 글은 준비하고 있어요.</p>';
-  const links = x.s === 'n' ? '' : `${note}<div class="lk">${main}${off}</div>`;
+  const links = x.s === 'n' ? '' : `<div class="lk">${main}${off}</div>`;
   return `<div class="res"><div class="rt"><span class="rn">${x.n}</span><span class="bd ${bd[0]}">${bd[1]}</span></div><p class="rd" style="margin-bottom:${links ? 10 : 0}px">${x.r}</p>${x.more && x.s !== 'n' ? '<ul class="ml">' + x.more.map((m) => '<li>' + m + '</li>').join('') + '</ul>' : ''}${links}</div>`;
 }
 function candCard(r) {
