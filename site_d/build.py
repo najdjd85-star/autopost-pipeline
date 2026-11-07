@@ -1062,30 +1062,20 @@ def recipe_page(tpl: str, r: dict, aff: dict, photos: dict, tools: dict) -> str:
     ing_html = "".join(
         f'<li><span>{esc(i18n.ing_cap(i["n"]))}{opt if i["opt"] else ""}</span><span class="q">{esc(i18n.qty(i["q"]))}</span></li>' for i in r["ingredients"]
     )
-    buy_items = [(i["n"], aff[i["n"]]) for i in r["ingredients"] if i["n"] in aff]
-    tool_items = tools_for(r, tools)
+    # 사러가기는 주재료만(양념·밥·물은 빼고 무게가 큰 순서로 최대 5개). 버튼이 많으면 제휴 사이트처럼 보여서 줄였다.
+    mains = sorted((i for i in r["ingredients"] if i["n"] in aff and i["n"] not in STAPLES and i["n"] not in ("밥", "물") and not i["opt"]), key=lambda i: -i["g"])
+    buy_items = [(i["n"], aff[i["n"]]) for i in mains[:5]]
     buy = ""
     if buy_items:
-        labels, extras = load_extras()
+        labels = load_extras()[0]
         variants = load_variants()
         pairs = []
         qmap = {i["n"]: i["q"] for i in r["ingredients"]}
-        chosen = set()
         for n, u in buy_items:
             v = pick_variant(n, r["name"], variants, qmap.get(n, ""))
             pairs.append((i18n.label(v["label"]), v["url"]) if v else (buy_label(n, labels), u))
-            chosen.add(v["url"] if v else u)
-        for i in r["ingredients"]:  # 같은 재료의 다른 상품(예: 새송이버섯 외에 팽이버섯). 위에서 이미 고른 상품은 다시 넣지 않는다
-            if pick_variant(i["n"], r["name"], variants, i["q"]):   # 이 요리에 맞춘 상품을 골랐으면 다른 종류는 권하지 않는다(양송이 수프에 팽이버섯 버튼 등)
-                continue
-            pairs += [(i18n.label(x["label"]), x["url"]) for x in extras.get(i["n"], []) if x.get("url") and x["url"] not in chosen]
         links = "".join(f'<a class="buy" href="{esc(u)}" target="_blank" rel="{REL}">{esc(T("{label} 사러가기", label=n))}</a> ' for n, u in pairs)
         buy += f'<div class="panel"><strong>{esc(T("재료 사러가기"))}</strong><div class="chips" style="margin-top:8px">{links}</div></div>'
-    if tool_items:
-        links = "".join(f'<a class="buy" href="{esc(t["url"])}" target="_blank" rel="{REL}">{esc(i18n.label(t["label"]))}</a> ' for _k, t in tool_items)
-        buy += f'<div class="panel"><strong>{esc(T("이 요리에 쓰는 요리도구"))}</strong><div class="chips" style="margin-top:8px">{links}</div></div>'
-    for cslug in r["cats"]:
-        buy += category_products(cslug)
     step_imgs = HERE / "stepimgs"
     li = []
     for n, s_html in enumerate(annotated_steps(r), 1):
@@ -1171,9 +1161,9 @@ def recipe_page(tpl: str, r: dict, aff: dict, photos: dict, tools: dict) -> str:
     vars_ = {
         "SITE_NAME": site_name(), "BASE": BASE, "NAME": esc(name), "SLUG": r["slug"], "MINUTES": str(r["minutes"]), "COST": f"{cost_per_serving(r):,}", "PRICE_NOTE": price_note(),
         "LEVEL": esc(T(r["level"])), "DESC": esc(tx["desc"]), "INGREDIENTS": ing_html, "BUY": (f'<div id="buy">{buy}</div>' if buy else ""),
-        "BUY_HINT": ('<p class="note buyhint"><a href="#buy">' + T("없는 재료·요리도구는 맨 아래에서 바로 살 수 있어요 ↓") + "</a></p>" if buy else ""),
+        "BUY_HINT": ('<p class="note buyhint"><a href="#buy">' + T("없는 재료는 맨 아래에서 바로 살 수 있어요 ↓") + "</a></p>" if buy else ""),
         "STEPS": steps, "STEPS_HINT": steps_hint, "STEPS_NOTE": steps_note, "TIP": tip, "CATS": cats_html, "MEASURE": measure,
-        "RELATED": rel, "DISCLOSURE": disclosure(bool(buy_items or tool_items)),
+        "RELATED": rel, "DISCLOSURE": disclosure(bool(buy_items)),
         "PHOTO": photo_html(r["slug"], name, photos), "ICON": RECIPE_ICON[r["slug"]],
         "SERVINGS": (T("여러 번 나눠 {n}회분", n=nut["servings"]) if is_special(r) else servings_txt), "NUTRITION": ("" if is_special(r) else nutrition),
         "PETNOTE": note_for(r) + (pet_feed_html(r, nut) if is_pet(r) else ""), "COSTLABEL": (T("1회분") if is_special(r) else T("1인분")),

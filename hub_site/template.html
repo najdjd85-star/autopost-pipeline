@@ -209,10 +209,10 @@ details.smap summary{min-height:44px;display:flex;align-items:center}
 <body>
 <header class="top"><div class="wrap nav">
  <a class="logo" href="#" id="logo">데일리픽스 포인트</a>
- <nav class="menu"><a data-f="gov" href="#">정부지원금</a><a data-f="life" href="#">생활비 절약</a><a data-f="tax" href="#">세금·절세</a><a class="nav-all" href="#">전체 글</a><a href="#calc">계산기</a><a id="pg-about" href="#">소개</a><a id="pg-contact" href="#">문의</a></nav>
+ <nav class="menu"><a data-f="gov" href="#">정부지원금</a><a data-f="life" href="#">생활비 절약</a><a data-f="tax" href="#">세금·절세</a><a class="nav-all" href="#">전체 글</a><a href="/calc/">계산기</a><a id="pg-about" href="#">소개</a><a id="pg-contact" href="#">문의</a></nav>
  <button class="burger" id="burger" aria-label="메뉴 열기"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 5h14M3 10h14M3 15h14"/></svg></button>
 </div>
-<nav class="mm" id="mm"><p class="mm-t">글 보기</p><a data-f="gov" href="#">정부지원금</a><a data-f="life" href="#">생활비 절약</a><a data-f="tax" href="#">세금·절세</a><a class="nav-all" href="#">전체 글</a><p class="mm-t">바로 쓰는 도구</p><a id="mm-check" href="#">내 지원금 1분 확인</a><a href="#calc">계산기</a><a href="https://cook.dailyfixpoint.com/">냉장고 파먹기</a><p class="mm-t">사이트 안내</p><a id="pg-about2" href="#">소개</a><a id="pg-contact2" href="#">문의</a></nav></header>
+<nav class="mm" id="mm"><p class="mm-t">글 보기</p><a data-f="gov" href="#">정부지원금</a><a data-f="life" href="#">생활비 절약</a><a data-f="tax" href="#">세금·절세</a><a class="nav-all" href="#">전체 글</a><p class="mm-t">바로 쓰는 도구</p><a id="mm-check" href="#">내 지원금 1분 확인</a><a href="/calc/">생활 계산기</a><a href="https://cook.dailyfixpoint.com/">냉장고 파먹기</a><p class="mm-t">사이트 안내</p><a id="pg-about2" href="#">소개</a><a id="pg-contact2" href="#">문의</a></nav></header>
 <div class="mmask" id="mmask"></div>
 
 <main id="home"><div class="wrap">
@@ -364,7 +364,8 @@ window.addEventListener('popstate', (e) => {
 });
 function renderCalcs() {
   const labels = {gov:'정부지원금 계산기', life:'생활비 계산기', tax:'세금 계산기'};
-  $('#calcs').innerHTML = ['tax','gov','life'].filter((s) => D.calc[s]).map((s) => `<a class="cb" href="${D.calc[s]}"><span>${labels[s]}<small>${D.sites[s].label}</small></span></a>`).join('');
+  $('#calcs').innerHTML = (D.hubcalc || []).map((c) => `<a class="cb" href="${c[0]}"><span>${esc(c[1])}<small>생활 계산기</small></span></a>`).join('')
+    + ['tax','gov','life'].filter((s) => D.calc[s]).map((s) => `<a class="cb" href="${D.calc[s]}"><span>${labels[s]}<small>${D.sites[s].label}</small></span></a>`).join('');
 }
 /* 탭을 눌러도 탭은 그 자리에 두고 목록만 바꾼다. 목록을 내려 본 상태였으면 새 목록의 처음으로 맞춘다. */
 function pinTabs(bar, list, render) {

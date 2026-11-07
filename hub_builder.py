@@ -194,6 +194,9 @@ def collect() -> Dict[str, Any]:
         elif by_title:
             best = by_title["link"]
         data["program_posts"][pid] = best or ""
+    from hub_calcs import CALCS
+
+    data["hubcalc"] = [[f"/calc/{s}/", c["title"]] for s, c in CALCS.items()]
     data["cand"] = gov24_candidates()
     try:
         data["standards"] = json.loads(STANDARDS_PATH.read_text(encoding="utf-8"))
@@ -379,8 +382,15 @@ def write_site(outdir: Path, data: Dict[str, Any], index_html: str) -> List[str]
     privacy += ('<h2>방문 통계</h2><p>이 허브 사이트는 방문 수, 본 쪽, 유입 경로 같은 통계를 쿠키로 수집하는 Google 애널리틱스를 사용합니다. '
                 '<a href="https://tools.google.com/dlpage/gaoptout?hl=ko">차단 부가기능</a>으로 거부할 수 있습니다.</p>')
     files["privacy/index.html"] = _page("개인정보처리방침", "개인정보 처리와 광고·쿠키 사용 안내", "/privacy/", privacy)
+    from hub_calcs import CALCS, LINKS, index_body, page_body
+
+    for slug, c in CALCS.items():  # 계산기 페이지: 같은 주제의 안내소 글을 '함께 보면 좋은 글'로 잇는다
+        related = [(_esc(p["title"]), _esc(p["link"])) for p in data["posts"] if any(w in p["title"] for w in LINKS[slug][0])][:4]
+        files[f"calc/{slug}/index.html"] = _page(c["title"], c["desc"], f"/calc/{slug}/", page_body(slug, related))
+    files["calc/index.html"] = _page("생활 계산기", "대출이자, 예금·적금 이자, 퇴직금, 주휴수당, 부가세 계산기 모음", "/calc/", index_body())
     today = time.strftime("%Y-%m-%d")
-    urls = "".join(f"<url><loc>{SITE_URL}{p}</loc><lastmod>{today}</lastmod></url>" for p in ("/", "/about/", "/contact/", "/privacy/"))
+    pages = ["/", "/about/", "/contact/", "/privacy/", "/calc/"] + [f"/calc/{s}/" for s in CALCS]
+    urls = "".join(f"<url><loc>{SITE_URL}{p}</loc><lastmod>{today}</lastmod></url>" for p in pages)
     files["sitemap-hub.xml"] = f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{urls}</urlset>\n'
     subs = "".join(f"<sitemap><loc>{info['url']}/wp-sitemap.xml</loc></sitemap>" for info in data["sites"].values())
     subs += "<sitemap><loc>https://cook.dailyfixpoint.com/sitemap.xml</loc></sitemap>"  # 냉장고 파먹기도 같은 도메인 묶음으로 알린다
@@ -389,6 +399,7 @@ def write_site(outdir: Path, data: Dict[str, Any], index_html: str) -> List[str]
         f"<sitemap><loc>{SITE_URL}/sitemap-hub.xml</loc></sitemap>{subs}</sitemapindex>\n"
     )
     files["robots.txt"] = f"User-agent: *\nAllow: /\n\nSitemap: {SITE_URL}/sitemap.xml\n"
+    files["files.json"] = json.dumps(sorted(files) + ["files.json"], ensure_ascii=False)  # 올릴 파일 목록(publish_if_enabled가 읽는다)
     for rel, content in files.items():
         path = outdir / rel
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -420,7 +431,9 @@ def build(out: Optional[Path] = None) -> Dict[str, Any]:
 
 def purge_cache() -> None:
     """서버 앞단 캐시(Varnish)가 옛 허브·옛 404를 내주지 않도록 올린 주소들을 PURGE 요청으로 비운다(안 되는 환경이면 로그만 남기고 넘어간다)."""
-    for path in ("/", "/about", "/about/", "/contact/", "/privacy/", "/robots.txt", "/sitemap.xml", "/sitemap-hub.xml"):
+    from hub_calcs import CALCS
+
+    for path in ("/", "/about", "/about/", "/contact/", "/privacy/", "/robots.txt", "/sitemap.xml", "/sitemap-hub.xml", "/calc/", *[f"/calc/{s}/" for s in CALCS]):
         try:
             r = requests.request("PURGE", f"{SITE_URL}{path}", timeout=10)
             logger.info("캐시 비우기 %s -> HTTP %s", path, r.status_code)
@@ -439,7 +452,11 @@ def publish_if_enabled(built: Path) -> bool:
         backup = Path(dest_dir).expanduser() / "index.before-redesign.html"
         if live_index.exists() and not backup.exists():  # 처음 올릴 때 예전 허브를 한 번만 백업한다(되돌리려면 이 파일을 index.html 로 복사)
             shutil.copyfile(live_index, backup)
-        for rel in ("index.html", "about/index.html", "contact/index.html", "privacy/index.html", "sitemap.xml", "sitemap-hub.xml", "robots.txt"):
+        try:
+            rels = [r for r in json.loads((src / "files.json").read_text(encoding="utf-8")) if r != "files.json"]
+        except (OSError, ValueError):
+            rels = ["index.html", "about/index.html", "contact/index.html", "privacy/index.html", "sitemap.xml", "sitemap-hub.xml", "robots.txt"]
+        for rel in rels:
             target = Path(dest_dir).expanduser() / rel
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(src / rel, target)
