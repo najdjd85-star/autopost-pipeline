@@ -3178,18 +3178,19 @@
   ]
  },
  "dongdaemun-dakhanmari": {
-  "desc": "A dish where a whole chicken is boiled with potatoes and dipped in a garlic-chive sauce.",
-  "h": "fb856ab6a8",
-  "name": "Dongdaemun Whole Chicken Stew (Dongdaemun Dakhanmari)",
+  "desc": "A dish of whole chicken boiled with potatoes and dipped in a garlic chive soy sauce with spicy seasoning paste.",
+  "h": "c4fd5952e7",
+  "name": "Dongdaemun Whole Chicken Stew (Dakhanmari)",
   "steps": [
-   "Rinse chicken in cold water, remove excess fat, and place in a pot with 2L of water, green onion, and minced garlic to boil.",
-   "Once it comes to a boil, skim off the foam, simmer over medium heat for 30 minutes, add potato, and boil for 15 minutes.",
-   "Mix 3 tbsp of soy sauce, 2 tbsp of vinegar, and mustard to make the dipping sauce.",
-   "Dip chicken and potato into the sauce to eat, and finish by adding knife-cut wheat noodles to boil for 5 minutes."
+   "Rinse the chicken in cold water, remove excess fat, and put it in a pot with 2L of water, green onion, and 1 tbsp of minced garlic to boil.",
+   "When it boils, skim off the foam, simmer over medium heat for 30 minutes, then add the potato and boil for 15 minutes.",
+   "Mix 2 tbsp of Korean red pepper flakes and 1 tbsp of minced garlic with 2 tbsp of chicken broth to make the spicy paste, and cut the garlic chive into 3cm lengths.",
+   "In a individual dipping bowl, mix soy sauce, vinegar, Korean hot mustard, and spicy paste to your taste, and submerge garlic chive to make the sauce. Dip the chicken and potato into the sauce, and at the end, add knife-cut wheat noodles into the broth and boil for 5 minutes."
   ],
   "tips": [
-   "Boiling the potato thoroughly will make the broth thick.",
-   "Adding knife-cut wheat noodles to the remaining broth is the standard way to finish."
+   "Boiling the potato thoroughly makes the broth thick.",
+   "Adding knife-cut wheat noodles to the leftover broth is the standard way.",
+   "Dissolving a little spicy paste into the broth makes the knife-cut wheat noodles spicy."
   ]
  },
  "donggeurangttaeng": {
@@ -4140,17 +4141,18 @@
   ]
  },
  "gochujapchae": {
-  "desc": "Stir-fried bell pepper and pork cooked over high heat.",
-  "h": "c949ab7877",
-  "name": "Stir-Fried Pork and Bell Peppers (Gochujapchae)",
+  "desc": "Bell pepper and pork stir-fried over high heat.",
+  "h": "e3f3f82a2b",
+  "name": "Stir-Fried Bell Pepper and Pork (Gochujapchae)",
   "steps": [
-   "Cut pork into thin strips and marinate for 10 minutes with 1/2 tbsp of soy sauce, 1 tsp of starch, and black pepper. Cut bell pepper and onion lengthwise into 0.5cm-wide strips.",
-   "Heat a pan over high heat, add 1 tbsp of cooking oil, and stir-fry green onion and minced garlic for 20 seconds.",
-   "Add pork and stir-fry for 2 minutes to cook, then add onion and stir-fry for 1 minute.",
-   "Add bell pepper, 1 tbsp of oyster sauce, the remaining 1/2 tbsp of soy sauce, and sugar, stir-fry quickly over high heat for 1 minute, and turn off the heat."
+   "Cut the pork into thin strips and marinate in 1/2 tbsp of soy sauce, 1 tsp of starch, and black pepper for 10 minutes. Cut the bell pepper and onion into long 0.5 cm wide strips.",
+   "Heat 1 tbsp of cooking oil in a pan heated over high heat, and stir-fry green onion and minced garlic for 20 seconds.",
+   "Add the pork and stir-fry for 2 minutes to cook, then add the onion and stir-fry for 1 minute.",
+   "Add the bell pepper, 1 tbsp of oyster sauce, the remaining 1/2 tbsp of soy sauce, and sugar, stir-fry quickly over high heat for 1 minute, and turn off the heat."
   ],
   "tips": [
-   "Vegetables should be stir-fried briefly over high heat to stay crisp.",
+   "Vegetables should be stir-fried briefly over high heat to keep them crunchy.",
+   "It pairs well when wrapped in steamed flower buns like at a Chinese restaurant.",
    "Serve with rice or dumplings for a complete meal."
   ]
  },
@@ -4411,18 +4413,18 @@
   ]
  },
  "gwangjang-mayak-gimbap": {
-  "desc": "Mini rice rolls from Gwangjang Market dipped in mustard soy sauce.",
-  "h": "092afe24b1",
-  "name": "Gwangjang Market 'Drug' Gimbap (Mayak Gimbap)",
+  "desc": "Gwangjang market-style kimbap rolled small and dipped in a mustard soy sauce.",
+  "h": "2f03af6138",
+  "name": "Gwangjang Market Addiction Kimbap (Mayak Gimbap)",
   "steps": [
-   "Cut carrot into thin strips and sauté in 1 tsp cooking oil with salt, then cut pickled yellow radish thinly. Mix sesame oil and salt into cooked rice.",
-   "Cut roasted seaweed in half, spread cooked rice thinly, place carrot and pickled yellow radish on top, and roll up tightly into thin cylinders.",
-   "Brush sesame oil on the outside and cut into bite-sized pieces.",
-   "Dip in a sauce made by mixing 1 tbsp soy sauce, mustard, and 1 tsp vinegar."
+   "Cut the carrot into thin strips, stir-fry in 1 tsp of cooking oil with salt, and cut the pickled yellow radish into thin strips. If using spinach, blanch it, squeeze out the water, and season with salt and sesame oil. Mix cooked rice with sesame oil and salt.",
+   "Cut the roasted seaweed in half, spread cooked rice thinly, top with the carrot, pickled yellow radish, and spinach, and roll tightly into thin cylinders.",
+   "Apply sesame oil to the outside and cut into bite-sized pieces.",
+   "Dip in a mustard sauce made by mixing 1 tbsp of soy sauce, 1 tsp of Korean hot mustard, 1 tsp of vinegar, and 1 tsp of sugar."
   ],
   "tips": [
-   "Spread the cooked rice thinly to make slender gimbap.",
-   "Adjust the amount of mustard to your preferred spice level."
+   "Spreading the cooked rice thinly makes slender kimbap.",
+   "Adjust the amount of Korean hot mustard to match your desired spiciness."
   ]
  },
  "gwangjang-nokdu-bindaetteok": {
@@ -5752,18 +5754,18 @@
   ]
  },
  "junghwa-naengmyeon": {
-  "desc": "Summer noodles served in a sweet and sour soy sauce broth with peanut sauce.",
-  "h": "576d2e7343",
-  "name": "Chinese-Style Cold Noodles (Junghwa Naengmyeon)",
+  "desc": "Korean-style Chinese cold noodles served in a sweet and sour broth mixed with peanut sauce.",
+  "h": "82b4b2d028",
+  "name": "Korean-Chinese Cold Noodles (Junghwa Naengmyeon)",
   "steps": [
-   "Boil 300 ml of water with 3 tbsp of soy sauce, 3 tbsp of vinegar, and 2 tbsp of sugar, let it cool, and chill it in the refrigerator for 30 minutes. Mix in 1 tbsp of sesame oil.",
-   "Make a thin egg garnish, slice it into thin strips, and slice the cucumber and ham into thin strips as well. Finely crush the mixed nuts.",
-   "Boil the thin wheat noodles in 2 L of boiling water for 3 minutes, rinse in cold water, and drain well.",
-   "Place the noodles in a bowl, top with the vegetables, egg garnish, and ham, and pour the cold broth over them. Serve with the mixed nuts and mustard on the side."
+   "First dissolve 2 tbsp of peanut butter in 3 tbsp of warm water, and mix with the remaining water, 3 tbsp of soy sauce, 3 tbsp of vinegar, 2 tbsp of sugar, and sesame oil, then place in the freezer for 40 minutes until ice crystals form.",
+   "Blanch the shrimp in boiling water for 2 minutes and let cool, and boil and halve the egg. Cut the cucumber and ham into thin strips, and if using jellyfish, soak in water to remove the salty taste and blanch in lukewarm water.",
+   "Boil the chinese wheat noodles in boiling water according to the package instructions, rub and rinse in cold water, submerge in ice water, and drain.",
+   "Place the noodles in a bowl, top with the cucumber, shrimp, egg, ham, and jellyfish, and pour the cold peanut broth over them. Serve with Korean hot mustard to mix into the broth."
   ],
   "tips": [
-   "Freezing the broth in an ice cube tray makes it even more refreshing.",
-   "Dissolving the mustard gives it an authentic Chinese restaurant flavor."
+   "Peanut butter does not dissolve well if put straight into cold water, so dissolve it in warm water first.",
+   "If you do not have chinese wheat noodles, you can use cold noodles or somen instead."
   ]
  },
  "kale-apple-salad": {
@@ -6547,18 +6549,18 @@
   ]
  },
  "kongtteuchigi-guksu": {
-  "desc": "Jeongseon-style hot noodle soup with thick buckwheat noodles you slurp right up.",
-  "h": "05b5915943",
-  "name": "Chewy Buckwheat Noodle Soup (Jeongseon Kotteongchigi Guksu)",
+  "desc": "Jeongseon-style noodles made by cooking thick buckwheat noodles directly in a soybean paste broth.",
+  "h": "03ef357b89",
+  "name": "Jeongseon Nose-Hitting Noodles (Kottteuchigi Guksu)",
   "steps": [
-   "Boil anchovy in 1 L water for 10 minutes, remove them, and cut potato and Korean zucchini into thin strips.",
-   "Add potato, minced garlic, and 2 tbsp soup soy sauce to the broth and boil for 5 minutes.",
-   "Boil soba noodle separately, rinse in cold water, and place in a bowl.",
-   "Boil Korean zucchini in the broth for 1 minute, pour over the noodles, and top with Korean red pepper flakes."
+   "Put the anchovy into 1.2L of water, boil for 10 minutes, and remove. Cut the potato into thick strips, Korean zucchini into half-moons, and finely chop the kimchi.",
+   "Dissolve 1 tbsp of doenjang (or 1/2 tbsp of gochujang according to taste) in the broth, add the potato, kimchi, and minced garlic, and boil for 5 minutes.",
+   "Add the soba noodle directly, stirring, and boil according to the package instructions. The broth becomes thick from the starch released by the noodles.",
+   "Add the Korean zucchini, boil for 2 more minutes, season with soup soy sauce, serve in a bowl, and top with green onion and Korean red pepper flakes."
   ],
   "tips": [
-   "Boil the noodles separately so the broth doesn't get cloudy.",
-   "Dissolving some doenjang (fermented soybean paste) makes it even more savory."
+   "Cooking the noodles directly in the broth is the style of kottteuchigi guksu. It makes the broth thick.",
+   "Using thick buckwheat noodles makes it more authentic."
   ]
  },
  "konjac-bibim-noodle": {
@@ -8915,18 +8917,18 @@
   ]
  },
  "pyeongan-gyeoja-chae": {
-  "desc": "Chilled cold salad of shredded chicken breast and vegetables tossed in a tangy mustard sauce.",
-  "h": "641ce9a601",
-  "name": "Gyeojachae",
+  "desc": "A chilled salad of shredded chicken breast and vegetables tossed in a punchy Korean hot mustard dressing.",
+  "h": "84173d925d",
+  "name": "Mustard Chicken Salad (Gyeoja-chae)",
   "steps": [
    "Boil the chicken breast in boiling water for 12 minutes, let it cool, and tear it along the grain.",
-   "Cut the cucumber, cabbage, carrot, and Korean pear into thin strips.",
-   "Mix 1 tbsp mustard, 2 tbsp vinegar, 2 tbsp sugar, and 1/3 tsp salt to make a mustard sauce.",
-   "Place the ingredients on a plate and pour the sauce to toss right before eating."
+   "Cut the cucumber, cabbage, carrot, and Korean pear into thin strips, soak them briefly in cold water, and drain.",
+   "Mix Korean hot mustard 1 tbsp with lukewarm water 1 tbsp to dissolve, then mix in vinegar 2 tbsp, sugar 1.5 tbsp, soy sauce 1 tsp, and salt to make the mustard sauce.",
+   "Arrange the ingredients on a plate and pour the sauce over them right before eating to toss."
   ],
   "tips": [
    "Toss right before eating to keep it crunchy.",
-   "Adjust the spiciness by the amount of mustard."
+   "Dissolving Korean hot mustard in lukewarm water brings out a sharper, spicier flavor."
   ]
  },
  "pyeongan-kimchi-mandu": {
@@ -8960,18 +8962,19 @@
   ]
  },
  "pyeongyang-naengmyeon": {
-  "desc": "Light and subtle Pyongyang-style cold noodles served in beef broth.",
-  "h": "c16c41ecc7",
-  "name": "Pyongyang Cold Buckwheat Noodles (Pyeongyang Naengmyeon)",
+  "desc": "Mild Pyongyang-style cold buckwheat noodles served in a clear beef broth.",
+  "h": "ac8c3b2c08",
+  "name": "Pyongyang Cold Noodles (Pyeongyang Naengmyeon)",
   "steps": [
-   "Boil beef in 1 l water for 40 minutes, remove and slice thinly, then let the broth cool, skim off the fat, and place in the freezer for 40 minutes.",
-   "Season the broth with 1 tbsp soup soy sauce and 1 tsp salt.",
-   "Boil naengmyeon noodles, rinse vigorously in cold water, and squeeze out the excess water. Boil egg and cut Korean pear and cucumber into thin strips.",
-   "Place the garnishes on top of naengmyeon noodles, pour the broth over, and serve with 1 tbsp vinegar, 1 tsp sugar, and mustard."
+   "Boil the beef in water 1L for 40 minutes, take it out to slice thinly, cool the broth, skim off the fat, and place it in the freezer for 40 minutes.",
+   "Mix soup soy sauce 1 tbsp and salt 1 tsp into the broth to season it.",
+   "Boil the naengmyeon noodles, rinse them vigorously in cold water, and squeeze out the water firmly. Boil the egg, and cut the Korean pear and cucumber into thin strips.",
+   "Top the noodles with the garnishes and pour the broth over them. Mix in a little vinegar and Korean hot mustard to taste."
   ],
   "tips": [
-   "Keeping the broth light and mild is the hallmark of Pyeongyang naengmyeon.",
-   "It is traditional to eat the noodles without cutting them with scissors."
+   "Keeping the broth light and subtle is the true flavor of Pyongyang naengmyeon.",
+   "Mixing dongchimi radish water into the broth makes it even more refreshing.",
+   "Do not add vinegar and mustard at first; taste the broth first, then add them."
   ]
  },
  "pyeongyang-onban": {
@@ -10035,18 +10038,19 @@
   ]
  },
  "suwon-wang-galbi": {
-  "desc": "Suwon king ribs marinated in a sweet soy sauce and grilled.",
-  "h": "489bfcb810",
-  "name": "Suwon Wang Galbi",
+  "desc": "Suwon-style large beef ribs flattened and marinated in a soy sauce seasoning before grilling.",
+  "h": "dc83491cb7",
+  "name": "Suwon King Ribs (Suwon Wang Galbi)",
   "steps": [
-   "Soak the pork in cold water for 30 minutes to draw out the blood and make score cuts.",
-   "Blend the Korean pear and onion, then mix with soy sauce 5 tbsp, sugar 2 tbsp, minced garlic 2 tbsp, mirin, sesame oil, and black pepper to make the marinade.",
-   "Coat the pork in the marinade and refrigerate to marinate for at least 4 hours.",
-   "Grill in a pan or oven at 200 degrees over medium heat for 8 minutes on each side."
+   "Soak the beef in cold water for 30 minutes to remove blood and wipe with a paper towel. Spread the meat attached to the bone long and wide (butterflying) and make light cuts on both sides.",
+   "Blend Korean pear and onion, mix with 5 tbsp of soy sauce, 2 tbsp of sugar, 2 tbsp of minced garlic, mirin, sesame oil, and black pepper to make the marinade.",
+   "Apply the marinade evenly to the ribs and marinate in the refrigerator for at least 4 hours.",
+   "Place on a heated pan or wire rack and grill over medium heat for 3 to 4 minutes on each side. Since it is beef, it gets tough if grilled too long, so cut with scissors and eat once the surface is browned."
   ],
   "tips": [
-   "It tastes even better when marinated overnight.",
-   "Trim off any charred parts with kitchen shears before eating."
+   "Suwon wang galbi is made with beef, not pork ribs.",
+   "It is sometimes eaten as plain ribs seasoned only with salt and grilled without marinade.",
+   "Marinating it overnight makes it even more tender."
   ]
  },
  "suyuk": {
@@ -10694,19 +10698,19 @@
   ]
  },
  "yangjangpi": {
-  "desc": "A Chinese-style cold dish tossed with seafood, vegetables, and glass noodles in a pungent mustard sauce.",
-  "h": "375d7533c0",
-  "name": "Yangjangpi (Cold Mixed Seafood and Vegetable Salad with Mustard Sauce)",
+  "desc": "A Chinese-style cold salad featuring chewy starch wrappers, seafood, and vegetables tossed in a sharp Korean hot mustard sauce.",
+  "h": "ce99af9cb4",
+  "name": "Assorted Seafood and Vegetable Cold Dish (Yangjangpi)",
   "steps": [
-   "Boil glass noodles in boiling water for 6 minutes, rinse in cold water, drain, and toss with 1 tbsp sesame oil.",
-   "Make an egg garnish, cut into thin strips, and cut cucumber, carrot, and onion into thin strips as well.",
-   "Score squid, blanch with shrimp in boiling water for 2 minutes, and cool in cold water.",
-   "Mix mustard, vinegar, sugar, soy sauce, and 3 tbsp water to make the mustard sauce.",
-   "Arrange glass noodles, vegetables, and seafood on a plate and serve the sauce on the side."
+   "Soak the yangjangpi in lukewarm water for 30 minutes, blanch it in boiling water for 1 minute, rinse in cold water, tear into bite-sized pieces, and toss with sesame oil 1 tbsp and salt.",
+   "Make egg garnish, cut it into thin strips, and also cut the cucumber and carrot into thin strips. If using jellyfish, soak it in water to remove saltiness, blanch it briefly in lukewarm water, and toss with a little vinegar.",
+   "Score the squid and blanch it along with the shrimp in boiling water for 2 minutes, then cool in cold water. If using pork, cut it into thin strips, stir-fry with a little soy sauce, and let cool.",
+   "Mix Korean hot mustard 1 tbsp, vinegar 2 tbsp, sugar 1.5 tbsp, soy sauce 1 tbsp, minced garlic, and water 2 tbsp to make the mustard sauce.",
+   "Arrange the vegetables, seafood, and egg strips around the edge of a large plate, place the yangjangpi in the center, pour the sauce over, and toss right before eating."
   ],
   "tips": [
-   "Toss the sauce right before eating so the vegetables stay crisp.",
-   "Using prepared mustard gives it a sharper kick."
+   "Blanch the yangjangpi for only 1 minute so it does not get mushy.",
+   "Adjust the spiciness with the amount of Korean hot mustard. Korean hot mustard is much spicier and more pungent than Western mustard."
   ]
  },
  "yangnyeom-chicken": {

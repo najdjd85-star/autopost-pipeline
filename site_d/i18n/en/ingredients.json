@@ -557,6 +557,14 @@
   ],
   "name": "strawberry"
  },
+ "땅콩버터": {
+  "aliases": [
+   "peanut butter",
+   "creamy peanut butter",
+   "nut butter"
+  ],
+  "name": "peanut butter"
+ },
  "떡": {
   "aliases": [
    "rice cakes",
@@ -1277,6 +1285,15 @@
   ],
   "name": "iceberg lettuce"
  },
+ "양장피": {
+  "aliases": [
+   "yangjangpi",
+   "potato starch wrapper",
+   "starch sheets",
+   "drunken skins"
+  ],
+  "name": "yangjangpi"
+ },
  "양파": {
   "aliases": [
    "onions",
@@ -1295,6 +1312,15 @@
    "sheet fish cake"
   ],
   "name": "fish cake"
+ },
+ "연겨자": {
+  "aliases": [
+   "yeongyeoja",
+   "korean mustard",
+   "hot mustard paste",
+   "gyeoja"
+  ],
+  "name": "korean hot mustard"
  },
  "연근": {
   "aliases": [
@@ -1504,6 +1530,15 @@
    "pig feet"
   ],
   "name": "pig trotter"
+ },
+ "중화면": {
+  "aliases": [
+   "chinese noodles",
+   "jajangmyeon noodles",
+   "jjajang noodles",
+   "wheat noodles"
+  ],
+  "name": "chinese wheat noodles"
  },
  "진미채": {
   "aliases": [
@@ -1761,6 +1796,14 @@
    "adzuki beans"
   ],
   "name": "red bean"
+ },
+ "해파리": {
+  "aliases": [
+   "jellyfish",
+   "salted jellyfish",
+   "edible jellyfish"
+  ],
+  "name": "jellyfish"
  },
  "햄": {
   "aliases": [
