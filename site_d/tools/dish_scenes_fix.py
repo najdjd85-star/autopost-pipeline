@@ -1,6 +1,7 @@
 """사진 점검에서 요리와 다르게 나온 것들의 장면 설명을 더 구체적으로 다시 적은 것(영어). make_dish_photos.py 가 맨 마지막에 읽어 덮어쓴다."""
 
 FIX = {
+    "naengso-ba": "top view of a white bowl of Korean cold buckwheat noodle soup naengsoba: thin grayish-brown buckwheat noodles in clear light brown cold broth with a few ice cubes and slushy ice, topped with a small heap of finely grated snowy white daikon radish, a sprinkle of thinly sliced green scallion rings and a pinch of shredded black nori strips, a small dab of green wasabi paste, vegetarian, no meat, no egg, no sliced vegetables",
     "myeolchi-bokkeum": "Korean myeolchi-bokkeum, a dense tangled heap of very small thin silvery-brown baby anchovies, each only 3 cm long and slim like slivers, glazed with sweet soy sauce and sprinkled with sesame seeds, served on a white plate with a gold rim, close view",
     "jinju-naengmyeon": "a deep black ceramic bowl of Jinju naengmyeon: dark brown clear beef soy broth, thin buckwheat noodles underneath, topped with several crossed strips of yellow egg-battered fried beef yukjeon, thin white radish slices, pear slices and half a boiled egg on top sprinkled with sesame seeds, close view",
     "baechu-geotjeori": "a white bowl full of Korean napa cabbage kimchi salad geotjeori, torn pieces of napa cabbage leaves completely covered in thick bright red gochugaru chili paste seasoning, deep red color, sesame seeds",

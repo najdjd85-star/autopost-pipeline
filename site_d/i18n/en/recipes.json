@@ -7621,18 +7621,20 @@
   ]
  },
  "naengso-ba": {
-  "desc": "Buckwheat noodles dipped in cold tsuyu.",
-  "h": "6a3ec6e736",
-  "name": "Cold Soba (Naengsoba)",
+  "desc": "Korean-style cold soba noodles served in an icy tsuyu broth.",
+  "h": "d703a4858b",
+  "name": "Cold Soba Noodles (Naeng Soba)",
   "steps": [
-   "Boil soba noodle in boiling water according to the package time, rinse thoroughly in cold water, and drain.",
-   "Mix water 150ml and tsuyu 3tbsp and chill.",
-   "Grate Korean radish and squeeze out the moisture, and slice thinly green onion.",
-   "Place soba noodle on a plate, top with crushed roasted seaweed, and serve with the sauce, Korean radish, green onion, and wasabi."
+   "Mix tsuyu 100 ml, water 400 ml, and sugar 1 tsp, then place it in the freezer for 1 hour to 1 hour and 30 minutes until it develops a slushy layer of ice. If you are short on time, add plenty of ice cubes.",
+   "Grate the Korean radish on a grater and drain slightly using a sieve, slice thinly the green onion, and cut the roasted seaweed into thin strips with scissors.",
+   "Drop the soba noodle into boiling water and cook according to the package instructions (usually 4 to 5 minutes). When it starts to boil over, pour half a cup of cold water a few times to calm it down.",
+   "Vigorously rinse the noodle in cold water multiple times to remove excess starch, dip it briefly in ice water, and drain well.",
+   "Place the noodle in a bowl, pour the icy broth over it, top with the grated Korean radish, green onion, and roasted seaweed, and serve with wasabi on the side. Dissolve the wasabi into the broth before eating."
   ],
   "tips": [
-   "Rigorously rinsing in cold water to wash off the starch makes them chewy.",
-   "Floating ice cubes makes it even colder and more refreshing."
+   "If you prefer to eat it like pan-mo-mil (dipping style), mix tsuyu and water in a rich 1:2 ratio.",
+   "Since tsuyu concentrations vary, check the cold soba or cold naeng-momil ratio printed on the bottle first.",
+   "Cook the noodle right before eating so they do not get soggy."
   ]
  },
  "naju-gomtang": {
