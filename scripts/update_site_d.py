@@ -1,6 +1,6 @@
 """[매일 18시, 내 PC] 냉장고 파먹기(사이트 D)의 '오늘 많이 찾은 요리'를 갱신하고 사이트를 다시 빌드한다.
 
-순서: 네이버 데이터랩에서 어제 검색 지수 받기 -> site_d/trending.json 저장 -> 사이트 빌드(site_d/dist) -> 텔레그램으로 결과 알림.
+순서: (7일에 한 번) 새 레시피 자동 추가(tools/auto_recipes.py) -> 네이버 데이터랩에서 어제 검색 지수 받기 -> site_d/trending.json 저장 -> 사이트 빌드(site_d/dist) -> 텔레그램으로 결과 알림.
 키가 아직 없으면 조용히 건너뛴다(알림 없음). 끝나면 trending.json 을 깃에 올리고(deploy), 서버 예약 작업(scripts/publish_site_d.sh)이 18:10에 받아 사이트를 갱신한다.
 실행: venv\\Scripts\\python.exe scripts\\update_site_d.py     (예약 작업 'FridgeTrending' 이 매일 18:00 에 실행)
 """
@@ -50,11 +50,12 @@ def deploy() -> str:
     def git(*args: str) -> subprocess.CompletedProcess:
         return subprocess.run(["git", *args], cwd=str(ROOT), capture_output=True, text=True, encoding="utf-8")
 
-    changed = [p for p in ("site_d/trending.json", "site_d/weather.json", "site_d/prices_live.json", "site_d/links_broken.json", "site_d/i18n/en/recipes.json", "site_d/i18n/en/ingredients.json", "site_d/i18n/en/quantities.json") if (ROOT / p).exists() and git("status", "--porcelain", "--", p).stdout.strip()]
+    changed = [p for p in ("site_d/trending.json", "site_d/weather.json", "site_d/prices_live.json", "site_d/links_broken.json", "site_d/i18n/en/recipes.json", "site_d/i18n/en/ingredients.json", "site_d/i18n/en/quantities.json", "site_d/recipes_auto.json", "site_d/photos_ai") if (ROOT / p).exists() and git("status", "--porcelain", "--", p).stdout.strip()]
     if not changed:
         return "서버 반영: 어제와 같아 올릴 것 없음"
     git("add", *changed)
-    msg = git("commit", "-m", "Site D: daily trending/price update", "--", *changed)
+    title = "Site D: daily trending/price update" + (" + weekly auto recipes" if "site_d/recipes_auto.json" in changed else "")
+    msg = git("commit", "-m", title, "--", *changed)
     if msg.returncode != 0:
         return "서버 반영 실패(커밋): " + (msg.stderr or msg.stdout)[-120:]
     push = git("push", "origin", "HEAD")
@@ -112,6 +113,17 @@ def translate_new() -> str:
         return "영어 번역 실패(무시)"
 
 
+def auto_recipes_weekly() -> str:
+    """7일에 한 번, 검색량 큰데 없는 요리 3개를 무료 Gemini로 써서 검사 통과분만 추가한다(사진만 유료, 장당 약 $0.003). 실패해도 나머지는 계속."""
+    try:
+        import auto_recipes
+
+        return auto_recipes.weekly(3)
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("자동 레시피 실패(무시): %s", exc)
+        return "자동 레시피 실패(무시)"
+
+
 def check_links_weekly() -> str:
     """쿠팡 링크가 만료되지 않았는지 7일에 한 번 점검한다(만료된 링크는 사이트에서 자동으로 숨김). 실패해도 나머지 갱신은 계속된다."""
     import datetime as dt
@@ -166,6 +178,11 @@ def main() -> int:
     top = ", ".join(nm[r["slug"]] for r in data["items"][:3])
     _notify(f"✅ 냉장고 파먹기 인기 요리 갱신 ({data['date']} 기준)\n1~3위: {top}\n{deploy()}")
     logger.info("인기 요리 갱신 완료: %s", top)
+    # 자동 레시피는 Gemini 응답이 느릴 수 있어 오늘 갱신을 다 올린 뒤에 한다. 새 레시피는 다음 날 번역·빌드·깃 반영(deploy)과 함께 사이트에 나온다.
+    auto_msg = auto_recipes_weekly()
+    logger.info(auto_msg)
+    if auto_msg.startswith("자동 레시피 ") and "개 추가" in auto_msg and not auto_msg.startswith("자동 레시피 0개"):
+        _notify(f"🍳 {auto_msg}\n(내일 18시 갱신 때 사이트에 올라가요)")
     return 0
 
 

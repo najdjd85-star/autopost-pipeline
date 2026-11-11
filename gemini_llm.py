@@ -32,10 +32,19 @@ def enabled() -> bool:
     return os.environ.get("GEMINI_LLM_ENABLED", "1").strip() != "0" and gemini_keys.has_keys()
 
 
+class _TimedOut:
+    """시간 초과를 504처럼 돌려줘서 키 순환을 멈추게 한다(모델 서버가 느린 것이라 키를 바꿔도 소용없고, 키마다 3분씩 기다리게 된다)."""
+    status_code = 504
+    text = "timeout"
+
+
 def _call(model: str, body: dict) -> Optional[requests.Response]:
     def req(key: str):
         try:  # 키는 주소가 아니라 헤더로 보낸다(로그에 키가 남지 않게)
             return requests.post(URL.format(model=model), headers={"x-goog-api-key": key}, json=body, timeout=180)
+        except requests.Timeout:
+            logger.info("Gemini %s 응답 시간 초과 - 다른 키는 건너뛰고 다음 방법으로", model)
+            return _TimedOut()
         except requests.RequestException as exc:
             logger.info("Gemini 요청 실패(네트워크): %s", exc)
             return None
@@ -44,13 +53,13 @@ def _call(model: str, body: dict) -> Optional[requests.Response]:
 
 
 def generate(prompt: str, *, purpose: str, system: str = "", site: Optional[str] = None, model: str = "flash",
-             json_mode: bool = False, max_output: int = 8192) -> Optional[str]:
+             json_mode: bool = False, max_output: int = 8192, allow_lite: bool = True) -> Optional[str]:
     """글을 만들어 돌려준다. 키가 없거나 모든 키·모델이 실패하면 None(호출부가 Claude로 대신한다).
 
     flash가 바쁘거나(503) 막히면 lite로 한 번 더 시도한다. 응답이 한도에 걸려 잘렸으면 실패로 본다."""
     if not enabled():
         return None
-    order = [MODELS[model]] + ([MODELS["lite"]] if model == "flash" else [])
+    order = [MODELS[model]] + ([MODELS["lite"]] if model == "flash" and allow_lite else [])  # allow_lite=False: 품질이 중요해 lite로 대신하지 않음
     for name in order:
         body: dict = {
             "contents": [{"role": "user", "parts": [{"text": prompt}]}],

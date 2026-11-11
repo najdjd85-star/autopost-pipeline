@@ -341,41 +341,48 @@ def tools_for(recipe: dict, tools: dict) -> list:
     return (specific + generic)[:5]  # 한 레시피에 도구 버튼은 최대 5개
 
 
-def validate() -> None:
-    """레시피 데이터가 앱에서 깨지지 않는지 검사한다(모르는 재료, 무게 누락, 모호한 분량, 빈 순서, 중복 슬러그 등)."""
+def recipe_problems(r: dict) -> list:
+    """레시피 한 개의 데이터 문제 목록(모르는 재료, 무게 누락, 모호한 분량, 짧은 순서 등). 자동 레시피 도구도 이 검사를 쓴다."""
     import re as _re
 
     known = set(ALIASES) | set(STAPLES)
     cat_slugs = {c[0] for c in RECIPE_CATS}
+    problems = []
+    nm = r["name"]
+    if len(r["steps"]) < 4:
+        problems.append(f"{nm}: 순서가 너무 짧음(4단계 이상)")
+    if len(r["tips"]) < 1:
+        problems.append(f"{nm}: 팁 없음")
+    if not r["cats"] or any(c not in cat_slugs for c in r["cats"]):
+        problems.append(f"{nm}: 카테고리 오류 {r['cats']}")
+    for i in r["ingredients"]:
+        n, q = i["n"], i["q"]
+        if n not in known:
+            problems.append(f"{nm}: 알 수 없는 재료 '{n}' (ALIASES/STAPLES에 추가 필요)")
+            continue
+        if n not in PRICE_100G:
+            problems.append(f"{nm}: 가격표(prices.py)에 없는 재료 '{n}'")
+        if n not in NUTRI or n not in EXTRA:
+            problems.append(f"{nm}: 영양 표에 없는 재료 '{n}'")
+        if not i["g"] and n not in ("물", "후추"):
+            problems.append(f"{nm}: '{n}' 무게(g) 누락")
+        if "컵" in q and not _re.search(r"\d\s*(ml|g|kg|L)", q):
+            problems.append(f"{nm}: '{n}' 분량 '{q}' - 컵만 적지 말고 ml 또는 g을 함께 적으세요")
+        if _re.search(r"약간|적당|조금|한 줌|한줌", q) and n not in ("후추",):
+            problems.append(f"{nm}: '{n}' 분량이 모호함 '{q}'")
+    return problems
+
+
+def validate() -> None:
+    """레시피 데이터가 앱에서 깨지지 않는지 검사한다(모르는 재료, 무게 누락, 모호한 분량, 빈 순서, 중복 슬러그 등)."""
     slugs, problems = set(), []
     for r in RECIPES:
-        nm = r["name"]
         if r["slug"] in slugs:
             problems.append(f"슬러그 중복: {r['slug']}")
         slugs.add(r["slug"])
-        if len(r["steps"]) < 4:
-            problems.append(f"{nm}: 순서가 너무 짧음(4단계 이상)")
-        if len(r["tips"]) < 1:
-            problems.append(f"{nm}: 팁 없음")
-        if not r["cats"] or any(c not in cat_slugs for c in r["cats"]):
-            problems.append(f"{nm}: 카테고리 오류 {r['cats']}")
-        for i in r["ingredients"]:
-            n, q = i["n"], i["q"]
-            if n not in known:
-                problems.append(f"{nm}: 알 수 없는 재료 '{n}' (ALIASES/STAPLES에 추가 필요)")
-                continue
-            if n not in PRICE_100G:
-                problems.append(f"{nm}: 가격표(prices.py)에 없는 재료 '{n}'")
-            if n not in NUTRI or n not in EXTRA:
-                problems.append(f"{nm}: 영양 표에 없는 재료 '{n}'")
-            if not i["g"] and n not in ("물", "후추"):
-                problems.append(f"{nm}: '{n}' 무게(g) 누락")
-            if "컵" in q and not _re.search(r"\d\s*(ml|g|kg|L)", q):
-                problems.append(f"{nm}: '{n}' 분량 '{q}' - 컵만 적지 말고 ml 또는 g을 함께 적으세요")
-            if _re.search(r"약간|적당|조금|한 줌|한줌", q) and n not in ("후추",):
-                problems.append(f"{nm}: '{n}' 분량이 모호함 '{q}'")
+        problems += recipe_problems(r)
         if r["slug"] not in RECIPE_ICON:
-            problems.append(f"{nm}: 아이콘 없음")
+            problems.append(f"{r['name']}: 아이콘 없음")
     listed = {n for names in CATEGORIES.values() for n in names}
     for n in ALIASES:
         if n not in EMOJI:
