@@ -31,6 +31,7 @@ PRICES: Dict[str, tuple] = {
     "claude-opus-5-5": (4.0, 20.0),
     "claude-opus-5": (5.0, 25.0),
 }
+WEB_SEARCH_USD = 0.01  # 웹 검색 1회 요금($10 / 1,000회, 토큰 요금과 별도)
 _UNKNOWN_MODEL_PRICE = (5.0, 25.0)  # 모르는 모델은 비싸게 잡아서 예산 가드가 더 일찍 걸리게 한다
 
 
@@ -50,7 +51,8 @@ def estimate_cost(model: str, usage: Any, batch: bool = False) -> float:
         + cache_read * price_in * 0.1
         + cache_write * price_in * 1.25
     ) / 1_000_000
-    return cost * (0.5 if batch else 1.0)
+    searches = getattr(getattr(usage, "server_tool_use", None), "web_search_requests", 0) or 0
+    return cost * (0.5 if batch else 1.0) + searches * WEB_SEARCH_USD
 
 
 def _today() -> str:
@@ -129,6 +131,27 @@ def record_usage(
     )
     _warn_if_near_limit()
     return cost
+
+
+def record_gemini(purpose: str, model: str, input_tokens: int, output_tokens: int, *, site: Optional[str] = None,
+                  finish: str = "", seconds: float = 0.0) -> None:
+    """무료 Gemini 호출 기록. kind="gemini"라 Claude 예산·호출 수 계산에는 들어가지 않는다."""
+    _append(
+        {
+            "ts": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            "date": _today(),
+            "kind": "gemini",
+            "purpose": purpose,
+            "site": site,
+            "model": model,
+            "input_tokens": input_tokens,
+            "output_tokens": output_tokens,
+            "cost_usd": 0.0,
+            "stop_reason": finish,
+            "seconds": round(seconds, 1),
+        }
+    )
+    logger.info("[Gemini] %s site=%s model=%s in=%s out=%s (무료)", purpose, site or "-", model, input_tokens, output_tokens)
 
 
 _PENDING_ESTIMATE_USD = {"generate": 0.06}  # 배치 제출 후 결과가 오기 전까지 가드가 잡아둘 예상 비용
@@ -396,6 +419,11 @@ def format_summary(days: int = 7) -> str:
         if rec.get("kind") == "image":
             day["images"] += 1
             continue
+        if rec.get("kind") == "gemini":
+            day["gemini"] = day.get("gemini", 0) + 1
+            continue
+        if rec.get("kind") != "llm":
+            continue
         day["calls"] += 1
         day["cost"] += rec.get("cost_usd", 0.0)
         purpose = by_purpose.setdefault(rec.get("purpose", "?"), {"calls": 0, "cost": 0.0})
@@ -404,7 +432,7 @@ def format_summary(days: int = 7) -> str:
     lines = [f"최근 {days}일 LLM 사용량 (일일 한도 ${settings.llm_daily_budget_usd:.2f}, 호출 {settings.llm_max_calls_per_day}회)"]
     for day in sorted(by_day):
         d = by_day[day]
-        lines.append(f"  {day}  호출 {int(d['calls'])}회  ${d['cost']:.3f}  이미지(유료) {int(d['images'])}장")
+        lines.append(f"  {day}  호출 {int(d['calls'])}회  ${d['cost']:.3f}  이미지(유료) {int(d['images'])}장  무료 Gemini {int(d.get('gemini', 0))}회")
     lines.append("용도별:")
     for name, p in sorted(by_purpose.items(), key=lambda kv: -kv[1]["cost"]):
         lines.append(f"  {name:<18} {int(p['calls'])}회  ${p['cost']:.3f}")

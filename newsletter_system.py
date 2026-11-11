@@ -9,6 +9,7 @@
 """
 from __future__ import annotations
 
+import re
 import sqlite3
 from contextlib import closing
 from datetime import datetime
@@ -170,9 +171,6 @@ def build_weekly_newsletter_html(days: int = 7) -> str:
         )
 
     client = _get_client()
-    if client is None:
-        logger.info("ANTHROPIC_API_KEY 미설정 - 기본 템플릿으로 뉴스레터를 생성합니다.")
-        return _fallback_newsletter_html(titles_block)
 
     try:
         prompt = f"""아래는 이번 주 발행된 글 제목 목록입니다:
@@ -181,7 +179,15 @@ def build_weekly_newsletter_html(days: int = 7) -> str:
 이 목록을 바탕으로 구독자에게 보낼 주간 브리핑 이메일 HTML을 작성하세요.
 친근한 어투로 핵심 소식 3~5개를 요약하고, 각 항목에 궁금증을 유발하는 한줄 후킹 문구를 붙이세요.
 인라인 CSS만 사용하고, 완성된 HTML 문자열만 출력하세요 (설명 없이)."""
-        # 제목 목록을 이메일 문구로 요약하는 단순 작업이라 가장 싼 Haiku로 처리한다(사고는 끈다).
+        # 제목 목록을 이메일 문구로 요약하는 단순 작업이라 무료 Gemini로 먼저 하고, 안 되면 가장 싼 Haiku로 한다.
+        import gemini_llm
+
+        html = gemini_llm.generate(prompt, purpose="newsletter", model="flash", max_output=8192)
+        if html:
+            return re.sub(r"^```(?:html)?\s*|\s*```$", "", html.strip()) or _fallback_newsletter_html(titles_block)
+        if client is None:
+            logger.info("Gemini 실패, ANTHROPIC_API_KEY 미설정 - 기본 템플릿으로 뉴스레터를 생성합니다.")
+            return _fallback_newsletter_html(titles_block)
         response = call_message(
             client,
             purpose="newsletter",

@@ -177,6 +177,20 @@ def _save_cache(cache: Dict[str, Any]) -> None:
 
 
 def _analyze(client: Any, keyword: str, posts: List[Dict[str, Any]], site: Optional[str]) -> Optional[Dict[str, Any]]:
+    import gemini_llm
+
+    fields = BENCHMARK_TOOL["input_schema"]["properties"]
+    shape = ", ".join(f'"{k}": [문자열, ...]' for k in fields)
+    data = gemini_llm.generate_json(
+        f"[검색 키워드] {keyword}\n\n[상위 노출 글 {len(posts)}편의 구조]\n{_outline_text(posts)}\n\n"
+        f"위 구조를 분석해 {{{shape}}} 형식의 JSON으로만 답하세요. 각 항목의 뜻: "
+        + "; ".join(f"{k}={v.get('description', '')}" for k, v in fields.items()),
+        purpose="benchmark", system=SYSTEM_PROMPT, site=site, model="flash", max_output=4096,
+    )
+    if isinstance(data, dict) and all(isinstance(data.get(k), list) for k in fields):
+        return data
+    if client is None:
+        return None
     user_prompt = (
         f"[검색 키워드] {keyword}\n\n[상위 노출 글 {len(posts)}편의 구조]\n{_outline_text(posts)}\n\n"
         "위 구조를 바탕으로 submit_benchmark 도구를 호출하세요."
@@ -231,9 +245,7 @@ def build_benchmark_brief(keyword: str, site: Optional[str] = None, client: Any 
         if len(posts) < 2:
             logger.info("벤치마크: 구조를 측정한 상위 글이 %s편뿐이라 건너뜁니다.", len(posts))
             return ""
-        if client is None:
-            if not settings.anthropic_api_key:
-                return ""
+        if client is None and settings.anthropic_api_key:
             import anthropic
 
             client = anthropic.Anthropic(api_key=settings.anthropic_api_key, max_retries=1)

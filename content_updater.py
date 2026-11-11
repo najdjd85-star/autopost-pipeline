@@ -94,17 +94,13 @@ def find_rank_defense_candidates(
 
 
 def rewrite_post_for_rank_defense(site: str, post: Dict[str, Any], current_html: str) -> Dict[str, Any]:
-    """Claude로 최신 팩트 업데이트 + FAQ 보강 리라이팅을 수행한다."""
-    client = _get_client()
-    if client is None:
-        raise GeneratorNotConfiguredError("ANTHROPIC_API_KEY 미설정으로 순위 방어 리라이팅 불가")
-
+    """최신 팩트 업데이트 + FAQ 보강 리라이팅 초안을 만든다(무료 Gemini 먼저, 안 되면 Claude). 초안은 사람이 검토 후 반영한다."""
     prompt = f"""아래는 현재 순위 방어가 필요한(평균 4~15위) 게시물의 기존 HTML 본문입니다.
 페이지: {post.get('page')}
 평균 순위: {post.get('position')}
 
 [기존 본문]
-{current_html[:6000]}
+{current_html[:40000]}
 
 요청사항:
 1. 최신 팩트/수치로 업데이트할 만한 부분을 찾아 갱신하세요 (추측하지 말고 표현을 최신화).
@@ -113,11 +109,24 @@ def rewrite_post_for_rank_defense(site: str, post: Dict[str, Any], current_html:
 
 설명 없이 submit_rewrite 도구를 호출해서 결과를 제출하세요.
 """
+    import gemini_llm
+
+    data = gemini_llm.generate_json(
+        prompt.replace("submit_rewrite 도구를 호출해서 결과를 제출하세요.",
+                       '{"updated_html": "전체 HTML", "change_summary": "무엇을 왜 바꿨는지 2~3문장"} 형식의 JSON으로만 답하세요.'),
+        purpose="rank_defense", site=site, model="flash", max_output=32768,
+    )
+    if isinstance(data, dict) and str(data.get("updated_html", "")).strip() and data.get("change_summary"):
+        return {"updated_html": str(data["updated_html"]), "change_summary": str(data["change_summary"])}
+
+    client = _get_client()
+    if client is None:
+        raise GeneratorNotConfiguredError("Gemini 실패, ANTHROPIC_API_KEY 미설정으로 순위 방어 리라이팅 불가")
     response = call_message(
         client,
         purpose="rank_defense",
         model=CLAUDE_MODEL,
-        max_tokens=6000,
+        max_tokens=16000,  # 글 전체를 다시 쓰므로 6,000이면 중간에 잘려 요금만 나갔다
         tools=[REWRITE_TOOL],
         tool_choice={"type": "tool", "name": "submit_rewrite"},
         thinking={"type": "disabled"},

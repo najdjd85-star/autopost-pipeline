@@ -4,7 +4,7 @@
 실행(서버):    venv/bin/python scripts/set_gemini_keys.py
 옵션:  --status  키 상태 보기(키는 뒤 4자리만)     --test  키마다 아주 작은 글자 요청 1번으로 유효한지 확인(무료 키면 비용 없음)
 
-- 키는 최대 5개까지 한 칸씩 붙여넣고 Enter. 칸을 비우고 Enter 하면 거기서 끝납니다.
+- 키는 최대 10개까지 한 칸씩 붙여넣고 Enter. 칸을 비우고 Enter 하면 거기서 끝납니다.
 - .env 의 GEMINI_API_KEYS 한 줄만 바꿉니다(여러 줄로 중복되지 않게). 다른 설정은 건드리지 않습니다.
 - 이미 키가 있으면 '추가'할지 '새로 바꿀지' 물어봅니다.
 """
@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 ENV = ROOT / ".env"
 NAME = "GEMINI_API_KEYS"
-MAX_KEYS = 5
+MAX_KEYS = 10
 
 
 def read_env_keys() -> list:

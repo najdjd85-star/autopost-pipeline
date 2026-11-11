@@ -150,6 +150,21 @@ def generate_bank(client: Any, now: Optional[datetime] = None, used: Optional[Li
     """Haiku 한 번으로 일상 글 BATCH_SIZE개를 만들어 걸러서 돌려준다(예산/호출 수 가드 적용)."""
     now = now or datetime.now(timezone.utc)
     recent = "\n".join(f"- {t[:60]}" for t in (used or [])[-15:]) or "(없음)"
+    import gemini_llm
+
+    ask = (f"[지금 시기] {_season_hint(now)}\n[최근에 쓴 글 - 비슷한 건 피하기]\n{recent}\n\n"
+           f'위 규칙에 맞는 일상 글 {BATCH_SIZE}개를 {{"posts": ["글1", "글2", ...]}} 형식의 JSON으로만 답하세요.')
+    data = gemini_llm.generate_json(ask, purpose="threads_casual", system=SYSTEM_PROMPT, model="flash", max_output=4096)
+    if isinstance(data, dict) and isinstance(data.get("posts"), list):
+        posts = []
+        for raw in data["posts"]:
+            cleaned = clean_post(str(raw))
+            if cleaned and cleaned not in posts:
+                posts.append(cleaned)
+        if posts:
+            return posts
+    if client is None:  # Gemini가 안 되고 Claude 키도 없으면 이번엔 건너뛴다
+        return []
     response = call_message(
         client,
         purpose="threads_casual",
