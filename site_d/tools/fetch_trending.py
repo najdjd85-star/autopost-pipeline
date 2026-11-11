@@ -32,6 +32,9 @@ SEARCH_NAME = {
     "tuna-kimchi-stew": "참치김치찌개", "egg-ramen": "계란라면", "ham-fried-rice": "햄볶음밥",
 }
 KST = timezone(timedelta(hours=9))
+BASE_DAYS = 27        # 어제와 비교할 기준 기간(어제 포함 28일)
+RISING_MIN_EST = 300  # 하루 추정 검색량이 이보다 적으면 상승률이 들쭉날쭉해서 '뜨는 요리'로 보지 않는다
+RISING_MIN_UP = 1.15  # 평소(4주 평균)보다 15% 이상 많이 찾을 때만 '뜨는 요리'로 본다
 
 
 class NotConfigured(Exception):
@@ -69,7 +72,7 @@ def query(cid: str, sec: str, names: list, start: str, end: str) -> dict:
 def build() -> dict:
     cid, sec = keys()
     end_d = (datetime.now(KST) - timedelta(days=1)).date()
-    start, end = (end_d - timedelta(days=6)).isoformat(), end_d.isoformat()
+    start, end = (end_d - timedelta(days=BASE_DAYS)).isoformat(), end_d.isoformat()
     names = {r["slug"]: SEARCH_NAME.get(r["slug"], r["name"]).replace(" ", "") for r in RECIPES}
     anchor = names[ANCHOR_SLUG]
     pop_path = HERE / "popularity.json"
@@ -95,10 +98,18 @@ def build() -> dict:
     for slug, s in series.items():
         if last_day not in s:
             continue
-        week = [v for v in s.values()]
-        avg7 = sum(week) / len(week) if week else 0
-        rows.append({"slug": slug, "est": round(s[last_day]), "avg7": round(avg7), "up": round(s[last_day] / avg7, 2) if avg7 else 0})
+        base = [v for day, v in s.items() if day != last_day]   # 어제를 뺀 지난 4주 평균과 비교해야 '평소보다 많이 찾는' 요리가 보인다
+        avg = sum(base) / len(base) if base else 0
+        rows.append({"slug": slug, "est": round(s[last_day]), "avg7": round(avg), "up": round(s[last_day] / avg, 2) if avg else 0})
     rows.sort(key=lambda r: -r["est"])
+    # 검색량 순위만 쓰면 김밥·샤브샤브처럼 늘 많이 찾는 요리가 매일 같은 자리에 온다.
+    # 그래서 앞 4자리는 검색량 상위, 다음 4자리는 평소보다 많이 찾는(상승률 큰) 요리로 채우고 나머지는 검색량 순서로 둔다.
+    top = rows[:4]
+    rising = sorted((r for r in rows[4:] if r["est"] >= RISING_MIN_EST and r["up"] >= RISING_MIN_UP), key=lambda r: -r["up"] * r["est"] ** 0.5)[:4]
+    picked = {r["slug"] for r in top + rising}
+    for r in rising:
+        r["rising"] = True
+    rows = top + rising + [r for r in rows if r["slug"] not in picked]
     return {
         "updated": datetime.now(KST).strftime("%Y-%m-%d %H:%M"),
         "date": last_day,
