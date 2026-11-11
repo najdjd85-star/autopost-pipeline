@@ -106,6 +106,22 @@
    "The skin contains dietary fiber, so wash it thoroughly and eat it together."
   ]
  },
+ "arong-satae-suyuk": {
+  "desc": "Tender beef shank with chewy tendons between the grain, boiled until soft and sliced thinly.",
+  "h": "b797160c84",
+  "name": "Boiled Beef Shin Slices (Arong-satae Suyuk)",
+  "steps": [
+   "Soak beef in cold water for 1 hour to draw out the blood. Change the water once midway.",
+   "In a pot, combine water, green onion, onion, minced garlic, ginger, doenjang, and black pepper, and bring to a boil.",
+   "When it boils, add beef, cover, and simmer over medium-low heat for 1 hour and 10 minutes. It is done when a chopstick goes through smoothly.",
+   "Remove beef, let cool for about 10 minutes, and slice 0.5 cm thick against the grain.",
+   "Mix soy sauce, vinegar, sugar, korean hot mustard, and 2 tbsp of the beef-boiling water to make a sauce, and serve alongside garlic chive cut into 5 cm lengths."
+  ],
+  "tips": [
+   "Slicing while hot will cause it to fall apart, so let it cool slightly before cutting.",
+   "Season the leftover broth with salt and float green onion on top to make a clear gukbap-style soup."
+  ]
+ },
  "asparagus-bacon-mal": {
   "desc": "An appetizer of asparagus wrapped in bacon and pan-fried.",
   "h": "2190ad202b",
@@ -586,6 +602,23 @@
    "If the batter is too thick, it gets chewy, so make it runny."
   ]
  },
+ "baek-kimchi": {
+  "desc": "Refreshing, non-spicy white kimchi made with Korean pear and Korean radish that even children can eat. 6 hours of salting time excluded.",
+  "h": "5f6e95e055",
+  "name": "White Kimchi (Baek Kimchi)",
+  "steps": [
+   "Cut the napa cabbage in half, dip it in and out of 1.5L of water mixed with 40g of salt, sprinkle the remaining pickling salt between the stems, and salt for 6 hours. Rinse 3 times in cold water and drain the water for 1 hour.",
+   "Cut the Korean radish into thin strips 0.3cm thick, and cut half of the Korean pear into thin strips and grate the other half with a grater. Cut the thin green onion to 4cm and the jujube into thin strips after removing the pits.",
+   "Add 1 tbsp of fish sauce to the Korean radish strips, Korean pear strips, thin green onion, and jujube, and mix to make the filling.",
+   "Put a small amount of the filling between the leaves of the napa cabbage, wrap it with the outer leaves, and place it in a container.",
+   "Wrap minced garlic and ginger in cheesecloth (or a soup bag), put them in 1.5L of water, and squeeze firmly to extract the juice. Add the grated Korean pear, remaining fish sauce, 1 tbsp of soup salt, and sugar to make the broth.",
+   "Pour the broth so that the napa cabbage is submerged, ferment at room temperature for a day, and then refrigerate. It can be enjoyed refreshingly starting 3 to 4 days later."
+  ],
+  "tips": [
+   "The broth should be slightly salty at first so that the napa cabbage releases water as it ferments, balancing the flavor.",
+   "Floating a few pieces of red chili threads or red chili pepper makes the color pretty."
+  ]
+ },
  "baesuk": {
   "desc": "A warm dessert made by simmering Korean pear and ginger.",
   "h": "f9767abcaf",
@@ -1055,6 +1088,22 @@
    "You can also mix it with soy sauce 1 tbsp and sesame oil instead of gochujang for a cleaner, milder taste."
   ]
  },
+ "biji-jjigae": {
+  "desc": "A hearty, savory stew made by stir-frying aged kimchi and pork, then simmering with ground soybeans.",
+  "h": "5f1b4e6fcc",
+  "name": "Okara Stew (Biji-jjigae)",
+  "steps": [
+   "Cut pork into bite-sized pieces, slice kimchi thinly, and cut onion into thin strips.",
+   "Heat perilla oil in a pot, stir-fry pork over medium heat for 3 minutes, then add kimchi and Korean red pepper flakes and stir-fry for 3 more minutes.",
+   "Add 400ml of water and onion, bring to a boil, and simmer over medium heat for 5 minutes.",
+   "Add okara and simmer over low heat for 7 minutes. Stir occasionally so the bottom doesn't burn.",
+   "Season with salted fermented shrimp and soup soy sauce, add green onion, Cheongyang chili, and minced garlic, and simmer for 2 more minutes."
+  ],
+  "tips": [
+   "Stirring okara too often makes it dry, so leave it alone towards the end.",
+   "Tofu shops often sell okara cheaply or even give it away for free."
+  ]
+ },
  "blueberry-oat-bowl": {
   "desc": "A morning breakfast of oatmeal soaked in milk and topped with blueberries.",
   "h": "b422591ef1",
@@ -1128,6 +1177,22 @@
   "tips": [
    "Geotjeori is best eaten right away before water releases.",
    "Adding julienned pear or apple makes it sweet."
+  ]
+ },
+ "bori-bap": {
+  "desc": "A one-bowl meal of barley rice cooked with pre-boiled barley, mixed with gangdoenjang and seasoned greens.",
+  "h": "b627e0ffc8",
+  "name": "Barley Bibimbap (Bori-bap)",
+  "steps": [
+   "Wash barley 3 times, boil in 600 ml of boiling water for 15 minutes, strain, and rinse in cold water. This eliminates the need for soaking.",
+   "Mix washed uncooked rice and boiled barley, pour 220 ml of water, and cook in the rice cooker using the white rice mode. If using a pot, boil over high heat, reduce to low heat for 15 minutes when bubbling, turn off the heat, and let steam for 10 minutes.",
+   "Cover and blanch soybean sprout in boiling water for 4 minutes, then season with salt and 1/2 tbsp sesame oil. Cut leaf lettuce and cucumber into thin strips.",
+   "Put 100 ml of water, doenjang, minced onion, Cheongyang chili, and minced garlic in an earthenware pot, and simmer over medium-low heat for 5 minutes, stirring occasionally, to make gangdoenjang.",
+   "Place barley rice in a bowl and top with vegetables, soybean sprout, and 2 tbsp gangdoenjang. Mix in gochujang, an egg, and the remaining sesame oil to taste."
+  ],
+  "tips": [
+   "Boiling a large batch of barley at once and freezing it in portions makes it easy to mix and cook every time.",
+   "Topping with yeolmu kimchi turns it into a refreshing summer specialty, yeolmu bori-bap."
   ]
  },
  "bossam": {
@@ -1343,6 +1408,23 @@
   "tips": [
    "Garlic chive releases water if left in the batter too long, so mix them right before frying.",
    "You must spread the batter thin for it to be crispy."
+  ]
+ },
+ "buchu-kimchi": {
+  "desc": "Garlic chive kimchi that tastes delicious right away.",
+  "h": "1df83978f8",
+  "name": "Garlic Chive Kimchi (Buchu Kimchi)",
+  "steps": [
+   "Remove yellow leaves from the garlic chive, wash them, drain the water, and cut them into 5cm lengths. Cut the onion into thin strips.",
+   "Dissolve 1 tbsp of glutinous rice in 100ml of water, boil while stirring over low heat to make a paste, and cool it.",
+   "Sprinkle 3 tbsp of fish sauce on the white stem side of the garlic chive and let it sit for 10 minutes. Pour out the resulting fish sauce liquid and use it in the seasoning.",
+   "Mix the remaining fish sauce, the reserved fish sauce liquid, Korean red pepper flakes, minced garlic, ginger, and sugar into the cooled paste.",
+   "Add the seasoning to the garlic chive and onion, toss gently with your fingertips, and sprinkle with sesame seeds.",
+   "Eat immediately or leave at room temperature for half a day and then refrigerate."
+  ],
+  "tips": [
+   "If you knead too roughly, a grassy smell will occur, so toss lightly as if shaking.",
+   "Ripe garlic chive kimchi is delicious when added to pancake batter."
   ]
  },
  "buchu-muchim": {
@@ -1741,6 +1823,21 @@
    "The oil from beef brisket is enough so no separate oil is needed."
   ]
  },
+ "chamnamul-muchim": {
+  "desc": "Fragrant chamnamul lightly blanched and tossed with savory seasonings.",
+  "h": "8e940bc668",
+  "name": "Seasoned Chamnamul (Chamnamul-muchim)",
+  "steps": [
+   "Remove yellow leaves and tough stem ends from chamnamul and wash clean.",
+   "Add a pinch of salt to boiling water, put the stems in first, and blanch for only 20 to 30 seconds.",
+   "Immediately rinse in cold water, squeeze out excess moisture gently, and cut into 5 cm lengths.",
+   "Add soup soy sauce, salt, minced garlic, and sesame oil, toss well, and sprinkle with sesame seeds."
+  ],
+  "tips": [
+   "Overblanching destroys the aroma and crisp texture.",
+   "If you want to eat it raw like fresh geotjeori salad, toss with a ratio of 1 soy sauce, 1 Korean red pepper flakes, 1 vinegar, 1/2 sugar, and 1 tbsp sesame oil."
+  ]
+ },
  "chapssal-danhobak-juk": {
   "desc": "A nutrient-rich porridge with a deep, sweet flavor.",
   "h": "cf3c43fa5c",
@@ -1769,6 +1866,23 @@
   "tips": [
    "Glutinous rice burns easily, so be sure to keep the heat on low.",
    "Serve alongside kimchi or seasoned beef (jangjorim)."
+  ]
+ },
+ "chapssal-tteok": {
+  "desc": "Chewy sweet rice cakes stuffed with red bean paste, cooked in the microwave.",
+  "h": "2a05c80a76",
+  "name": "Sweet Rice Cakes (Chapssal-tteok)",
+  "steps": [
+   "Divide red bean paste into 8 portions of 30g each, roll them into balls, and place them in the refrigerator (they are easier to wrap when cold).",
+   "In a bowl, mix glutinous rice, sugar, salt, and water until there are no lumps.",
+   "Cover with plastic wrap, poke a few holes, microwave for 2 minutes, and knead vigorously with a wet spatula. Microwave for another 1 minute and 30 seconds, knead again, and heat for 1 more minute until the dough becomes translucent.",
+   "Spread starch on a tray, place the dough on top, and divide into 8 equal parts with starch-coated hands.",
+   "Flatten the dough on your palm, place the red bean paste on top, wrap and seal it closed, place seam-side down, and brush off excess starch."
+  ],
+  "tips": [
+   "The dough is very hot, so wear vinyl gloves coated with starch to handle it.",
+   "They will harden by the next day, so wrap them individually in plastic wrap and freeze; thaw at room temperature 1 hour before eating.",
+   "If using dry glutinous rice flour, increase the water to 200 ml."
   ]
  },
  "cheese-egg-roll": {
@@ -2089,6 +2203,40 @@
    "Chodang tofu has a clean and mild flavor because seawater is used instead of bittern."
   ]
  },
+ "chonggak-kimchi": {
+  "desc": "Crunchy chonggak radish kimchi tossed with radish greens.",
+  "h": "b146e53abc",
+  "name": "Chonggak Kimchi",
+  "steps": [
+   "Remove yellow radish greens, and scrape away dirt between the chonggak radish and greens with the tip of a knife. Scrub and wash with a scouring pad without peeling the skin.",
+   "Cut large chonggak radish lengthwise into 2 to 4 pieces so they remain attached to the radish greens. Sprinkle coarse salt evenly, salt for 1 hour and 30 minutes, and flip every 30 minutes.",
+   "When the chonggak radish bends softly, rinse twice in cold water and drain the water for 30 minutes.",
+   "Dissolve 2 tbsp of glutinous rice in 200ml of water, boil while stirring over low heat to make a paste, and cool it.",
+   "Mix Korean red pepper flakes, fish sauce, minced salted fermented shrimp, minced garlic, ginger, and sugar into the cooled paste, and cut the thin green onion into 4cm pieces.",
+   "Add seasoning to the chonggak radish and thin green onion and toss evenly, then wrap 2 to 3 chonggak radish with the radish greens and place them in a container.",
+   "Ferment at room temperature for 1 to 2 days, and when a sour smell develops, put it in the refrigerator."
+  ],
+  "tips": [
+   "If you salt the chonggak radish for too long, the crunchiness decreases. Just check the degree of flexibility.",
+   "Ripe chonggak kimchi is also delicious when added to braised kimchi or kimchi fried rice."
+  ]
+ },
+ "chop-steak": {
+  "desc": "Cubed beef seared over high heat and stir-fried with vegetables in a sweet and savory sauce.",
+  "h": "9ccd51ee1d",
+  "name": "Cube Steak (Chop Steak)",
+  "steps": [
+   "Cut beef into 2.5 cm cubes, pat dry with a paper towel, toss with salt, black pepper, and olive oil, and let sit at room temperature for 20 minutes.",
+   "Cut onion, bell pepper, and mushroom into sizes similar to the beef, and slice garlic. Mix oyster sauce, ketchup, soy sauce, and oligosaccharide syrup to make the sauce.",
+   "Heat a pan until smoking hot, arrange the beef in a single layer, roll on each side for 1 minute to brown only the surface, and remove.",
+   "Melt butter in the same pan, stir-fry garlic, onion, and mushroom for 2 minutes, then add bell pepper and stir-fry for 1 minute.",
+   "Add the sauce, bring to a boil, return the beef, toss for just 30 seconds, and turn off the heat."
+  ],
+  "tips": [
+   "Adding too much beef at once lowers the pan temperature and creates water. Cook in two batches.",
+   "Toss the beef quickly at the very end so it doesn't get tough."
+  ]
+ },
  "chungcheong-dakbaeksuk": {
   "desc": "A tender chicken soup simmered long with glutinous rice and green onion.",
   "h": "1613426bc8",
@@ -2132,6 +2280,21 @@
   "tips": [
    "Because there are no fillings inside, the gimbap spoils less easily at room temperature.",
    "Leaving it for 30 minutes to let the seasonings absorb makes it tastier."
+  ]
+ },
+ "chwinamul-muchim": {
+  "desc": "Bitter yet fragrant wild aster greens tossed with doenjang and perilla oil.",
+  "h": "6b18bec25d",
+  "name": "Seasoned Wild Aster Greens (Chwinamul Muchim)",
+  "steps": [
+   "Trim the tough ends of the chwinamul stems and wash them thoroughly.",
+   "Blanch in boiling water with a pinch of salt for 1 minute 30 seconds to 2 minutes. Blanching slightly longer than other greens makes them tender.",
+   "Soak in cold water for 10 minutes to remove the bitterness, squeeze out the moisture, and cut into 5 cm lengths.",
+   "Toss gently with doenjang, soup soy sauce, minced garlic, green onion, and perilla oil, then sprinkle with sesame seeds."
+  ],
+  "tips": [
+   "For dried chwinamul, soak overnight, boil for 30 minutes, and stir-fry in perilla oil (DaeBoReum greens).",
+   "Using only soup soy sauce instead of doenjang gives a cleaner taste."
   ]
  },
  "cold-udon-tsuyu": {
@@ -2514,6 +2677,22 @@
    "Adjust the spiciness with the amount of Korean red pepper flakes."
   ]
  },
+ "dakdari-gui": {
+  "desc": "Chicken thighs with crispy skin and juicy meat coated in a sweet soy sauce glaze.",
+  "h": "269ab02b51",
+  "name": "Teriyaki Chicken Thighs (Dakdari-gui)",
+  "steps": [
+   "Score the thick parts of the chicken meat to flatten evenly and cut the tendons. Sprinkle with salt, black pepper, and mirin, and let rest for 10 minutes.",
+   "Mix soy sauce, oligosaccharide syrup, sugar, minced garlic, and water to make the sauce, and cut green onion into 4 cm lengths.",
+   "Lightly grease a pan with cooking oil, place chicken skin-side down, and cook over medium heat for 6-7 minutes. Press down with a spatula and wipe away the rendered oil with a paper towel.",
+   "Flip and cook for 4 more minutes with the green onion.",
+   "Pour in the sauce, simmer on low heat for 1-2 minutes until glossy on both sides, let rest for 1-2 minutes, and slice to serve."
+  ],
+  "tips": [
+   "You can also grill them with just salt and serve with wasabi.",
+   "If using an air fryer, cook skin-side up at 200 degrees for 15 minutes before brushing with the sauce."
+  ]
+ },
  "dakdoritang": {
   "desc": "A spicy one-pot chicken dish.",
   "h": "862317f05d",
@@ -2814,6 +2993,23 @@
   "tips": [
    "Tear the dough thin so it is chewy and cooks quickly.",
    "Add perilla seed powder at the end to keep the nutty aroma vibrant."
+  ]
+ },
+ "deunggalbi-jjim": {
+  "desc": "Sweet and spicy braised pork ribs made by removing blood and briefly blanching to eliminate any gamey flavor.",
+  "h": "659c50e273",
+  "name": "Spicy Braised Pork Ribs (Deunggalbi-jjim)",
+  "steps": [
+   "Cut pork into individual ribs, soak in cold water for 1 hour to draw out blood, changing the water once halfway through.",
+   "Blanch in boiling water for 5 minutes, then rinse in cold water to wash away impurities.",
+   "Mix soy sauce, Korean red pepper flakes, gochujang, sugar, oligosaccharide syrup, minced garlic, ginger, mirin, and black pepper to make the sauce.",
+   "Place pork, 600 ml of water, and half of the sauce in a pot, bring to a boil over high heat, cover, and simmer over medium heat for 30 minutes.",
+   "Add potato and carrot cut into large chunks along with the remaining sauce, and simmer for another 15 minutes.",
+   "Add onion, green onion, and Cheongyang chili, and simmer uncovered for 5 to 7 minutes until the broth reduces."
+  ],
+  "tips": [
+   "Trimming the sharp edges of potato and carrot prevents them from breaking apart during long simmering.",
+   "Stir-frying rice, seaweed flakes, and sesame oil in the leftover sauce makes a delicious treat."
   ]
  },
  "doenjang-gamja-guk": {
@@ -3820,6 +4016,22 @@
    "Squeezing out the moisture firmly ensures the seasoning clings well."
   ]
  },
+ "gaji-twigim": {
+  "desc": "Crispy on the outside and tender on the inside fried eggplant with a tangy soy dipping sauce.",
+  "h": "f19a0bca6c",
+  "name": "Fried Eggplant (Gaji-twigim)",
+  "steps": [
+   "Cut eggplant in half lengthwise into 1cm-thick stick shapes, sprinkle with salt, let sit for 10 minutes, and wipe off the moisture with a paper towel.",
+   "Put eggplant and 2 tbsp of starch into a plastic bag and shake to coat them thinly on the outside.",
+   "Roughly mix 4 tbsp of Korean pancake mix, the remaining 2 tbsp of starch, and 120ml of cold water to make the batter. A few lumps are fine.",
+   "Heat cooking oil to 170°C (the point where a drop of batter floats up halfway), coat eggplant in the batter, and fry for 3 minutes. Take them out, let sit for 1 minute, and fry for 1 more minute so they stay crispy for a long time.",
+   "Mix soy sauce, vinegar, sugar, 2 tbsp of water with diced Cheongyang chili, green onion, and minced garlic to make a dipping sauce to serve alongside."
+  ],
+  "tips": [
+   "If using an air fryer, drizzle oil over the battered eggplant and bake at 200°C for 12 minutes, flipping once halfway through.",
+   "Pouring sauce over fried eggplant beforehand will make it soggy, so dip it instead."
+  ]
+ },
  "galbi-jjim": {
   "desc": "Holiday beef short ribs braised tender with Korean radish, carrot, and chestnut in a sweet soy sauce glaze.",
   "h": "3e1bf040f6",
@@ -4035,6 +4247,24 @@
    "Topping with plenty of roasted seaweed makes it taste great."
   ]
  },
+ "ganjang-gejang": {
+  "desc": "Blue crabs marinated three times in boiled and cooled soy sauce so they aren't too salty. Eat starting on the 3rd day.",
+  "h": "f935cba6fb",
+  "name": "Marinated Crab (Ganjang Gejang)",
+  "steps": [
+   "Place blue crab in the freezer for 1~2 hours so it stops moving, then scrub it thoroughly with a brush including between the belly and legs. Remove the triangular flap on the belly and trim the tips of the legs with scissors.",
+   "In a pot, combine soy sauce, water, sugar, mirin, roughly chopped onion, green onion, minced garlic, sliced ginger, Cheongyang chili, and kombu, and bring to a boil.",
+   "When it boils, remove the kombu, simmer over medium heat for another 15 minutes, strain through a sieve, and let cool completely.",
+   "Place blue crab in a container with the shell facing down, and pour the cooled soy sauce so the crab is submerged. Top with lemon, press down with a heavy plate, and keep in the refrigerator for a day.",
+   "The next day, pour out only the soy sauce, reboil it, let it cool, and pour it back over. Repeat this process one more time on the second day.",
+   "Eat starting on the 3rd day, and finish within a week in the refrigerator. If storing longer, take out only the crab and freeze it."
+  ],
+  "tips": [
+   "Be sure to use live blue crab or fresh blue crab flash-frozen specifically for gejang.",
+   "You must boil the soy sauce and pour it only after it has cooled completely to prevent a fishy smell and spoilage.",
+   "It is also great to mix rice into the leftover soy sauce or make marinated eggs."
+  ]
+ },
  "garlic-bread-simple": {
   "desc": "Crispy garlic bread baked in an air fryer or pan.",
   "h": "612e69c85a",
@@ -4048,6 +4278,23 @@
   "tips": [
    "Melting the butter in a double boiler helps spread it evenly on the bread.",
    "Add parsley if you have some."
+  ]
+ },
+ "gat-kimchi": {
+  "desc": "Jeolla-do style Dolsan mustard greens kimchi with an attractive pungent kick.",
+  "h": "73cdd91600",
+  "name": "Mustard Greens Kimchi (Gat Kimchi)",
+  "steps": [
+   "Remove yellow leaves from the mustard greens, wash them, concentrate salt on the thick stem side, and salt for 1 hour. Flip once after 30 minutes.",
+   "When the stems bend softly, rinse twice in cold water and drain the water for 30 minutes.",
+   "Dissolve glutinous rice in 200ml of water, boil while stirring over low heat to make a paste, and cool it.",
+   "Mix Korean red pepper flakes, fish sauce, minced garlic, ginger, and sugar into the cooled paste and let it soak for 20 minutes.",
+   "Add seasoning to the mustard greens and thin green onion cut to 4cm, and toss evenly starting from the stem side.",
+   "Roll up 3 to 4 strands of mustard greens into tight bundles and pack them firmly into a container, ferment at room temperature for a day, and then refrigerate."
+  ],
+  "tips": [
+   "Mustard greens must be fermented for more than 2 weeks to get rid of the bitterness and bring out the umami.",
+   "If salted for too long, they become tough, so do not exceed 1 hour."
   ]
  },
  "gemmatsal-egg-roll": {
@@ -4125,6 +4372,23 @@
    "It is also great tossed in tomato sauce."
   ]
  },
+ "gochu-jangajji": {
+  "desc": "Crunchy chili pickles made by pouring boiled soy sauce and vinegar brine, good to keep for a year. Eat after 2 weeks.",
+  "h": "5a394bff3b",
+  "name": "Pickled Chili Peppers (Gochu-jangajji)",
+  "steps": [
+   "Wash Cheongyang chili, trim the stems leaving only 1 cm, and wipe off all moisture completely with a paper towel.",
+   "Poke 2~3 holes in each Cheongyang chili with a fork or toothpick so the seasoning penetrates well.",
+   "Pack Cheongyang chili tightly into a glass jar sterilized with boiling water.",
+   "In a pot, combine soy sauce, water, and sugar, bring to a boil, turn off the heat once the sugar dissolves, add vinegar, pour it hot over Cheongyang chili, and weigh them down with a heavy pressing stone or a small plate.",
+   "Once cooled, close the lid, leave at room temperature for 3 days, then drain only the soy sauce liquid, reboil it, let it cool, and pour it back over. Afterwards, store in the refrigerator.",
+   "Ready to eat after 2 weeks, and can be kept in the refrigerator for up to 1 year."
+  ],
+  "tips": [
+   "If any moisture remains, mold can easily form, so make sure to dry them thoroughly before pickling.",
+   "If Cheongyang chili float to the top, the seasoning won't absorb properly, so keep them pressed down until the end."
+  ]
+ },
  "gochu-jeon": {
   "desc": "Spicy chili peppers stuffed with a savory tofu and meat filling.",
   "h": "673dc49f4d",
@@ -4199,6 +4463,22 @@
   "tips": [
    "Blanching helps the inside cook quickly.",
    "It is also great as a kid's snack."
+  ]
+ },
+ "goguma-julgi-bokkeum": {
+  "desc": "Savory sweet potato stems stir-fried with perilla oil and perilla seed powder.",
+  "h": "a87d082f5a",
+  "name": "Stir-Fried Sweet Potato Stems (Goguma-julgi-bokkeum)",
+  "steps": [
+   "If you have sweet potato stems with peels, soak them in salted water for 10 minutes, bend the ends, and pull the peels down to strip them.",
+   "Blanch them in boiling water with a pinch of salt for 3 minutes, rinse in cold water, drain, and cut into 6cm lengths.",
+   "Heat perilla oil and cooking oil in a pan, stir-fry minced garlic, then add sweet potato stems and soup soy sauce, stirring over medium heat for 3 minutes.",
+   "Add 4 tbsp of water, cover with a lid, and cook for 2 minutes to make them tender.",
+   "Add thin strips of onion, green onion, and perilla seed powder, stir-fry for 1 minute, season with salt, and sprinkle with sesame seeds."
+  ],
+  "tips": [
+   "Adding 1/2 tbsp of Korean red pepper flakes makes it a spicy version.",
+   "Wear gloves when peeling them because your hands will turn black."
   ]
  },
  "goguma-latte": {
@@ -4565,6 +4845,22 @@
    "Adding the starch water helps the sauce cling well to the seafood."
   ]
  },
+ "haemul-kalguksu": {
+  "desc": "Fresh knife-cut noodles in a refreshing broth boiled with Manila clams, shrimp, and squid.",
+  "h": "dfa8ce1b4a",
+  "name": "Seafood Knife-Cut Noodle Soup (Haemul-kalguksu)",
+  "steps": [
+   "Rub and wash Manila clam, cut squid into ring shapes, and trim the feelers and horns of shrimp. Cut Korean zucchini and onion into thin strips.",
+   "Put 1.4L of water and kombu in a pot, bring to a boil, and take out kombu after 5 minutes. Add Manila clam and take them out immediately as soon as they open their shells.",
+   "Shake off the flour from knife-cut wheat noodles, drop them in, and boil over medium heat for 4 minutes while stirring so they don't stick.",
+   "Add Korean zucchini, onion, squid, and shrimp, and boil for 3 more minutes.",
+   "Add minced garlic, season with soup soy sauce and salt, then add the cooked Manila clam, green onion, Cheongyang chili, and black pepper and boil one last time."
+  ],
+  "tips": [
+   "Manila clam gets tough if boiled too long, so make sure to take them out once they open.",
+   "If you want a clear broth, boil the noodles separately, rinse them, and add them in."
+  ]
+ },
  "haemul-pajeon": {
   "desc": "A crispy seafood pancake made with squid and shrimp.",
   "h": "211b7e2104",
@@ -4898,6 +5194,23 @@
    "Spray cooking oil before baking in the air fryer."
   ]
  },
+ "hotteok": {
+  "desc": "Home-style hotteok with a chewy dough mixed with glutinous rice flour and a brown sugar and nut filling.",
+  "h": "a851f33614",
+  "name": "Sweet Korean Pancake (Hotteok)",
+  "steps": [
+   "Dissolve yeast and 1 tbsp sugar in milk warmed to about 40 degrees and let sit for 5 minutes.",
+   "Add flour, glutinous rice, and salt, mix with a spatula, then add 1 tbsp cooking oil and knead for 5 minutes. The dough should be sticky enough to cling to your hands.",
+   "Cover with plastic wrap and ferment in a warm place for 1 hour until the dough doubles in size.",
+   "Mix 6 tbsp brown sugar and coarsely chopped mixed nuts to make the filling.",
+   "Coat your hands with cooking oil, press the dough to release the gas, and divide into 8 pieces. Flatten each piece in your palm, add 1 tbsp of filling, and seal the edges.",
+   "Generously grease a pan with cooking oil, place the seams down, and cook over medium-low heat for 30 seconds. Flip and press flat with a spatula or the bottom of a cup, then cook for 2 minutes. Flip again and cook until golden brown for 1 to 2 minutes."
+  ],
+  "tips": [
+   "If the heat is too high, the outside will burn and the sugar inside won't melt. Maintain medium-low heat.",
+   "The filling sugar is very hot, so let it cool for a moment before eating."
+  ]
+ },
  "hummus": {
   "desc": "A smooth Middle Eastern spread made from chickpeas.",
   "h": "179899c54b",
@@ -5031,6 +5344,21 @@
   "tips": [
    "It is characterized by mixing with soy sauce instead of gochujang.",
    "The vegetables should be seasoned lightly to bring out their true flavor."
+  ]
+ },
+ "hwangtae-chae-muchim": {
+  "desc": "A dried pollack side dish that stays soft even when hardened because the sauce is boiled, cooled, and then tossed.",
+  "h": "b2d10b02af",
+  "name": "Seasoned Dried Pollack (Hwangtae-chae-muchim)",
+  "steps": [
+   "Pick out bones from dried pollack and tear into bite-sized lengths.",
+   "Evenly sprinkle 3 tbsp water and let sit for 10 minutes to make them tender. Do not soak in water as it drains the flavor, just sprinkle.",
+   "Put gochujang, Korean red pepper flakes, oligosaccharide syrup, sugar, soy sauce, and minced garlic in a pan, bubble over low heat for 1 minute, then turn off the heat.",
+   "When the sauce cools down a bit, add dried pollack and mayonnaise, toss together, and finish with sesame oil and sesame seeds."
+  ],
+  "tips": [
+   "Adding mayonnaise keeps the texture tender even when kept in the refrigerator.",
+   "It can be stored in the refrigerator for about a week."
   ]
  },
  "hwangtae-gui": {
@@ -6291,6 +6619,26 @@
    "Even if you use only half the soup packet, the kimchi will add plenty of flavor."
   ]
  },
+ "kimjang-baechu-kimchi": {
+  "desc": "Traditional winter napa cabbage kimchi made with 1 whole napa cabbage. Allow 6 to 8 hours for salting separately.",
+  "h": "318596990f",
+  "name": "Napa Cabbage Kimchi (Kimjang Kimchi)",
+  "steps": [
+   "Make a slit at the root of the napa cabbage and split it in half by hand. Dissolve 50g of salt in 2L of water, dip the napa cabbage in and out, and sprinkle the remaining 200g of salt layer by layer between the leaves near the stems.",
+   "Salt for 6 to 8 hours with the cut side facing up, flipping it top and bottom once in the middle. When you bend the stem and it flexes without breaking, it is fully salted.",
+   "Rinse 3 times in cold water, place upside down on a rack with the cut side facing down, and drain the water for 1 hour.",
+   "Dissolve 300ml of water and 3 tbsp of glutinous rice in a pot, boil over low heat while stirring until thick, and cool completely.",
+   "Cut the Korean radish into thin strips 0.3cm thick, and cut the thin green onion and mustard greens into 4cm lengths. Mince the solids of the salted fermented shrimp finely.",
+   "Mix Korean red pepper flakes, fish sauce, salted fermented shrimp, minced garlic, ginger, and sugar into the cooled rice paste and let it soak for 10 minutes. Add the Korean radish first and mix until red, then add the thin green onion and mustard greens and mix gently to make the kimchi filling.",
+   "Starting from the outer leaves of the napa cabbage, lift them one by one, spread a thin layer of the filling mainly on the stem side, wrap it with the outer leaf, fold it in half, and press it firmly into a container.",
+   "Let it ferment at room temperature for a day (1-2 days in winter) and then put it in the refrigerator; it will taste ripe after about a week."
+  ],
+  "tips": [
+   "You must use coarse sea salt, not fine table salt, so that the napa cabbage does not become mushy.",
+   "Taste the filling after making it, and if it is bland, add 1 tbsp of fish sauce at a time.",
+   "After placing it in the container, cover the top with plastic wrap or outer leaves to block the air so it sours less quickly."
+  ]
+ },
  "kiwi-yogurt-cup": {
   "desc": "A layered cup filled with kiwi and yogurt.",
   "h": "a8439b7b32",
@@ -6334,6 +6682,22 @@
   "tips": [
    "Spread the filling thinly so the inside cooks thoroughly.",
    "Serve with a soy-vinegar dipping sauce made by mixing 1 tbsp of soy sauce and 1/2 tbsp of vinegar."
+  ]
+ },
+ "kkaennip-kimchi": {
+  "desc": "A rice-stealing side dish made by applying seasoned sauce to each perilla leaf and pickling them.",
+  "h": "169fa16680",
+  "name": "Perilla Leaf Kimchi (Kkaennip Kimchi)",
+  "steps": [
+   "Wash the perilla leaves front and back one by one under running water, and cut the stems leaving only 1cm. Stand them on a rack to drain the moisture for 30 minutes.",
+   "Finely mince the onion and carrot, and slice thinly the thin green onion.",
+   "Mix soy sauce, water, fish sauce, Korean red pepper flakes, minced garlic, sugar, green plum syrup, sesame oil, sesame seeds, and chopped vegetables to make the sauce.",
+   "Layer the perilla leaves 2 at a time and stack them up while spreading 1/2 tsp of the sauce on each layer.",
+   "Place them in a side dish container, leave them at room temperature for 1 hour, put them in the refrigerator, and eat them starting the next day."
+  ],
+  "tips": [
+   "If you like soft perilla leaves that have wilted, you can also steam them in a steamer for 2 minutes after stacking.",
+   "You can enjoy it deliciously for about a week in the refrigerator."
   ]
  },
  "kkaennip-yangnyeom": {
@@ -6501,6 +6865,22 @@
   "tips": [
    "Frying twice keeps them crispy for a long time.",
    "You must pour off the watery layer of the starch batter to make it chewy."
+  ]
+ },
+ "kkwari-gochu-jjim": {
+  "desc": "Old-school steamed shishito peppers coated in flour so the seasoning clings to them well.",
+  "h": "63006db898",
+  "name": "Steamed Shishito Peppers (Kkwari-gochu-jjim)",
+  "steps": [
+   "Remove stems from Cheongyang chili, wash them, cut large ones in half, and poke 2 holes in each with a toothpick.",
+   "While they are still damp, put them in a plastic bag with flour and shake to coat evenly.",
+   "Line a steamer basket with a wet cotton cloth over rising steam and steam for 5 minutes. When the white flour becomes translucent, they are fully cooked.",
+   "Spread them out widely and let cool for a moment.",
+   "Add the seasoning made by mixing soy sauce, Korean red pepper flakes, minced garlic, slice thinly thin green onion, sugar, sesame oil, and sesame seeds, and toss gently."
+  ],
+  "tips": [
+   "If you don't have a steamer, you can put them on a plate, cover with plastic wrap, and microwave for 2 minutes.",
+   "This has a soft flavor, different from stir-fried shishito peppers with anchovies."
   ]
  },
  "kodari-jorim": {
@@ -7288,6 +7668,22 @@
    "Topping it with mixed nuts adds a nutty flavor."
   ]
  },
+ "miyeok-julgi-bokkeum": {
+  "desc": "A chewy side dish of seaweed stems with the saltiness removed, stir-fried in perilla oil.",
+  "h": "eed80cd093",
+  "name": "Stir-Fried Seaweed Stems (Miyeok-julgi-bokkeum)",
+  "steps": [
+   "Wash seaweed stems vigorously 2~3 times in water to shake off the salt, and soak in cold water for 30 minutes to remove the saltiness. Change the water once midway and taste at the end.",
+   "Cut into 7 cm lengths and squeeze out excess moisture. Cut onion and carrot into thin strips.",
+   "Coat a pan with cooking oil and perilla oil, stir-fry minced garlic over medium heat for 30 seconds, then add seaweed stems and stir-fry for 3 minutes.",
+   "Add water and stir-fry for 1 more minute to soften.",
+   "Add onion and carrot, stir-fry for 2 minutes, season with soup soy sauce, and sprinkle with sesame seeds."
+  ],
+  "tips": [
+   "If the saltiness hasn't been removed enough, skip the soup soy sauce.",
+   "Blanching them in boiling water for just 10 seconds before stir-frying reduces the fishy taste even more."
+  ]
+ },
  "miyeok-naengguk": {
   "desc": "Tangy and refreshing cold soup made with rehydrated dried seaweed.",
   "h": "f03eeb49a3",
@@ -7361,6 +7757,22 @@
   "tips": [
    "Rinsing by rubbing in cold water makes them chewy.",
    "Using store-bought naengmyeon broth makes it even easier."
+  ]
+ },
+ "mumallaengi-muchim": {
+  "desc": "A sweet and chewy dried radish side dish that is great to chew on.",
+  "h": "e7edc2b4c2",
+  "name": "Seasoned Dried Radish Strips (Mumallaengi-muchim)",
+  "steps": [
+   "Vigorously wash dried radish strips in lukewarm water 2 to 3 times, then soak them in 500ml of water for 20 minutes. If you soak them too long, they lose their chewiness.",
+   "Squeeze out the water tightly with your hands.",
+   "Add Korean red pepper flakes first, mix, and let sit for 10 minutes to dye them red.",
+   "Add soy sauce, fish sauce, oligosaccharide syrup, sugar, minced garlic, green plum syrup, and thin green onion cut to 4cm, mix evenly, and sprinkle with sesame seeds.",
+   "Leaving them in the refrigerator for a day lets the seasonings soak in and taste even better."
+  ],
+  "tips": [
+   "The soaking water has sweetness in it, so it's fine to mix 1 tbsp of it into the seasoning.",
+   "If you have dried radish greens, soak them together to get an old-school flavor."
   ]
  },
  "muneo-sukhoe": {
@@ -7850,6 +8262,21 @@
    "Eating it right away tastes like fresh geotjeori and has a crunchy texture."
   ]
  },
+ "oiji-muchim": {
+  "desc": "A chewy summer side dish made by desalinating and tightly squeezing salted pickled cucumbers.",
+  "h": "f58201b1c1",
+  "name": "Seasoned Pickled Cucumbers (Oiji-muchim)",
+  "steps": [
+   "Cut salted pickled cucumbers into round slices 0.3 cm thick.",
+   "Soak in 500 ml of cold water for 20 minutes to remove the saltiness, taste one, and remove them when they are just mildly salty.",
+   "Squeeze out as much moisture as possible using a cotton cloth or your hands. This step creates the chewy texture.",
+   "Add slice thinly thin green onion, Korean red pepper flakes, minced garlic, sugar, and sesame oil, toss, and sprinkle with sesame seeds."
+  ],
+  "tips": [
+   "If you don't squeeze out enough moisture, they will quickly turn mushy, so squeeze with all your might.",
+   "Floating sliced salted pickled cucumbers in 400 ml of water with 1 tbsp vinegar and 1 tsp sugar makes oiji-naengguk (chilled pickled cucumber soup)."
+  ]
+ },
  "ojingeo-bokkeum": {
   "desc": "Squid stir-fried over high heat in a sweet and spicy sauce.",
   "h": "ac91a9d138",
@@ -7864,6 +8291,22 @@
   "tips": [
    "Cooking squid too long makes it tough and releases water. Finish within 3 minutes over high heat.",
    "Scoring helps the sauce absorb well and makes the pieces curl up nicely."
+  ]
+ },
+ "ojingeo-cho-muchim": {
+  "desc": "A drinking snack of blanched squid and crunchy vegetables tossed in a sweet and sour gochujang sauce.",
+  "h": "36ab95ff8a",
+  "name": "Spicy Sweet Blanched Squid Salad (Ojingeo Cho Muchim)",
+  "steps": [
+   "Remove the entrails and skin of the squid, score the inside diagonally, cut into 1 cm width pieces, and slice the legs to 5 cm.",
+   "Blanch in boiling water for 1 minute, rinse in cold water, and drain well.",
+   "Slice the cucumber diagonally into half-moons, salt for 5 minutes, and squeeze out the moisture. Cut the onion and carrot into thin strips, water dropwort to 4 cm, and Cheongyang chili diagonally.",
+   "Mix gochujang, Korean red pepper flakes, vinegar, sugar, oligosaccharide syrup, and minced garlic to make the cho-gochujang sauce.",
+   "Just before serving, toss the squid and vegetables with the cho-gochujang sauce and sprinkle with sesame seeds."
+  ],
+  "tips": [
+   "Tossing in advance will draw out water from the vegetables, so mix just before serving.",
+   "It is also great to boil somen noodles and toss them together."
   ]
  },
  "ojingeo-deopbap": {
@@ -9115,6 +9558,22 @@
    "Straining through a sieve makes it smooth."
   ]
  },
+ "saeu-jang": {
+  "desc": "A rice thief made by pickling raw shrimp in sweet soy sauce. Ready to eat after a day.",
+  "h": "a92ef8398f",
+  "name": "Soy Sauce Marinated Shrimp (Saeu-jang)",
+  "steps": [
+   "Trim the shrimp's whiskers, sharp horn above the head, and the water pocket at the tip of the tail with scissors. Insert a toothpick into the second joint of the back to remove the vein, then wash and wipe off the moisture.",
+   "In a pot, combine soy sauce, water, sugar, mirin, onion, green onion, minced garlic, sliced ginger, and Cheongyang chili. Once it boils, simmer over medium heat for 10 minutes, strain, and let cool completely.",
+   "Place shrimp in a container, pour the cooled soy sauce until submerged, top with lemon, and refrigerate for a day.",
+   "The next day, pour out only the soy sauce, reboil it, let it cool, and pour it back over.",
+   "Eat within 4 days starting from the second day. Mix the shrimp flesh and an egg yolk into warm rice and enjoy."
+  ],
+  "tips": [
+   "Since it is eaten raw, use live shrimp suitable for sashimi or flash-frozen shrimp, and thaw frozen shrimp slowly in the refrigerator.",
+   "If left too long, the flesh becomes mushy and salty, so marinate in small batches."
+  ]
+ },
  "saeu-jeon": {
   "desc": "Plump shrimp coated in egg and pan-fried.",
   "h": "8da47e706f",
@@ -10131,6 +10590,22 @@
    "Frying twice keeps it from getting soggy."
   ]
  },
+ "tantanmen": {
+  "desc": "Rich and spicy tantanmen topped with seasoned meat in a creamy peanut butter and soy milk broth.",
+  "h": "fa10b189b2",
+  "name": "Tantanmen (Dan Dan Noodles)",
+  "steps": [
+   "In a small pan, heat cooking oil 2 tbsp, Korean red pepper flakes 1 tbsp, and a little of the white part of the green onion on low heat for 2 minutes to make chili oil, then strain it through a sieve.",
+   "In another pan, drizzle cooking oil 1 tbsp and stir-fry half of the minced garlic, ginger, and pork over high heat, then add soy sauce 1 tbsp and sugar 1 tsp, stir-frying until completely dry.",
+   "Bring water 300ml and beef bouillon powder to a boil in a pot, then lower the heat and dissolve soy milk, peanut butter, the remaining soy sauce 2 tbsp, sugar 1 tsp, and the remaining minced garlic. Heat just before boiling and add vinegar.",
+   "Boil the chinese wheat noodles according to the package time, and blanch the bok choy in the last 30 seconds before draining.",
+   "Pour the broth into a bowl, add the noodles, top with the pork, bok choy, and thinly sliced green onion, and drizzle with chili oil and sesame seeds."
+  ],
+  "tips": [
+   "Boiling soy milk vigorously will cause it to curdle and separate, so just warm it over low heat.",
+   "To make dry bibim tantanmen, make a rich sauce without broth and toss."
+  ]
+ },
  "tartar-egg-sandwich": {
   "desc": "Egg sandwich with tartar sauce containing pickled cucumber.",
   "h": "30139efbcb",
@@ -10358,6 +10833,21 @@
   "tips": [
    "Dissolve doenjang at the end to preserve its aroma.",
    "Leftover soup tastes even better the next day."
+  ]
+ },
+ "toowoomba-pasta": {
+  "desc": "Shrimp cream pasta with a subtle kick of Korean red pepper flakes in a butter and heavy cream sauce.",
+  "h": "36c656fddf",
+  "name": "Toowoomba Pasta",
+  "steps": [
+   "Boil water 2L with a little salt and cook spaghetti 1 minute less than the package time. Reserve spaghetti 100ml of the cooking water.",
+   "Melt butter in a pan and stir-fry minced garlic and bacon cut to 1 cm over medium heat for 2 minutes, then add thinly sliced onion and mushroom, stirring for 2 more minutes.",
+   "Add shrimp and cook for 1 minute 30 seconds until they change color, then add heavy cream, milk, and Korean red pepper flakes, simmering gently on low heat for 3 minutes.",
+   "Season with cheese, salt, and black pepper, add spaghetti, and toss while reducing for 1-2 minutes. Adjust the consistency with the reserved spaghetti cooking water if the sauce gets too thick."
+  ],
+  "tips": [
+   "If you have paprika powder, mixing it half-and-half with Korean red pepper flakes will make the color and aroma closer to the original.",
+   "Heavy cream will separate if boiled over high heat, so keep the heat low."
   ]
  },
  "tortilla-pizza": {

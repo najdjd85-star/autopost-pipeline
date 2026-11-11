@@ -53,6 +53,15 @@
   ],
   "name": "potato"
  },
+ "갓": {
+  "aliases": [
+   "mustard leaf",
+   "dolsan mustard greens",
+   "gat",
+   "leaf mustard"
+  ],
+  "name": "mustard greens"
+ },
  "건새우": {
   "aliases": [
    "dried shrimps",
@@ -97,6 +106,14 @@
    "purple sweet potato"
   ],
   "name": "sweet potato"
+ },
+ "고구마줄기": {
+  "aliases": [
+   "sweet potato vines",
+   "goguma julgi",
+   "goguma sun"
+  ],
+  "name": "sweet potato stems"
  },
  "고등어": {
   "aliases": [
@@ -743,6 +760,14 @@
   ],
   "name": "Korean radish"
  },
+ "무말랭이": {
+  "aliases": [
+   "dried radish",
+   "mu mallaengi",
+   "dehydrated radish"
+  ],
+  "name": "dried radish strips"
+ },
  "문어": {
   "aliases": [
    "giant octopus",
@@ -776,6 +801,15 @@
    "brown seaweed"
   ],
   "name": "dried seaweed"
+ },
+ "미역줄기": {
+  "aliases": [
+   "kelp stems",
+   "salted seaweed stems",
+   "miyeok julgi",
+   "wakame stems"
+  ],
+  "name": "seaweed stems"
  },
  "밀가루": {
   "aliases": [
@@ -891,6 +925,15 @@
   ],
   "name": "chickpea"
  },
+ "보리": {
+  "aliases": [
+   "barley grain",
+   "bori",
+   "hulled barley",
+   "glutinous barley"
+  ],
+  "name": "barley"
+ },
  "봄동": {
   "aliases": [
    "bomdong",
@@ -952,6 +995,15 @@
   ],
   "name": "blueberry"
  },
+ "비지": {
+  "aliases": [
+   "soy pulp",
+   "biji",
+   "kongbiji",
+   "soybean curd refuse"
+  ],
+  "name": "okara"
+ },
  "비트": {
   "aliases": [
    "beets",
@@ -1004,6 +1056,15 @@
    "frozen shrimp"
   ],
   "name": "shrimp"
+ },
+ "새우젓": {
+  "aliases": [
+   "saeujeot",
+   "fermented shrimp",
+   "saewoojeot",
+   "salted shrimp"
+  ],
+  "name": "salted fermented shrimp"
  },
  "생강": {
   "aliases": [
@@ -1366,6 +1427,14 @@
   ],
   "name": "cucumber"
  },
+ "오이지": {
+  "aliases": [
+   "oiji",
+   "korean pickled cucumbers",
+   "salted cucumbers"
+  ],
+  "name": "salted pickled cucumbers"
+ },
  "오이피클": {
   "aliases": [
    "cucumber pickle",
@@ -1489,6 +1558,14 @@
   ],
   "name": "fried tofu pouch"
  },
+ "이스트": {
+  "aliases": [
+   "active dry yeast",
+   "instant yeast",
+   "baking yeast"
+  ],
+  "name": "yeast"
+ },
  "장어": {
   "aliases": [
    "freshwater eel",
@@ -1604,6 +1681,15 @@
   ],
   "name": "sesame oil"
  },
+ "참나물": {
+  "aliases": [
+   "cham namul",
+   "korean chervil",
+   "pimpinella brachycarpa",
+   "wild chervil"
+  ],
+  "name": "chamnamul"
+ },
  "참치캔": {
   "aliases": [
    "tuna",
@@ -1648,6 +1734,16 @@
    "hot pepper"
   ],
   "name": "Cheongyang chili"
+ },
+ "총각무": {
+  "aliases": [
+   "chonggak mu",
+   "ponytail radish",
+   "altari radish",
+   "altari",
+   "chonggak"
+  ],
+  "name": "chonggak radish"
  },
  "취나물": {
   "aliases": [
