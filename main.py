@@ -377,10 +377,17 @@ def search_demand_job() -> None:
 
 def hub_build_job() -> None:
     """허브 홈 페이지를 최신 글·제도 기준으로 다시 만든다(data/output/hub/index.html). 실제 허브에 올리는 것은 HUB_PUBLISH_PATH를 설정했을 때만."""
-    try:
-        import hub_builder
+    # 데몬이 오래 켜져 있으면 예전에 불러온 hub_builder 코드로 계속 만들어(새 템플릿 + 옛 코드) 계산기 페이지 같은 새 파일이 빠졌다.
+    # 그래서 매번 새 프로세스로 실행해 git pull 한 최신 코드가 바로 쓰이게 한다.
+    import subprocess
 
-        hub_builder.run_daily()
+    try:
+        res = subprocess.run([sys.executable, str(BASE_DIR / "hub_builder.py"), "--publish"],
+                             capture_output=True, text=True, encoding="utf-8", timeout=900, cwd=str(BASE_DIR))
+        if res.returncode != 0:
+            logger.warning("허브 생성 실패(무시): %s", (res.stderr or res.stdout)[-300:])
+        else:
+            logger.info("허브 생성: %s", (res.stdout or "").strip()[-300:])
     except Exception as exc:  # noqa: BLE001
         logger.warning("허브 생성 중 오류(무시): %s", exc)
 
