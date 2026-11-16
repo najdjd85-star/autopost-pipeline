@@ -6126,6 +6126,24 @@
    "If it lacks sweetness, add 1 tsp of oligosaccharide."
   ]
  },
+ "kalguksu": {
+  "desc": "A neat and warm classic kalguksu made by boiling chewy noodles with Korean zucchini and potato in a deep broth simmered with anchovy and kombu.",
+  "h": "cfe1ab7b4c",
+  "name": "Knife-Cut Noodle Soup (Kalguksu)",
+  "steps": [
+   "Put 7 cup (1400ml) water, 15 deskinned anchovy (about 20g), and 2 sheet (about 10g) kombu in a pot, boil over high heat, and when it starts to boil, reduce to low heat to simmer for 10 min before removing all solids.",
+   "Cut 1 potato (about 150g) into half-moon slices 0.5cm thick, cut 1/3 Korean zucchini (about 100g) and 1/4 carrot (about 40g) into thin strips 0.5cm thick, and slice 1/2 green onion (about 50g) diagonally.",
+   "Bring the strained broth to a boil over high heat, and when it starts to boil, add the sliced potato first and cook over medium heat for 3 min.",
+   "Lightly shake off excess flour from 2 serving (300g) knife-cut wheat noodles, add them to the boiling broth, and gently stir with chopsticks so they do not clump together.",
+   "When the broth boils again, add the sliced Korean zucchini, carrot, 1 tbsp (15ml) minced garlic, and 1 tbsp (15ml) soup soy sauce, and cook over medium heat for 4-5 min until the noodles become translucent.",
+   "Finally, add the green onion, 1 tsp (2.5ml) salt, and a little black pepper, boil once more to adjust the seasoning, turn off the heat, and top with 1/2 sheet (about 1g) roasted seaweed cut into thin strips according to your preference."
+  ],
+  "tips": [
+   "You must shake off the starch powder from the surface of store-bought fresh noodles before adding them so the soup does not become murky and thick, but stays clean.",
+   "Since the noodles absorb the broth and easily get soggy over time, it is best to eat kalguksu right away while it is hot after cooking.",
+   "When making the broth, kombu releases bitter flavors and slime if boiled too long, so take it out 5 minutes after it starts boiling to keep the soup clearer."
+  ]
+ },
  "karaage": {
   "desc": "Japanese-style fried chicken marinated in garlic soy sauce.",
   "h": "70c2af69cd",
