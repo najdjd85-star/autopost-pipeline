@@ -1,83 +1,71 @@
 {
- "updated": "2026-11-16 18:04",
- "date": "2026-11-15",
+ "updated": "2026-11-17 18:03",
+ "date": "2026-11-16",
  "source": "네이버 데이터랩 검색어 트렌드(일별 지수)로 추정한 하루 검색량",
  "items": [
   {
    "slug": "kimbap",
-   "est": 7937,
-   "avg7": 8104,
-   "up": 0.98
+   "est": 7645,
+   "avg7": 8054,
+   "up": 0.95
+  },
+  {
+   "slug": "beef-radish-soup",
+   "est": 6317,
+   "avg7": 4662,
+   "up": 1.35
   },
   {
    "slug": "shabu-shabu",
-   "est": 7694,
-   "avg7": 7215,
-   "up": 1.07
-  },
-  {
-   "slug": "kalguksu",
-   "est": 6930,
-   "avg7": 6082,
-   "up": 1.14
+   "est": 6130,
+   "avg7": 7246,
+   "up": 0.85
   },
   {
    "slug": "mala-tang",
-   "est": 5195,
-   "avg7": 5284,
+   "est": 5156,
+   "avg7": 5264,
    "up": 0.98
   },
   {
-   "slug": "jjamppong",
-   "est": 3229,
-   "avg7": 2805,
-   "up": 1.15,
-   "rising": true
-  },
-  {
-   "slug": "damyang-tteokgalbi",
-   "est": 886,
-   "avg7": 405,
-   "up": 2.19,
-   "rising": true
-  },
-  {
-   "slug": "bossam",
-   "est": 2193,
-   "avg7": 1731,
-   "up": 1.27,
+   "slug": "chapssal-tteok",
+   "est": 3472,
+   "avg7": 1939,
+   "up": 1.79,
    "rising": true
   },
   {
    "slug": "baechu-doenjang-guk",
-   "est": 1682,
-   "avg7": 1199,
-   "up": 1.4,
+   "est": 2393,
+   "avg7": 1223,
+   "up": 1.96,
    "rising": true
   },
   {
-   "slug": "beef-radish-soup",
-   "est": 4930,
-   "avg7": 4657,
-   "up": 1.06
+   "slug": "braised-tofu",
+   "est": 2711,
+   "avg7": 2287,
+   "up": 1.19,
+   "rising": true
   },
   {
-   "slug": "gamjatang",
-   "est": 4516,
-   "avg7": 4491,
-   "up": 1.01
+   "slug": "parae-muchim",
+   "est": 1328,
+   "avg7": 782,
+   "up": 1.7,
+   "rising": true
   },
   {
-   "slug": "dakgalbi",
-   "est": 3885,
-   "avg7": 3752,
-   "up": 1.04
+   "slug": "kalguksu",
+   "est": 4959,
+   "avg7": 6126,
+   "up": 0.81
   },
   {
-   "slug": "budae-jjigae",
-   "est": 3624,
-   "avg7": 3844,
-   "up": 0.94
+   "slug": "soft-tofu-stew",
+   "est": 3528,
+   "avg7": 3234,
+   "up": 1.09
   },
   {
    "slug": "tteokbokki",
@@ -86,1510 +74,1636 @@
    "up": 1.0
   },
   {
-   "slug": "sundae-guk",
-   "est": 3299,
-   "avg7": 3463,
-   "up": 0.95
+   "slug": "budae-jjigae",
+   "est": 3484,
+   "avg7": 3825,
+   "up": 0.91
+  },
+  {
+   "slug": "dakgalbi",
+   "est": 3420,
+   "avg7": 3739,
+   "up": 0.91
+  },
+  {
+   "slug": "gamjatang",
+   "est": 3414,
+   "avg7": 4487,
+   "up": 0.76
   },
   {
    "slug": "galbitang",
-   "est": 3277,
-   "avg7": 2961,
-   "up": 1.11
-  },
-  {
-   "slug": "jokbal",
-   "est": 3068,
-   "avg7": 3376,
-   "up": 0.91
-  },
-  {
-   "slug": "soft-tofu-stew",
-   "est": 3024,
-   "avg7": 3264,
-   "up": 0.93
-  },
-  {
-   "slug": "dakdoritang",
-   "est": 2707,
-   "avg7": 3100,
-   "up": 0.87
-  },
-  {
-   "slug": "seasoned-bean-sprouts",
-   "est": 2461,
-   "avg7": 2750,
-   "up": 0.9
-  },
-  {
-   "slug": "kimchi-jjigae",
-   "est": 2401,
-   "avg7": 2427,
-   "up": 0.99
-  },
-  {
-   "slug": "chapssal-tteok",
-   "est": 2280,
-   "avg7": 1919,
-   "up": 1.19
-  },
-  {
-   "slug": "baechu-geotjeori",
-   "est": 2249,
-   "avg7": 1973,
-   "up": 1.14
-  },
-  {
-   "slug": "jinmichae-bokkeum",
-   "est": 2166,
-   "avg7": 2223,
-   "up": 0.97
-  },
-  {
-   "slug": "ganjang-gejang",
-   "est": 2148,
-   "avg7": 2240,
-   "up": 0.96
-  },
-  {
-   "slug": "samgyetang",
-   "est": 2122,
-   "avg7": 2219,
-   "up": 0.96
-  },
-  {
-   "slug": "braised-tofu",
-   "est": 2000,
-   "avg7": 2325,
-   "up": 0.86
-  },
-  {
-   "slug": "quail-egg-jangjorim",
-   "est": 1962,
-   "avg7": 2265,
-   "up": 0.87
-  },
-  {
-   "slug": "bomdong-geotjeori",
-   "est": 1954,
-   "avg7": 2072,
-   "up": 0.94
-  },
-  {
-   "slug": "jjajangmyeon",
-   "est": 1915,
-   "avg7": 1675,
-   "up": 1.14
-  },
-  {
-   "slug": "bean-sprout-soup",
-   "est": 1876,
-   "avg7": 2133,
-   "up": 0.88
-  },
-  {
-   "slug": "ppyeo-haejangguk",
-   "est": 1831,
-   "avg7": 1877,
-   "up": 0.98
-  },
-  {
-   "slug": "seolleongtang",
-   "est": 1828,
-   "avg7": 1844,
-   "up": 0.99
-  },
-  {
-   "slug": "ojingeo-bokkeum",
-   "est": 1775,
-   "avg7": 2244,
-   "up": 0.79
-  },
-  {
-   "slug": "jjukkumi-bokkeum",
-   "est": 1767,
-   "avg7": 1947,
-   "up": 0.91
-  },
-  {
-   "slug": "kids-mini-gimbap",
-   "est": 1726,
-   "avg7": 1889,
-   "up": 0.91
-  },
-  {
-   "slug": "miyeok-julgi-bokkeum",
-   "est": 1642,
-   "avg7": 1879,
-   "up": 0.87
-  },
-  {
-   "slug": "ojingeo-muguk",
-   "est": 1634,
-   "avg7": 1731,
-   "up": 0.94
-  },
-  {
-   "slug": "hotteok",
-   "est": 1618,
-   "avg7": 1140,
-   "up": 1.42
-  },
-  {
-   "slug": "steamed-egg",
-   "est": 1603,
-   "avg7": 1574,
-   "up": 1.02
-  },
-  {
-   "slug": "gul-gukbap",
-   "est": 1599,
-   "avg7": 1285,
-   "up": 1.24
-  },
-  {
-   "slug": "tuna-kimchi-stew",
-   "est": 1577,
-   "avg7": 1608,
-   "up": 0.98
-  },
-  {
-   "slug": "dakgangjeong",
-   "est": 1565,
-   "avg7": 1786,
-   "up": 0.88
-  },
-  {
-   "slug": "kodari-jorim",
-   "est": 1534,
-   "avg7": 1638,
-   "up": 0.94
-  },
-  {
-   "slug": "godeungeo-mu-jorim",
-   "est": 1533,
-   "avg7": 1615,
-   "up": 0.95
-  },
-  {
-   "slug": "beef-seaweed-soup",
-   "est": 1485,
-   "avg7": 1697,
-   "up": 0.87
-  },
-  {
-   "slug": "chonggak-kimchi",
-   "est": 1462,
-   "avg7": 1730,
-   "up": 0.85
-  },
-  {
-   "slug": "kimchi-jjim",
-   "est": 1366,
-   "avg7": 1240,
+   "est": 3265,
+   "avg7": 2972,
    "up": 1.1
   },
   {
-   "slug": "galchi-jorim",
-   "est": 1366,
-   "avg7": 1362,
-   "up": 1.0
+   "slug": "seasoned-bean-sprouts",
+   "est": 3051,
+   "avg7": 2703,
+   "up": 1.13
+  },
+  {
+   "slug": "sundae-guk",
+   "est": 3037,
+   "avg7": 3447,
+   "up": 0.88
+  },
+  {
+   "slug": "jokbal",
+   "est": 3028,
+   "avg7": 3370,
+   "up": 0.9
+  },
+  {
+   "slug": "dakdoritang",
+   "est": 2766,
+   "avg7": 3069,
+   "up": 0.9
+  },
+  {
+   "slug": "ganjang-gejang",
+   "est": 2651,
+   "avg7": 2208,
+   "up": 1.2
+  },
+  {
+   "slug": "quail-egg-jangjorim",
+   "est": 2488,
+   "avg7": 2226,
+   "up": 1.12
+  },
+  {
+   "slug": "jjamppong",
+   "est": 2483,
+   "avg7": 2814,
+   "up": 0.88
+  },
+  {
+   "slug": "kimchi-jjigae",
+   "est": 2462,
+   "avg7": 2412,
+   "up": 1.02
+  },
+  {
+   "slug": "ojingeo-bokkeum",
+   "est": 2378,
+   "avg7": 2210,
+   "up": 1.08
+  },
+  {
+   "slug": "jinmichae-bokkeum",
+   "est": 2334,
+   "avg7": 2204,
+   "up": 1.06
+  },
+  {
+   "slug": "bean-sprout-soup",
+   "est": 2283,
+   "avg7": 2101,
+   "up": 1.09
+  },
+  {
+   "slug": "baechu-geotjeori",
+   "est": 2277,
+   "avg7": 1993,
+   "up": 1.14
+  },
+  {
+   "slug": "samgyetang",
+   "est": 2244,
+   "avg7": 2213,
+   "up": 1.01
+  },
+  {
+   "slug": "bomdong-geotjeori",
+   "est": 2184,
+   "avg7": 2078,
+   "up": 1.05
+  },
+  {
+   "slug": "miyeok-julgi-bokkeum",
+   "est": 2158,
+   "avg7": 1846,
+   "up": 1.17
+  },
+  {
+   "slug": "godeungeo-mu-jorim",
+   "est": 2123,
+   "avg7": 1609,
+   "up": 1.32
+  },
+  {
+   "slug": "bossam",
+   "est": 2041,
+   "avg7": 1754,
+   "up": 1.16
+  },
+  {
+   "slug": "ojingeo-muguk",
+   "est": 2031,
+   "avg7": 1723,
+   "up": 1.18
+  },
+  {
+   "slug": "chonggak-kimchi",
+   "est": 1877,
+   "avg7": 1719,
+   "up": 1.09
+  },
+  {
+   "slug": "kodari-jorim",
+   "est": 1873,
+   "avg7": 1630,
+   "up": 1.15
+  },
+  {
+   "slug": "jjukkumi-bokkeum",
+   "est": 1841,
+   "avg7": 1926,
+   "up": 0.96
+  },
+  {
+   "slug": "beef-seaweed-soup",
+   "est": 1748,
+   "avg7": 1677,
+   "up": 1.04
+  },
+  {
+   "slug": "kids-mini-gimbap",
+   "est": 1722,
+   "avg7": 1874,
+   "up": 0.92
+  },
+  {
+   "slug": "tuna-kimchi-stew",
+   "est": 1714,
+   "avg7": 1590,
+   "up": 1.08
+  },
+  {
+   "slug": "hotteok",
+   "est": 1713,
+   "avg7": 1169,
+   "up": 1.47
+  },
+  {
+   "slug": "jjajangmyeon",
+   "est": 1684,
+   "avg7": 1672,
+   "up": 1.01
+  },
+  {
+   "slug": "ppyeo-haejangguk",
+   "est": 1677,
+   "avg7": 1867,
+   "up": 0.9
+  },
+  {
+   "slug": "seolleongtang",
+   "est": 1610,
+   "avg7": 1834,
+   "up": 0.88
+  },
+  {
+   "slug": "steamed-egg",
+   "est": 1605,
+   "avg7": 1565,
+   "up": 1.03
+  },
+  {
+   "slug": "gul-gukbap",
+   "est": 1589,
+   "avg7": 1317,
+   "up": 1.21
+  },
+  {
+   "slug": "sukju-namul",
+   "est": 1587,
+   "avg7": 1383,
+   "up": 1.15
+  },
+  {
+   "slug": "dotorimuk-muchim",
+   "est": 1546,
+   "avg7": 1527,
+   "up": 1.01
+  },
+  {
+   "slug": "dakgangjeong",
+   "est": 1520,
+   "avg7": 1769,
+   "up": 0.86
   },
   {
    "slug": "dakbal",
-   "est": 1353,
-   "avg7": 1597,
-   "up": 0.85
+   "est": 1505,
+   "avg7": 1583,
+   "up": 0.95
+  },
+  {
+   "slug": "spicy-pork",
+   "est": 1458,
+   "avg7": 1353,
+   "up": 1.08
+  },
+  {
+   "slug": "beef-jangjorim",
+   "est": 1455,
+   "avg7": 1252,
+   "up": 1.16
+  },
+  {
+   "slug": "gat-kimchi",
+   "est": 1418,
+   "avg7": 1249,
+   "up": 1.14
+  },
+  {
+   "slug": "cucumber-salad",
+   "est": 1417,
+   "avg7": 2066,
+   "up": 0.69
+  },
+  {
+   "slug": "galchi-jorim",
+   "est": 1405,
+   "avg7": 1352,
+   "up": 1.04
+  },
+  {
+   "slug": "myeolchi-bokkeum",
+   "est": 1358,
+   "avg7": 1234,
+   "up": 1.1
+  },
+  {
+   "slug": "kimchi-jjim",
+   "est": 1355,
+   "avg7": 1235,
+   "up": 1.1
+  },
+  {
+   "slug": "dakgomtang-simple",
+   "est": 1258,
+   "avg7": 1101,
+   "up": 1.14
+  },
+  {
+   "slug": "muu-saengchae",
+   "est": 1232,
+   "avg7": 928,
+   "up": 1.33
   },
   {
    "slug": "hummus",
-   "est": 1341,
-   "avg7": 1545,
-   "up": 0.87
+   "est": 1227,
+   "avg7": 1516,
+   "up": 0.81
+  },
+  {
+   "slug": "mala-xiangguo",
+   "est": 1191,
+   "avg7": 958,
+   "up": 1.24
+  },
+  {
+   "slug": "galbi-jjim-pork",
+   "est": 1178,
+   "avg7": 1280,
+   "up": 0.92
+  },
+  {
+   "slug": "stir-fried-zucchini",
+   "est": 1168,
+   "avg7": 1444,
+   "up": 0.81
+  },
+  {
+   "slug": "sigeumchi-doenjang-guk",
+   "est": 1166,
+   "avg7": 1038,
+   "up": 1.12
+  },
+  {
+   "slug": "naju-gomtang",
+   "est": 1143,
+   "avg7": 1186,
+   "up": 0.96
   },
   {
    "slug": "donkatsu",
-   "est": 1317,
-   "avg7": 1111,
+   "est": 1137,
+   "avg7": 1116,
+   "up": 1.02
+  },
+  {
+   "slug": "dongchimi",
+   "est": 1133,
+   "avg7": 732,
+   "up": 1.55
+  },
+  {
+   "slug": "nakji-bokkeum",
+   "est": 1132,
+   "avg7": 989,
+   "up": 1.14
+  },
+  {
+   "slug": "doenjang-stew",
+   "est": 1131,
+   "avg7": 1085,
+   "up": 1.04
+  },
+  {
+   "slug": "arong-satae-suyuk",
+   "est": 1120,
+   "avg7": 1200,
+   "up": 0.93
+  },
+  {
+   "slug": "hamburg-steak",
+   "est": 1114,
+   "avg7": 855,
+   "up": 1.3
+  },
+  {
+   "slug": "gamja-jorim",
+   "est": 1103,
+   "avg7": 1045,
+   "up": 1.06
+  },
+  {
+   "slug": "yeongeun-jorim",
+   "est": 1094,
+   "avg7": 1207,
+   "up": 0.91
+  },
+  {
+   "slug": "yakgwa",
+   "est": 1091,
+   "avg7": 642,
+   "up": 1.7
+  },
+  {
+   "slug": "janchi-noodles",
+   "est": 1052,
+   "avg7": 1224,
+   "up": 0.86
+  },
+  {
+   "slug": "gosari-bokkeum",
+   "est": 1043,
+   "avg7": 1042,
+   "up": 1.0
+  },
+  {
+   "slug": "jjimdak",
+   "est": 1014,
+   "avg7": 1029,
+   "up": 0.99
+  },
+  {
+   "slug": "wolnam-ssam",
+   "est": 1000,
+   "avg7": 943,
+   "up": 1.06
+  },
+  {
+   "slug": "kimchi-mandu-jeongol",
+   "est": 999,
+   "avg7": 1194,
+   "up": 0.84
+  },
+  {
+   "slug": "chamnamul-muchim",
+   "est": 964,
+   "avg7": 868,
+   "up": 1.11
+  },
+  {
+   "slug": "kongnamul-bap",
+   "est": 963,
+   "avg7": 811,
    "up": 1.19
   },
   {
    "slug": "french-toast",
-   "est": 1298,
-   "avg7": 1133,
-   "up": 1.15
-  },
-  {
-   "slug": "janchi-noodles",
-   "est": 1292,
-   "avg7": 1217,
-   "up": 1.06
-  },
-  {
-   "slug": "dotorimuk-muchim",
-   "est": 1253,
-   "avg7": 1549,
-   "up": 0.81
-  },
-  {
-   "slug": "bajirak-kalguksu",
-   "est": 1191,
-   "avg7": 1066,
-   "up": 1.12
-  },
-  {
-   "slug": "spicy-pork",
-   "est": 1190,
-   "avg7": 1374,
-   "up": 0.87
-  },
-  {
-   "slug": "myeolchi-bokkeum",
-   "est": 1160,
-   "avg7": 1250,
-   "up": 0.93
-  },
-  {
-   "slug": "cucumber-salad",
-   "est": 1150,
-   "avg7": 2159,
-   "up": 0.53
-  },
-  {
-   "slug": "beef-jangjorim",
-   "est": 1135,
-   "avg7": 1261,
-   "up": 0.9
-  },
-  {
-   "slug": "kimchi-mandu-jeongol",
-   "est": 1130,
-   "avg7": 1191,
-   "up": 0.95
-  },
-  {
-   "slug": "gat-kimchi",
-   "est": 1127,
-   "avg7": 1255,
-   "up": 0.9
-  },
-  {
-   "slug": "sukju-namul",
-   "est": 1113,
-   "avg7": 1410,
-   "up": 0.79
-  },
-  {
-   "slug": "makguksu",
-   "est": 1113,
-   "avg7": 749,
-   "up": 1.49
-  },
-  {
-   "slug": "arong-satae-suyuk",
-   "est": 1113,
-   "avg7": 1217,
-   "up": 0.91
-  },
-  {
-   "slug": "mala-xiangguo",
-   "est": 1106,
-   "avg7": 954,
-   "up": 1.16
-  },
-  {
-   "slug": "naju-gomtang",
-   "est": 1091,
-   "avg7": 1191,
-   "up": 0.92
-  },
-  {
-   "slug": "jeonju-kongnamul-gukbap",
-   "est": 1063,
-   "avg7": 918,
-   "up": 1.16
-  },
-  {
-   "slug": "haemul-jjim",
-   "est": 1023,
-   "avg7": 958,
-   "up": 1.07
-  },
-  {
-   "slug": "goguma-matang",
-   "est": 1021,
-   "avg7": 1296,
-   "up": 0.79
-  },
-  {
-   "slug": "jjimdak",
-   "est": 1019,
-   "avg7": 1034,
-   "up": 0.99
-  },
-  {
-   "slug": "nakji-bokkeum",
-   "est": 1015,
-   "avg7": 994,
-   "up": 1.02
-  },
-  {
-   "slug": "muu-saengchae",
-   "est": 1008,
-   "avg7": 924,
-   "up": 1.09
-  },
-  {
-   "slug": "galbi-jjim-pork",
-   "est": 994,
-   "avg7": 1290,
-   "up": 0.77
-  },
-  {
-   "slug": "doenjang-stew",
-   "est": 947,
-   "avg7": 1107,
-   "up": 0.86
-  },
-  {
-   "slug": "hamburg-steak",
-   "est": 947,
-   "avg7": 850,
-   "up": 1.11
-  },
-  {
-   "slug": "dakgomtang-simple",
-   "est": 945,
-   "avg7": 1112,
-   "up": 0.85
-  },
-  {
-   "slug": "dak-kalguksu",
-   "est": 940,
-   "avg7": 976,
-   "up": 0.96
-  },
-  {
-   "slug": "stir-fried-zucchini",
-   "est": 921,
-   "avg7": 1506,
-   "up": 0.61
-  },
-  {
-   "slug": "parae-muchim",
-   "est": 921,
-   "avg7": 776,
-   "up": 1.19
-  },
-  {
-   "slug": "yeongeun-jorim",
-   "est": 920,
-   "avg7": 1228,
-   "up": 0.75
-  },
-  {
-   "slug": "wolnam-ssam",
-   "est": 908,
-   "avg7": 950,
-   "up": 0.96
-  },
-  {
-   "slug": "dongchimi",
-   "est": 905,
-   "avg7": 721,
-   "up": 1.26
-  },
-  {
-   "slug": "gul-jeon",
-   "est": 893,
-   "avg7": 611,
-   "up": 1.46
-  },
-  {
-   "slug": "palbochae",
-   "est": 891,
-   "avg7": 978,
-   "up": 0.91
-  },
-  {
-   "slug": "oripa-jumulleok",
-   "est": 889,
-   "avg7": 834,
-   "up": 1.07
-  },
-  {
-   "slug": "yakgwa",
-   "est": 883,
-   "avg7": 637,
-   "up": 1.39
-  },
-  {
-   "slug": "gamja-jorim",
-   "est": 869,
-   "avg7": 1070,
-   "up": 0.81
-  },
-  {
-   "slug": "gosari-bokkeum",
-   "est": 852,
-   "avg7": 1064,
+   "est": 914,
+   "avg7": 1138,
    "up": 0.8
   },
   {
-   "slug": "gopchang-jeongol",
-   "est": 848,
-   "avg7": 1084,
-   "up": 0.78
-  },
-  {
-   "slug": "yangjangpi",
-   "est": 814,
-   "avg7": 916,
-   "up": 0.89
-  },
-  {
-   "slug": "sigeumchi-doenjang-guk",
-   "est": 812,
-   "avg7": 1055,
-   "up": 0.77
-  },
-  {
-   "slug": "chungmu-gimbap",
-   "est": 796,
-   "avg7": 811,
-   "up": 0.98
-  },
-  {
    "slug": "yurinki",
-   "est": 789,
-   "avg7": 1068,
-   "up": 0.74
-  },
-  {
-   "slug": "haemul-kalguksu",
-   "est": 782,
-   "avg7": 580,
-   "up": 1.35
-  },
-  {
-   "slug": "sukiyaki",
-   "est": 770,
-   "avg7": 1001,
-   "up": 0.77
-  },
-  {
-   "slug": "buchu-muchim",
-   "est": 733,
-   "avg7": 848,
+   "est": 912,
+   "avg7": 1054,
    "up": 0.86
   },
   {
-   "slug": "pyeongyang-naengmyeon",
-   "est": 726,
-   "avg7": 546,
-   "up": 1.33
-  },
-  {
-   "slug": "chamnamul-muchim",
-   "est": 713,
-   "avg7": 874,
-   "up": 0.82
-  },
-  {
-   "slug": "kimchi-fried-rice",
-   "est": 712,
-   "avg7": 646,
-   "up": 1.1
-  },
-  {
    "slug": "bibimbap",
-   "est": 707,
-   "avg7": 848,
-   "up": 0.83
-  },
-  {
-   "slug": "daegu-tang",
-   "est": 701,
-   "avg7": 647,
+   "est": 901,
+   "avg7": 833,
    "up": 1.08
   },
   {
-   "slug": "gochu-jangajji",
-   "est": 695,
-   "avg7": 1596,
-   "up": 0.44
+   "slug": "goguma-matang",
+   "est": 898,
+   "avg7": 1271,
+   "up": 0.71
   },
   {
-   "slug": "unagi-donburi",
-   "est": 692,
-   "avg7": 783,
-   "up": 0.88
+   "slug": "gul-jeon",
+   "est": 894,
+   "avg7": 636,
+   "up": 1.41
   },
   {
-   "slug": "kongnamul-bap",
-   "est": 684,
-   "avg7": 825,
+   "slug": "gopchang-jeongol",
+   "est": 889,
+   "avg7": 1067,
    "up": 0.83
   },
   {
    "slug": "baechu-jeon",
-   "est": 681,
-   "avg7": 436,
-   "up": 1.56
-  },
-  {
-   "slug": "soy-egg-rice",
-   "est": 673,
-   "avg7": 725,
-   "up": 0.93
-  },
-  {
-   "slug": "godeungeo-gui",
-   "est": 672,
-   "avg7": 684,
-   "up": 0.98
-  },
-  {
-   "slug": "haemul-tang",
-   "est": 660,
-   "avg7": 647,
-   "up": 1.02
-  },
-  {
-   "slug": "doraji-muchim",
-   "est": 656,
-   "avg7": 820,
-   "up": 0.8
-  },
-  {
-   "slug": "golbaengi-muchim",
-   "est": 656,
-   "avg7": 810,
-   "up": 0.81
-  },
-  {
-   "slug": "egg-drop-soup",
-   "est": 640,
-   "avg7": 671,
-   "up": 0.95
+   "est": 869,
+   "avg7": 450,
+   "up": 1.93
   },
   {
    "slug": "ueong-jorim",
-   "est": 626,
-   "avg7": 800,
-   "up": 0.78
+   "est": 860,
+   "avg7": 791,
+   "up": 1.09
   },
   {
-   "slug": "kkomak-muchim",
-   "est": 625,
-   "avg7": 612,
-   "up": 1.02
-  },
-  {
-   "slug": "hotdog",
-   "est": 622,
-   "avg7": 667,
-   "up": 0.93
-  },
-  {
-   "slug": "yubu-chobap",
-   "est": 620,
-   "avg7": 797,
-   "up": 0.78
-  },
-  {
-   "slug": "kkomak-bibimbap",
-   "est": 618,
-   "avg7": 553,
-   "up": 1.12
-  },
-  {
-   "slug": "japchae",
-   "est": 616,
-   "avg7": 808,
-   "up": 0.76
-  },
-  {
-   "slug": "bun-cha",
-   "est": 605,
-   "avg7": 682,
-   "up": 0.89
-  },
-  {
-   "slug": "gaji-bokkeum",
-   "est": 600,
-   "avg7": 1194,
-   "up": 0.5
-  },
-  {
-   "slug": "tomato-egg",
-   "est": 597,
-   "avg7": 741,
-   "up": 0.81
-  },
-  {
-   "slug": "jjokpa-kimchi",
-   "est": 594,
-   "avg7": 1330,
-   "up": 0.45
-  },
-  {
-   "slug": "baek-kimchi",
-   "est": 593,
-   "avg7": 456,
-   "up": 1.3
-  },
-  {
-   "slug": "biji-jjigae",
-   "est": 587,
-   "avg7": 638,
+   "slug": "jeonju-kongnamul-gukbap",
+   "est": 851,
+   "avg7": 923,
    "up": 0.92
   },
   {
-   "slug": "lasagna",
-   "est": 568,
-   "avg7": 635,
-   "up": 0.89
+   "slug": "sukiyaki",
+   "est": 843,
+   "avg7": 992,
+   "up": 0.85
   },
   {
-   "slug": "hwangtae-haejangguk",
-   "est": 567,
-   "avg7": 481,
-   "up": 1.18
+   "slug": "japchae",
+   "est": 837,
+   "avg7": 797,
+   "up": 1.05
   },
   {
-   "slug": "omegi-tteok",
-   "est": 567,
-   "avg7": 382,
-   "up": 1.48
+   "slug": "tomato-egg",
+   "est": 835,
+   "avg7": 726,
+   "up": 1.15
   },
   {
-   "slug": "egg-fried-rice",
-   "est": 565,
-   "avg7": 471,
-   "up": 1.2
-  },
-  {
-   "slug": "mumallaengi-muchim",
-   "est": 561,
-   "avg7": 554,
-   "up": 1.01
-  },
-  {
-   "slug": "hwangtae-chae-muchim",
-   "est": 559,
-   "avg7": 670,
-   "up": 0.83
-  },
-  {
-   "slug": "stir-fried-potato",
-   "est": 557,
-   "avg7": 649,
+   "slug": "haemul-jjim",
+   "est": 831,
+   "avg7": 963,
    "up": 0.86
   },
   {
-   "slug": "sundubu-egg-tang",
-   "est": 556,
-   "avg7": 600,
-   "up": 0.93
+   "slug": "unagi-donburi",
+   "est": 822,
+   "avg7": 776,
+   "up": 1.06
   },
   {
-   "slug": "gamja-ongsimi",
-   "est": 555,
-   "avg7": 634,
-   "up": 0.87
+   "slug": "bajirak-kalguksu",
+   "est": 819,
+   "avg7": 1071,
+   "up": 0.76
   },
   {
-   "slug": "omurice",
-   "est": 553,
-   "avg7": 658,
+   "slug": "dak-kalguksu",
+   "est": 817,
+   "avg7": 973,
    "up": 0.84
   },
   {
-   "slug": "mushroom-bokkeum",
-   "est": 547,
-   "avg7": 616,
+   "slug": "yangjangpi",
+   "est": 811,
+   "avg7": 910,
    "up": 0.89
   },
   {
-   "slug": "dongtae-jjigae",
-   "est": 540,
-   "avg7": 543,
-   "up": 0.99
+   "slug": "doraji-muchim",
+   "est": 806,
+   "avg7": 809,
+   "up": 1.0
   },
   {
-   "slug": "bibim-noodles",
-   "est": 533,
-   "avg7": 436,
-   "up": 1.22
+   "slug": "baek-kimchi",
+   "est": 787,
+   "avg7": 461,
+   "up": 1.71
   },
   {
-   "slug": "oiji-muchim",
-   "est": 526,
-   "avg7": 674,
-   "up": 0.78
-  },
-  {
-   "slug": "zucchini-jeon",
-   "est": 523,
-   "avg7": 859,
-   "up": 0.61
-  },
-  {
-   "slug": "pad-thai",
-   "est": 523,
-   "avg7": 696,
-   "up": 0.75
-  },
-  {
-   "slug": "salmon-steak",
-   "est": 520,
-   "avg7": 662,
-   "up": 0.79
-  },
-  {
-   "slug": "busan-pig-gukbap",
-   "est": 509,
-   "avg7": 511,
-   "up": 0.99
-  },
-  {
-   "slug": "galbi-jjim",
-   "est": 509,
-   "avg7": 548,
-   "up": 0.93
-  },
-  {
-   "slug": "cabbage-salad-simple",
-   "est": 501,
-   "avg7": 576,
-   "up": 0.87
-  },
-  {
-   "slug": "fish-cake-soup",
-   "est": 492,
-   "avg7": 694,
-   "up": 0.71
-  },
-  {
-   "slug": "bulgogi",
-   "est": 491,
-   "avg7": 522,
-   "up": 0.94
-  },
-  {
-   "slug": "cabbage-bokkeum",
-   "est": 491,
-   "avg7": 618,
-   "up": 0.79
-  },
-  {
-   "slug": "tangsuyuk",
-   "est": 486,
-   "avg7": 552,
-   "up": 0.88
-  },
-  {
-   "slug": "kkanpunggi",
-   "est": 483,
-   "avg7": 479,
-   "up": 1.01
-  },
-  {
-   "slug": "cheonan-hodu-gwaja",
-   "est": 480,
-   "avg7": 498,
+   "slug": "chungmu-gimbap",
+   "est": 780,
+   "avg7": 810,
    "up": 0.96
   },
   {
-   "slug": "pork-jangjorim",
-   "est": 473,
-   "avg7": 553,
-   "up": 0.85
+   "slug": "gochu-jangajji",
+   "est": 779,
+   "avg7": 1527,
+   "up": 0.51
   },
   {
-   "slug": "danmuji-muchim",
-   "est": 470,
-   "avg7": 532,
-   "up": 0.88
+   "slug": "gaji-bokkeum",
+   "est": 777,
+   "avg7": 1142,
+   "up": 0.68
   },
   {
-   "slug": "jeonbok-juk",
-   "est": 467,
-   "avg7": 496,
-   "up": 0.94
-  },
-  {
-   "slug": "gyeongsang-beef-mu-guk",
-   "est": 467,
-   "avg7": 616,
-   "up": 0.76
-  },
-  {
-   "slug": "rolled-omelet",
-   "est": 466,
-   "avg7": 556,
-   "up": 0.84
-  },
-  {
-   "slug": "kongnamul-haejangguk",
-   "est": 459,
-   "avg7": 326,
-   "up": 1.41
-  },
-  {
-   "slug": "jumeokbap",
-   "est": 451,
-   "avg7": 569,
-   "up": 0.79
-  },
-  {
-   "slug": "musaengchae-namul",
-   "est": 444,
-   "avg7": 402,
-   "up": 1.11
-  },
-  {
-   "slug": "dongdaemun-dakhanmari",
-   "est": 436,
-   "avg7": 458,
-   "up": 0.95
-  },
-  {
-   "slug": "kimchi-jeon",
-   "est": 431,
-   "avg7": 528,
-   "up": 0.82
-  },
-  {
-   "slug": "oori-baeksuk",
-   "est": 427,
-   "avg7": 383,
-   "up": 1.11
-  },
-  {
-   "slug": "fish-cake-stir-fry",
-   "est": 424,
-   "avg7": 548,
-   "up": 0.77
-  },
-  {
-   "slug": "dumpling-soup",
-   "est": 423,
-   "avg7": 488,
-   "up": 0.87
-  },
-  {
-   "slug": "myeolchi-guksu",
-   "est": 419,
-   "avg7": 425,
+   "slug": "yubu-chobap",
+   "est": 776,
+   "avg7": 781,
    "up": 0.99
   },
   {
-   "slug": "chwinamul-muchim",
-   "est": 401,
-   "avg7": 473,
-   "up": 0.85
+   "slug": "buchu-muchim",
+   "est": 775,
+   "avg7": 839,
+   "up": 0.92
   },
   {
-   "slug": "bajirak-sulchim",
-   "est": 399,
-   "avg7": 566,
-   "up": 0.7
+   "slug": "palbochae",
+   "est": 775,
+   "avg7": 978,
+   "up": 0.79
   },
   {
-   "slug": "sundae-bokkeum",
-   "est": 396,
-   "avg7": 531,
-   "up": 0.75
+   "slug": "oripa-jumulleok",
+   "est": 769,
+   "avg7": 831,
+   "up": 0.93
   },
   {
-   "slug": "kkwabarou",
-   "est": 395,
-   "avg7": 406,
-   "up": 0.97
+   "slug": "kkomak-bibimbap",
+   "est": 767,
+   "avg7": 559,
+   "up": 1.37
   },
   {
-   "slug": "dubu-buchim",
-   "est": 392,
-   "avg7": 477,
-   "up": 0.82
+   "slug": "biji-jjigae",
+   "est": 761,
+   "avg7": 634,
+   "up": 1.2
   },
   {
-   "slug": "tteokguk",
-   "est": 385,
-   "avg7": 406,
+   "slug": "sundubu-egg-tang",
+   "est": 753,
+   "avg7": 597,
+   "up": 1.26
+  },
+  {
+   "slug": "zucchini-jeon",
+   "est": 750,
+   "avg7": 829,
+   "up": 0.9
+  },
+  {
+   "slug": "kkomak-muchim",
+   "est": 743,
+   "avg7": 624,
+   "up": 1.19
+  },
+  {
+   "slug": "egg-drop-soup",
+   "est": 740,
+   "avg7": 664,
+   "up": 1.11
+  },
+  {
+   "slug": "omegi-tteok",
+   "est": 735,
+   "avg7": 386,
+   "up": 1.9
+  },
+  {
+   "slug": "kimchi-fried-rice",
+   "est": 714,
+   "avg7": 643,
+   "up": 1.11
+  },
+  {
+   "slug": "stir-fried-potato",
+   "est": 713,
+   "avg7": 633,
+   "up": 1.13
+  },
+  {
+   "slug": "mushroom-bokkeum",
+   "est": 711,
+   "avg7": 604,
+   "up": 1.18
+  },
+  {
+   "slug": "cabbage-salad-simple",
+   "est": 706,
+   "avg7": 565,
+   "up": 1.25
+  },
+  {
+   "slug": "pad-thai",
+   "est": 694,
+   "avg7": 684,
+   "up": 1.01
+  },
+  {
+   "slug": "golbaengi-muchim",
+   "est": 676,
+   "avg7": 805,
+   "up": 0.84
+  },
+  {
+   "slug": "godeungeo-gui",
+   "est": 674,
+   "avg7": 677,
+   "up": 1.0
+  },
+  {
+   "slug": "makguksu",
+   "est": 673,
+   "avg7": 758,
+   "up": 0.89
+  },
+  {
+   "slug": "soy-egg-rice",
+   "est": 671,
+   "avg7": 720,
+   "up": 0.93
+  },
+  {
+   "slug": "eobok-jaengban",
+   "est": 662,
+   "avg7": 420,
+   "up": 1.58
+  },
+  {
+   "slug": "cabbage-bokkeum",
+   "est": 660,
+   "avg7": 605,
+   "up": 1.09
+  },
+  {
+   "slug": "hotdog",
+   "est": 654,
+   "avg7": 658,
+   "up": 0.99
+  },
+  {
+   "slug": "mumallaengi-muchim",
+   "est": 650,
+   "avg7": 554,
+   "up": 1.17
+  },
+  {
+   "slug": "jjokpa-kimchi",
+   "est": 631,
+   "avg7": 1286,
+   "up": 0.49
+  },
+  {
+   "slug": "bun-cha",
+   "est": 631,
+   "avg7": 677,
+   "up": 0.93
+  },
+  {
+   "slug": "rolled-omelet",
+   "est": 627,
+   "avg7": 547,
+   "up": 1.15
+  },
+  {
+   "slug": "musaengchae-namul",
+   "est": 622,
+   "avg7": 405,
+   "up": 1.53
+  },
+  {
+   "slug": "fish-cake-soup",
+   "est": 619,
+   "avg7": 687,
+   "up": 0.9
+  },
+  {
+   "slug": "gyeongsang-beef-mu-guk",
+   "est": 619,
+   "avg7": 617,
+   "up": 1.0
+  },
+  {
+   "slug": "omurice",
+   "est": 615,
+   "avg7": 648,
    "up": 0.95
   },
   {
-   "slug": "suyuk",
-   "est": 384,
-   "avg7": 210,
-   "up": 1.83
+   "slug": "salmon-steak",
+   "est": 614,
+   "avg7": 652,
+   "up": 0.94
   },
   {
-   "slug": "kkaennip-kimchi",
-   "est": 380,
-   "avg7": 477,
-   "up": 0.8
+   "slug": "hwangtae-chae-muchim",
+   "est": 603,
+   "avg7": 662,
+   "up": 0.91
   },
   {
-   "slug": "egg-jangjorim",
-   "est": 377,
-   "avg7": 453,
-   "up": 0.83
+   "slug": "pork-jangjorim",
+   "est": 602,
+   "avg7": 548,
+   "up": 1.1
+  },
+  {
+   "slug": "gamja-ongsimi",
+   "est": 596,
+   "avg7": 630,
+   "up": 0.95
+  },
+  {
+   "slug": "oiji-muchim",
+   "est": 595,
+   "avg7": 659,
+   "up": 0.9
+  },
+  {
+   "slug": "fish-cake-stir-fry",
+   "est": 585,
+   "avg7": 536,
+   "up": 1.09
+  },
+  {
+   "slug": "pyeongyang-naengmyeon",
+   "est": 583,
+   "avg7": 548,
+   "up": 1.06
+  },
+  {
+   "slug": "hayashi-rice",
+   "est": 574,
+   "avg7": 467,
+   "up": 1.23
   },
   {
    "slug": "mapa-dubu",
-   "est": 377,
-   "avg7": 494,
-   "up": 0.76
+   "est": 568,
+   "avg7": 486,
+   "up": 1.17
   },
   {
-   "slug": "kkaennip-jangajji",
-   "est": 371,
-   "avg7": 629,
-   "up": 0.59
+   "slug": "jeonbok-juk",
+   "est": 567,
+   "avg7": 490,
+   "up": 1.16
   },
   {
-   "slug": "buchu-jeon",
-   "est": 369,
-   "avg7": 562,
+   "slug": "lasagna",
+   "est": 564,
+   "avg7": 631,
+   "up": 0.89
+  },
+  {
+   "slug": "daegu-tang",
+   "est": 558,
+   "avg7": 653,
+   "up": 0.86
+  },
+  {
+   "slug": "dubu-buchim",
+   "est": 549,
+   "avg7": 469,
+   "up": 1.17
+  },
+  {
+   "slug": "damyang-tteokgalbi",
+   "est": 549,
+   "avg7": 424,
+   "up": 1.29
+  },
+  {
+   "slug": "galbi-jjim",
+   "est": 543,
+   "avg7": 544,
+   "up": 1.0
+  },
+  {
+   "slug": "bulgogi",
+   "est": 541,
+   "avg7": 517,
+   "up": 1.05
+  },
+  {
+   "slug": "danmuji-muchim",
+   "est": 525,
+   "avg7": 523,
+   "up": 1.0
+  },
+  {
+   "slug": "dumpling-soup",
+   "est": 510,
+   "avg7": 485,
+   "up": 1.05
+  },
+  {
+   "slug": "dongtae-jjigae",
+   "est": 503,
+   "avg7": 544,
+   "up": 0.92
+  },
+  {
+   "slug": "gyudon",
+   "est": 492,
+   "avg7": 462,
+   "up": 1.06
+  },
+  {
+   "slug": "hwangtae-haejangguk",
+   "est": 488,
+   "avg7": 484,
+   "up": 1.01
+  },
+  {
+   "slug": "chwinamul-muchim",
+   "est": 485,
+   "avg7": 464,
+   "up": 1.04
+  },
+  {
+   "slug": "jumeokbap",
+   "est": 474,
+   "avg7": 560,
+   "up": 0.85
+  },
+  {
+   "slug": "egg-fried-rice",
+   "est": 473,
+   "avg7": 472,
+   "up": 1.0
+  },
+  {
+   "slug": "tangsuyuk",
+   "est": 470,
+   "avg7": 548,
+   "up": 0.86
+  },
+  {
+   "slug": "busan-pig-gukbap",
+   "est": 470,
+   "avg7": 504,
+   "up": 0.93
+  },
+  {
+   "slug": "haemul-tang",
+   "est": 468,
+   "avg7": 650,
+   "up": 0.72
+  },
+  {
+   "slug": "suyuk",
+   "est": 467,
+   "avg7": 218,
+   "up": 2.14
+  },
+  {
+   "slug": "tantanmen",
+   "est": 457,
+   "avg7": 405,
+   "up": 1.13
+  },
+  {
+   "slug": "sundae-bokkeum",
+   "est": 456,
+   "avg7": 522,
+   "up": 0.87
+  },
+  {
+   "slug": "bibim-noodles",
+   "est": 454,
+   "avg7": 439,
+   "up": 1.03
+  },
+  {
+   "slug": "gaji-muchim",
+   "est": 454,
+   "avg7": 692,
    "up": 0.66
   },
   {
-   "slug": "jjolmyeon",
-   "est": 364,
-   "avg7": 399,
+   "slug": "gungjung-tteokbokki",
+   "est": 453,
+   "avg7": 371,
+   "up": 1.22
+  },
+  {
+   "slug": "kimchi-jeon",
+   "est": 446,
+   "avg7": 524,
+   "up": 0.85
+  },
+  {
+   "slug": "minari-muchim",
+   "est": 446,
+   "avg7": 385,
+   "up": 1.16
+  },
+  {
+   "slug": "kkaennip-jangajji",
+   "est": 443,
+   "avg7": 606,
+   "up": 0.73
+  },
+  {
+   "slug": "tteokguk",
+   "est": 442,
+   "avg7": 405,
+   "up": 1.09
+  },
+  {
+   "slug": "kkwabarou",
+   "est": 436,
+   "avg7": 403,
+   "up": 1.08
+  },
+  {
+   "slug": "egg-jangjorim",
+   "est": 433,
+   "avg7": 451,
+   "up": 0.96
+  },
+  {
+   "slug": "haemul-kalguksu",
+   "est": 433,
+   "avg7": 589,
+   "up": 0.73
+  },
+  {
+   "slug": "buchu-jeon",
+   "est": 430,
+   "avg7": 551,
+   "up": 0.78
+  },
+  {
+   "slug": "chop-steak",
+   "est": 430,
+   "avg7": 375,
+   "up": 1.15
+  },
+  {
+   "slug": "cheonan-hodu-gwaja",
+   "est": 425,
+   "avg7": 494,
+   "up": 0.86
+  },
+  {
+   "slug": "kkaennip-kimchi",
+   "est": 423,
+   "avg7": 463,
    "up": 0.91
   },
   {
    "slug": "jeju-gogi-guksu",
-   "est": 363,
-   "avg7": 492,
-   "up": 0.74
-  },
-  {
-   "slug": "ojingeo-sundae",
-   "est": 361,
-   "avg7": 495,
-   "up": 0.73
-  },
-  {
-   "slug": "deulkkae-kalguksu",
-   "est": 360,
-   "avg7": 372,
-   "up": 0.97
-  },
-  {
-   "slug": "kkotge-jjim",
-   "est": 358,
-   "avg7": 532,
-   "up": 0.67
-  },
-  {
-   "slug": "potato-pancake",
-   "est": 357,
-   "avg7": 509,
-   "up": 0.7
-  },
-  {
-   "slug": "gamja-chae-jeon",
-   "est": 350,
-   "avg7": 466,
-   "up": 0.75
-  },
-  {
-   "slug": "patjuk",
-   "est": 350,
-   "avg7": 357,
-   "up": 0.98
-  },
-  {
-   "slug": "gyudon",
-   "est": 343,
-   "avg7": 469,
-   "up": 0.73
-  },
-  {
-   "slug": "danhobak-juk",
-   "est": 338,
-   "avg7": 371,
-   "up": 0.91
-  },
-  {
-   "slug": "jeonbok-butter-gui",
-   "est": 333,
-   "avg7": 315,
-   "up": 1.06
-  },
-  {
-   "slug": "daeha-gui",
-   "est": 331,
-   "avg7": 558,
-   "up": 0.59
-  },
-  {
-   "slug": "kkwari-gochu-jjim",
-   "est": 322,
-   "avg7": 462,
-   "up": 0.7
-  },
-  {
-   "slug": "aglio-olio",
-   "est": 320,
-   "avg7": 407,
-   "up": 0.79
-  },
-  {
-   "slug": "jinju-naengmyeon",
-   "est": 320,
-   "avg7": 267,
-   "up": 1.2
-  },
-  {
-   "slug": "gaji-muchim",
-   "est": 318,
-   "avg7": 730,
-   "up": 0.44
-  },
-  {
-   "slug": "gungjung-tteokbokki",
-   "est": 315,
-   "avg7": 375,
-   "up": 0.84
-  },
-  {
-   "slug": "chop-steak",
-   "est": 314,
-   "avg7": 379,
-   "up": 0.83
-  },
-  {
-   "slug": "minari-muchim",
-   "est": 312,
-   "avg7": 391,
-   "up": 0.8
-  },
-  {
-   "slug": "duruchigi",
-   "est": 306,
-   "avg7": 419,
-   "up": 0.73
-  },
-  {
-   "slug": "tuna-mayo-bowl",
-   "est": 304,
-   "avg7": 358,
-   "up": 0.85
-  },
-  {
-   "slug": "gajami-jorim",
-   "est": 298,
-   "avg7": 363,
-   "up": 0.82
-  },
-  {
-   "slug": "hayashi-rice",
-   "est": 295,
-   "avg7": 481,
-   "up": 0.61
-  },
-  {
-   "slug": "gyeran-ppang",
-   "est": 292,
-   "avg7": 276,
-   "up": 1.06
-  },
-  {
-   "slug": "yeolmu-kimchi",
-   "est": 291,
-   "avg7": 494,
-   "up": 0.59
-  },
-  {
-   "slug": "oori-bulgogi",
-   "est": 290,
-   "avg7": 276,
-   "up": 1.05
-  },
-  {
-   "slug": "oi-sobagi",
-   "est": 290,
-   "avg7": 532,
-   "up": 0.54
-  },
-  {
-   "slug": "eohyang-gaji",
-   "est": 288,
-   "avg7": 439,
-   "up": 0.66
-  },
-  {
-   "slug": "eobok-jaengban",
-   "est": 286,
-   "avg7": 428,
-   "up": 0.67
-  },
-  {
-   "slug": "tuna-kimchi-fried-rice",
-   "est": 283,
-   "avg7": 277,
-   "up": 1.02
-  },
-  {
-   "slug": "simple-pancake",
-   "est": 283,
-   "avg7": 256,
-   "up": 1.11
-  },
-  {
-   "slug": "cheonggukjang-jjigae",
-   "est": 280,
-   "avg7": 296,
-   "up": 0.95
-  },
-  {
-   "slug": "seasoned-spinach",
-   "est": 276,
-   "avg7": 265,
-   "up": 1.04
-  },
-  {
-   "slug": "salmon-don",
-   "est": 275,
-   "avg7": 361,
-   "up": 0.76
+   "est": 422,
+   "avg7": 480,
+   "up": 0.88
   },
   {
    "slug": "dakgaejang",
-   "est": 268,
-   "avg7": 370,
-   "up": 0.72
+   "est": 419,
+   "avg7": 362,
+   "up": 1.16
   },
   {
-   "slug": "bugeo-guk",
-   "est": 266,
-   "avg7": 324,
-   "up": 0.82
+   "slug": "yeolmu-kimchi",
+   "est": 415,
+   "avg7": 477,
+   "up": 0.87
   },
   {
-   "slug": "chicken-mayo-deopbap",
-   "est": 263,
-   "avg7": 299,
-   "up": 0.88
-  },
-  {
-   "slug": "hongap-tang",
-   "est": 262,
-   "avg7": 290,
-   "up": 0.91
-  },
-  {
-   "slug": "potato-salad",
-   "est": 260,
-   "avg7": 326,
-   "up": 0.8
-  },
-  {
-   "slug": "tantanmen",
-   "est": 260,
-   "avg7": 408,
-   "up": 0.64
-  },
-  {
-   "slug": "naengi-muchim",
-   "est": 256,
-   "avg7": 147,
-   "up": 1.74
-  },
-  {
-   "slug": "haemul-pajeon",
-   "est": 253,
-   "avg7": 336,
-   "up": 0.75
-  },
-  {
-   "slug": "coleslaw",
-   "est": 250,
-   "avg7": 330,
-   "up": 0.76
-  },
-  {
-   "slug": "toowoomba-pasta",
-   "est": 248,
-   "avg7": 390,
-   "up": 0.64
-  },
-  {
-   "slug": "geonsaeu-bokkeum",
-   "est": 244,
-   "avg7": 288,
-   "up": 0.85
-  },
-  {
-   "slug": "deulkkae-sujebi",
-   "est": 241,
-   "avg7": 291,
-   "up": 0.83
-  },
-  {
-   "slug": "cheonggyeongchae-bokkeum",
-   "est": 239,
-   "avg7": 436,
-   "up": 0.55
-  },
-  {
-   "slug": "egg-porridge",
-   "est": 237,
-   "avg7": 247,
-   "up": 0.96
-  },
-  {
-   "slug": "gaji-twigim",
-   "est": 237,
-   "avg7": 455,
-   "up": 0.52
-  },
-  {
-   "slug": "tofu-kimchi",
-   "est": 236,
-   "avg7": 317,
-   "up": 0.74
-  },
-  {
-   "slug": "samchi-gui",
-   "est": 231,
-   "avg7": 242,
-   "up": 0.95
-  },
-  {
-   "slug": "ganjang-bibim-guksu",
-   "est": 231,
-   "avg7": 239,
-   "up": 0.97
-  },
-  {
-   "slug": "karaage",
-   "est": 230,
-   "avg7": 337,
-   "up": 0.68
-  },
-  {
-   "slug": "muneo-sukhoe",
-   "est": 226,
-   "avg7": 257,
-   "up": 0.88
-  },
-  {
-   "slug": "deunggalbi-jjim",
-   "est": 224,
-   "avg7": 249,
+   "slug": "dongdaemun-dakhanmari",
+   "est": 415,
+   "avg7": 460,
    "up": 0.9
   },
   {
-   "slug": "myeongran-pasta",
-   "est": 223,
-   "avg7": 277,
-   "up": 0.81
+   "slug": "potato-pancake",
+   "est": 414,
+   "avg7": 490,
+   "up": 0.84
   },
   {
-   "slug": "yangpa-jangajji",
-   "est": 223,
-   "avg7": 320,
-   "up": 0.7
+   "slug": "tuna-mayo-bowl",
+   "est": 413,
+   "avg7": 352,
+   "up": 1.17
   },
   {
-   "slug": "galchi-gui",
-   "est": 221,
-   "avg7": 212,
-   "up": 1.04
+   "slug": "patjuk",
+   "est": 408,
+   "avg7": 358,
+   "up": 1.14
   },
   {
-   "slug": "air-fryer-goguma",
-   "est": 219,
-   "avg7": 236,
+   "slug": "eohyang-gaji",
+   "est": 403,
+   "avg7": 433,
    "up": 0.93
   },
   {
-   "slug": "ojingeo-cho-muchim",
-   "est": 219,
-   "avg7": 403,
-   "up": 0.54
+   "slug": "kkanpunggi",
+   "est": 401,
+   "avg7": 481,
+   "up": 0.83
   },
   {
-   "slug": "tofu-egg-steam",
-   "est": 214,
-   "avg7": 224,
-   "up": 0.96
+   "slug": "toowoomba-pasta",
+   "est": 401,
+   "avg7": 380,
+   "up": 1.06
   },
   {
-   "slug": "saeu-jang",
-   "est": 214,
-   "avg7": 346,
-   "up": 0.62
+   "slug": "aglio-olio",
+   "est": 399,
+   "avg7": 400,
+   "up": 1.0
+  },
+  {
+   "slug": "gamja-chae-jeon",
+   "est": 399,
+   "avg7": 456,
+   "up": 0.87
+  },
+  {
+   "slug": "ojingeo-sundae",
+   "est": 396,
+   "avg7": 486,
+   "up": 0.81
+  },
+  {
+   "slug": "gyeran-ppang",
+   "est": 394,
+   "avg7": 278,
+   "up": 1.42
   },
   {
    "slug": "katsudon",
-   "est": 213,
-   "avg7": 363,
-   "up": 0.58
+   "est": 393,
+   "avg7": 357,
+   "up": 1.1
   },
   {
-   "slug": "chadol-sukju-bokkeum",
-   "est": 213,
-   "avg7": 331,
-   "up": 0.64
+   "slug": "jjolmyeon",
+   "est": 385,
+   "avg7": 395,
+   "up": 0.97
   },
   {
-   "slug": "pork-gochujang-jjigae",
-   "est": 212,
-   "avg7": 318,
-   "up": 0.67
+   "slug": "gajami-jorim",
+   "est": 383,
+   "avg7": 359,
+   "up": 1.07
+  },
+  {
+   "slug": "bajirak-sulchim",
+   "est": 380,
+   "avg7": 559,
+   "up": 0.68
+  },
+  {
+   "slug": "duruchigi",
+   "est": 379,
+   "avg7": 413,
+   "up": 0.92
+  },
+  {
+   "slug": "oori-baeksuk",
+   "est": 359,
+   "avg7": 386,
+   "up": 0.93
+  },
+  {
+   "slug": "danhobak-juk",
+   "est": 358,
+   "avg7": 369,
+   "up": 0.97
+  },
+  {
+   "slug": "deulkkae-kalguksu",
+   "est": 358,
+   "avg7": 371,
+   "up": 0.97
   },
   {
    "slug": "beef-bokkeumbap",
-   "est": 211,
-   "avg7": 238,
+   "est": 344,
+   "avg7": 236,
+   "up": 1.46
+  },
+  {
+   "slug": "chicken-mayo-deopbap",
+   "est": 341,
+   "avg7": 295,
+   "up": 1.16
+  },
+  {
+   "slug": "myeolchi-guksu",
+   "est": 338,
+   "avg7": 424,
+   "up": 0.8
+  },
+  {
+   "slug": "tofu-kimchi",
+   "est": 333,
+   "avg7": 313,
+   "up": 1.06
+  },
+  {
+   "slug": "bugeo-guk",
+   "est": 333,
+   "avg7": 321,
+   "up": 1.04
+  },
+  {
+   "slug": "karaage",
+   "est": 333,
+   "avg7": 332,
+   "up": 1.0
+  },
+  {
+   "slug": "potato-salad",
+   "est": 331,
+   "avg7": 319,
+   "up": 1.04
+  },
+  {
+   "slug": "kkwari-gochu-jjim",
+   "est": 330,
+   "avg7": 449,
+   "up": 0.74
+  },
+  {
+   "slug": "salmon-don",
+   "est": 329,
+   "avg7": 355,
+   "up": 0.93
+  },
+  {
+   "slug": "saeu-jang",
+   "est": 327,
+   "avg7": 337,
+   "up": 0.97
+  },
+  {
+   "slug": "chadol-sukju-bokkeum",
+   "est": 324,
+   "avg7": 325,
+   "up": 1.0
+  },
+  {
+   "slug": "egg-porridge",
+   "est": 319,
+   "avg7": 246,
+   "up": 1.3
+  },
+  {
+   "slug": "ojingeo-cho-muchim",
+   "est": 318,
+   "avg7": 392,
+   "up": 0.81
+  },
+  {
+   "slug": "cheonggukjang-jjigae",
+   "est": 317,
+   "avg7": 294,
+   "up": 1.08
+  },
+  {
+   "slug": "gochujapchae",
+   "est": 314,
+   "avg7": 303,
+   "up": 1.04
+  },
+  {
+   "slug": "dubu-duruchigi",
+   "est": 314,
+   "avg7": 220,
+   "up": 1.42
+  },
+  {
+   "slug": "danhobak-salad",
+   "est": 313,
+   "avg7": 308,
+   "up": 1.01
+  },
+  {
+   "slug": "seasoned-spinach",
+   "est": 311,
+   "avg7": 263,
+   "up": 1.18
+  },
+  {
+   "slug": "poo-pad-pong-curry",
+   "est": 309,
+   "avg7": 452,
+   "up": 0.68
+  },
+  {
+   "slug": "naengi-doenjang-guk",
+   "est": 308,
+   "avg7": 118,
+   "up": 2.61
+  },
+  {
+   "slug": "pork-gochujang-jjigae",
+   "est": 303,
+   "avg7": 310,
+   "up": 0.97
+  },
+  {
+   "slug": "chicken-nanban",
+   "est": 297,
+   "avg7": 330,
+   "up": 0.9
+  },
+  {
+   "slug": "coleslaw",
+   "est": 295,
+   "avg7": 326,
+   "up": 0.9
+  },
+  {
+   "slug": "tuna-kimchi-fried-rice",
+   "est": 294,
+   "avg7": 276,
+   "up": 1.06
+  },
+  {
+   "slug": "yukjeon",
+   "est": 291,
+   "avg7": 279,
+   "up": 1.04
+  },
+  {
+   "slug": "oi-sobagi",
+   "est": 287,
+   "avg7": 505,
+   "up": 0.57
+  },
+  {
+   "slug": "samchi-gui",
+   "est": 286,
+   "avg7": 241,
+   "up": 1.19
+  },
+  {
+   "slug": "naengi-muchim",
+   "est": 285,
+   "avg7": 154,
+   "up": 1.84
+  },
+  {
+   "slug": "jinju-naengmyeon",
+   "est": 285,
+   "avg7": 267,
+   "up": 1.07
+  },
+  {
+   "slug": "oori-bulgogi",
+   "est": 281,
+   "avg7": 275,
+   "up": 1.02
+  },
+  {
+   "slug": "yangpa-jangajji",
+   "est": 280,
+   "avg7": 310,
+   "up": 0.9
+  },
+  {
+   "slug": "gondre-bap",
+   "est": 278,
+   "avg7": 282,
+   "up": 0.99
+  },
+  {
+   "slug": "deulkkae-sujebi",
+   "est": 277,
+   "avg7": 288,
+   "up": 0.96
+  },
+  {
+   "slug": "cheonggyeongchae-bokkeum",
+   "est": 268,
+   "avg7": 424,
+   "up": 0.63
+  },
+  {
+   "slug": "gaji-twigim",
+   "est": 267,
+   "avg7": 436,
+   "up": 0.61
+  },
+  {
+   "slug": "tofu-egg-steam",
+   "est": 266,
+   "avg7": 223,
+   "up": 1.19
+  },
+  {
+   "slug": "mukssabal",
+   "est": 262,
+   "avg7": 223,
+   "up": 1.18
+  },
+  {
+   "slug": "jeju-gosari-yukgaejang",
+   "est": 262,
+   "avg7": 134,
+   "up": 1.96
+  },
+  {
+   "slug": "geonsaeu-bokkeum",
+   "est": 261,
+   "avg7": 283,
+   "up": 0.93
+  },
+  {
+   "slug": "kongnamul-haejangguk",
+   "est": 260,
+   "avg7": 331,
+   "up": 0.79
+  },
+  {
+   "slug": "myeongran-pasta",
+   "est": 259,
+   "avg7": 274,
+   "up": 0.95
+  },
+  {
+   "slug": "hongap-tang",
+   "est": 258,
+   "avg7": 288,
    "up": 0.89
   },
   {
-   "slug": "tortilla-pizza",
+   "slug": "hongeo-samhap",
+   "est": 257,
+   "avg7": 289,
+   "up": 0.89
+  },
+  {
+   "slug": "spam-mayo-bowl",
+   "est": 255,
+   "avg7": 229,
+   "up": 1.11
+  },
+  {
+   "slug": "croque-monsieur",
+   "est": 251,
+   "avg7": 251,
+   "up": 1.0
+  },
+  {
+   "slug": "corn-cheese",
+   "est": 248,
+   "avg7": 241,
+   "up": 1.03
+  },
+  {
+   "slug": "simple-pancake",
+   "est": 248,
+   "avg7": 254,
+   "up": 0.98
+  },
+  {
+   "slug": "haemul-pajeon",
+   "est": 247,
+   "avg7": 334,
+   "up": 0.74
+  },
+  {
+   "slug": "baesuk",
+   "est": 244,
+   "avg7": 221,
+   "up": 1.1
+  },
+  {
+   "slug": "kkotge-jjim",
+   "est": 244,
+   "avg7": 518,
+   "up": 0.47
+  },
+  {
+   "slug": "jeonbok-butter-gui",
+   "est": 237,
+   "avg7": 311,
+   "up": 0.76
+  },
+  {
+   "slug": "galchi-gui",
+   "est": 234,
+   "avg7": 212,
+   "up": 1.1
+  },
+  {
+   "slug": "buchu-kimchi",
+   "est": 234,
+   "avg7": 313,
+   "up": 0.75
+  },
+  {
+   "slug": "shrimp-fried-rice",
+   "est": 228,
+   "avg7": 212,
+   "up": 1.08
+  },
+  {
+   "slug": "deulkkae-mu-guk",
+   "est": 226,
+   "avg7": 131,
+   "up": 1.72
+  },
+  {
+   "slug": "jeonju-bibimbap",
+   "est": 226,
+   "avg7": 245,
+   "up": 0.92
+  },
+  {
+   "slug": "deunggalbi-jjim",
+   "est": 226,
+   "avg7": 248,
+   "up": 0.91
+  },
+  {
+   "slug": "gamja-sujebi",
+   "est": 222,
+   "avg7": 222,
+   "up": 1.0
+  },
+  {
+   "slug": "japchae-bap",
+   "est": 221,
+   "avg7": 190,
+   "up": 1.17
+  },
+  {
+   "slug": "goguma-salad",
+   "est": 221,
+   "avg7": 250,
+   "up": 0.88
+  },
+  {
+   "slug": "caesar-salad",
    "est": 210,
+   "avg7": 240,
+   "up": 0.88
+  },
+  {
+   "slug": "chicken-breast-steak",
+   "est": 209,
+   "avg7": 180,
+   "up": 1.16
+  },
+  {
+   "slug": "memil-jeonbyeong",
+   "est": 209,
    "avg7": 221,
    "up": 0.95
   },
   {
-   "slug": "gondre-bap",
-   "est": 210,
-   "avg7": 287,
-   "up": 0.73
-  },
-  {
-   "slug": "gochujapchae",
-   "est": 209,
-   "avg7": 309,
-   "up": 0.68
-  },
-  {
-   "slug": "poo-pad-pong-curry",
+   "slug": "daeha-gui",
    "est": 208,
-   "avg7": 517,
-   "up": 0.4
+   "avg7": 537,
+   "up": 0.39
   },
   {
-   "slug": "dubu-duruchigi",
-   "est": 207,
-   "avg7": 222,
-   "up": 0.93
-  },
-  {
-   "slug": "hwangtae-gui",
-   "est": 203,
-   "avg7": 220,
+   "slug": "rabokki",
+   "est": 206,
+   "avg7": 224,
    "up": 0.92
   },
   {
-   "slug": "shrimp-fried-rice",
+   "slug": "saeu-twigim",
+   "est": 204,
+   "avg7": 229,
+   "up": 0.89
+  },
+  {
+   "slug": "dallae-doenjang-jjigae",
+   "est": 202,
+   "avg7": 110,
+   "up": 1.84
+  },
+  {
+   "slug": "muneo-sukhoe",
    "est": 201,
-   "avg7": 214,
-   "up": 0.94
-  },
-  {
-   "slug": "hongeo-samhap",
-   "est": 201,
-   "avg7": 294,
-   "up": 0.68
-  },
-  {
-   "slug": "danhobak-salad",
-   "est": 200,
-   "avg7": 317,
-   "up": 0.63
-  },
-  {
-   "slug": "spam-mayo-bowl",
-   "est": 198,
-   "avg7": 232,
-   "up": 0.85
-  },
-  {
-   "slug": "buchu-kimchi",
-   "est": 197,
-   "avg7": 322,
-   "up": 0.61
-  },
-  {
-   "slug": "corn-cheese",
-   "est": 193,
-   "avg7": 244,
+   "avg7": 255,
    "up": 0.79
   },
   {
+   "slug": "hongeo-muchim",
+   "est": 201,
+   "avg7": 220,
+   "up": 0.91
+  },
+  {
+   "slug": "goguma-julgi-bokkeum",
+   "est": 201,
+   "avg7": 405,
+   "up": 0.5
+  },
+  {
    "slug": "tomato-spaghetti",
-   "est": 191,
+   "est": 199,
    "avg7": 193,
-   "up": 0.99
+   "up": 1.03
+  },
+  {
+   "slug": "hwangtae-gui",
+   "est": 199,
+   "avg7": 216,
+   "up": 0.92
+  },
+  {
+   "slug": "salmon-chobap",
+   "est": 198,
+   "avg7": 228,
+   "up": 0.87
+  },
+  {
+   "slug": "sausage-veg-bokkeum",
+   "est": 196,
+   "avg7": 156,
+   "up": 1.26
+  },
+  {
+   "slug": "ganjang-bibim-guksu",
+   "est": 195,
+   "avg7": 239,
+   "up": 0.81
+  },
+  {
+   "slug": "air-fryer-goguma",
+   "est": 192,
+   "avg7": 233,
+   "up": 0.83
   },
   {
    "slug": "kkanso-saeu",
    "est": 191,
-   "avg7": 237,
+   "avg7": 234,
+   "up": 0.82
+  },
+  {
+   "slug": "ojingeo-twigim",
+   "est": 190,
+   "avg7": 235,
    "up": 0.81
   },
   {
-   "slug": "japchae-bap",
-   "est": 190,
-   "avg7": 191,
-   "up": 1.0
+   "slug": "tuna-miyeok-guk",
+   "est": 188,
+   "avg7": 180,
+   "up": 1.04
   },
   {
-   "slug": "naengi-doenjang-guk",
-   "est": 186,
-   "avg7": 113,
-   "up": 1.65
+   "slug": "rose-tteokbokki",
+   "est": 188,
+   "avg7": 192,
+   "up": 0.98
   },
   {
-   "slug": "gamja-sujebi",
-   "est": 185,
-   "avg7": 223,
-   "up": 0.83
+   "slug": "goguma-jeon",
+   "est": 187,
+   "avg7": 270,
+   "up": 0.69
   },
   {
-   "slug": "salmon-chobap",
+   "slug": "beef-juk",
+   "est": 187,
+   "avg7": 105,
+   "up": 1.78
+  },
+  {
+   "slug": "kimchi-kongnamul-guk",
    "est": 184,
-   "avg7": 230,
-   "up": 0.8
+   "avg7": 153,
+   "up": 1.2
   },
   {
-   "slug": "yukjeon",
-   "est": 183,
-   "avg7": 285,
-   "up": 0.64
-  },
-  {
-   "slug": "croque-monsieur",
+   "slug": "sangchu-geotjeori",
    "est": 182,
-   "avg7": 255,
-   "up": 0.72
-  },
-  {
-   "slug": "mukssabal",
-   "est": 182,
-   "avg7": 229,
-   "up": 0.8
-  },
-  {
-   "slug": "rabokki",
-   "est": 180,
-   "avg7": 228,
-   "up": 0.79
-  },
-  {
-   "slug": "baesuk",
-   "est": 179,
-   "avg7": 224,
-   "up": 0.8
+   "avg7": 190,
+   "up": 0.96
   },
   {
    "slug": "kimchi-mari-guksu",
@@ -1598,1402 +1712,1294 @@
    "up": 1.1
   },
   {
-   "slug": "carbonara",
+   "slug": "donggeurangttaeng",
    "est": 178,
-   "avg7": 218,
-   "up": 0.82
+   "avg7": 192,
+   "up": 0.93
   },
   {
-   "slug": "ojingeo-twigim",
+   "slug": "tortilla-pizza",
    "est": 177,
-   "avg7": 242,
-   "up": 0.73
-  },
-  {
-   "slug": "sanchae-bibimbap",
-   "est": 176,
-   "avg7": 149,
-   "up": 1.18
-  },
-  {
-   "slug": "chicken-nanban",
-   "est": 170,
-   "avg7": 337,
-   "up": 0.51
-  },
-  {
-   "slug": "deulkkae-mu-guk",
-   "est": 167,
-   "avg7": 129,
-   "up": 1.29
-  },
-  {
-   "slug": "goguma-salad",
-   "est": 165,
-   "avg7": 259,
-   "up": 0.64
-  },
-  {
-   "slug": "hongeo-muchim",
-   "est": 163,
-   "avg7": 224,
-   "up": 0.73
-  },
-  {
-   "slug": "myeongran-egg-roll",
-   "est": 162,
-   "avg7": 182,
-   "up": 0.89
-  },
-  {
-   "slug": "daegu-napjak-mandu",
-   "est": 160,
-   "avg7": 185,
-   "up": 0.86
-  },
-  {
-   "slug": "jeonju-bibimbap",
-   "est": 160,
-   "avg7": 249,
-   "up": 0.64
-  },
-  {
-   "slug": "rose-tteokbokki",
-   "est": 159,
-   "avg7": 193,
-   "up": 0.82
-  },
-  {
-   "slug": "memil-jeonbyeong",
-   "est": 159,
-   "avg7": 226,
-   "up": 0.7
-  },
-  {
-   "slug": "goguma-jeon",
-   "est": 157,
-   "avg7": 281,
-   "up": 0.56
-  },
-  {
-   "slug": "tuna-miyeok-guk",
-   "est": 156,
-   "avg7": 182,
-   "up": 0.86
-  },
-  {
-   "slug": "jjajang-tteokbokki",
-   "est": 156,
-   "avg7": 178,
-   "up": 0.87
-  },
-  {
-   "slug": "deodeok-gui",
-   "est": 155,
-   "avg7": 179,
-   "up": 0.87
-  },
-  {
-   "slug": "caesar-salad",
-   "est": 153,
-   "avg7": 243,
-   "up": 0.63
-  },
-  {
-   "slug": "goguma-julgi-bokkeum",
-   "est": 146,
-   "avg7": 437,
-   "up": 0.33
+   "avg7": 221,
+   "up": 0.8
   },
   {
    "slug": "dakjuk",
-   "est": 143,
-   "avg7": 158,
-   "up": 0.9
-  },
-  {
-   "slug": "siraegi-guk",
-   "est": 143,
-   "avg7": 133,
-   "up": 1.08
-  },
-  {
-   "slug": "saeu-twigim",
-   "est": 142,
-   "avg7": 234,
-   "up": 0.61
-  },
-  {
-   "slug": "donggeurangttaeng",
-   "est": 141,
-   "avg7": 198,
-   "up": 0.71
-  },
-  {
-   "slug": "beef-doenjang-jjigae",
-   "est": 134,
-   "avg7": 152,
-   "up": 0.88
-  },
-  {
-   "slug": "egg-sandwich",
-   "est": 131,
-   "avg7": 153,
-   "up": 0.86
-  },
-  {
-   "slug": "sausage-veg-bokkeum",
-   "est": 128,
-   "avg7": 159,
-   "up": 0.81
-  },
-  {
-   "slug": "sangchu-geotjeori",
-   "est": 125,
-   "avg7": 194,
-   "up": 0.64
-  },
-  {
-   "slug": "goguma-latte",
-   "est": 125,
-   "avg7": 166,
-   "up": 0.75
-  },
-  {
-   "slug": "saeu-jeon",
-   "est": 120,
-   "avg7": 176,
-   "up": 0.69
-  },
-  {
-   "slug": "chicken-breast-steak",
-   "est": 119,
-   "avg7": 185,
-   "up": 0.64
+   "est": 176,
+   "avg7": 156,
+   "up": 1.13
   },
   {
    "slug": "tuna-jeon",
-   "est": 118,
-   "avg7": 169,
-   "up": 0.7
+   "est": 172,
+   "avg7": 165,
+   "up": 1.05
   },
   {
-   "slug": "gambas",
-   "est": 118,
-   "avg7": 130,
+   "slug": "carbonara",
+   "est": 169,
+   "avg7": 216,
+   "up": 0.78
+  },
+  {
+   "slug": "myeongran-egg-roll",
+   "est": 169,
+   "avg7": 180,
+   "up": 0.94
+  },
+  {
+   "slug": "dwaeji-bulgogi",
+   "est": 166,
+   "avg7": 165,
+   "up": 1.01
+  },
+  {
+   "slug": "daegu-napjak-mandu",
+   "est": 165,
+   "avg7": 185,
+   "up": 0.89
+  },
+  {
+   "slug": "mukeunji-godeungeo-jorim",
+   "est": 159,
+   "avg7": 157,
+   "up": 1.01
+  },
+  {
+   "slug": "tuna-bibimbap",
+   "est": 148,
+   "avg7": 134,
+   "up": 1.1
+  },
+  {
+   "slug": "tofu-egg-soup",
+   "est": 145,
+   "avg7": 114,
+   "up": 1.26
+  },
+  {
+   "slug": "gun-mandu",
+   "est": 143,
+   "avg7": 113,
+   "up": 1.27
+  },
+  {
+   "slug": "goguma-latte",
+   "est": 143,
+   "avg7": 165,
+   "up": 0.87
+  },
+  {
+   "slug": "oyakodon",
+   "est": 141,
+   "avg7": 114,
+   "up": 1.24
+  },
+  {
+   "slug": "tomato-marinade",
+   "est": 141,
+   "avg7": 155,
    "up": 0.91
+  },
+  {
+   "slug": "siraegi-guk",
+   "est": 141,
+   "avg7": 132,
+   "up": 1.07
+  },
+  {
+   "slug": "hobak-gochujang-jjigae",
+   "est": 140,
+   "avg7": 180,
+   "up": 0.78
+  },
+  {
+   "slug": "nakji-yeonpo-tang",
+   "est": 140,
+   "avg7": 140,
+   "up": 1.0
+  },
+  {
+   "slug": "deodeok-gui",
+   "est": 140,
+   "avg7": 177,
+   "up": 0.79
+  },
+  {
+   "slug": "saeu-jeon",
+   "est": 139,
+   "avg7": 172,
+   "up": 0.81
+  },
+  {
+   "slug": "beef-doenjang-jjigae",
+   "est": 139,
+   "avg7": 148,
+   "up": 0.94
+  },
+  {
+   "slug": "jjajang-tteokbokki",
+   "est": 139,
+   "avg7": 177,
+   "up": 0.79
+  },
+  {
+   "slug": "yaksik",
+   "est": 139,
+   "avg7": 136,
+   "up": 1.02
+  },
+  {
+   "slug": "pork-kimchi-stir-fry",
+   "est": 136,
+   "avg7": 126,
+   "up": 1.08
+  },
+  {
+   "slug": "jeyuk-bowl",
+   "est": 136,
+   "avg7": 128,
+   "up": 1.06
+  },
+  {
+   "slug": "egg-sandwich",
+   "est": 135,
+   "avg7": 150,
+   "up": 0.89
+  },
+  {
+   "slug": "salmon-salad",
+   "est": 135,
+   "avg7": 131,
+   "up": 1.03
+  },
+  {
+   "slug": "dubu-gangjeong",
+   "est": 131,
+   "avg7": 114,
+   "up": 1.15
+  },
+  {
+   "slug": "oori-rosugui",
+   "est": 131,
+   "avg7": 135,
+   "up": 0.97
+  },
+  {
+   "slug": "bajirak-sundubu",
+   "est": 130,
+   "avg7": 133,
+   "up": 0.98
+  },
+  {
+   "slug": "tteok-mandu-guk",
+   "est": 128,
+   "avg7": 121,
+   "up": 1.06
+  },
+  {
+   "slug": "kkaennip-jeon",
+   "est": 120,
+   "avg7": 140,
+   "up": 0.86
+  },
+  {
+   "slug": "kkongchi-kimchi-jjim",
+   "est": 120,
+   "avg7": 100,
+   "up": 1.2
+  },
+  {
+   "slug": "eonyang-bulgogi",
+   "est": 119,
+   "avg7": 99,
+   "up": 1.2
+  },
+  {
+   "slug": "sanchae-bibimbap",
+   "est": 119,
+   "avg7": 150,
+   "up": 0.79
+  },
+  {
+   "slug": "chicken-breast-salad",
+   "est": 116,
+   "avg7": 104,
+   "up": 1.12
   },
   {
    "slug": "cream-spaghetti",
    "est": 116,
    "avg7": 108,
-   "up": 1.08
+   "up": 1.07
   },
   {
-   "slug": "bajirak-sundubu",
+   "slug": "corn-jeon",
+   "est": 116,
+   "avg7": 122,
+   "up": 0.95
+  },
+  {
+   "slug": "jjokpa-jeon",
    "est": 115,
-   "avg7": 134,
-   "up": 0.86
+   "avg7": 99,
+   "up": 1.16
   },
   {
-   "slug": "dwaeji-bulgogi",
-   "est": 114,
-   "avg7": 168,
-   "up": 0.68
+   "slug": "rose-pasta",
+   "est": 113,
+   "avg7": 113,
+   "up": 1.01
   },
   {
-   "slug": "dallae-doenjang-jjigae",
+   "slug": "dongtae-jeon",
    "est": 113,
    "avg7": 110,
-   "up": 1.02
+   "up": 1.03
   },
   {
-   "slug": "yangnyeom-chicken",
+   "slug": "cheese-egg-roll",
+   "est": 112,
+   "avg7": 129,
+   "up": 0.87
+  },
+  {
+   "slug": "ssukgat-dubu-muchim",
    "est": 111,
-   "avg7": 132,
-   "up": 0.84
-  },
-  {
-   "slug": "kimchi-kongnamul-guk",
-   "est": 110,
-   "avg7": 153,
-   "up": 0.72
+   "avg7": 105,
+   "up": 1.06
   },
   {
    "slug": "kimchi-ramen",
    "est": 110,
+   "avg7": 116,
+   "up": 0.95
+  },
+  {
+   "slug": "gambas",
+   "est": 108,
+   "avg7": 129,
+   "up": 0.83
+  },
+  {
+   "slug": "parae-jeon",
+   "est": 108,
+   "avg7": 64,
+   "up": 1.68
+  },
+  {
+   "slug": "beoseot-sotbap",
+   "est": 107,
    "avg7": 117,
-   "up": 0.94
+   "up": 0.91
   },
   {
-   "slug": "hobak-gochujang-jjigae",
-   "est": 105,
-   "avg7": 185,
-   "up": 0.57
+   "slug": "beoseot-jeon",
+   "est": 106,
+   "avg7": 89,
+   "up": 1.19
   },
   {
-   "slug": "beef-juk",
-   "est": 102,
-   "avg7": 106,
-   "up": 0.96
-  },
-  {
-   "slug": "yaksik",
-   "est": 102,
-   "avg7": 140,
-   "up": 0.73
-  },
-  {
-   "slug": "kimchi-bibim-guksu",
-   "est": 101,
-   "avg7": 88,
-   "up": 1.14
-  },
-  {
-   "slug": "tomato-marinade",
-   "est": 101,
-   "avg7": 158,
-   "up": 0.64
-  },
-  {
-   "slug": "mukeunji-godeungeo-jorim",
-   "est": 101,
-   "avg7": 161,
-   "up": 0.63
-  },
-  {
-   "slug": "egg-toast",
-   "est": 97,
-   "avg7": 81,
-   "up": 1.2
-  },
-  {
-   "slug": "jeyuk-bowl",
-   "est": 97,
+   "slug": "yangnyeom-chicken",
+   "est": 106,
    "avg7": 130,
+   "up": 0.81
+  },
+  {
+   "slug": "gaji-namul",
+   "est": 102,
+   "avg7": 169,
+   "up": 0.6
+  },
+  {
+   "slug": "oi-bokkeum",
+   "est": 102,
+   "avg7": 138,
    "up": 0.74
   },
   {
    "slug": "ham-cheese-toast",
-   "est": 97,
+   "est": 100,
    "avg7": 107,
-   "up": 0.9
-  },
-  {
-   "slug": "kkongchi-kimchi-jjim",
-   "est": 97,
-   "avg7": 101,
-   "up": 0.95
-  },
-  {
-   "slug": "jeju-gosari-yukgaejang",
-   "est": 96,
-   "avg7": 136,
-   "up": 0.7
-  },
-  {
-   "slug": "anseong-jangteo-gukbap",
-   "est": 96,
-   "avg7": 76,
-   "up": 1.25
-  },
-  {
-   "slug": "tteok-mandu-guk",
-   "est": 94,
-   "avg7": 122,
-   "up": 0.77
-  },
-  {
-   "slug": "salmon-salad",
-   "est": 94,
-   "avg7": 134,
-   "up": 0.7
-  },
-  {
-   "slug": "jjokpa-jeon",
-   "est": 94,
-   "avg7": 100,
    "up": 0.94
   },
   {
-   "slug": "oori-rosugui",
-   "est": 93,
-   "avg7": 138,
-   "up": 0.67
-  },
-  {
-   "slug": "tuna-sandwich",
-   "est": 93,
-   "avg7": 110,
-   "up": 0.84
-  },
-  {
-   "slug": "gun-mandu",
-   "est": 90,
-   "avg7": 114,
-   "up": 0.79
-  },
-  {
-   "slug": "nakji-yeonpo-tang",
-   "est": 90,
-   "avg7": 143,
-   "up": 0.63
-  },
-  {
-   "slug": "pork-kimchi-stir-fry",
-   "est": 89,
-   "avg7": 129,
-   "up": 0.69
-  },
-  {
-   "slug": "oyakodon",
-   "est": 89,
-   "avg7": 115,
-   "up": 0.77
-  },
-  {
-   "slug": "tofu-egg-soup",
-   "est": 89,
-   "avg7": 117,
-   "up": 0.76
-  },
-  {
-   "slug": "corn-jeon",
-   "est": 89,
-   "avg7": 125,
-   "up": 0.72
-  },
-  {
-   "slug": "pohang-mori-guksu",
-   "est": 88,
-   "avg7": 78,
-   "up": 1.13
-  },
-  {
-   "slug": "rose-pasta",
-   "est": 86,
-   "avg7": 114,
-   "up": 0.75
-  },
-  {
-   "slug": "jjajang-ramyeon",
-   "est": 85,
-   "avg7": 105,
-   "up": 0.81
-  },
-  {
-   "slug": "cheese-egg-roll",
-   "est": 83,
-   "avg7": 132,
-   "up": 0.63
-  },
-  {
-   "slug": "beoseot-sotbap",
-   "est": 82,
-   "avg7": 120,
-   "up": 0.68
-  },
-  {
-   "slug": "mul-naengmyeon",
-   "est": 82,
-   "avg7": 71,
-   "up": 1.15
-  },
-  {
-   "slug": "hamburger",
-   "est": 82,
-   "avg7": 72,
-   "up": 1.13
-  },
-  {
-   "slug": "kkaennip-jeon",
-   "est": 81,
-   "avg7": 143,
-   "up": 0.56
-  },
-  {
-   "slug": "dongnae-pajeon",
-   "est": 81,
-   "avg7": 118,
-   "up": 0.68
-  },
-  {
-   "slug": "dubu-gangjeong",
-   "est": 79,
-   "avg7": 117,
-   "up": 0.68
-  },
-  {
-   "slug": "hongap-miyeok-guk",
-   "est": 78,
-   "avg7": 75,
-   "up": 1.04
+   "slug": "misoshiru",
+   "est": 100,
+   "avg7": 81,
+   "up": 1.24
   },
   {
    "slug": "beef-jumeokbap",
-   "est": 78,
-   "avg7": 105,
-   "up": 0.74
-  },
-  {
-   "slug": "tuna-bibimbap",
-   "est": 78,
-   "avg7": 139,
-   "up": 0.56
-  },
-  {
-   "slug": "dongtae-jeon",
-   "est": 78,
-   "avg7": 112,
-   "up": 0.7
-  },
-  {
-   "slug": "tonjiru",
-   "est": 75,
-   "avg7": 91,
-   "up": 0.83
-  },
-  {
-   "slug": "honey-ginger-tea",
-   "est": 75,
-   "avg7": 94,
-   "up": 0.8
-  },
-  {
-   "slug": "oi-bokkeum",
-   "est": 74,
-   "avg7": 143,
-   "up": 0.52
-  },
-  {
-   "slug": "yakisoba",
-   "est": 74,
-   "avg7": 95,
-   "up": 0.78
+   "est": 99,
+   "avg7": 102,
+   "up": 0.97
   },
   {
    "slug": "yeolmu-bibimbap",
-   "est": 74,
-   "avg7": 132,
-   "up": 0.56
+   "est": 99,
+   "avg7": 127,
+   "up": 0.78
   },
   {
-   "slug": "parae-jeon",
-   "est": 73,
-   "avg7": 63,
-   "up": 1.15
+   "slug": "kimchi-bibim-guksu",
+   "est": 98,
+   "avg7": 89,
+   "up": 1.1
   },
   {
    "slug": "potato-korokke",
-   "est": 73,
+   "est": 98,
    "avg7": 62,
-   "up": 1.17
+   "up": 1.59
   },
   {
-   "slug": "ssukgat-dubu-muchim",
-   "est": 73,
-   "avg7": 108,
-   "up": 0.67
+   "slug": "jjajang-ramyeon",
+   "est": 98,
+   "avg7": 104,
+   "up": 0.94
   },
   {
-   "slug": "sukju-pork-bokkeum",
-   "est": 71,
-   "avg7": 88,
+   "slug": "ojingeo-deopbap",
+   "est": 97,
+   "avg7": 79,
+   "up": 1.23
+  },
+  {
+   "slug": "tuna-sandwich",
+   "est": 97,
+   "avg7": 109,
+   "up": 0.89
+  },
+  {
+   "slug": "jjajang-bap",
+   "est": 95,
+   "avg7": 83,
+   "up": 1.13
+  },
+  {
+   "slug": "garlic-bread-simple",
+   "est": 95,
+   "avg7": 91,
+   "up": 1.04
+  },
+  {
+   "slug": "gaji-jeon",
+   "est": 93,
+   "avg7": 126,
+   "up": 0.74
+  },
+  {
+   "slug": "dongnae-pajeon",
+   "est": 93,
+   "avg7": 117,
    "up": 0.8
   },
   {
-   "slug": "jjamppong-bap",
-   "est": 71,
+   "slug": "gul-sundubu",
+   "est": 92,
+   "avg7": 56,
+   "up": 1.65
+  },
+  {
+   "slug": "yakisoba",
+   "est": 91,
+   "avg7": 94,
+   "up": 0.97
+  },
+  {
+   "slug": "sukju-pork-bokkeum",
+   "est": 89,
+   "avg7": 88,
+   "up": 1.01
+  },
+  {
+   "slug": "hongap-miyeok-guk",
+   "est": 88,
+   "avg7": 75,
+   "up": 1.17
+  },
+  {
+   "slug": "egg-toast",
+   "est": 86,
    "avg7": 80,
-   "up": 0.88
+   "up": 1.06
   },
   {
-   "slug": "bibim-naengmyeon",
-   "est": 70,
-   "avg7": 77,
-   "up": 0.91
-  },
-  {
-   "slug": "salmon-ochazuke",
-   "est": 67,
-   "avg7": 71,
+   "slug": "jjamppong-ramen",
+   "est": 83,
+   "avg7": 88,
    "up": 0.95
   },
   {
    "slug": "beef-mushroom-jeongol",
-   "est": 66,
-   "avg7": 104,
-   "up": 0.64
-  },
-  {
-   "slug": "jogi-gui",
-   "est": 66,
-   "avg7": 88,
-   "up": 0.76
-  },
-  {
-   "slug": "gaji-namul",
-   "est": 65,
-   "avg7": 179,
-   "up": 0.36
-  },
-  {
-   "slug": "jjamppong-ramen",
-   "est": 63,
-   "avg7": 88,
-   "up": 0.71
-  },
-  {
-   "slug": "beoseot-jeon",
-   "est": 63,
-   "avg7": 90,
-   "up": 0.7
-  },
-  {
-   "slug": "egg-salad",
-   "est": 62,
-   "avg7": 79,
-   "up": 0.79
-  },
-  {
-   "slug": "jjajang-bap",
-   "est": 61,
-   "avg7": 86,
-   "up": 0.71
-  },
-  {
-   "slug": "garlic-bread-simple",
-   "est": 60,
-   "avg7": 92,
-   "up": 0.65
-  },
-  {
-   "slug": "gyeongsang-hutjesa-tang",
-   "est": 60,
-   "avg7": 81,
-   "up": 0.74
-  },
-  {
-   "slug": "mapo-dwaeji-galbi",
-   "est": 60,
-   "avg7": 60,
-   "up": 1.0
-  },
-  {
-   "slug": "beef-steak",
-   "est": 57,
-   "avg7": 60,
-   "up": 0.94
-  },
-  {
-   "slug": "eonyang-bulgogi",
-   "est": 57,
+   "est": 83,
    "avg7": 102,
-   "up": 0.56
-  },
-  {
-   "slug": "olgaengi-guk",
-   "est": 57,
-   "avg7": 75,
-   "up": 0.76
-  },
-  {
-   "slug": "cabbage-egg-bokkeum",
-   "est": 56,
-   "avg7": 57,
-   "up": 0.98
-  },
-  {
-   "slug": "hutjesabap",
-   "est": 56,
-   "avg7": 59,
-   "up": 0.94
-  },
-  {
-   "slug": "jeju-godeungeo-ssambap",
-   "est": 56,
-   "avg7": 92,
-   "up": 0.61
-  },
-  {
-   "slug": "gul-sundubu",
-   "est": 55,
-   "avg7": 55,
-   "up": 0.99
-  },
-  {
-   "slug": "tofu-steak",
-   "est": 54,
-   "avg7": 85,
-   "up": 0.64
-  },
-  {
-   "slug": "bibim-dangmyeon",
-   "est": 54,
-   "avg7": 71,
-   "up": 0.76
-  },
-  {
-   "slug": "chicken-breast-salad",
-   "est": 53,
-   "avg7": 107,
-   "up": 0.5
-  },
-  {
-   "slug": "cheese-tteokbokki",
-   "est": 53,
-   "avg7": 46,
-   "up": 1.16
+   "up": 0.82
   },
   {
    "slug": "kare-rice",
-   "est": 52,
-   "avg7": 72,
-   "up": 0.73
+   "est": 82,
+   "avg7": 71,
+   "up": 1.16
   },
   {
-   "slug": "okonomiyaki",
-   "est": 52,
-   "avg7": 57,
-   "up": 0.91
-  },
-  {
-   "slug": "misoshiru",
-   "est": 52,
-   "avg7": 82,
-   "up": 0.63
-  },
-  {
-   "slug": "yeongeun-jeon",
-   "est": 52,
-   "avg7": 76,
-   "up": 0.69
-  },
-  {
-   "slug": "danggeun-bokkeum",
-   "est": 51,
-   "avg7": 69,
-   "up": 0.75
-  },
-  {
-   "slug": "ham-fried-rice",
-   "est": 49,
-   "avg7": 41,
-   "up": 1.2
-  },
-  {
-   "slug": "jinju-bibimbap",
-   "est": 49,
-   "avg7": 64,
-   "up": 0.76
-  },
-  {
-   "slug": "gnocchi",
-   "est": 49,
-   "avg7": 56,
+   "slug": "honey-ginger-tea",
+   "est": 82,
+   "avg7": 94,
    "up": 0.87
   },
   {
-   "slug": "cheese-ramen",
-   "est": 47,
-   "avg7": 49,
-   "up": 0.95
+   "slug": "danggeun-bokkeum",
+   "est": 81,
+   "avg7": 67,
+   "up": 1.21
   },
   {
-   "slug": "gaji-jeon",
-   "est": 47,
-   "avg7": 133,
-   "up": 0.35
-  },
-  {
-   "slug": "cold-udon-tsuyu",
-   "est": 47,
-   "avg7": 55,
-   "up": 0.86
-  },
-  {
-   "slug": "pyeongan-gyeoja-chae",
-   "est": 47,
-   "avg7": 42,
-   "up": 1.11
-  },
-  {
-   "slug": "hunje-oori-fried-rice",
-   "est": 46,
-   "avg7": 74,
-   "up": 0.62
-  },
-  {
-   "slug": "baksok-nakji-tang",
-   "est": 46,
-   "avg7": 56,
-   "up": 0.83
-  },
-  {
-   "slug": "jeju-haemul-ttukbaegi",
-   "est": 46,
-   "avg7": 57,
-   "up": 0.81
-  },
-  {
-   "slug": "potato-gochujang-jjigae",
-   "est": 44,
-   "avg7": 73,
-   "up": 0.61
-  },
-  {
-   "slug": "ojingeo-deopbap",
-   "est": 44,
-   "avg7": 81,
-   "up": 0.54
-  },
-  {
-   "slug": "bread-pizza",
-   "est": 43,
-   "avg7": 44,
-   "up": 0.99
-  },
-  {
-   "slug": "squid-jeon",
-   "est": 41,
-   "avg7": 68,
-   "up": 0.6
-  },
-  {
-   "slug": "tofu-salad",
-   "est": 40,
-   "avg7": 54,
-   "up": 0.74
-  },
-  {
-   "slug": "eomuk-udon",
-   "est": 40,
-   "avg7": 53,
-   "up": 0.76
-  },
-  {
-   "slug": "chicken-curry-rice",
-   "est": 39,
-   "avg7": 50,
-   "up": 0.78
-  },
-  {
-   "slug": "bori-bap",
-   "est": 39,
-   "avg7": 23,
-   "up": 1.67
-  },
-  {
-   "slug": "kids-sweetpotato-cheese-ball",
-   "est": 38,
-   "avg7": 52,
-   "up": 0.73
-  },
-  {
-   "slug": "yubu-udon",
-   "est": 38,
-   "avg7": 56,
-   "up": 0.68
-  },
-  {
-   "slug": "gamja-tteok",
-   "est": 36,
-   "avg7": 46,
-   "up": 0.79
-  },
-  {
-   "slug": "doenjang-gamja-guk",
-   "est": 35,
-   "avg7": 51,
-   "up": 0.7
-  },
-  {
-   "slug": "salmon-avocado-bowl",
-   "est": 35,
-   "avg7": 34,
-   "up": 1.02
-  },
-  {
-   "slug": "bulgogi-bowl",
-   "est": 34,
-   "avg7": 38,
-   "up": 0.88
-  },
-  {
-   "slug": "cream-pasta-fresh",
-   "est": 33,
-   "avg7": 24,
-   "up": 1.36
-  },
-  {
-   "slug": "ojingeo-pajeon",
-   "est": 32,
-   "avg7": 35,
-   "up": 0.92
-  },
-  {
-   "slug": "kkongchi-mu-jorim",
-   "est": 32,
-   "avg7": 37,
-   "up": 0.85
-  },
-  {
-   "slug": "samchi-mu-jorim",
-   "est": 31,
-   "avg7": 23,
-   "up": 1.36
-  },
-  {
-   "slug": "oi-naengguk",
-   "est": 31,
-   "avg7": 50,
-   "up": 0.62
-  },
-  {
-   "slug": "daepa-jeon",
-   "est": 31,
-   "avg7": 34,
-   "up": 0.91
-  },
-  {
-   "slug": "beef-veg-bokkeum",
-   "est": 30,
-   "avg7": 27,
-   "up": 1.1
-  },
-  {
-   "slug": "tofu-egg-jeon",
-   "est": 30,
-   "avg7": 32,
-   "up": 0.94
-  },
-  {
-   "slug": "shrimp-broccoli-bokkeum",
-   "est": 29,
-   "avg7": 32,
-   "up": 0.91
-  },
-  {
-   "slug": "yukgaejang-style",
-   "est": 29,
-   "avg7": 33,
-   "up": 0.89
-  },
-  {
-   "slug": "beef-gaji-bokkeum",
-   "est": 28,
-   "avg7": 52,
-   "up": 0.55
-  },
-  {
-   "slug": "onepan-tomato-pasta",
-   "est": 27,
-   "avg7": 22,
-   "up": 1.2
-  },
-  {
-   "slug": "yangpa-jeon",
-   "est": 27,
-   "avg7": 23,
-   "up": 1.17
-  },
-  {
-   "slug": "bam-bap",
-   "est": 27,
-   "avg7": 37,
-   "up": 0.73
-  },
-  {
-   "slug": "jeju-okdom-gui",
-   "est": 27,
-   "avg7": 26,
-   "up": 1.04
-  },
-  {
-   "slug": "gochu-jeon",
-   "est": 26,
-   "avg7": 62,
-   "up": 0.41
-  },
-  {
-   "slug": "jeju-galchi-guk",
-   "est": 26,
-   "avg7": 28,
-   "up": 0.91
-  },
-  {
-   "slug": "oatmeal-egg-porridge",
-   "est": 25,
-   "avg7": 42,
-   "up": 0.6
-  },
-  {
-   "slug": "kids-banana-pancake",
-   "est": 25,
-   "avg7": 35,
-   "up": 0.71
-  },
-  {
-   "slug": "chickpea-salad",
-   "est": 25,
-   "avg7": 44,
-   "up": 0.57
-  },
-  {
-   "slug": "spinach-egg-bokkeum",
-   "est": 24,
-   "avg7": 24,
-   "up": 1.01
-  },
-  {
-   "slug": "sukju-egg-bokkeum",
-   "est": 24,
-   "avg7": 31,
-   "up": 0.78
-  },
-  {
-   "slug": "daegu-ttaro-gukbap",
-   "est": 23,
-   "avg7": 26,
-   "up": 0.88
-  },
-  {
-   "slug": "kkaennip-yangnyeom",
-   "est": 22,
-   "avg7": 37,
-   "up": 0.61
-  },
-  {
-   "slug": "hunje-oori-buchu-bokkeum",
-   "est": 22,
-   "avg7": 38,
-   "up": 0.58
-  },
-  {
-   "slug": "kids-sweetpotato-stick",
-   "est": 21,
-   "avg7": 31,
-   "up": 0.69
-  },
-  {
-   "slug": "gwangjang-mayak-gimbap",
-   "est": 21,
-   "avg7": 25,
-   "up": 0.84
-  },
-  {
-   "slug": "kids-oat-cookie",
-   "est": 20,
-   "avg7": 31,
-   "up": 0.66
-  },
-  {
-   "slug": "konjac-bokkeumbap",
-   "est": 20,
-   "avg7": 30,
-   "up": 0.68
-  },
-  {
-   "slug": "kimjang-baechu-kimchi",
-   "est": 20,
-   "avg7": 13,
-   "up": 1.62
-  },
-  {
-   "slug": "siraegi-jjigae",
-   "est": 19,
-   "avg7": 30,
-   "up": 0.65
-  },
-  {
-   "slug": "nikujaga",
-   "est": 18,
-   "avg7": 42,
-   "up": 0.43
-  },
-  {
-   "slug": "mushroom-cream-risotto",
-   "est": 17,
-   "avg7": 24,
-   "up": 0.7
-  },
-  {
-   "slug": "la-galbi",
-   "est": 17,
-   "avg7": 26,
-   "up": 0.64
-  },
-  {
-   "slug": "miyeok-naengguk",
-   "est": 16,
-   "avg7": 15,
-   "up": 1.09
-  },
-  {
-   "slug": "egg-ramen",
-   "est": 15,
-   "avg7": 17,
+   "slug": "tonjiru",
+   "est": 80,
+   "avg7": 89,
    "up": 0.9
   },
   {
-   "slug": "broccoli-egg-salad",
-   "est": 15,
-   "avg7": 23,
-   "up": 0.65
+   "slug": "mapo-dwaeji-galbi",
+   "est": 79,
+   "avg7": 60,
+   "up": 1.32
   },
   {
-   "slug": "meat-sauce-spaghetti",
-   "est": 15,
-   "avg7": 16,
+   "slug": "tofu-steak",
+   "est": 77,
+   "avg7": 83,
+   "up": 0.92
+  },
+  {
+   "slug": "potato-gochujang-jjigae",
+   "est": 76,
+   "avg7": 70,
+   "up": 1.08
+  },
+  {
+   "slug": "beef-steak",
+   "est": 73,
+   "avg7": 60,
+   "up": 1.23
+  },
+  {
+   "slug": "jeju-godeungeo-ssambap",
+   "est": 71,
+   "avg7": 90,
+   "up": 0.79
+  },
+  {
+   "slug": "hamburger",
+   "est": 71,
+   "avg7": 72,
+   "up": 0.99
+  },
+  {
+   "slug": "bibim-dangmyeon",
+   "est": 70,
+   "avg7": 70,
+   "up": 1.0
+  },
+  {
+   "slug": "kkongchi-mu-jorim",
+   "est": 70,
+   "avg7": 38,
+   "up": 1.85
+  },
+  {
+   "slug": "jjamppong-bap",
+   "est": 69,
+   "avg7": 79,
+   "up": 0.87
+  },
+  {
+   "slug": "egg-salad",
+   "est": 69,
+   "avg7": 77,
+   "up": 0.9
+  },
+  {
+   "slug": "jinju-bibimbap",
+   "est": 68,
+   "avg7": 64,
+   "up": 1.05
+  },
+  {
+   "slug": "gyeongsang-hutjesa-tang",
+   "est": 67,
+   "avg7": 81,
+   "up": 0.82
+  },
+  {
+   "slug": "baksok-nakji-tang",
+   "est": 67,
+   "avg7": 53,
+   "up": 1.25
+  },
+  {
+   "slug": "tofu-salad",
+   "est": 66,
+   "avg7": 53,
+   "up": 1.24
+  },
+  {
+   "slug": "cabbage-egg-bokkeum",
+   "est": 66,
+   "avg7": 56,
+   "up": 1.18
+  },
+  {
+   "slug": "jogi-gui",
+   "est": 65,
+   "avg7": 84,
+   "up": 0.77
+  },
+  {
+   "slug": "cold-udon-tsuyu",
+   "est": 63,
+   "avg7": 53,
+   "up": 1.19
+  },
+  {
+   "slug": "olgaengi-guk",
+   "est": 63,
+   "avg7": 74,
+   "up": 0.86
+  },
+  {
+   "slug": "hunje-oori-fried-rice",
+   "est": 61,
+   "avg7": 73,
+   "up": 0.84
+  },
+  {
+   "slug": "bibim-naengmyeon",
+   "est": 61,
+   "avg7": 74,
+   "up": 0.82
+  },
+  {
+   "slug": "gnocchi",
+   "est": 61,
+   "avg7": 55,
+   "up": 1.11
+  },
+  {
+   "slug": "kids-sweetpotato-cheese-ball",
+   "est": 60,
+   "avg7": 51,
+   "up": 1.17
+  },
+  {
+   "slug": "cheese-tteokbokki",
+   "est": 59,
+   "avg7": 46,
+   "up": 1.28
+  },
+  {
+   "slug": "pyeongan-gyeoja-chae",
+   "est": 59,
+   "avg7": 42,
+   "up": 1.39
+  },
+  {
+   "slug": "pohang-mori-guksu",
+   "est": 57,
+   "avg7": 78,
+   "up": 0.73
+  },
+  {
+   "slug": "doenjang-gamja-guk",
+   "est": 54,
+   "avg7": 49,
+   "up": 1.1
+  },
+  {
+   "slug": "yubu-udon",
+   "est": 52,
+   "avg7": 55,
    "up": 0.95
   },
   {
-   "slug": "rice-paper-mandu",
-   "est": 15,
-   "avg7": 14,
-   "up": 1.07
+   "slug": "mul-naengmyeon",
+   "est": 51,
+   "avg7": 69,
+   "up": 0.74
   },
   {
-   "slug": "kongtteuchigi-guksu",
-   "est": 15,
-   "avg7": 27,
-   "up": 0.56
-  },
-  {
-   "slug": "jeju-jeonbok-dolsotbap",
-   "est": 15,
-   "avg7": 16,
+   "slug": "jeju-haemul-ttukbaegi",
+   "est": 51,
+   "avg7": 55,
    "up": 0.93
   },
   {
-   "slug": "danhobak-soup",
-   "est": 14,
-   "avg7": 11,
-   "up": 1.33
+   "slug": "oi-naengguk",
+   "est": 50,
+   "avg7": 48,
+   "up": 1.05
   },
   {
-   "slug": "pyeongyang-onban",
-   "est": 14,
-   "avg7": 17,
+   "slug": "squid-jeon",
+   "est": 49,
+   "avg7": 65,
+   "up": 0.76
+  },
+  {
+   "slug": "salmon-ochazuke",
+   "est": 49,
+   "avg7": 70,
+   "up": 0.7
+  },
+  {
+   "slug": "bulgogi-bowl",
+   "est": 48,
+   "avg7": 37,
+   "up": 1.28
+  },
+  {
+   "slug": "eomuk-udon",
+   "est": 48,
+   "avg7": 53,
+   "up": 0.91
+  },
+  {
+   "slug": "samchi-mu-jorim",
+   "est": 48,
+   "avg7": 23,
+   "up": 2.08
+  },
+  {
+   "slug": "yeongeun-jeon",
+   "est": 48,
+   "avg7": 73,
+   "up": 0.65
+  },
+  {
+   "slug": "hutjesabap",
+   "est": 47,
+   "avg7": 59,
+   "up": 0.79
+  },
+  {
+   "slug": "anseong-jangteo-gukbap",
+   "est": 46,
+   "avg7": 77,
+   "up": 0.59
+  },
+  {
+   "slug": "okonomiyaki",
+   "est": 44,
+   "avg7": 56,
+   "up": 0.79
+  },
+  {
+   "slug": "daepa-jeon",
+   "est": 44,
+   "avg7": 34,
+   "up": 1.3
+  },
+  {
+   "slug": "chickpea-salad",
+   "est": 43,
+   "avg7": 42,
+   "up": 1.04
+  },
+  {
+   "slug": "bread-pizza",
+   "est": 42,
+   "avg7": 43,
+   "up": 0.98
+  },
+  {
+   "slug": "tofu-egg-jeon",
+   "est": 41,
+   "avg7": 32,
+   "up": 1.3
+  },
+  {
+   "slug": "beef-gaji-bokkeum",
+   "est": 41,
+   "avg7": 49,
    "up": 0.83
   },
   {
-   "slug": "spam-gui",
-   "est": 13,
-   "avg7": 19,
-   "up": 0.72
+   "slug": "broccoli-egg-salad",
+   "est": 40,
+   "avg7": 22,
+   "up": 1.78
   },
   {
-   "slug": "naengso-ba",
+   "slug": "siraegi-jjigae",
+   "est": 40,
+   "avg7": 29,
+   "up": 1.39
+  },
+  {
+   "slug": "shrimp-broccoli-bokkeum",
+   "est": 39,
+   "avg7": 32,
+   "up": 1.21
+  },
+  {
+   "slug": "beef-veg-bokkeum",
+   "est": 38,
+   "avg7": 27,
+   "up": 1.4
+  },
+  {
+   "slug": "oatmeal-egg-porridge",
+   "est": 38,
+   "avg7": 42,
+   "up": 0.91
+  },
+  {
+   "slug": "gochu-jeon",
+   "est": 38,
+   "avg7": 59,
+   "up": 0.64
+  },
+  {
+   "slug": "gamja-tteok",
+   "est": 38,
+   "avg7": 46,
+   "up": 0.82
+  },
+  {
+   "slug": "nikujaga",
+   "est": 37,
+   "avg7": 40,
+   "up": 0.91
+  },
+  {
+   "slug": "sigeumchi-gyeran-mal",
+   "est": 34,
+   "avg7": 20,
+   "up": 1.7
+  },
+  {
+   "slug": "mushroom-cream-risotto",
+   "est": 33,
+   "avg7": 24,
+   "up": 1.41
+  },
+  {
+   "slug": "jeju-galchi-guk",
+   "est": 33,
+   "avg7": 28,
+   "up": 1.2
+  },
+  {
+   "slug": "kkaennip-yangnyeom",
+   "est": 32,
+   "avg7": 36,
+   "up": 0.9
+  },
+  {
+   "slug": "yukgaejang-style",
+   "est": 32,
+   "avg7": 32,
+   "up": 1.0
+  },
+  {
+   "slug": "chicken-curry-rice",
+   "est": 31,
+   "avg7": 49,
+   "up": 0.63
+  },
+  {
+   "slug": "gwangjang-mayak-gimbap",
+   "est": 29,
+   "avg7": 25,
+   "up": 1.14
+  },
+  {
+   "slug": "bori-bap",
+   "est": 29,
+   "avg7": 24,
+   "up": 1.19
+  },
+  {
+   "slug": "kids-banana-pancake",
+   "est": 27,
+   "avg7": 35,
+   "up": 0.77
+  },
+  {
+   "slug": "daegu-ttaro-gukbap",
+   "est": 27,
+   "avg7": 26,
+   "up": 1.01
+  },
+  {
+   "slug": "cheese-ramen",
+   "est": 26,
+   "avg7": 49,
+   "up": 0.52
+  },
+  {
+   "slug": "hunje-oori-buchu-bokkeum",
+   "est": 26,
+   "avg7": 37,
+   "up": 0.69
+  },
+  {
+   "slug": "konjac-bokkeumbap",
+   "est": 26,
+   "avg7": 30,
+   "up": 0.87
+  },
+  {
+   "slug": "salmon-avocado-bowl",
+   "est": 26,
+   "avg7": 34,
+   "up": 0.75
+  },
+  {
+   "slug": "rice-paper-mandu",
+   "est": 26,
+   "avg7": 14,
+   "up": 1.84
+  },
+  {
+   "slug": "bam-bap",
+   "est": 26,
+   "avg7": 35,
+   "up": 0.73
+  },
+  {
+   "slug": "chodang-sundubu-yangnyeom",
+   "est": 26,
+   "avg7": 12,
+   "up": 2.05
+  },
+  {
+   "slug": "la-galbi",
+   "est": 26,
+   "avg7": 25,
+   "up": 1.01
+  },
+  {
+   "slug": "ham-fried-rice",
+   "est": 23,
+   "avg7": 41,
+   "up": 0.57
+  },
+  {
+   "slug": "cream-pasta-fresh",
+   "est": 23,
+   "avg7": 25,
+   "up": 0.95
+  },
+  {
+   "slug": "ojingeo-pajeon",
+   "est": 23,
+   "avg7": 35,
+   "up": 0.67
+  },
+  {
+   "slug": "dak-jorim",
+   "est": 22,
+   "avg7": 17,
+   "up": 1.34
+  },
+  {
+   "slug": "kids-oat-cookie",
+   "est": 22,
+   "avg7": 30,
+   "up": 0.74
+  },
+  {
+   "slug": "kids-sweetpotato-stick",
+   "est": 22,
+   "avg7": 30,
+   "up": 0.74
+  },
+  {
+   "slug": "bokchoy-shrimp-bokkeum",
+   "est": 22,
+   "avg7": 23,
+   "up": 0.99
+  },
+  {
+   "slug": "pyeongyang-onban",
+   "est": 22,
+   "avg7": 17,
+   "up": 1.3
+  },
+  {
+   "slug": "saeu-gyeran-jjim",
+   "est": 21,
+   "avg7": 14,
+   "up": 1.5
+  },
+  {
+   "slug": "spinach-egg-bokkeum",
+   "est": 20,
+   "avg7": 23,
+   "up": 0.87
+  },
+  {
+   "slug": "sukju-egg-bokkeum",
+   "est": 20,
+   "avg7": 31,
+   "up": 0.64
+  },
+  {
+   "slug": "danhobak-gui",
+   "est": 20,
+   "avg7": 15,
+   "up": 1.33
+  },
+  {
+   "slug": "onepan-tomato-pasta",
+   "est": 20,
+   "avg7": 22,
+   "up": 0.91
+  },
+  {
+   "slug": "kongtteuchigi-guksu",
+   "est": 20,
+   "avg7": 26,
+   "up": 0.76
+  },
+  {
+   "slug": "chapssal-juk",
+   "est": 19,
+   "avg7": 14,
+   "up": 1.39
+  },
+  {
+   "slug": "egg-pudding-simple",
+   "est": 19,
+   "avg7": 10,
+   "up": 1.94
+  },
+  {
+   "slug": "jeju-jeonbok-dolsotbap",
+   "est": 18,
+   "avg7": 16,
+   "up": 1.1
+  },
+  {
+   "slug": "dakdari-gui",
+   "est": 18,
+   "avg7": 19,
+   "up": 0.93
+  },
+  {
+   "slug": "dog-sweetpotato-chew",
+   "est": 17,
+   "avg7": 17,
+   "up": 0.98
+  },
+  {
+   "slug": "chicken-katsu",
+   "est": 17,
+   "avg7": 13,
+   "up": 1.25
+  },
+  {
+   "slug": "kimjang-baechu-kimchi",
+   "est": 17,
+   "avg7": 13,
+   "up": 1.29
+  },
+  {
+   "slug": "spam-gui",
+   "est": 16,
+   "avg7": 18,
+   "up": 0.85
+  },
+  {
+   "slug": "cabbage-tofu-ssam",
+   "est": 16,
+   "avg7": 13,
+   "up": 1.19
+  },
+  {
+   "slug": "jeju-okdom-gui",
+   "est": 14,
+   "avg7": 26,
+   "up": 0.55
+  },
+  {
+   "slug": "jeju-bingtteok",
+   "est": 14,
+   "avg7": 22,
+   "up": 0.66
+  },
+  {
+   "slug": "spam-egg-rice",
+   "est": 13,
+   "avg7": 11,
+   "up": 1.17
+  },
+  {
+   "slug": "dak-soy-bokkeum",
    "est": 13,
    "avg7": 13,
    "up": 1.03
   },
   {
-   "slug": "masan-agujjim",
+   "slug": "banana-oat-pancake",
    "est": 13,
    "avg7": 12,
-   "up": 1.07
+   "up": 1.15
   },
   {
-   "slug": "jeju-bingtteok",
+   "slug": "hunje-oori-kimchi-bokkeum",
    "est": 13,
-   "avg7": 23,
+   "avg7": 15,
+   "up": 0.87
+  },
+  {
+   "slug": "yangpa-jeon",
+   "est": 13,
+   "avg7": 22,
    "up": 0.59
   },
   {
-   "slug": "spam-egg-rice",
-   "est": 12,
-   "avg7": 12,
-   "up": 0.95
+   "slug": "duck-garlic-pasta",
+   "est": 13,
+   "avg7": 15,
+   "up": 0.87
   },
   {
-   "slug": "dak-jorim",
-   "est": 12,
-   "avg7": 17,
-   "up": 0.72
-  },
-  {
-   "slug": "danhobak-gui",
-   "est": 12,
-   "avg7": 16,
-   "up": 0.79
+   "slug": "danhobak-soup",
+   "est": 13,
+   "avg7": 10,
+   "up": 1.28
   },
   {
    "slug": "myeongran-butter-rice",
    "est": 12,
    "avg7": 11,
-   "up": 1.1
+   "up": 1.09
   },
   {
-   "slug": "chapssal-juk",
+   "slug": "meat-sauce-spaghetti",
+   "est": 12,
+   "avg7": 16,
+   "up": 0.77
+  },
+  {
+   "slug": "miyeok-naengguk",
    "est": 12,
    "avg7": 14,
-   "up": 0.83
+   "up": 0.87
   },
   {
-   "slug": "saeu-gyeran-jjim",
+   "slug": "bacon-cream-risotto",
    "est": 12,
-   "avg7": 15,
-   "up": 0.78
+   "avg7": 6,
+   "up": 2.19
   },
   {
-   "slug": "chodang-sundubu-yangnyeom",
+   "slug": "hobak-beombeok",
    "est": 12,
+   "avg7": 19,
+   "up": 0.63
+  },
+  {
+   "slug": "cheongyang-gochu-doenjang-muchim",
+   "est": 12,
+   "avg7": 7,
+   "up": 1.77
+  },
+  {
+   "slug": "tofu-egg-roll",
+   "est": 11,
+   "avg7": 18,
+   "up": 0.63
+  },
+  {
+   "slug": "hunje-oori-salad",
+   "est": 11,
    "avg7": 13,
-   "up": 0.99
+   "up": 0.84
   },
   {
-   "slug": "hunje-oori-kimchi-bokkeum",
+   "slug": "kids-cheese-riceball",
    "est": 11,
-   "avg7": 16,
-   "up": 0.68
+   "avg7": 13,
+   "up": 0.89
   },
   {
-   "slug": "morning-bread-egg-sandwich",
+   "slug": "dog-bugeo-treat",
    "est": 11,
-   "avg7": 11,
-   "up": 0.93
+   "avg7": 9,
+   "up": 1.21
   },
   {
    "slug": "greek-salad",
    "est": 11,
    "avg7": 14,
-   "up": 0.77
+   "up": 0.81
+  },
+  {
+   "slug": "egg-ramen",
+   "est": 10,
+   "avg7": 17,
+   "up": 0.6
   },
   {
    "slug": "omelet",
    "est": 10,
    "avg7": 15,
-   "up": 0.64
+   "up": 0.67
   },
   {
-   "slug": "tofu-egg-roll",
+   "slug": "avocado-egg-toast",
    "est": 10,
-   "avg7": 19,
-   "up": 0.52
-  },
-  {
-   "slug": "hunje-oori-salad",
-   "est": 10,
-   "avg7": 14,
-   "up": 0.7
-  },
-  {
-   "slug": "bacon-tomato-pasta",
-   "est": 10,
-   "avg7": 9,
-   "up": 1.09
-  },
-  {
-   "slug": "duck-garlic-pasta",
-   "est": 10,
-   "avg7": 16,
-   "up": 0.62
-  },
-  {
-   "slug": "cream-cheese-pasta",
-   "est": 10,
-   "avg7": 10,
-   "up": 0.93
+   "avg7": 8,
+   "up": 1.28
   },
   {
    "slug": "potato-omelet-spanish",
+   "est": 10,
+   "avg7": 8,
+   "up": 1.19
+  },
+  {
+   "slug": "masan-agujjim",
+   "est": 10,
+   "avg7": 12,
+   "up": 0.83
+  },
+  {
+   "slug": "dak-breast-soy-bokkeum",
+   "est": 9,
+   "avg7": 7,
+   "up": 1.22
+  },
+  {
+   "slug": "hunje-oori-deopbap",
    "est": 9,
    "avg7": 9,
-   "up": 1.0
+   "up": 1.04
   },
   {
-   "slug": "bokchoy-shrimp-bokkeum",
+   "slug": "tamago-don",
    "est": 9,
-   "avg7": 23,
-   "up": 0.38
+   "avg7": 10,
+   "up": 0.87
   },
   {
-   "slug": "sigeumchi-gyeran-mal",
+   "slug": "naengso-ba",
    "est": 9,
-   "avg7": 21,
-   "up": 0.43
+   "avg7": 13,
+   "up": 0.69
   },
   {
-   "slug": "banana-oat-pancake",
+   "slug": "morning-bread-egg-sandwich",
+   "est": 9,
+   "avg7": 11,
+   "up": 0.81
+  },
+  {
+   "slug": "seoul-bulgogi-jeongol",
+   "est": 9,
+   "avg7": 25,
+   "up": 0.36
+  },
+  {
+   "slug": "beef-ssalguksu",
    "est": 8,
-   "avg7": 12,
-   "up": 0.68
+   "avg7": 13,
+   "up": 0.62
+  },
+  {
+   "slug": "onepan-cream-pasta",
+   "est": 8,
+   "avg7": 6,
+   "up": 1.22
   },
   {
    "slug": "junghwa-naengmyeon",
    "est": 8,
    "avg7": 8,
-   "up": 0.99
+   "up": 0.97
   },
   {
-   "slug": "kkakdugi",
+   "slug": "oori-bokkeumtang",
    "est": 8,
-   "avg7": 8,
-   "up": 1.0
+   "avg7": 10,
+   "up": 0.8
   },
   {
-   "slug": "cheongyang-gochu-doenjang-muchim",
+   "slug": "munguh-gambas",
    "est": 8,
    "avg7": 7,
-   "up": 1.16
+   "up": 1.1
   },
   {
-   "slug": "dog-sweetpotato-chew",
-   "est": 7,
-   "avg7": 17,
-   "up": 0.41
-  },
-  {
-   "slug": "potato-gratin",
-   "est": 7,
+   "slug": "mini-burger",
+   "est": 8,
    "avg7": 8,
+   "up": 0.97
+  },
+  {
+   "slug": "dog-beef-jerky",
+   "est": 8,
+   "avg7": 6,
+   "up": 1.27
+  },
+  {
+   "slug": "hunje-oori-ssam",
+   "est": 7,
+   "avg7": 7,
    "up": 0.9
   },
   {
-   "slug": "egg-pudding-simple",
+   "slug": "kkakdugi",
    "est": 7,
-   "avg7": 10,
-   "up": 0.7
+   "avg7": 8,
+   "up": 0.83
   },
   {
-   "slug": "chicken-katsu",
+   "slug": "beet-salad",
    "est": 7,
-   "avg7": 14,
-   "up": 0.52
+   "avg7": 7,
+   "up": 0.98
   },
   {
-   "slug": "cabbage-tofu-ssam",
+   "slug": "daejeon-dubu-duruchigi",
+   "est": 7,
+   "avg7": 15,
+   "up": 0.45
+  },
+  {
+   "slug": "natto-egg-rice",
    "est": 6,
-   "avg7": 14,
-   "up": 0.46
+   "avg7": 8,
+   "up": 0.72
   },
   {
    "slug": "oori-deulkkae-tang",
    "est": 6,
-   "avg7": 11,
-   "up": 0.59
-  },
-  {
-   "slug": "beet-salad",
-   "est": 6,
-   "avg7": 7,
-   "up": 0.91
-  },
-  {
-   "slug": "dakdari-gui",
-   "est": 6,
-   "avg7": 20,
-   "up": 0.31
-  },
-  {
-   "slug": "dak-soy-bokkeum",
-   "est": 5,
-   "avg7": 13,
-   "up": 0.39
-  },
-  {
-   "slug": "dak-breast-soy-bokkeum",
-   "est": 5,
-   "avg7": 7,
-   "up": 0.73
-  },
-  {
-   "slug": "hunje-oori-ssam",
-   "est": 5,
-   "avg7": 8,
-   "up": 0.67
-  },
-  {
-   "slug": "buchu-gyeran-bokkeumbap",
-   "est": 5,
-   "avg7": 8,
-   "up": 0.69
-  },
-  {
-   "slug": "munguh-gambas",
-   "est": 5,
-   "avg7": 7,
-   "up": 0.74
-  },
-  {
-   "slug": "hobak-beombeok",
-   "est": 5,
-   "avg7": 21,
-   "up": 0.26
-  },
-  {
-   "slug": "daejeon-dubu-duruchigi",
-   "est": 5,
-   "avg7": 16,
-   "up": 0.34
-  },
-  {
-   "slug": "potato-cheese-bake",
-   "est": 4,
-   "avg7": 6,
-   "up": 0.7
-  },
-  {
-   "slug": "ssalguksu-bokkeum",
-   "est": 4,
-   "avg7": 8,
-   "up": 0.57
-  },
-  {
-   "slug": "hunje-oori-deopbap",
-   "est": 4,
-   "avg7": 9,
-   "up": 0.49
-  },
-  {
-   "slug": "oori-bokkeumtang",
-   "est": 4,
    "avg7": 10,
-   "up": 0.45
+   "up": 0.54
   },
   {
-   "slug": "kids-bread-egg-tart",
-   "est": 4,
+   "slug": "asparagus-bacon-mal",
+   "est": 6,
    "avg7": 6,
-   "up": 0.78
+   "up": 0.87
   },
   {
-   "slug": "dog-duck-jerky",
-   "est": 4,
-   "avg7": 8,
-   "up": 0.58
+   "slug": "mixed-fruit-yogurt-salad",
+   "est": 6,
+   "avg7": 6,
+   "up": 0.92
   },
   {
-   "slug": "chickpea-curry",
-   "est": 4,
-   "avg7": 8,
-   "up": 0.57
-  },
-  {
-   "slug": "mini-burger",
-   "est": 4,
+   "slug": "memil-chongtteok",
+   "est": 6,
    "avg7": 9,
-   "up": 0.52
-  },
-  {
-   "slug": "tofu-kimchi-jeon",
-   "est": 4,
-   "avg7": 9,
-   "up": 0.5
-  },
-  {
-   "slug": "gwangju-duck-tang",
-   "est": 4,
-   "avg7": 10,
-   "up": 0.46
-  },
-  {
-   "slug": "hobakip-ssambap",
-   "est": 4,
-   "avg7": 8,
-   "up": 0.57
+   "up": 0.63
   }
  ]
 }
