@@ -20,6 +20,18 @@ from pathlib import Path
 
 import requests
 
+
+def _threads_token() -> str:
+    """자동 연장된 스레드 토큰(threads_token.py). 실패하면 .env 값."""
+    try:
+        import threads_token
+
+        return threads_token.current()
+    except Exception:  # noqa: BLE001
+        from config import settings as _s
+
+        return _s.threads_access_token
+
 HERE = Path(__file__).resolve().parent
 SITE_D = HERE.parent
 ROOT = SITE_D.parent
@@ -99,9 +111,9 @@ def post_threads() -> dict:
     from utils.http import safe_post
 
     check_public_url(URL_LINK)
-    if not settings.threads_access_token:
+    if not _threads_token():
         return {"status": "skipped", "reason": "not_configured"}
-    tok = settings.threads_access_token
+    tok = _threads_token()
     c = safe_post(f"{THREADS_API_BASE}/me/threads", data={"media_type": "VIDEO", "video_url": URL_LINK, "text": plain_threads_text(threads_text()), "access_token": tok}, timeout=60)
     if c is None or c.status_code != 200:
         return {"status": "error", "reason": "create_failed", "body": getattr(c, "text", "")[:300]}

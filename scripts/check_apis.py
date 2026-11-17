@@ -27,6 +27,18 @@ from utils.http import safe_get  # noqa: E402
 from video_trend_analyzer import get_trending_videos  # noqa: E402
 from wp_client import WordPressClient  # noqa: E402
 
+
+def _threads_token() -> str:
+    """자동 연장된 스레드 토큰(threads_token.py). 실패하면 .env 값."""
+    try:
+        import threads_token
+
+        return threads_token.current()
+    except Exception:  # noqa: BLE001
+        from config import settings as _s
+
+        return _s.threads_access_token
+
 OK, SKIP, ERR = "OK", "SKIP", "ERR"
 ICON = {OK: "✅", SKIP: "⏭️ ", ERR: "❌"}
 
@@ -231,7 +243,7 @@ def main() -> int:
             fields="id,username,account_type",
         )
     )
-    checks.append(check_meta_graph("Threads API", settings.threads_access_token, "https://graph.threads.net/v1.0"))
+    checks.append(check_meta_graph("Threads API", _threads_token(), "https://graph.threads.net/v1.0"))
     checks.append(check_pinterest())
     checks.append(check_google_service_account())
     checks.append(check_youtube_oauth())

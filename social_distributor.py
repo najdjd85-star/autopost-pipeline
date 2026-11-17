@@ -22,6 +22,18 @@ from smart_affiliate_matcher import get_primary_affiliate_link
 from utils.http import safe_get, safe_post
 from utils.logger import get_logger
 
+
+def _threads_token() -> str:
+    """자동 연장된 스레드 토큰(threads_token.py). 실패하면 .env 값."""
+    try:
+        import threads_token
+
+        return threads_token.current()
+    except Exception:  # noqa: BLE001
+        from config import settings as _s
+
+        return _s.threads_access_token
+
 logger = get_logger(__name__)
 
 GRAPH_API_BASE = "https://graph.facebook.com/v19.0"
@@ -254,7 +266,7 @@ def plain_threads_text(text: str) -> str:
 
 def publish_threads_post(text: str) -> Dict[str, Any]:
     text = plain_threads_text(text)
-    if not settings.threads_access_token:
+    if not _threads_token():
         logger.info("THREADS_ACCESS_TOKEN 미설정 - 스레드 게시를 건너뜁니다.")
         return {"status": "skipped", "reason": "not_configured"}
 
@@ -268,7 +280,7 @@ def publish_threads_post(text: str) -> Dict[str, Any]:
             data={
                 "media_type": "TEXT",
                 "text": text,
-                "access_token": settings.threads_access_token,
+                "access_token": _threads_token(),
             },
             timeout=20,
         )
@@ -281,11 +293,11 @@ def publish_threads_post(text: str) -> Dict[str, Any]:
             return {"status": "error", "reason": "blocked" if _is_blocked_response(create_resp) else "create_failed"}
         creation_id = create_resp.json().get("id")
 
-        _wait_for_threads_container_ready(creation_id, settings.threads_access_token)
+        _wait_for_threads_container_ready(creation_id, _threads_token())
 
         publish_resp = safe_post(
             f"{THREADS_API_BASE}/{user_id}/threads_publish",
-            data={"creation_id": creation_id, "access_token": settings.threads_access_token},
+            data={"creation_id": creation_id, "access_token": _threads_token()},
             timeout=20,
         )
         if publish_resp is None or publish_resp.status_code != 200:
@@ -305,7 +317,7 @@ def publish_threads_post(text: str) -> Dict[str, Any]:
 
 def add_threads_first_comment(post_id: str, comment_text: str) -> Dict[str, Any]:
     comment_text = plain_threads_text(comment_text)
-    if not (settings.threads_access_token and post_id):
+    if not (_threads_token() and post_id):
         return {"status": "skipped", "reason": "not_configured_or_no_post_id"}
 
     try:
@@ -319,7 +331,7 @@ def add_threads_first_comment(post_id: str, comment_text: str) -> Dict[str, Any]
                 "media_type": "TEXT",
                 "text": comment_text,
                 "reply_to_id": post_id,
-                "access_token": settings.threads_access_token,
+                "access_token": _threads_token(),
             },
             timeout=20,
         )
@@ -332,11 +344,11 @@ def add_threads_first_comment(post_id: str, comment_text: str) -> Dict[str, Any]
             return {"status": "error", "reason": "blocked" if _is_blocked_response(create_resp) else "comment_create_failed"}
         creation_id = create_resp.json().get("id")
 
-        _wait_for_threads_container_ready(creation_id, settings.threads_access_token)
+        _wait_for_threads_container_ready(creation_id, _threads_token())
 
         publish_resp = safe_post(
             f"{THREADS_API_BASE}/me/threads_publish",
-            data={"creation_id": creation_id, "access_token": settings.threads_access_token},
+            data={"creation_id": creation_id, "access_token": _threads_token()},
             timeout=20,
         )
         if publish_resp is None or publish_resp.status_code != 200:

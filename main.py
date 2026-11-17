@@ -392,6 +392,16 @@ def hub_build_job() -> None:
         logger.warning("허브 생성 중 오류(무시): %s", exc)
 
 
+def threads_token_job() -> None:
+    """스레드 토큰(60일짜리)을 7일마다 연장하고, 만료됐으면 텔레그램으로 알린다."""
+    try:
+        import threads_token
+
+        threads_token.daily_check()
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("스레드 토큰 점검 중 오류(무시): %s", exc)
+
+
 def wp_cron_ping_job() -> None:
     """방문이 적으면 워드프레스 예약 글이 제시간에 안 나갈 수 있어서 예약 실행을 직접 깨운다."""
     for site in SITE_KEYS:
@@ -409,6 +419,7 @@ def _register_schedule_jobs() -> None:
     schedule.every(10).minutes.do(wp_cron_ping_job)
     schedule.every(5).minutes.do(threads_queue_job)
     schedule.every(3).hours.do(threads_casual_job)
+    schedule.every().day.at("01:10").do(threads_token_job)  # 서버 UTC 01:10 = 한국 10:10, 스레드 토큰 7일마다 자동 연장·만료 알림
 
     # NEWSLETTER_SCHEDULE_TIME 예: "Monday 08:00"
     try:
