@@ -31,6 +31,22 @@
    "Poking holes in the skin with a fork prevents them from bursting."
   ]
  },
+ "altang": {
+  "desc": "A spicy and vibrant soup made with pollock roe and milt, simmered with Korean radish and tofu.",
+  "h": "cdb938bb90",
+  "name": "Altang (Spicy Pollock Roe Soup)",
+  "steps": [
+   "If the pollock roe is frozen, thaw it in the refrigerator, rinse gently in salt water, and cut into 2-3 bite-sized pieces.",
+   "Cut the Korean radish into thin rectangular slabs, cut the tofu into large chunks, and slice diagonally the green onion and Cheongyang chili.",
+   "Put 700 ml of broth and the Korean radish in a pot, bring to a boil, and simmer over medium heat for 7 minutes to partially cook the Korean radish.",
+   "Dissolve the Korean red pepper flakes, soup soy sauce, minced garlic, salted fermented shrimp, and mirin, then add the pollock roe, soybean sprout, and tofu, cover, and boil for 7 minutes until the roe turns white.",
+   "Top with the green onion, Cheongyang chili, crown daisy, and water dropwort, boil for just 1 more minute, and serve."
+  ],
+  "tips": [
+   "Do not stir with a ladle after adding the roe, or the roe will fall apart completely.",
+   "If you have milt, adding it alongside makes the soup even richer and nuttier."
+  ]
+ },
  "andong-gangodeungeo-gui": {
   "desc": "Andong-style salted grilled mackerel infused with salt flavor.",
   "h": "f3a39acf2a",
@@ -1164,6 +1180,22 @@
    "Squid works well instead of shrimp."
   ]
  },
+ "bomdong-bibimbap": {
+  "desc": "A bibimbap topped generously with sweet and nutty bomdong cabbage seasoned like geotjeori and finished with a fried egg.",
+  "h": "207c967b57",
+  "name": "Bomdong Bibimbap",
+  "steps": [
+   "Trim the root of the bomdong cabbage, detach the leaves, wash, shake off the water, and cut into bite-sized pieces.",
+   "In a bowl, mix Korean red pepper flakes, soy sauce, fish sauce, sugar, minced garlic, vinegar, and 1 tbsp of sesame oil to make the seasoning.",
+   "Add the seasoning to the bomdong cabbage, toss gently without wilting the greens, and sprinkle with sesame seeds.",
+   "Heat cooking oil in a pan and fry 2 eggs sunny-side up.",
+   "Put cooked rice in a bowl, top generously with the seasoned bomdong cabbage, add the fried egg and remaining sesame oil, and mix with gochujang to taste."
+  ],
+  "tips": [
+   "Bomdong cabbage must be eaten right after tossing to stay crisp.",
+   "Adding a canned tuna with the oil drained makes it a hearty meal."
+  ]
+ },
  "bomdong-geotjeori": {
   "desc": "Crunchy fresh salad made by tossing sweet bomdong cabbage immediately with Korean red pepper flakes and fish sauce.",
   "h": "deb986736f",
@@ -1379,6 +1411,23 @@
    "If the water reduces too much while simmering, add water 50 ml at a time to adjust the consistency."
   ]
  },
+ "brownie": {
+  "desc": "Square brownies with a crispy crust and a fudgy center, made by melting chocolate and butter.",
+  "h": "b88e094c5e",
+  "name": "Brownie",
+  "steps": [
+   "Preheat the oven to 175 degrees and line a 20 cm square baking pan with parchment paper.",
+   "Put the chocolate and butter in a bowl, place it over hot water (double boiler), and stir until completely melted.",
+   "Remove from heat, mix in the sugar, then add the eggs one by one, mixing until smooth and glossy.",
+   "Sift in the flour, cocoa powder, and salt, mix just until no flour is visible, and fold in the coarsely chopped mixed nuts.",
+   "Pour into the pan and bake at 175 degrees for 22 to 25 minutes. It is done when a skewer inserted comes out with a few moist crumbs.",
+   "Cool completely in the pan (refrigerate for 1 hour if possible) and cut into 9 pieces."
+  ],
+  "tips": [
+   "Baking too long will make it dry. Even if you take it out when the center is slightly jiggly, it will firm up as it cools.",
+   "Cutting while warm will make it crumble, so make sure to cool it completely before cutting."
+  ]
+ },
  "buchu-gyeran-bokkeumbap": {
   "desc": "A Chinese-style fried rice featuring aromatic garlic chives.",
   "h": "89661c1afe",
@@ -1534,6 +1583,39 @@
   "tips": [
    "Seasoning with salted fermented shrimp makes it Busan-style.",
    "Scalding the rice by pouring and draining the hot broth over it warms up the rice."
+  ]
+ },
+ "butadon": {
+  "desc": "A pork rice bowl featuring thinly sliced pork browned until crisp and simmered in a sweet soy sauce, served over rice.",
+  "h": "9c7392bd6c",
+  "name": "Butadon (Pork Rice Bowl)",
+  "steps": [
+   "Mix soy sauce, mirin, sugar, oligosaccharide syrup, ginger, and water to make the sauce, cut the onion into thin strips, and slice thinly the thin green onion.",
+   "Drizzle cooking oil in a pan, spread out the pork, and brown over medium-high heat for 2 minutes on each side. Wipe away the rendered fat with a paper towel.",
+   "Add the onion and stir-fry for 1 minute.",
+   "Pour in the sauce and simmer over medium heat for 2 to 3 minutes until the pork has a glossy sheen and the sauce is reduced.",
+   "Place cooked rice in a bowl, top with pork and sauce, and garnish with thin green onion and egg."
+  ],
+  "tips": [
+   "Brown the pork first before adding the sauce to get that charred flavor.",
+   "Sprinkling shichimi or black pepper reduces the greasiness."
+  ]
+ },
+ "butter-tteok": {
+  "desc": "A trendy dessert baked in the oven with a glutinous rice flour batter loaded with butter, offering a crispy outside and chewy inside.",
+  "h": "afb07a7827",
+  "name": "Butter Rice Cake (Butter-tteok)",
+  "steps": [
+   "Preheat the oven to 180 degrees, and lightly grease a 20 cm square pan (or muffin pan) with butter.",
+   "Add egg, sugar, and salt to a bowl and whisk for 30 seconds, then add milk and melted butter and mix.",
+   "Add glutinous rice and baking powder and mix smoothly without lumps. The batter should be about the consistency of a thick yogurt.",
+   "Pour the batter into the pan and drop it onto the floor a couple of times to remove air bubbles.",
+   "Bake in an 180-degree oven for 30~35 minutes until the top turns deep brown (for an air fryer, bake at 170 degrees for 25 minutes and add 5 minutes at a time while checking the status).",
+   "Let cool for 10 minutes, remove from the pan, and cut into bite-sized pieces. The outside is crispest when warm."
+  ],
+  "tips": [
+   "This is based on dry glutinous rice flour. If using wet flour, reduce the milk to 120ml.",
+   "It firms up as it cools, so reheating it in an air fryer at 170 degrees for 3 minutes will make it crispy and chewy again."
   ]
  },
  "cabbage-bokkeum": {
@@ -1806,6 +1888,22 @@
   "tips": [
    "Peeling the celery fibers makes it much more tender.",
    "Toss just before eating to keep it crunchy."
+  ]
+ },
+ "chadol-doenjang-jjigae": {
+  "desc": "A rich and savory soybean paste stew made by sautéing beef brisket in its own fat, just like the ones served at Korean BBQ restaurants.",
+  "h": "d5a5271f43",
+  "name": "Chadol Doenjang Jjigae (Brisket Soybean Paste Stew)",
+  "steps": [
+   "Cut the potato, Korean zucchini, onion, and tofu into 1.5 cm cubes, tear the mushroom, and slice thinly the Cheongyang chili and green onion.",
+   "Put the beef in an earthenware pot (ttukbaegi) and sauté over medium heat for 2 minutes; once fat comes out, add the doenjang and gochujang and sauté for 1 more minute.",
+   "Add 500 ml of water and the potato, bring to a boil, and simmer over medium heat for 5 minutes.",
+   "Add the Korean zucchini, onion, mushroom, and tofu and simmer for 5 more minutes.",
+   "Add the minced garlic, Korean red pepper flakes, Cheongyang chili, and green onion, simmer for 1 minute, and turn off the heat."
+  ],
+  "tips": [
+   "Sautéing the doenjang in the meat fat first reduces pastiness and makes the stew deeper and more savory.",
+   "Using rice water makes the broth even smoother."
   ]
  },
  "chadol-sukju-bokkeum": {
@@ -2495,6 +2593,22 @@
    "If the cucumber tastes bitter, cut off 2cm from both ends."
   ]
  },
+ "daegu-maeuntang": {
+  "desc": "A spicy fish stew featuring tender cod simmered with Korean radish and tofu in a fiery red pepper broth.",
+  "h": "18e7268f28",
+  "name": "Daegu Maeuntang (Spicy Cod Soup)",
+  "steps": [
+   "Rinse the cod under running water, scrape away blood clots and black membranes near the bones, and sprinkle 1 tbsp of mirin over it.",
+   "Mix together the Korean red pepper flakes, gochujang, doenjang, soup soy sauce, minced garlic, ginger, and the remaining mirin to make the seasoning paste.",
+   "Put 1 L of broth and the rectangular-sliced Korean radish in a pot, boil over medium heat for 10 minutes, then dissolve the seasoning paste.",
+   "When the broth comes to a boil, add the cod and simmer uncovered over medium heat for 10 minutes; it is done when the flesh turns white and opaque and easily flakes off the bones.",
+   "Add the tofu and Korean zucchini and boil for 3 minutes, add the green onion and Cheongyang chili and boil for 1 minute, season with salt, then top with the water dropwort and crown daisy and turn off the heat."
+  ],
+  "tips": [
+   "Do not stir too often after adding the fish so the flesh doesn't break apart.",
+   "You must boil it uncovered so the fishy odor can escape."
+  ]
+ },
  "daegu-napjak-mandu": {
   "desc": "Daegu-style flat dumplings filled with glass noodles and garlic chives wrapped in thin dough and pan-fried.",
   "h": "5ad35ee041",
@@ -2644,6 +2758,22 @@
   "tips": [
    "Shake off the noodle flour so the broth does not become cloudy.",
    "Sprinkling a little pepper makes it clean-tasting."
+  ]
+ },
+ "dak-kkochi": {
+  "desc": "Home-style chicken skewers made with chicken thigh and green onion, glazed with a sweet soy sauce and grilled.",
+  "h": "fdd9bad285",
+  "name": "Chicken Skewers (Dak-kkochi)",
+  "steps": [
+   "Soak wooden skewers in water for 20 minutes to prevent burning. Cut the chicken into 3 cm pieces and sprinkle with salt and black pepper, then cut the green onion into 3 cm lengths.",
+   "Thread the chicken and green onion alternately onto the skewers.",
+   "Add soy sauce, mirin, sugar, oligosaccharide syrup, minced garlic, and water (add gochujang for a spicy flavor) to a pot and simmer over low heat for 3 minutes to make the sauce.",
+   "Coat a pan with cooking oil and grill the skewers over medium heat, rolling them for 8~10 minutes until the chicken is cooked through.",
+   "Brush the sauce on both sides and grill over low heat for 1 minute each, repeating twice to add a gloss."
+  ],
+  "tips": [
+   "When you cut into the chicken, there should be no pink color left so you know it is fully cooked.",
+   "You can also air fry at 200 degrees for 12 minutes, brush with sauce, and bake for 3 more minutes."
   ]
  },
  "dak-soy-bokkeum": {
@@ -2948,6 +3078,22 @@
   "tips": [
    "The sauce burns easily, so apply it toward the end of cooking.",
    "You can also grill it with just a pinch of salt to enjoy its natural aroma."
+  ]
+ },
+ "deulgireum-makguksu": {
+  "desc": "Makguksu noodles tossed in a nutty blend of boiled soba noodle, perilla oil, soy sauce, roasted seaweed, and sesame seeds.",
+  "h": "713c19079e",
+  "name": "Buckwheat Noodles with Perilla Oil (Deulgireum Makguksu)",
+  "steps": [
+   "Mix soy sauce, sugar, and tsuyu, and stir until the sugar dissolves to make the seasoned soy sauce.",
+   "Lightly toast roasted seaweed in a dry pan, put it in a plastic bag, and crush finely. Crush the sesame seeds halfway using a mortar or your hand.",
+   "Add soba noodle to 2L of boiling water and boil according to the time indicated on the package (usually 4-5 minutes) while stirring.",
+   "Rub and rinse 2-3 times in cold water to remove starch, shake off excess water, and plate.",
+   "Place soba noodle in a bowl, drizzle with the seasoned soy sauce and perilla oil, and top generously with roasted seaweed, sesame seeds, and thinly sliced thin green onion before mixing."
+  ],
+  "tips": [
+   "You must shake off the water thoroughly so the perilla oil flavor does not get diluted.",
+   "Perilla oil is sensitive to heat, so make sure to add it raw at the very end."
   ]
  },
  "deulkkae-kalguksu": {
@@ -3494,6 +3640,24 @@
    "It tastes even better served with kimchi."
   ]
  },
+ "dubai-jjondeuk-cookie": {
+  "desc": "A trendy, chewy dessert wrapping butter-roasted kataifi and pistachio spread inside a marshmallow cocoa dough.",
+  "h": "3da1420e0c",
+  "name": "Dubai Chewy Cookie",
+  "steps": [
+   "Finely chop the kataifi with scissors into 1 cm lengths. Melt 20g of butter in a pan and roast the kataifi over low heat for 8~10 minutes, stirring until golden and crispy, then let it cool completely.",
+   "Add pistachio spread to the cooled kataifi and mix, divide into 8 portions, roll into balls, and place in the freezer for 20 minutes to make them firm.",
+   "Melt 30g of butter in a pot (or non-stick pan) over low heat, add the marshmallow, and stir with a spatula until completely melted.",
+   "Turn off the heat, add 15g of cocoa powder, and mix until smooth. Lightly apply butter to your hands, and divide the dough into 8 portions while it is lukewarm.",
+   "Flatten the dough in your palm, place the frozen filling inside to wrap and round it into a ball, and roll it in the remaining cocoa powder to coat the outside.",
+   "Let it set in the refrigerator for 30 minutes until chewy, then eat."
+  ],
+  "tips": [
+   "Kataifi must be roasted thoroughly so the crispy texture lasts long.",
+   "The marshmallow dough firms up as it cools, so you need to work quickly. If it hardens, microwave it for 10 seconds.",
+   "Store airtight and consume within 3 days in the refrigerator."
+  ]
+ },
  "dubu-buchim": {
   "desc": "Pan-fried tofu with a savory seasoned soy sauce topping.",
   "h": "8d9bdeac93",
@@ -3880,6 +4044,24 @@
    "Serve with lettuce wraps."
   ]
  },
+ "financier": {
+  "desc": "A French baked pastry made with browned butter and almond flour, featuring a crispy exterior and moist interior.",
+  "h": "16a5688db7",
+  "name": "Financier",
+  "steps": [
+   "Put 100g of butter in a pot and boil over medium heat for 4~5 minutes while stirring. As soon as the bottom turns brown and gives off a nutty aroma, turn off the heat, strain through a sieve, and let cool to about 40 degrees (brown butter).",
+   "Add egg, sugar, honey, and salt to a bowl and mix with a whisk just enough to dissolve the sugar. Do not whip air into it.",
+   "Sift in almond flour and flour, mix until smooth, and then add the brown butter in 3 separate additions while mixing.",
+   "Let the batter rest in the refrigerator for 1 hour. Preheat the oven to 190 degrees and grease the financier molds with butter.",
+   "Fill the molds up to 80% with batter and bake at 190 degrees for 12~14 minutes until the edges turn deep brown.",
+   "Let sit for 5 minutes, remove from the molds, and cool on a cooling rack."
+  ],
+  "tips": [
+   "Butter burns quickly the moment it turns brown, so do not leave the front of the pot.",
+   "Use the leftover egg yolks for custard or marinated egg yolks.",
+   "Can be stored airtight at room temperature for 3 days or frozen for 2 weeks."
+  ]
+ },
  "fish-cake-soup": {
   "desc": "A comforting soup that's great to boil in a single pot on a cold day.",
   "h": "8865744759",
@@ -3924,6 +4106,23 @@
   "tips": [
    "Sandwich bread that is a day old absorbs the egg wash better, which is great.",
    "Melting butter 5g in the pan makes the flavor much better."
+  ]
+ },
+ "gaeseong-juak": {
+  "desc": "Traditional Gaeseong yakgwa-style rice cakes made from makgeolli-fermented glutinous rice dough fried at low temperature and soaked in jocheong syrup.",
+  "h": "249935357d",
+  "name": "Gaeseong Juak (Fried Rice Cakes in Syrup)",
+  "steps": [
+   "Add 150g of jocheong, 50ml of water, and ginger to a pot and simmer over low heat for 3 minutes to make the syrup, then let it cool.",
+   "Mix glutinous rice, flour, sugar, and salt in a bowl, add makgeolli and rub together, then add hot water 1 tbsp at a time to form a pliable dough as soft as your earlobe.",
+   "Divide the dough into 15g portions, roll into balls, press lightly to flatten into 3.5 cm wide disks, and press the center firmly with your finger to make it concave.",
+   "Heat cooking oil to 140 degrees (the point where small bubbles slowly rise when dough is added), add the juak, and fry at a low temperature for 8~10 minutes while rolling with a ladle to puff them up.",
+   "Once puffed, increase the heat to 160 degrees and fry for 1~2 minutes until golden, then remove.",
+   "Drain the oil from the juak, soak them in the syrup for 2~3 minutes, take them out, and place thin strips of jujube in the center."
+  ],
+  "tips": [
+   "If the oil is too hot from the beginning, only the outside will burn and the inside won't puff properly. Frying slowly at a low temperature is the key.",
+   "You can use milk instead of makgeolli, but the fermented aroma and crispiness will be less."
   ]
  },
  "gaeseong-pyeonsu": {
@@ -4357,6 +4556,22 @@
    "Adding tofu makes it filling."
   ]
  },
+ "gimpitang": {
+  "desc": "A famous specialty dish from Gongju where crispy sweet and sour pork is coated in a kimchi-infused sweet and sour sauce and smothered in melted pizza cheese.",
+  "h": "98889f2025",
+  "name": "Kimchi Pork Sweet and Sour with Cheese (Gimpitang)",
+  "steps": [
+   "Cut the pork into 1 cm thickness and 5 cm length, and mix thoroughly with salt, egg, 70g of starch, and 3 tbsp of water to make a thick batter.",
+   "Heat cooking oil to 170 degrees and fry the pork for 4 minutes, take it out, and after 1 minute fry it again at 180 degrees for 2 more minutes to make it crispy.",
+   "Add 300 ml of water, sugar, vinegar, soy sauce, and ketchup to a pan, and when it boils, add thinly sliced kimchi, onion, and carrot and boil for 3 minutes. Dissolve 1 tbsp of starch in 2 tbsp of water, pour it in, and stir to thicken.",
+   "Place the fried pork in an oven-safe container (or heat-resistant dish), pour the kimchi sauce over it, and top generously with cheese.",
+   "Bake in a 200-degree oven (or air fryer) for 5~7 minutes until the cheese melts and turns golden. If using a microwave, heat for 2 minutes to melt the cheese."
+  ],
+  "tips": [
+   "You must use well-fermented kimchi so it pairs well with the sweet and sour sauce.",
+   "If you make it with store-bought frozen sweet and sour pork, it takes only 20 minutes."
+  ]
+ },
  "gnocchi": {
   "desc": "Chewy potato gnocchi made with boiled potatoes and tossed in a creamy sauce.",
   "h": "4d1cd82f45",
@@ -4602,6 +4817,22 @@
    "Toss just before eating."
   ]
  },
+ "gul-bossam": {
+  "desc": "A winter delicacy of boiled pork slices wrapped with fresh raw oysters and spicy shredded Korean radish salad.",
+  "h": "228499cbf3",
+  "name": "Oyster Bossam (Gul Bossam)",
+  "steps": [
+   "In a pot, combine 1.5L of water, green onion, onion, whole garlic, ginger, and doenjang. Bring to a boil, add the pork, cover, and boil over medium heat for 45-50 minutes. Pierce with a chopstick; if no bloody juice comes out, it is fully cooked.",
+   "While the pork cooks, cut the Korean radish into 0.3cm thin strips, marinate with 1/2 tbsp of salt for 15 minutes, and squeeze out the excess water firmly.",
+   "Toss the Korean radish strips with Korean red pepper flakes first to color them, then mix in 1 tbsp of minced garlic, fish sauce, sugar, vinegar, thin green onion, and sesame seeds to make the radish salad.",
+   "Wash the oyster gently in saltwater (1L water + 1/2 tbsp salt) by swirling to pick out shell pieces, rinse twice in cold water, and drain in a colander.",
+   "Take out the boiled pork, let it rest for 5 minutes, slice it into 0.7cm thickness, and arrange napa cabbage inner leaves, pork, radish salad, and oyster on a plate. Wrap the pork, oyster, and radish salad together in the napa cabbage and eat."
+  ],
+  "tips": [
+   "Buy fresh raw oysters marked for raw consumption and eat them on the same day. Pregnant women and the elderly should eat cooked oysters.",
+   "Oysters can burst if you massage them too long, so wash them only by swirling in saltwater."
+  ]
+ },
  "gul-gukbap": {
   "desc": "Clear winter rice soup made with Korean radish and oyster.",
   "h": "592c25738d",
@@ -4630,6 +4861,22 @@
   "tips": [
    "If you pan-fry the oyster for too long, it shrinks and becomes tough.",
    "You must drain the oyster thoroughly so the egg coating does not peel off."
+  ]
+ },
+ "gul-jjim": {
+  "desc": "A simple seasonal oyster dish where shell-on oysters are steamed in a pot and dipped inチョ(chogochujang).",
+  "h": "15607a2f69",
+  "name": "Steamed Oysters (Gul Jjim)",
+  "steps": [
+   "Scrub the mud and impurities on the shell of the seokhwa with a brush and rinse under running water.",
+   "Pour 1 cup of water into a large pot, place a steamer or colander on top, and arrange the oyster with the convex side facing down.",
+   "Cover, steam over high heat for 8-10 minutes once steam rises. When the shell opens slightly, they are fully cooked.",
+   "Mix gochujang, vinegar, sugar, and minced Cheongyang chili to make the dipping sauce.",
+   "Wear work gloves, open the shell with an oyster knife or spoon, detach the oyster, and eat it with the dipping sauce or lemon juice."
+  ],
+  "tips": [
+   "Steaming too long makes the oyster small and chewy. The moment the shell opens is when it is most delicious.",
+   "Do not eat oysters whose shells do not open all the way."
   ]
  },
  "gul-sundubu": {
@@ -5074,6 +5321,22 @@
    "Serve alongside doenjang jjigae."
   ]
  },
+ "hoguo": {
+  "desc": "A Chinese-style shabu-shabu where you make a broth with store-bought hot pot (mala) sauce, blanch meat and vegetables, and dip them in peanut sauce.",
+  "h": "d5c3aefdbc",
+  "name": "Chinese Hot Pot at Home (Huoguo)",
+  "steps": [
+   "Soak the glass noodles in lukewarm water for 30 minutes. Cut the napa cabbage and bok choy into bite-sized pieces and cut the tofu to 1.5cm thickness.",
+   "Mix peanut butter, soy sauce, minced garlic, sesame oil, sugar, and 2 tbsp of water to make a dipping sauce.",
+   "Put 1L of water and mala sauce in a hot pot and boil over high heat to make the broth.",
+   "Add napa cabbage, mushroom, and tofu to the boiling broth first, boil for 3 minutes, and add bok choy and glass noodles.",
+   "Add as much beef as you want into the broth, and when the color changes (about 30 seconds), take it out and dip it in the sauce. Briefly blanch crown daisy at the very end."
+  ],
+  "tips": [
+   "If the spice is too much for you, cut the sauce amount in half and increase the water.",
+   "Adding shrimp, meatballs, or fish cakes makes it more hearty."
+  ]
+ },
  "honey-butter-toast": {
   "desc": "Sweet toast brushed with butter and honey.",
   "h": "a20ee481dd",
@@ -5405,6 +5668,22 @@
   "tips": [
    "Noodles will get soggy if left in the broth too long, so pour the broth right before eating.",
    "Serving with a seasoned soy sauce mixture (1 tbsp soy sauce, 1/2 tsp Korean red pepper flakes, 1 tsp sesame oil) makes it even tastier."
+  ]
+ },
+ "jangeo-gui": {
+  "desc": "A stamina dish made by pre-grilling trimmed eel, brushing with a sweet glaze, and grilling until glossy.",
+  "h": "5285f7d732",
+  "name": "Grilled Eel (Jangeo-gui)",
+  "steps": [
+   "Put soy sauce, mirin, sugar, oligosaccharide syrup, ginger, minced garlic, and water in a pot, and simmer over low heat for 5 minutes to make a thick glaze.",
+   "Wipe moisture off the eel with paper towels, scrape off the slimy mucus on the middle of the back side with the back of a knife, and cut into 8cm lengths.",
+   "Lightly grease a pan with cooking oil and pre-grill starting from the skin side over medium heat for 4 minutes, flip and cook the flesh side for 4 minutes. If the eel curls up, press it down with a spatula.",
+   "Brush the glaze on both sides and grill over low heat for 1 minute each, brushing 2 to 3 more times to give it a gloss.",
+   "Cut into bite-sized pieces, sprinkle with sesame seeds, and serve with ginger strips or garlic chives."
+  ],
+  "tips": [
+   "You must brush the glaze at the end so it does not burn.",
+   "If using an air fryer, cook at 200 degrees for 8 minutes on the skin side, then flip, brush with glaze, and cook for 5 minutes."
   ]
  },
  "japchae": {
@@ -6192,6 +6471,22 @@
    "You can also use store-bought frozen pork cutlets."
   ]
  },
+ "keto-gimbap": {
+  "desc": "A low-carb diet gimbap packed with thinly shredded egg strips instead of rice.",
+  "h": "2bd1051446",
+  "name": "Keto Gimbap",
+  "steps": [
+   "Beat the egg with a pinch of salt, pour into an oiled pan, and fry 3 thin egg sheets on low heat. Once cooled, cut into thin 0.3cm wide strips.",
+   "Cut the carrot into strips, stir-fry in a little cooking oil with a pinch of salt for 1 minute, remove the seeds from the cucumber and cut lengthwise. Pan-fry the ham for 1 minute.",
+   "Place roasted seaweed with the rough side facing up, lay 2 perilla leaf sheets, and spread the shredded egg thickly up to 2/3 of the roasted seaweed.",
+   "Place the carrot, cucumber, ham, and cheese in the center, roll tightly with a bamboo mat, and seal the edge.",
+   "Brush sesame oil on the outside and slice into 1.5cm thickness with a wet knife."
+  ],
+  "tips": [
+   "You need a generous amount of shredded egg so the gimbap holds its shape well without rice.",
+   "Wetting the knife with water when slicing prevents the shredded egg from falling out."
+  ]
+ },
  "kids-banana-oat-muffin": {
   "desc": "Muffins sweetened naturally with banana instead of sugar.",
   "h": "ae99b33e04",
@@ -6809,6 +7104,22 @@
    "Boiling them for too long makes them tough."
   ]
  },
+ "kkongchi-kimchi-jjigae": {
+  "desc": "A spicy and rich kimchi stew boiled with canned saury and aged kimchi.",
+  "h": "236cd9c879",
+  "name": "Saury Kimchi Stew (Kkongchi Kimchi Jjigae)",
+  "steps": [
+   "Grease a pot with cooking oil, add kimchi cut into bite-sized pieces and sugar, and stir-fry over medium heat for 3 minutes.",
+   "Pour the canned saury liquid and 400ml of water, and when it starts to boil, boil over medium heat for 7 minutes to make the kimchi tender.",
+   "Add the saury in large pieces, sliced onion, Korean red pepper flakes, and minced garlic, and boil for 5 minutes.",
+   "Add tofu and boil for 3 minutes, then add green onion and Cheongyang chili and boil for 1 more minute.",
+   "Check the seasoning and if it is bland, adjust with kimchi juice."
+  ],
+  "tips": [
+   "Do not stir after adding the saury as it will break apart, so just ladle the broth over it.",
+   "The saury bones become soft during the canning process so you can eat them as they are."
+  ]
+ },
  "kkongchi-kimchi-jjim": {
   "desc": "Easy braised dish made with canned saury and aged kimchi.",
   "h": "2da2bc5b1e",
@@ -6899,6 +7210,22 @@
   "tips": [
    "If you don't have a steamer, you can put them on a plate, cover with plastic wrap, and microwave for 2 minutes.",
    "This has a soft flavor, different from stir-fried shishito peppers with anchovies."
+  ]
+ },
+ "kkwari-myeolchi-bokkeum": {
+  "desc": "A beloved everyday side dish of small anchovies and shishito peppers stir-fried in a sweet and savory soy-based sauce.",
+  "h": "13d426b22c",
+  "name": "Kkwari Myeolchi Bokkeum (Stir-Fried Shishito Peppers and Anchovies)",
+  "steps": [
+   "Remove the stems from the Cheongyang chili and wash them; cut larger ones in half and poke 1-2 holes in each with a toothpick.",
+   "Put the anchovy in a dry pan and stir-fry over medium heat for 2 minutes to remove the fishy smell and moisture, then shake through a sieve to remove crumbs.",
+   "Drizzle cooking oil in the pan and stir-fry the Cheongyang chili over medium heat for 2 minutes until the skin becomes slightly wrinkled.",
+   "Add the soy sauce, mirin, sugar, and minced garlic, simmer down for 1 minute, then add the anchovy and mix evenly.",
+   "Turn off the heat and toss with the oligosaccharide syrup, sesame oil, and sesame seeds. Adding the oligosaccharide syrup after turning off the heat keeps it from hardening."
+  ],
+  "tips": [
+   "Stir-frying the anchovy in a dry pan first reduces the fishy odor.",
+   "They get glossy as they cool, so let them sit for a moment before packing them into a container."
   ]
  },
  "kodari-jorim": {
@@ -7472,6 +7799,23 @@
    "Cooking slowly over low heat makes it tender."
   ]
  },
+ "madeleine": {
+  "desc": "Lemon-scented shell-shaped mini cakes with a distinct hump, baked at high heat after chilling the batter.",
+  "h": "8ae431d2fb",
+  "name": "Madeleine",
+  "steps": [
+   "Wash the lemon by rubbing it with baking soda and finely grate only the yellow zest using a grater.",
+   "Put the egg, sugar, honey, salt, and lemon zest in a bowl and mix with a whisk for 1 minute.",
+   "Sift in the flour and baking powder, mix just until no flour is visible, then add the melted butter warmed to about 50 degrees and lemon juice, and mix smoothly.",
+   "Cover with plastic wrap and chill in the refrigerator for at least 1 hour (overnight if possible). The cold batter creates the hump.",
+   "Preheat the oven to 200 degrees, grease the madeleine mold with butter, dust lightly with flour, and tap out the excess. Pipe the batter into the mold up to 80% full.",
+   "Bake at 200 degrees for 4 minutes, lower the heat to 180 degrees, bake for another 6 to 7 minutes, and when the center bulges and edges turn golden, take them out and remove them from the mold immediately."
+  ],
+  "tips": [
+   "The colder the batter and the hotter the oven, the better the hump will form.",
+   "Let them cool slightly and seal them in an airtight container for even more moisture the next day."
+  ]
+ },
  "makguksu": {
   "desc": "Gangwon-style buckwheat noodles tossed in a sweet and sour sauce.",
   "h": "cfa4cf3db2",
@@ -7624,6 +7968,22 @@
   "tips": [
    "Spread the batter thinly so the filling doesn't show through and it remains chewy.",
    "Serve with a side of soy-vinegar dipping sauce."
+  ]
+ },
+ "millefeuille-nabe": {
+  "desc": "Hot pot dish featuring layers of napa cabbage, perilla leaves, and beef arranged like a flower in a pot.",
+  "h": "afb7c8d93d",
+  "name": "Mille-Feuille Nabe",
+  "steps": [
+   "Put 800ml of water and kombu in a pot, bring to a boil, remove the kombu after 5 minutes, and add tsuyu to make the broth.",
+   "Layer napa cabbage → perilla leaf → beef → napa cabbage in that order 3 to 4 times.",
+   "Cut the layered stack into 5 cm lengths and pack them tightly into the pot starting from the edge with the cut side facing up, then add the mushroom and mung bean sprout in the center.",
+   "Pour the broth up to 2/3 of the pot's height and cook over medium heat for 10 minutes until the beef is fully cooked.",
+   "Dip and eat in a sauce mixed with soy sauce, vinegar, and lemon, and finish by adding knife-cut wheat noodles to the remaining broth."
+  ],
+  "tips": [
+   "Packing the pot tightly without any gaps prevents the shape from falling apart when boiling.",
+   "You can also make a savory dipping sauce with 1 tbsp of peanut butter + 1 tbsp of soy sauce + 1 tbsp of water."
   ]
  },
  "minari-muchim": {
@@ -8005,6 +8365,22 @@
    "Stir-frying over high heat for too long makes the pollock roe dry."
   ]
  },
+ "nabak-kimchi": {
+  "desc": "A refreshing water kimchi made by slicing Korean radish and napa cabbage flat and steeping them in red Korean red pepper flakes water.",
+  "h": "b497d6981a",
+  "name": "Water Kimchi (Nabak Kimchi)",
+  "steps": [
+   "Cut the Korean radish and napa cabbage flat into 3cm squares and 0.3cm thickness, and marinate in 1 tbsp of salt for 20 minutes (do not rinse with water).",
+   "Wrap Korean red pepper flakes in a cotton cloth or broth bag, put it in 1.2L of water, knead it to extract the red color, and remove it.",
+   "Wrap minced garlic and ginger in the cotton cloth, squeeze them into the same water, and dissolve the remaining 1 tbsp of salt and sugar to make the broth.",
+   "Put the marinated Korean radish and napa cabbage, flat-cut Korean pear, thin green onion and water dropwort cut to 4cm, and diagonally sliced Cheongyang chili in a container and pour the broth over them.",
+   "Let it ferment at room temperature for a day, and when a sour smell develops, store it in the refrigerator and serve cold."
+  ],
+  "tips": [
+   "If you add Korean red pepper flakes directly, the broth will become cloudy, so be sure to extract the color using a cotton cloth.",
+   "It is great as a palate cleanser when served with rice cake soup or meat dishes."
+  ]
+ },
  "naeng-somyeon": {
   "desc": "Thin wheat noodles served with a chilled soy sauce broth for dipping.",
   "h": "161f3fd4cc",
@@ -8158,6 +8534,22 @@
   "tips": [
    "Stirring while braising will break potato. Shake the pot instead.",
    "Serve over rice to make a rice bowl dish."
+  ]
+ },
+ "niurou-mian": {
+  "desc": "A Taiwanese beef noodle soup featuring beef shank simmered long and slow in a soy sauce and tomato broth, served with chewy noodles and bok choy.",
+  "h": "b991d5cb90",
+  "name": "Niurou Mian (Taiwanese Beef Noodle Soup)",
+  "steps": [
+   "Soak the beef shank in cold water for 1 hour to remove blood, blanch in boiling water for 5 minutes, rinse, and cut into 3cm cubes.",
+   "Drizzle cooking oil in a pot, stir-fry green onion, sliced ginger and garlic, and onion over medium heat for 3 minutes, then add Korean red pepper flakes and stir-fry for 30 seconds.",
+   "Add the cubed tomato and stir-fry for 2 minutes, then add beef, soy sauce, and sugar, and stir-fry for 2 minutes more to color.",
+   "Pour in 1.5L of water, skim off any foam when it comes to a boil, cover with a lid, and simmer over low heat for 1 hour and 30 minutes until the beef easily pulls apart with chopsticks. Remove the green onion and ginger.",
+   "Boil the chinese wheat noodles according to the package instructions, blanch the bok choy together in the last 30 seconds, place them in a bowl, and pour the hot broth and beef over them."
+  ],
+  "tips": [
+   "If you have 1 tbsp of doubanjiang, use it instead of Korean red pepper flakes for a flavor closer to the authentic version.",
+   "It is convenient to make a generous amount of broth at once and freeze it in portions."
   ]
  },
  "nokdu-jijim": {
@@ -9453,6 +9845,22 @@
    "Serving it alongside mung bean pancakes makes it true Pyongyang style."
   ]
  },
+ "pyogo-beoseot-bokkeum": {
+  "desc": "A fragrant and chewy side dish made by stir-frying fresh shiitake mushrooms with soy sauce and perilla oil.",
+  "h": "6b43e4f62f",
+  "name": "Pyogo Beoseot Bokkeum (Stir-Fried Shiitake Mushrooms)",
+  "steps": [
+   "Remove the stems from the mushroom, wipe them with a damp paper towel, and cut them into 0.5 cm thickness. Cut the onion and carrot into thin strips.",
+   "Drizzle cooking oil and perilla oil into a pan, and sauté the minced garlic over medium heat for 30 seconds.",
+   "Add the mushroom, stir-fry for 2 minutes until wilted, then add the onion and carrot and stir-fry for 1 more minute.",
+   "Add the soy sauce and oligosaccharide syrup and stir-fry for 1 minute so the flavors absorb.",
+   "Add slice thinly green onion, black pepper, and sesame seeds, mix together once, and turn off the heat."
+  ],
+  "tips": [
+   "Do not wash shiitakes in water or they will lose their aroma and get soggy; wipe them instead.",
+   "You can swap them for king oyster or oyster mushrooms and use the same seasoning with great results."
+  ]
+ },
  "quail-egg-jangjorim": {
   "desc": "Sweet and salty bite-sized braised quail eggs that absorb flavors wonderfully.",
   "h": "ec1fb20964",
@@ -9482,6 +9890,22 @@
   "tips": [
    "If you boil the ramen noodles too long, the soup becomes thick and the noodles get mushy.",
    "Placing 1 slice of cheese on top tones down the spicy flavor."
+  ]
+ },
+ "ratatouille": {
+  "desc": "A French vegetable dish baked in the oven with overlapping slices of eggplant, Korean zucchini, and tomato arranged on top of tomato sauce.",
+  "h": "f412531ffd",
+  "name": "Ratatouille",
+  "steps": [
+   "Preheat the oven to 180°C. Finely dice the onion and bell pepper.",
+   "Drizzle 1 tbsp of olive oil in a pan, sauté minced garlic, onion, and bell pepper over medium heat for 4 minutes, add pasta sauce and boil for 2 minutes, then spread it on the bottom of an ovenproof dish.",
+   "Cut the eggplant, Korean zucchini, and tomato into round slices 0.3cm thick.",
+   "Arrange the eggplant, Korean zucchini, and tomato alternately and diagonally over the sauce, packing them tightly in a spiral shape starting from the outside.",
+   "Drizzle with the remaining olive oil, sprinkle with salt and black pepper, cover with parchment paper, bake at 180°C for 40 minutes, remove the paper, and bake for 15 minutes more."
+  ],
+  "tips": [
+   "Slice the vegetables to an even thickness so they cook uniformly.",
+   "If you have leftovers, toss them with pasta or serve on bread."
   ]
  },
  "rice-paper-mandu": {
@@ -9544,6 +9968,22 @@
   "tips": [
    "Milk will separate if boiled over high heat, so keep it on low heat.",
    "Adding a little red pepper powder makes it spicy."
+  ]
+ },
+ "saenggul-muchim": {
+  "desc": "A winter side dish of raw oysters and shredded Korean radish tossed in a tangy Korean red pepper flakes seasoning.",
+  "h": "be9394712f",
+  "name": "Seasoned Raw Oysters (Saenggul Muchim)",
+  "steps": [
+   "Wash the oyster gently by swirling in saltwater, pick out any shell pieces, rinse in cold water, and drain in a colander to remove moisture.",
+   "Cut the Korean radish and Korean pear into 0.3cm thin strips, and cut the thin green onion to 4cm.",
+   "Toss the Korean radish strips with Korean red pepper flakes first and let sit for 5 minutes to dye them red.",
+   "Add fish sauce, minced garlic, sugar, and vinegar, mix well, then add the oyster, Korean pear, and thin green onion, and toss gently so the oyster does not burst.",
+   "Sprinkle with sesame oil and sesame seeds and serve immediately."
+  ],
+  "tips": [
+   "Oysters release a lot of water, so toss them just before eating.",
+   "Eat tossed oysters within a day even in the refrigerator."
   ]
  },
  "saeu-chili": {
@@ -9862,6 +10302,22 @@
    "You can also stir-fry it spicyly using 1tsp of gochujang instead of ketchup."
   ]
  },
+ "scone": {
+  "desc": "Flaky and plain English-style scones made by rubbing cold butter into dry ingredients.",
+  "h": "7dfc495a14",
+  "name": "Scone",
+  "steps": [
+   "Preheat the oven to 200 degrees. Put the flour, baking powder, sugar, and salt in a bowl and mix.",
+   "Cut the cold butter into 1 cm cubes, add them to the bowl, and rub the butter into the flour with a pastry scraper or your fingertips until it reaches the size of rice grains.",
+   "Beaten the egg and set aside 1/3 of it, then mix the remaining egg with milk and pour it into the dry ingredients. Mix with a spatula using a cutting motion until it comes together into a ball. Do not knead.",
+   "Flatten the dough into a round shape 2.5 cm thick, cut it into 6 pieces, and put them in the refrigerator for 20 minutes to chill the butter again.",
+   "Place them on a baking sheet with space in between, brush the remaining egg wash on top, and bake at 200 degrees for 15 to 18 minutes until golden and puffed up."
+  ],
+  "tips": [
+   "Keeping all ingredients cold so the butter doesn't melt is the secret to getting flaky layers.",
+   "Adding 50g of chocolate chips or cranberries in step 3 makes flavored scones."
+  ]
+ },
  "seafood-tomato-spaghetti": {
   "desc": "Tomato spaghetti made with shrimp and squid.",
   "h": "c931c16d8c",
@@ -9920,6 +10376,22 @@
   "tips": [
    "Skim off the foam and fat in between.",
    "Serving with kkakdugi juice goes very well with seolleongtang."
+  ]
+ },
+ "seonji-haejangguk": {
+  "desc": "A hearty hangover soup with dried radish greens and soybean sprouts in a doenjang broth, loaded with congealed ox blood.",
+  "h": "365aa3c307",
+  "name": "Seonji Haejangguk (Ox Blood Hangover Soup)",
+  "steps": [
+   "Cut the ox blood into large chunks, blanch in 1 L of boiling water with a pinch of salt for 5 minutes, and drain (blanched ox blood becomes firm and won't break apart in the soup).",
+   "Squeeze the excess moisture from the dried radish greens, cut into 5 cm lengths, and rub together with the doenjang, gochujang, Korean red pepper flakes, and minced garlic to coat.",
+   "Put 1.5 L of water and thinly sliced beef in a pot, bring to a boil, skim off the foam, and simmer over medium heat for 15 minutes.",
+   "Add the seasoned dried radish greens and simmer over medium heat for 20 minutes to make the dried radish greens tender.",
+   "Add the soybean sprout and blanched ox blood, cover with a lid, boil for 5 minutes, season with soup soy sauce and salt, then add the green onion and Cheongyang chili and boil for 2 more minutes."
+  ],
+  "tips": [
+   "Buy fresh ox blood from the butcher or market on the day of cooking and use it right away.",
+   "After adding the soybean sprout, do not open and close the lid or it will develop a fishy smell."
   ]
  },
  "seoul-bulgogi-jeongol": {
@@ -10560,6 +11032,23 @@
    "Replacing the dressing with lemon juice makes it more refreshing."
   ]
  },
+ "takoyaki": {
+  "desc": "A Japanese street snack (approx. 24 pieces) made by adding octopus and cabbage to a thin batter and rolling them in a takoyaki pan.",
+  "h": "e1ce119cf6",
+  "name": "Takoyaki",
+  "steps": [
+   "In a bowl, mix 350ml of water, egg, and tsuyu, add flour, and dissolve without lumps to make a thin batter (about the consistency of milk).",
+   "Cut the octopus into 1cm cubes, finely dice the cabbage, and slice thinly the thin green onion.",
+   "Heat the takoyaki pan over medium heat, brush cooking oil generously into each hole, and pour the batter until it overflows the holes.",
+   "Put 1 piece of octopus into each hole and sprinkle cabbage and thin green onion on top.",
+   "After 1 to 2 minutes when the edges are cooked, use a skewer to cut around the rim of the holes, push the batter inward, and turn 90 degrees at a time. Roll in the overflowed batter together.",
+   "Continue rolling for 6 to 8 minutes until the outside is golden and firm, place on a plate, and drizzle with tonkatsu sauce, mayonnaise, and roasted seaweed."
+  ],
+  "tips": [
+   "The batter must be thin so the outside is crispy and the inside is soft. Pour enough to overflow so it rolls into a round shape.",
+   "If you have bonito flakes, putting them on top at the end makes it even closer to the original. Be careful as the inside is very hot."
+  ]
+ },
  "tamago-don": {
   "desc": "Rice bowl topped with beaten egg simmered in a sweet soy broth.",
   "h": "ba4a69fac3",
@@ -10637,6 +11126,38 @@
   "tips": [
    "Soak onion in water for 5 minutes to remove the spicy taste.",
    "Toasting the sandwich bread keeps it from getting soggy."
+  ]
+ },
+ "tendon": {
+  "desc": "A Japanese rice bowl topped with crispy fried shrimp and vegetables, drizzled with a sweet soy sauce.",
+  "h": "9ef7d64b39",
+  "name": "Tendon (Japanese Tempura Rice Bowl)",
+  "steps": [
+   "Combine soy sauce, mirin, sugar, and 4 tbsp of water in a pot and simmer over low heat for 3 minutes to make the tendon sauce.",
+   "Remove the shell and vein of the shrimp leaving only the tail segment, make 3 to 4 slashes on the belly side and press down to straighten them so they stay straight when fried. Cut the eggplant in half lengthwise and score it, and cut the kabocha squash to 0.7cm thickness.",
+   "In a bowl, beat 150ml of very cold water and egg yolk, add flour and starch, and mix roughly with chopsticks. It is okay if some flour remains.",
+   "Heat the cooking oil to 175°C. Lightly dust the ingredients with flour, coat with batter, and fry kabocha squash for 3 minutes, eggplant and mushroom for 2 minutes, perilla leaf on one side only for 30 seconds, and shrimp for 2 minutes.",
+   "Place cooked rice in a bowl, drizzle with 2 tbsp of sauce, place the fried food on top, and drizzle the remaining sauce over the fried food."
+  ],
+  "tips": [
+   "Keep the batter cold and mix it roughly so the batter coating stays light and crispy.",
+   "Do not put too much fried food in at once and maintain the correct oil temperature."
+  ]
+ },
+ "tiramisu": {
+  "desc": "Easy homemade cup tiramisu made with cream cheese, heavy cream, and coffee-soaked castella instead of mascarpone. 4 hours setting time separate.",
+  "h": "d5d142dba0",
+  "name": "Tiramisu",
+  "steps": [
+   "Dissolve the instant coffee in 150ml of hot water and cool completely.",
+   "Leave the cheese at room temperature for 30 minutes to soften, add the sugar, and mix until smooth.",
+   "Whip the cold heavy cream with a whisk until soft peaks form (about 80%), and fold it into the cheese in two additions.",
+   "Cut the castella into 1 cm thick slices, place them at the bottom of the container, soak them evenly with coffee using a spoon, and spread half of the cream on top. Layer once more in the same order.",
+   "Cover with plastic wrap and chill in the refrigerator for at least 4 hours to set, then dust with cocoa powder through a sieve right before serving."
+  ],
+  "tips": [
+   "Using store-bought ladyfinger cookies instead of castella gives a more authentic flavor.",
+   "Dust the cocoa powder right before eating so it doesn't get soggy."
   ]
  },
  "tofu-egg-jeon": {
@@ -11143,6 +11664,23 @@
    "Using peanut sauce or sweet chili sauce is also great."
   ]
  },
+ "yakbap": {
+  "desc": "Traditional sweet Korean rice dish made in a rice cooker with soaked glutinous rice, soy sauce and dark brown sugar seasoning, chestnuts, and jujubes.",
+  "h": "92ffc34ef4",
+  "name": "Yakbap (Sweet Sticky Rice with Chestnuts and Jujubes)",
+  "steps": [
+   "Wash the glutinous rice, soak it in water for 2 hours, and drain in a colander.",
+   "Peel the jujube by cutting around the pit, remove the pit, cut into thirds, and cut the chestnut in half.",
+   "Put 250ml of water, soy sauce, sugar, and salt in a bowl, and stir until the sugar dissolves to make the seasoning liquid.",
+   "Put the soaked glutinous rice, seasoning liquid, 1 tbsp of sesame oil, chestnut, and jujube in the rice cooker, mix evenly, and cook on the 'sweet rice' (or white rice if unavailable) mode.",
+   "When done, add the remaining 2 tbsp of sesame oil and mixed nuts, and mix well.",
+   "Line a square mold with plastic wrap, press the yakbap firmly into it, let cool for 30 minutes, and slice into bite-sized pieces."
+  ],
+  "tips": [
+   "Adding 1/2 tsp of cinnamon powder to the seasoning liquid gives a more traditional aroma.",
+   "Wrap individual pieces in plastic wrap, freeze, and microwave for 1 minute before eating."
+  ]
+ },
  "yakgwa": {
   "desc": "Traditional fried pastries made with a dough of honey and sesame oil.",
   "h": "a346f6e2f4",
@@ -11203,6 +11741,22 @@
   "tips": [
    "Mix while hot so the sugar and soy sauce absorb evenly.",
    "Adding jujubes and pine nuts gives it a more traditional flavor."
+  ]
+ },
+ "yangbaechu-jeon": {
+  "desc": "A sweet and light pancake made by pan-frying thinly sliced cabbage with egg and a small amount of flour.",
+  "h": "e15f61816d",
+  "name": "Cabbage Pancake (Yangbaechu-jeon)",
+  "steps": [
+   "Cut the cabbage, onion, and carrot into thin strips as much as possible.",
+   "In a bowl, mix egg, Korean pancake mix, 2 tbsp of water, and salt, then add the vegetables and toss evenly so that the flour lightly coats the vegetables.",
+   "Grease a pan with cooking oil and spread the batter thinly to 15cm in diameter over medium-low heat.",
+   "Cover with a lid and cook for 4 minutes until the bottom is golden brown, then flip and cook without the lid for 3 more minutes.",
+   "Transfer to a plate and drizzle with mayonnaise and tonkatsu sauce in a zigzag pattern according to your preference."
+  ],
+  "tips": [
+   "The thinner you slice the cabbage, the better it holds together and the faster it cooks.",
+   "You must cover with a lid and steam-fry it so that the inside cooks until sweet."
   ]
  },
  "yangjangpi": {
@@ -11295,6 +11849,22 @@
   "tips": [
    "Handle young summer radish greens gently as rubbing them too much will create a grassy smell.",
    "Serving it over noodles makes delicious yeolmu noodles."
+  ]
+ },
+ "yeoneo-jang": {
+  "desc": "A rice thief dish made by marinating raw salmon in boiled and cooled soy sauce broth for a day. Great for eating as salmon bowl.",
+  "h": "0f578ba041",
+  "name": "Soy Sauce Marinated Salmon (Yeoneo-jang)",
+  "steps": [
+   "Put soy sauce, water, mirin, sugar, and kombu in a pot, and when it starts to boil, boil for 2 more minutes, remove the kombu, and let it cool completely.",
+   "Wipe moisture off the salmon with paper towels and cut it into 2cm thickness.",
+   "Cut the onion into thin strips, slice the lemon thinly, and slice the Cheongyang chili thinly.",
+   "Place the salmon in an airtight container, top with onion, lemon, and Cheongyang chili, and pour the cooled soy sauce broth over so the salmon is submerged.",
+   "After marinating in the refrigerator for 6 hours to a day, place the salmon and onion over cooked rice and serve with wasabi."
+  ],
+  "tips": [
+   "You must let the soy sauce broth cool completely before pouring so the salmon does not cook.",
+   "Eat within 2 to 3 days, and if kept for a long time, it becomes too salty, so drain the soy sauce broth."
   ]
  },
  "yeongcheon-kalguksu": {
@@ -11416,6 +11986,22 @@
   "tips": [
    "Stir-frying Korean red pepper flakes in oil first makes the broth deep and spicy.",
    "Add mung bean sprout at the end so they stay crisp."
+  ]
+ },
+ "yukhoe-bibimbap": {
+  "desc": "Fresh beef tartare seasoned with Korean pear and sesame oil, served over seasoned vegetables and cooked rice.",
+  "h": "021cd1f893",
+  "name": "Beef Tartare Bibimbap (Yukhoe Bibimbap)",
+  "steps": [
+   "Pat the beef dry with paper towels, and cut it into thin 0.3cm strips against the grain (it is easier to slice if slightly frozen).",
+   "Mix soy sauce, sugar, minced garlic, 1 tbsp of sesame oil, salt, and sesame seeds, add it to the beef, and toss gently.",
+   "Cut the Korean pear and cucumber into thin strips, and cut the leaf lettuce into 1cm widths.",
+   "Put cooked rice in a bowl, arrange leaf lettuce, cucumber, and Korean pear around it, and mound the beef in the center.",
+   "Place the egg on top of the beef, and serve with gochujang and the remaining sesame oil to mix together."
+  ],
+  "tips": [
+   "Be sure to use fresh beef trimmed for 'yukhoe' from the same day, and eat immediately.",
+   "Pregnant women, children, and the elderly should lightly stir-fry the meat instead of eating it raw."
   ]
  },
  "yukjeon": {

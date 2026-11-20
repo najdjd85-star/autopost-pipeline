@@ -143,6 +143,9 @@ SCENE.update(_SCENES6)
 from dish_scenes_batch7 import SCENES as _SCENES7  # noqa: E402
 
 SCENE.update(_SCENES7)
+from dish_scenes_batch8 import SCENES as _SCENES8  # noqa: E402
+
+SCENE.update(_SCENES8)
 _AUTO = HERE / "recipes_auto.json"  # 매주 자동 추가 레시피의 장면 설명
 if _AUTO.exists():
     SCENE.update({a["slug"]: a["scene"] for a in json.loads(_AUTO.read_text(encoding="utf-8")) if a.get("scene")})

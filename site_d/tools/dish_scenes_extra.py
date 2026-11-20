@@ -164,7 +164,7 @@ SCENE_EXTRA.update({
 })
 
 # AI 가 요리를 제대로 그리지 못해(숙주를 국수로 그림) 사진 없이 아이콘만 쓰는 레시피
-NO_PHOTO = {"sukju-namul", "sukju-egg-bokkeum", "sukju-pork-bokkeum"}
+NO_PHOTO = {"sukju-namul", "sukju-egg-bokkeum", "sukju-pork-bokkeum", "madeleine"}  # madeleine: AI가 조개 모양을 못 그려 사진 없이 둠
 
 SCENE_OVERRIDE["cat-salmon-treat"] = "small bite-sized pieces of plain boiled cooked salmon, opaque light pink flakes, on a small plain plate, pet treat, no garnish"
 SCENE_OVERRIDE["dog-salmon-potato-bite"] = "small round homemade cooked salmon and potato bites, pale golden, on a plain plate, pet treats, no garnish"

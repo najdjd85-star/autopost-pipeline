@@ -654,12 +654,29 @@
   ],
   "name": "mala sauce"
  },
+ "마시멜로": {
+  "aliases": [
+   "marshmallows",
+   "marshmallow",
+   "marshmellow",
+   "marshmellows"
+  ],
+  "name": "marshmallow"
+ },
  "마요네즈": {
   "aliases": [
    "mayo",
    "kewpie mayo"
   ],
   "name": "mayonnaise"
+ },
+ "막걸리": {
+  "aliases": [
+   "makgeolli",
+   "korean rice wine",
+   "rice wine"
+  ],
+  "name": "makgeolli"
  },
  "만두": {
   "aliases": [
@@ -738,6 +755,14 @@
    "spicy pollock roe",
    "mentaiko",
    "cod roe"
+  ],
+  "name": "pollock roe"
+ },
+ "명태알": {
+  "aliases": [
+   "pollock roe",
+   "cod roe",
+   "fish roe"
   ],
   "name": "pollock roe"
  },
@@ -1294,6 +1319,14 @@
   ],
   "name": "monkfish"
  },
+ "아몬드가루": {
+  "aliases": [
+   "almond flour",
+   "almond powder",
+   "ground almonds"
+  ],
+  "name": "almond flour"
+ },
  "아보카도": {
   "aliases": [
    "avocados",
@@ -1735,6 +1768,15 @@
   ],
   "name": "Cheongyang chili"
  },
+ "초콜릿": {
+  "aliases": [
+   "chocolate",
+   "dark chocolate",
+   "couverture chocolate",
+   "chocolates"
+  ],
+  "name": "chocolate"
+ },
  "총각무": {
   "aliases": [
    "chonggak mu",
@@ -1764,6 +1806,15 @@
   ],
   "name": "cheese"
  },
+ "카다이프": {
+  "aliases": [
+   "kataifi",
+   "kataifi dough",
+   "kunafa dough",
+   "kadayif"
+  ],
+  "name": "kataifi"
+ },
  "카레가루": {
   "aliases": [
    "korean curry powder",
@@ -1773,6 +1824,14 @@
   ],
   "name": "curry powder"
  },
+ "카스테라": {
+  "aliases": [
+   "castella",
+   "castella cake",
+   "sponge cake"
+  ],
+  "name": "castella"
+ },
  "칼국수": {
   "aliases": [
    "kalguksu noodles",
@@ -1781,6 +1840,14 @@
    "fresh flat noodles"
   ],
   "name": "knife-cut wheat noodles"
+ },
+ "커피": {
+  "aliases": [
+   "coffee",
+   "instant coffee",
+   "coffee powder"
+  ],
+  "name": "coffee"
  },
  "케일": {
   "aliases": [
@@ -1797,6 +1864,15 @@
    "catsup"
   ],
   "name": "ketchup"
+ },
+ "코코아파우더": {
+  "aliases": [
+   "cocoa powder",
+   "cocoa",
+   "unsweetened cocoa powder",
+   "cacao powder"
+  ],
+  "name": "cocoa powder"
  },
  "콜리플라워": {
   "aliases": [
@@ -1892,6 +1968,14 @@
    "adzuki beans"
   ],
   "name": "red bean"
+ },
+ "피스타치오스프레드": {
+  "aliases": [
+   "pistachio spread",
+   "pistachio cream",
+   "pistachio butter"
+  ],
+  "name": "pistachio spread"
  },
  "해파리": {
   "aliases": [
