@@ -56,7 +56,19 @@ def query(cid: str, sec: str, names: list, start: str, end: str) -> dict:
     url = NCP_URL if ncp else URL
     headers = ({"X-NCP-APIGW-API-KEY-ID": cid, "X-NCP-APIGW-API-KEY": sec} if ncp else {"X-Naver-Client-Id": cid, "X-Naver-Client-Secret": sec})
     body = {"startDate": start, "endDate": end, "timeUnit": "date", "keywordGroups": [{"groupName": n, "keywords": [n]} for n in names]}
-    r = requests.post(url, headers={**headers, "Content-Type": "application/json"}, data=json.dumps(body), timeout=30)
+    # 네이버 쪽 일시 오류(5xx, 또는 HTTP 400 + errorCode 500 "검색 트렌드 API 호출 오류" - 11/19 실패 원인)는 잠시 뒤 다시 시도한다
+    for attempt in range(4):
+        try:
+            r = requests.post(url, headers={**headers, "Content-Type": "application/json"}, data=json.dumps(body), timeout=30)
+        except requests.RequestException:
+            if attempt == 3:
+                raise
+            time.sleep(15 * (attempt + 1))
+            continue
+        transient = r.status_code >= 500 or (r.status_code == 400 and '"errorCode":500' in r.text.replace(" ", ""))
+        if not transient or attempt == 3:
+            break
+        time.sleep(15 * (attempt + 1))
     if r.status_code == 429 or (r.status_code == 401 and "subscription" in r.text.lower()):
         raise RuntimeError(
             "키는 맞지만 이 Application에 '검색어 트렌드(데이터랩)' API가 선택되어 있지 않습니다. "

@@ -154,7 +154,6 @@ def main() -> int:
         return 1
     logger.info(update_prices())
     logger.info(update_weather())
-    logger.info(check_links_weekly())
     logger.info(translate_new())
     try:
         data = fetch_trending.build()
@@ -183,6 +182,8 @@ def main() -> int:
     logger.info(auto_msg)
     if auto_msg.startswith("자동 레시피 ") and "개 추가" in auto_msg and not auto_msg.startswith("자동 레시피 0개"):
         _notify(f"🍳 {auto_msg}\n(내일 18시 갱신 때 사이트에 올라가요)")
+    # 링크 점검(7일에 한 번)은 13분쯤 걸려 맨 앞에 두면 20분 제한에 걸렸다(11/20: 인기 요리 갱신·사이트 반영이 중간에 끊김). 오늘 갱신을 다 올린 뒤에 하고, 결과는 다음 날 반영된다.
+    logger.info(check_links_weekly())
     return 0
 
 
