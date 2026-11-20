@@ -2,7 +2,7 @@
 
 순서
   1. 네이버 검색광고 API(무료)로 요리 이름 검색량을 보고, 아직 없는 요리 후보를 고른다(이미 시도한 이름은 건너뜀).
-  2. Gemini가 사이트 형식(재료는 등록된 재료 이름만, 분량은 g/ml까지)으로 레시피를 쓴다.
+  2. Gemini(flash, 바쁘면 lite)가 사이트 형식(재료는 등록된 재료 이름만, 분량은 g/ml까지)으로 레시피를 쓴다.
   3. 기계 검사(build.recipe_problems: 모르는 재료·무게 누락·모호한 분량 등) → Gemini 2차 검토(조리법·분량·시간·식품 안전).
      문제가 나오면 한 번 고쳐 쓰고 다시 검사, 그래도 안 되면 버린다.
   4. 통과한 레시피는 site_d/recipes_auto.json 에 쌓고(recipes_db.py 가 읽는다), 사진을 만든 뒤(fal, 장당 약 $0.003)
@@ -37,7 +37,9 @@ AUTO = SITE_D / "recipes_auto.json"
 STATE = ROOT / "data" / "output" / "auto_recipes_state.json"
 MIN_VOLUME = 3000          # 월 검색량(PC+모바일)이 이보다 작으면 후보에서 뺀다
 LEVELS = ("쉬움", "보통", "어려움")
-UNAVAILABLE = False      # 이번 실행 중 Gemini(flash)가 응답하지 않았는지(그러면 weekly 가 내일 다시 시도)
+UNAVAILABLE = False      # 이번 실행 중 Gemini가 flash·lite 모두 응답하지 않았는지(그러면 weekly 가 내일 다시 시도)
+# 11/15~20 매일 18시에 flash 가 503("high demand")·시간 초과라 한 번도 못 썼다. 그래서 flash 가 안 되면 lite 로 쓰고 검토한다
+# (기계 검사·검토·사진 확인은 그대로라 틀린 레시피는 걸러진다).
 
 SEEDS = ["김치", "찌개", "국", "탕", "볶음", "조림", "무침", "나물", "전", "구이", "찜", "덮밥", "볶음밥", "국수", "비빔밥", "죽",
          "반찬", "밑반찬", "도시락반찬", "술안주", "간식", "다이어트요리", "에어프라이어요리", "제철요리", "명절음식", "장아찌", "파스타", "샐러드"]
@@ -130,7 +132,7 @@ def write_recipe(dish: str, similar: list, fix_notes: list | None = None, prev: 
                 + "\n고칠 점을 모두 반영해 레시피 전체를 다시 쓴다.\n")
     ask += f"\n아래 형식의 JSON 하나로만 답한다:\n{SHAPE}"
     return gemini_llm.generate_json(ask, purpose="auto_recipe", system="당신은 한국 가정식 레시피를 정확하게 쓰는 요리 연구가입니다.",
-                                    model="flash", max_output=8192, allow_lite=False)
+                                    model="flash", max_output=8192, allow_lite=True)
 
 
 def review_recipe(rec: dict) -> list:
@@ -145,7 +147,7 @@ def review_recipe(rec: dict) -> list:
            '{"ok": true/false, "problems": ["..."]} 형식의 JSON으로만 답하세요.\n\n' + json.dumps(rec, ensure_ascii=False))
     data = None
     for _ in range(2):   # 일시 오류면 한 번 더
-        data = gemini_llm.generate_json(ask, purpose="auto_recipe_review", model="flash", max_output=4096, allow_lite=False)
+        data = gemini_llm.generate_json(ask, purpose="auto_recipe_review", model="flash", max_output=4096, allow_lite=True)
         if isinstance(data, dict) and "ok" in data:
             break
         time.sleep(20)
@@ -275,7 +277,7 @@ def run(count: int = 3, dry: bool = False) -> str:
         if not isinstance(raw, dict):   # 일시 오류(503·JSON 깨짐)일 수 있어 한 번 더
             time.sleep(20)
             raw = write_recipe(dish, _similar(dish, names))
-        if not isinstance(raw, dict):   # Gemini(flash)가 응답하지 않음 -> 이번엔 멈추고 내일 다시(가벼운 모델로 대충 쓰지 않는다)
+        if not isinstance(raw, dict):   # Gemini(flash·lite 모두)가 응답하지 않음 -> 이번엔 멈추고 내일 다시
             state["tried"].pop(_norm(dish), None)
             notes.append(f"{dish}: Gemini 응답 없음, 내일 다시 시도")
             UNAVAILABLE = True
