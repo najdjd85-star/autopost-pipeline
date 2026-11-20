@@ -35,6 +35,7 @@ for _p in (ROOT, SITE_D, HERE):
 
 AUTO = SITE_D / "recipes_auto.json"
 STATE = ROOT / "data" / "output" / "auto_recipes_state.json"
+TIME_BUDGET = 20 * 60     # 한 번 실행에 새 후보를 시작하는 시간 한도(초)
 MIN_VOLUME = 3000          # 월 검색량(PC+모바일)이 이보다 작으면 후보에서 뺀다
 LEVELS = ("쉬움", "보통", "어려움")
 UNAVAILABLE = False      # 이번 실행 중 Gemini가 flash·lite 모두 응답하지 않았는지(그러면 weekly 가 내일 다시 시도)
@@ -51,6 +52,44 @@ def _norm(name: str) -> str:
     return re.sub(r"\s|\(.*?\)", "", name)
 
 
+# 같은 음식을 부르는 다른 이름(끝말). 예: 시금치무침=시금치나물, 동태탕=동태찌개
+_SAME_KIND = [("무침", "나물"), ("탕", "찌개"), ("전", "부침", "부침개", "지짐")]  # 국은 찌개와 다른 음식(된장국≠된장찌개)
+
+
+def _dish_key(name: str) -> tuple:
+    """중복 판단용 (주재료 부분, 음식 종류). 끝말이 같은 무리에 속하면 같은 종류로 본다."""
+    n = _norm(name)
+    for group in _SAME_KIND:
+        for suf in sorted(group, key=len, reverse=True):
+            if n.endswith(suf) and len(n) > len(suf):
+                return n[: -len(suf)], group[0]
+    return n, ""
+
+
+# 같은 요리의 다른 이름(검색어 → 사이트에 있는 이름)
+_ALIAS = {"닭도리탕": "닭볶음탕", "오뎅": "어묵", "쏘야": "소시지야채볶음", "떡사리": "떡", "제육": "제육볶음", "돈까스": "돈가스",
+          "계란후라이": "계란프라이", "꼬마김밥": "마약김밥", "부대전골": "부대찌개"}
+
+
+def is_duplicate(cand: str, existing: list) -> str:
+    """기존 레시피와 사실상 같은 요리면 그 이름, 아니면 빈 문자열.
+    - 이름이 기존 이름 안에 통째로 들어 있음(육개장 ⊂ 소고기 육개장, 칼국수 ⊂ 바지락칼국수)
+    - 주재료 부분이 같고 음식 종류가 같은 무리(시금치무침 = 시금치나물, 동태탕 = 동태찌개)"""
+    c = _norm(cand)
+    for k, v in _ALIAS.items():
+        c = c.replace(k, v)
+    cand = c
+    ck = _dish_key(cand)
+    for name in existing:
+        e = _norm(name)
+        if c == e or (len(c) >= 2 and c in e):
+            return name
+        ek = _dish_key(name)
+        if ck[1] and ck == ek:
+            return name
+    return ""
+
+
 def _load_json(path: Path, default):
     try:
         return json.loads(path.read_text(encoding="utf-8"))
@@ -63,7 +102,8 @@ def candidates(have_names: set, tried: set, n_hints: int = 25) -> list:
     import search_demand as sd
     from recipes_db import RECIPES
 
-    hints = SEEDS + random.sample([r["name"] for r in RECIPES], min(n_hints, len(RECIPES)))
+    names = [r["name"] for r in RECIPES]
+    hints = SEEDS + random.sample(names, min(n_hints, len(RECIPES)))
     random.shuffle(hints)
     vol: dict = {}
     for i in range(0, len(hints), 5):
@@ -79,7 +119,7 @@ def candidates(have_names: set, tried: set, n_hints: int = 25) -> list:
     for k, v in vol.items():
         if v < MIN_VOLUME or len(k) < 2 or not DISH.search(k) or NOISE.search(k):
             continue
-        if _norm(k) in have_names or _norm(k) in tried:
+        if _norm(k) in have_names or _norm(k) in tried or is_duplicate(k, names):
             continue
         out.append((v, k))
     return sorted(out, reverse=True)
@@ -109,7 +149,8 @@ RULES = """[작성 규칙]
 - 재료 name 은 아래 [등록된 재료] 목록의 이름과 글자까지 똑같아야 한다(예: 마늘은 '다진마늘', 꽈리고추는 '청양고추' 이름에 qty '꽈리고추 200g').
   목록에 없는 핵심 재료가 꼭 필요하면 레시피를 쓰지 말고 {"skip": "이유"} 만 답한다.
 - qty 는 정확한 수치(예: '2큰술(30ml)', '1개(약 200g)', '300g'). '약간·적당량·조금·한 줌' 금지(후추만 예외). 컵은 ml도 함께.
-  1컵=200ml, 1큰술=15ml, 1작은술=5ml. grams 는 영양 계산용 무게(g, 물은 0). 튀김 기름·절임 소금·버리는 절임장은 먹게 되는(흡수되는) 양만.
+  1컵=200ml, 1큰술=15ml, 1작은술=5ml. grams 는 영양 계산용 무게(g, 물은 0). 튀김 기름·절임 소금·버리는 절임장·데치는 물에 넣는 소금은 먹게 되는(흡수되는) 양만.
+  무게 기준: 고춧가루 1큰술≈6g, 설탕 1큰술≈12g, 소금 1큰술≈15g, 간장 1큰술≈17g, 다진마늘 1큰술≈10g, 참기름 1큰술≈13g.
 - 선택 재료는 optional=true. steps 는 4~8단계, 각 단계에 불 세기·시간·크기 같은 구체 수치. 단계에 쓰는 재료는 모두 재료 목록에 있어야 한다.
 - tips 2~3개(실패 줄이는 요령, 보관법, 대체 재료). 돼지고기·닭고기·해산물은 속까지 익히는 기준을 적는다.
 - cats 는 아래 [카테고리] 슬러그 1~3개를 쉼표로. icon 은 이모지 1개. level 은 쉬움/보통/어려움 중 하나.
@@ -170,6 +211,8 @@ def to_entry(raw: dict, used_slugs: set):
             tag = name + ("?" if i.get("optional") else "")
             parts.append(f"{tag}:{qty}" + (f"|{g:g}" if g > 0 else ""))
         slug = re.sub(r"[^a-z0-9-]+", "-", str(raw["slug"]).lower()).strip("-")[:60] or "recipe"
+        if slug in used_slugs:   # 로마자 이름이 기존 레시피와 같으면 같은 요리일 가능성이 크다(닭도리탕 = 닭볶음탕 'dakdoritang')
+            return None, f"중복: 기존 레시피와 같은 주소({slug})"
         base, k = slug, 2
         while slug in used_slugs:
             slug, k = f"{base}-{k}", k + 1
@@ -256,6 +299,7 @@ def run(count: int = 3, dry: bool = False) -> str:
     import search_demand as sd
 
     UNAVAILABLE = False
+    started = time.time()
     if not gemini_keys.has_keys():
         return "자동 레시피: Gemini 키 없음, 건너뜀"
     if not sd.naver_ad_configured():
@@ -271,6 +315,9 @@ def run(count: int = 3, dry: bool = False) -> str:
     added, notes = [], []
     for vol, dish in candidates(have, tried)[:count * 4]:
         if len(added) >= count:
+            break
+        if time.time() - started > TIME_BUDGET:   # Gemini가 느린 날 PC 예약작업(1시간 제한)을 넘기지 않게
+            notes.append("시간이 오래 걸려 이번엔 여기까지")
             break
         state["tried"][_norm(dish)] = dt.date.today().isoformat()
         raw = write_recipe(dish, _similar(dish, names))
@@ -299,8 +346,9 @@ def run(count: int = 3, dry: bool = False) -> str:
         if probs or entry is None:
             notes.append(f"{dish}: 검사 불합격({'; '.join(probs)[:80]})")
             continue
-        if _norm(entry["name"]) in have:
-            notes.append(f"{dish}: 이미 있는 이름({entry['name']})")
+        dup = is_duplicate(entry["name"], names)
+        if _norm(entry["name"]) in have or dup:
+            notes.append(f"{dish}: 이미 있는 요리({dup or entry['name']})")
             continue
         entry.update({"added": dt.date.today().isoformat(), "keyword": dish, "volume": vol, "source": "gemini"})
         if dry:
