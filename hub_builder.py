@@ -339,9 +339,10 @@ _PAGE_SHELL = """<!DOCTYPE html>
 <style>body{{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;background:#f6f6f4;color:#1d1d1b;line-height:1.8;word-break:keep-all}}
 .w{{max-width:760px;margin:0 auto;padding:0 18px 60px}}header{{padding:16px 0;border-bottom:1px solid #e4e3de;margin-bottom:24px}}header a{{font-weight:700;color:#185fa5;text-decoration:none}}
 h1{{font-size:26px;margin:0 0 14px}}h2{{font-size:19px;margin:28px 0 8px}}p,li{{font-size:16px;color:#3b3a36}}a{{color:#185fa5}}footer{{margin-top:40px;padding-top:16px;border-top:1px solid #e4e3de;font-size:14px;color:#6b6a65}}
-footer a{{margin-right:14px}}@media (prefers-color-scheme:dark){{body{{background:#1b1b19;color:#f1efe8}}p,li{{color:#d3d1c7}}a,header a{{color:#85b7eb}}header,footer{{border-color:#383835}}}}</style></head>
-<body><div class="w"><header><a href="/">← 데일리픽스 포인트 홈</a></header><main><h1>{title}</h1>{body}</main>
-<footer><a href="/about/">소개</a><a href="/contact/">문의</a><a href="/privacy/">개인정보처리방침</a><a href="https://cook.dailyfixpoint.com/">냉장고 파먹기</a><div style="margin-top:8px">이 사이트의 일부 링크에는 제휴 수수료가 포함될 수 있습니다.</div></footer></div></body></html>"""
+footer a{{margin-right:14px}}header{{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px 14px}}header nav a{{font-weight:500;color:#3b3a36;margin-left:14px;font-size:15px}}
+@media (prefers-color-scheme:dark){{body{{background:#1b1b19;color:#f1efe8}}p,li{{color:#d3d1c7}}a,header a{{color:#85b7eb}}header nav a{{color:#d3d1c7}}header,footer{{border-color:#383835}}}}</style></head>
+<body><div class="w"><header><a href="/">← 데일리픽스 포인트 홈</a><nav><a href="/guide/">생활 가이드</a><a href="/calc/">계산기</a></nav></header><main><h1>{title}</h1>{body}</main>
+<footer><a href="/about/">소개</a><a href="/contact/">문의</a><a href="/privacy/">개인정보처리방침</a><a href="/guide/">생활 가이드</a><a href="https://cook.dailyfixpoint.com/">냉장고 파먹기</a><div style="margin-top:8px">이 사이트의 일부 링크에는 제휴 수수료가 포함될 수 있습니다.</div></footer></div></body></html>"""
 
 
 def _page(title: str, desc: str, path: str, body: str) -> str:
@@ -388,8 +389,17 @@ def write_site(outdir: Path, data: Dict[str, Any], index_html: str) -> List[str]
         related = [(_esc(p["title"]), _esc(p["link"])) for p in data["posts"] if any(w in p["title"] for w in LINKS[slug][0])][:4]
         files[f"calc/{slug}/index.html"] = _page(c["title"], c["desc"], f"/calc/{slug}/", page_body(slug, related))
     files["calc/index.html"] = _page("생활 계산기", "대출이자, 예금·적금 이자, 퇴직금, 주휴수당, 부가세 계산기 모음", "/calc/", index_body())
+    import hub_guides
+
+    guides = hub_guides.load()
+    calc_titles = {s: c["title"] for s, c in CALCS.items()}
+    for slug, g in guides.items():  # 생활 가이드 글: 같은 주제의 안내소 글을 '관련 글'로 잇는다
+        related = [(_esc(p["title"]), _esc(p["link"])) for p in data["posts"] if any(w in p["title"] for w in g["words"])][:4]
+        files[f"guide/{slug}/index.html"] = _page(g["title"], g["desc"], f"/guide/{slug}/", hub_guides.page_body(slug, related, calc_titles))
+    files["guide/index.html"] = _page("생활 가이드", "정부지원금·주거, 생활비 절약, 세금·절세에서 자주 막히는 문제를 한 페이지로 정리한 안내서 모음", "/guide/", hub_guides.index_body())
     today = time.strftime("%Y-%m-%d")
-    pages = ["/", "/about/", "/contact/", "/privacy/", "/calc/"] + [f"/calc/{s}/" for s in CALCS]
+    pages = (["/", "/guide/"] + [f"/guide/{s}/" for s in guides]
+             + ["/calc/"] + [f"/calc/{s}/" for s in CALCS] + ["/about/", "/contact/", "/privacy/"])
     urls = "".join(f"<url><loc>{SITE_URL}{p}</loc><lastmod>{today}</lastmod></url>" for p in pages)
     files["sitemap-hub.xml"] = f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{urls}</urlset>\n'
     subs = "".join(f"<sitemap><loc>{info['url']}/wp-sitemap.xml</loc></sitemap>" for info in data["sites"].values())
@@ -407,6 +417,14 @@ def write_site(outdir: Path, data: Dict[str, Any], index_html: str) -> List[str]
     return sorted(files)
 
 
+def _guides_home() -> str:
+    """홈 '생활 가이드' 묶음(이달 추천 3편)."""
+    import hub_guides
+
+    hub_guides.load()
+    return hub_guides.home_html(datetime.now(timezone(timedelta(hours=9))).month)
+
+
 def build(out: Optional[Path] = None) -> Dict[str, Any]:
     data = collect()
     template = (SITE_DIR / "template.html").read_text(encoding="utf-8")
@@ -418,6 +436,7 @@ def build(out: Optional[Path] = None) -> Dict[str, Any]:
         .replace("__STATIC_LIST__", static_list(data["posts"]))
         .replace("__INTRO__", intro_html(data))
         .replace("__SEASON__", season_html(data))
+        .replace("__GUIDES__", _guides_home())
         .replace("__TOPICS__", topics_html(data))
         .replace("__SITEMAP__", sitemap_html(data))
     )
@@ -432,8 +451,11 @@ def build(out: Optional[Path] = None) -> Dict[str, Any]:
 def purge_cache() -> None:
     """서버 앞단 캐시(Varnish)가 옛 허브·옛 404를 내주지 않도록 올린 주소들을 PURGE 요청으로 비운다(안 되는 환경이면 로그만 남기고 넘어간다)."""
     from hub_calcs import CALCS
+    import hub_guides
 
-    for path in ("/", "/about", "/about/", "/contact/", "/privacy/", "/robots.txt", "/sitemap.xml", "/sitemap-hub.xml", "/calc/", *[f"/calc/{s}/" for s in CALCS]):
+    guides = hub_guides.load()
+    for path in ("/", "/about", "/about/", "/contact/", "/privacy/", "/robots.txt", "/sitemap.xml", "/sitemap-hub.xml", "/calc/", *[f"/calc/{s}/" for s in CALCS],
+                 "/guide/", *[f"/guide/{s}/" for s in guides]):
         try:
             r = requests.request("PURGE", f"{SITE_URL}{path}", timeout=10)
             logger.info("캐시 비우기 %s -> HTTP %s", path, r.status_code)
